@@ -12,18 +12,23 @@
  * Collection constructor
  *
  * @constructor
- * @param {?} collection - source collection
+ * @implements {$$Collection}
+ * @param {$$CollectionType} obj
  */
-export default function $C(collection) {
-	if (!this || this instanceof $C === false) {
-		return new $C(collection);
-	}
-
-	this.data = collection;
+export function Collection(obj) {
+	this.data = obj;
 }
 
 /**
  * Library version
  * @const
  */
-$C.prototype.VERSION = [6, 0, 0];
+Collection.prototype.VERSION = [6, 0, 0];
+
+/**
+ * Creates an instance of Collection
+ * @param {$$CollectionType} obj
+ */
+export default function $C(obj) {
+	return new Collection(obj);
+}
