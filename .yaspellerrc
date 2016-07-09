@@ -1,0 +1,20 @@
+{
+  "lang": "en,ru",
+
+  "fileExtensions": [
+    ".md",
+    ".html"
+  ],
+
+  "excludeFiles": [
+    ".git",
+    "node_modules",
+    "bower_components",
+    "coverage",
+    "predefs",
+    "dist",
+    "spec"
+  ],
+
+  "dictionary": []
+}
