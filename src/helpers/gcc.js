@@ -1,7 +1,5 @@
 'use strict';
 
-/* eslint-disable no-useless-rename */
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -10,10 +8,13 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-export { default as default } from './core';
-
-import './iterators/forEach';
-
-//#if iterators.thread
-import './iterators/thread';
-//#endif
+/**
+ * Gets an object with an undefined type
+ * (for the GCC)
+ *
+ * @param {?} val - source object
+ * @return {?}
+ */
+export function any(val) {
+	return val;
+}

@@ -8,9 +8,22 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-const $C = {
-	VERSION: [6, 0, 0]
-};
+/**
+ * Collection constructor
+ *
+ * @constructor
+ * @param {?} collection - source collection
+ */
+export default function $C(collection) {
+	if (!this || this instanceof $C === false) {
+		return new $C(collection);
+	}
 
-export default
-	$C;
+	this.data = collection;
+}
+
+/**
+ * Library version
+ * @const
+ */
+$C.prototype.VERSION = [6, 0, 0];
