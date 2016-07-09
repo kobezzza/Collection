@@ -62,15 +62,6 @@ export const DESCRIPTORS_SUPPORT = (() => {
 	}
 })();
 
-export const JSON_SUPPORT = (() => {
-	try {
-		return JSON.parse(JSON.stringify({foo: 'bar'})).foo === 'bar';
-
-	} catch (ignore) {
-		return false;
-	}
-})();
-
 export const CALLEE_SUPPORT = Boolean(eval(ws`
 	(function () {
 		'use strict';

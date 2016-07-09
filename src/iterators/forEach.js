@@ -10,7 +10,7 @@
 
 import $C from '../core';
 import { tmpCycle } from '../consts/cache';
-import { getType, isObjectInstance } from '../helpers/types';
+import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
 import { STRUCT_OPT } from '../helpers/structs';
 import { compileCycle } from './compile';
 
@@ -18,7 +18,7 @@ const
 	stack = $C.prototype['_stack'] = [];
 
 $C.prototype.forEach = function (cb, opt_params) {
-	const p = Object.assign({
+	let p = {
 		mult: true,
 		count: false,
 		from: false,
@@ -33,7 +33,14 @@ $C.prototype.forEach = function (cb, opt_params) {
 		this: false,
 		return: false,
 		length: true
-	}, opt_params);
+	};
+
+	if (isArray(opt_params) || isFunction(opt_params)) {
+		p.filter = opt_params;
+
+	} else {
+		p = Object.assign(p, opt_params);
+	}
 
 	if (p.notOwn) {
 		p.use = 'for in';
@@ -74,12 +81,15 @@ $C.prototype.forEach = function (cb, opt_params) {
 		cbArgs = false,
 		filterArgs = false;
 
+	const
+		length = '__COLLECTION_TMP__length';
+
 	if (p.length) {
-		cbArgs = p.cbArgs = cb.length;
+		cbArgs = p.cbArgs = cb[length] || cb.length;
 		p.filterArgs = [];
 
 		for (let i = 0; i < filter.length; i++) {
-			p.filterArgs.push(filter[i].length);
+			p.filterArgs.push(filter[i][length] || filter[i].length);
 		}
 
 		filterArgs = p.filterArgs.length ? p.filterArgs : false;

@@ -13,6 +13,9 @@
 export { default as default } from './core';
 
 import './iterators/forEach';
+import './iterators/length';
+import './iterators/map';
+import './iterators/get';
 
 //#if iterators.thread
 import './iterators/thread';

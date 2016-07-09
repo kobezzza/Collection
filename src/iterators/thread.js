@@ -9,6 +9,7 @@
  */
 
 import $C from '../core';
+import { getRandomInt } from '../helpers/math';
 import { maxPriority, priority } from '../consts/thread';
 
 const intervals = [
@@ -104,11 +105,11 @@ function getTasks() {
 		const
 			rand = getRandomInt(0, max);
 
-		$C(rands).forEach(({key, val}) => {
+		$C(rands).forEach(({key, value}) => {
 			const
 				arr = tmp[key];
 
-			if (rand >= val[0] && rand <= val[1]) {
+			if (rand >= value[0] && rand <= value[1]) {
 				tasks[key] = tasks[key] || [];
 				let pos = lastPos[key];
 
@@ -117,7 +118,10 @@ function getTasks() {
 					mods[key] = 0;
 				}
 
-				if (!exec[key][arr[pos]].pause) {
+				const
+					point = exec[key][arr[pos]];
+
+				if (point && !point.pause) {
 					mods[key]++;
 					tasks[key].push(arr[pos]);
 					total += priority[key];
@@ -222,7 +226,6 @@ $C.prototype._addToStack = function (priority, obj, opt_onComplete, opt_onChunk)
 					obj.onChunk.call(that, obj.result);
 				}
 			});
-
 		});
 
 		if (exec) {
