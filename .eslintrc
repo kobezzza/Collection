@@ -126,7 +126,6 @@
     "object-shorthand": ["error"],
     "prefer-arrow-callback": ["error", {"allowNamedFunctions": true}],
     "prefer-const": ["error"],
-    "prefer-spread": ["error"],
     "prefer-template": ["error"],
     "require-yield": ["error"],
     "rest-spread-spacing": ["error"],
