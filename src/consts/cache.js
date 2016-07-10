@@ -8,6 +8,6 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-export let
+export const
 	tmpCycleStr = {},
 	tmpCycle = {};

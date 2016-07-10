@@ -9,6 +9,7 @@
  */
 
 import { ws } from '../helpers/string';
+import { any } from '../helpers/gcc';
 
 export const IS_NODE = (() => {
 	try {
@@ -23,7 +24,7 @@ export const
 	IS_BROWSER = !IS_NODE && typeof window === 'object',
 	BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function',
 	LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'function',
-	OBJECT_KEYS_NATIVE_SUPPORT = (Object.keys && Object.keys.toString()) === '[native code]';
+	OBJECT_KEYS_NATIVE_SUPPORT = (Object.keys && any(Object.keys).toString()) === '[native code]';
 
 export const MAP_SUPPORT = (() => {
 	try {

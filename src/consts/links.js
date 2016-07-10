@@ -8,12 +8,12 @@
  * https://github.com/SnakeskinTpl/Snakeskin/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
 
 export const
 	GLOBAL = Function('return this')();
 
 export const
-	TRUE = $C.prototype.TRUE = {},
-	FALSE = $C.prototype.FALSE = {},
-	NULL = $C.prototype.NULL = {};
+	TRUE = Collection.prototype.TRUE = {},
+	FALSE = Collection.prototype.FALSE = {},
+	NULL = Collection.prototype.NULL = {};
