@@ -11,6 +11,7 @@
 import $C, { Collection } from '../core';
 import { getRandomInt } from '../helpers/math';
 import { maxPriority, priority } from '../consts/thread';
+import './map';
 
 const intervals = [
 	[
@@ -156,20 +157,20 @@ let exec = 0;
  * Adds a task to the execution stack
  *
  * @private
- * @param {!Generator} obj - generator object
+ * @param {?} obj - generator object
  * @param {string} priority - task priority
  * @param {?function(this:$C, ?)} onComplete - callback function for complete
  * @param {?function(this:$C, ?)} [opt_onChunk] - callback function for chunks
  */
 Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onChunk) {
-	obj['thread'] = true;
-	obj['priority'] = priority;
-	obj['destroy'] = () => $C.destroy(obj);
-	obj['onComplete'] = onComplete;
-	obj['onChunk'] = opt_onChunk;
-	obj['pause'] = false;
-	obj['sleep'] = null;
-	obj['children'] = [];
+	obj.thread = true;
+	obj.priority = priority;
+	obj.destroy = () => $C.destroy(obj);
+	obj.onComplete = onComplete;
+	obj.onChunk = opt_onChunk;
+	obj.pause = false;
+	obj.sleep = null;
+	obj.children = [];
 
 	const
 		next = obj.next;
@@ -177,9 +178,9 @@ Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onCh
 	// With strictMode in Chrome (bug?) that method can't define as obj.next =
 	Object.defineProperty(obj, 'next', {
 		value() {
-			if (obj['sleep'] !== null) {
-				clearTimeout(obj['sleep']);
-				obj['sleep'] = null;
+			if (obj.sleep !== null) {
+				clearTimeout(obj.sleep);
+				obj.sleep = null;
 			}
 
 			return next.apply(this, arguments);
@@ -189,7 +190,6 @@ Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onCh
 	exec++;
 	execStack[priority].push(obj);
 
-	const that = this;
 	function loop() {
 		$C(getTasks()).forEach((el, key) => {
 			const
@@ -239,17 +239,18 @@ Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onCh
 /**
  * Destroys the specified Collection worker
  *
- * @param {(Generator|?)} obj - Collection worker or any value (returns false)
+ * @param {(Promise|?)} obj - Collection worker or any value (returns false)
  * @return {boolean}
  */
 $C.destroy = function (obj) {
-	if (!obj || !obj['thread']) {
+	if (!obj || !obj.thread) {
 		return false;
 	}
 
-	clearTimeout(obj['sleep']);
-	$C(obj['children']).forEach((child) => $C.destroy(child));
-	$C(execStack[obj['priority']]).remove((el) => el === obj, {mult: false});
+	const {thread} = obj;
+	clearTimeout(thread.sleep);
+	$C(thread.children).forEach((child) => $C.destroy(child));
+	$C(execStack[thread.priority]).remove((el) => el === obj, {mult: false});
 
 	return true;
 };

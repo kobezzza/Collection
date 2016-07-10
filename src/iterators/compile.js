@@ -28,7 +28,7 @@ const filterArgsList = [
 ];
 
 /**
- * Compiles a cycle by the specified parameters
+ * Compiles a loop by the specified parameters
  *
  * @param {string} key - cache key
  * @param {!Object} p - compile parameters
@@ -247,8 +247,11 @@ export function compileCycle(key, p) {
 					return false;
 				}
 
+				var diff = i - n;
 				n = val - 1;
-				return n;
+				i = n + diff;
+
+				return i;
 			},
 
 			i: function (val) {
@@ -261,7 +264,9 @@ export function compileCycle(key, p) {
 				}
 
 				n += val;
-				return n;
+				i += val;
+
+				return i;
 			},
 
 			get reset() {
@@ -278,7 +283,7 @@ export function compileCycle(key, p) {
 
 		var cbCtx = Object.create(ctx);
 		cbCtx.length = o.cbLength;
-		
+
 		var filterCtx = Object.create(ctx);
 		filterCtx.length = o.fLength;
 	`;
@@ -468,7 +473,7 @@ export function compileCycle(key, p) {
 						if (key in data === false) {
 							continue;
 						}
-						
+
 						i = n + ${startIndex};
 				`;
 
@@ -706,12 +711,7 @@ export function compileCycle(key, p) {
 
 	let tmp;
 	if (p.mult) {
-		if (p.return) {
-			tmp = `if (cb(${cbArgs}) === FALSE) { breaker = true; }`;
-
-		} else {
-			tmp = `cb(${cbArgs});`;
-		}
+		tmp = `cb(${cbArgs});`;
 
 	} else {
 		tmp = `cb(${cbArgs}); breaker = true;`;

@@ -21,14 +21,40 @@ const
 	stack = Collection.prototype['_stack'] = [];
 
 /**
+ * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
- * @param cb
- * @param opt_params
- * @return {*}
+ * @param {$$CollectionCb} cb - callback function
+ * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
+ *
+ *   *) [filter] - function filter or array of functions;
+ *   *) [mult = true] - if false, then after the first successful iteration the operation will be broken;
+ *   *) [count] - maximum number of elements in the response (by default all object);
+ *   *) [from = 0] - number of skipping successful iterations;
+ *   *) [startIndex = 0] - number of skipping successful iterations;
+ *   *) [endIndex] - end iteration position;
+ *   *) [opt_inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter;
+ *   *) [notOwn = false] - iteration type:
+ *
+ *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
+ *     2) if true, then hasOwnProperty test is disabled;
+ *     3) if -1, then hasOwnProperty test is enabled and all own properties will be skipped.
+ *
+ *   *) [live = false] - if true, the initial collection length won't be cached (not for all data types),
+ *      ie all elements which will be added to the collection during the iteration will be included to the processing;
+ *
+ *   *) [use] - type of the using iterator (for, for of, for in)
+ *   *) [length = true] - if false, then function parameters optimization won't be apply
+ *   *) [thread = false] - if true, then operation will be executed in a thread (returns a promise)
+ *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
+ *   *) [onChunk] - callback function for chunks
+ *   *) [onIterationEnd] - callback function for the end of iterations
+ *   *) [onComplete] - callback function for the operation end
+ *   *) [result] - parameter that marked as the operation result
+ *
+ * @return {(!Collection|!Promise)}
  */
 Collection.prototype.forEach = function (cb, opt_params) {
-	const
-		p = Object.create(this.p);
+	const p = any(Object.create(this.p));
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = opt_params;
@@ -127,7 +153,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filterArgs,
 		p.this,
 		p.length,
-		p.return,
 		p.thread,
 		p.notOwn,
 		p.live,
@@ -165,7 +190,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 					return undefined;
 				}
 
-				return function (el, key, data, o) {
+				return (el, key, data, o) => {
 					try {
 						return fn(el, key, data, o);
 

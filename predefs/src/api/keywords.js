@@ -41,3 +41,12 @@ var set;
 
 /** @type {?} */
 var call;
+
+/** @type {?} */
+var children;
+
+/** @type {?} */
+var ctx;
+
+/** @type {?} */
+var destroy;

@@ -10,11 +10,23 @@
 
 import { Collection } from '../core';
 import { LENGTH_REQUEST } from '../consts/base';
+import { isArray, isFunction } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
+/**
+ * Returns the number of elements in the collection by the specified parameters
+ *
+ * @see Collection.prototype.forEach
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or array of functions
+ * @param {?$$CollectionBase=} [opt_params] - additional parameters
+ * @return {(number|!Promise)}
+ */
 Collection.prototype.length = function (opt_filter, opt_params) {
-	const
-		p = opt_params || {};
+	let p = any(opt_params || {});
+	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+		p = opt_filter || p;
+		opt_filter = null;
+	}
 
 	p.filter = opt_filter;
 	p.result = 0;

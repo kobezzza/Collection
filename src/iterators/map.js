@@ -9,17 +9,29 @@
  */
 
 import { Collection } from '../core';
+import { FN_LENGTH } from '../consts/base';
 import { getType, isArray, isFunction } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
+/**
+ * Creates a new collection based on the current by the specified parameters
+ *
+ * @see Collection.prototype.forEach
+ * @param {($$CollectionCb|$$Collection_map)} cb - callback function
+ * @param {($$Collection_map|$$CollectionFilter)=} [opt_params] - additional parameters:
+ *   *) [initial] - initial object for adding elements
+ *
+ * @return {(?|!Promise)}
+ */
 Collection.prototype.map = function (cb, opt_params) {
-	cb = cb || ((el) => el);
+	let p = any(opt_params || {});
+	if (!isFunction(cb)) {
+		p = cb || p;
+		cb = (el) => el;
+	}
 
-	let p;
-	if (isArray(opt_params) || isFunction(opt_params)) {
-		p = {filter: opt_params};
-
-	} else {
-		p = opt_params || {};
+	if (isArray(p) || isFunction(p)) {
+		p = {filter: p};
 	}
 
 	const
@@ -70,49 +82,43 @@ Collection.prototype.map = function (cb, opt_params) {
 	switch (type) {
 		case 'array':
 			action = function () {
-				res.push(cb.apply(this, arguments));
+				res.push(cb.apply(null, arguments));
 			};
 
-			action['__COLLECTION_TMP__length'] = cb.length;
+			action[FN_LENGTH] = cb.length;
 			break;
 
 		case 'object':
 			action = function (el, key) {
-				res[key] = cb.apply(this, arguments);
+				res[key] = cb.apply(null, arguments);
 			};
 
-			action['__COLLECTION_TMP__length'] = action.length > cb.length ? action.length : cb.length;
+			action[FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
 			break;
 
 		case 'map':
 		case 'weakMap':
 			action = function (el, key) {
-				res.set(key, cb.apply(this, arguments));
+				res.set(key, cb.apply(null, arguments));
 			};
 
-			action['__COLLECTION_TMP__length'] = action.length > cb.length ? action.length : cb.length;
+			action[FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
 			break;
 
 		case 'set':
 		case 'weakSep':
 			action = function () {
-				res.add(cb.apply(this, arguments));
+				res.add(cb.apply(null, arguments));
 			};
 
-			action['__COLLECTION_TMP__length'] = cb.length;
+			action[FN_LENGTH] = cb.length;
 			break;
 	}
 
-	const
-		{onComplete} = p;
-
 	p.result = res;
-	p.onComplete = function () {
-		onComplete && onComplete.call(this, res);
-	};
 
 	const
-		returnVal = this.forEach(action, p);
+		returnVal = any(this.forEach(action, p));
 
 	if (returnVal !== this) {
 		return returnVal;

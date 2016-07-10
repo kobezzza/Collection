@@ -11,13 +11,23 @@
 import { Collection } from '../core';
 import { isLink } from '../helpers/link';
 import { isFunction, isArray } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
 //#if link
 import { byLink } from '../other/link';
 //#endif
 
+/**
+ * Searches elements in a collection by the specified condition/link.
+ * The method returns an array of found elements or an element (if mult = false)
+ *
+ * @see Collection.prototype.forEach
+ * @param {($$CollectionFilter|$$CollectionBase|$$CollectionLink)=} [opt_filter] - link, function filter or an array of functions
+ * @param {?$$CollectionBase=} [opt_params] - additional parameters
+ * @return {(?|!Array|!Promise)}
+ */
 Collection.prototype.get = function (opt_filter, opt_params) {
-	const p = opt_params || {};
+	let p = any(opt_params || {});
 
 	/* eslint-disable no-constant-condition */
 
@@ -27,24 +37,18 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 		return tmp;
 	}
 
+	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+		p = opt_filter || p;
+		opt_filter = null;
+	}
+
 	/* eslint-enable no-constant-condition */
 
-	let res = [];
-
-	p.inject = res;
+	const res = p.result = [];
 	p.filter = opt_filter;
 
-	const {onComplete} = p;
-	p.onComplete = function () {
-		if (p.mult === false) {
-			res = res[0];
-		}
-
-		onComplete && onComplete.call(this, res);
-	};
-
 	const
-		returnVal = this.forEach((el) => res.push(el), p);
+		returnVal = any(this.forEach(p.mult ? (el) => res.push(el) : (el) => p.result = el, p));
 
 	if (returnVal !== this) {
 		return returnVal;
