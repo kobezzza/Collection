@@ -42,8 +42,14 @@ const
 	lastPos = {},
 	execStack = {};
 
-$C(priority).forEach((el, key) => lastPos[key] = 0);
-$C(priority).forEach((el, key) => execStack[key] = []);
+for (const key in priority) {
+	if (!priority.hasOwnProperty(key)) {
+		break;
+	}
+
+	lastPos[key] = 0;
+	execStack[key] = [];
+}
 
 /**
  * Returns a working plan for the current iteration of the event loop

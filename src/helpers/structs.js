@@ -8,6 +8,7 @@
 
 'use strict';
 
+import $C from '../core';
 import { GLOBAL, NULL } from '../consts/links';
 import { MAP_SUPPORT, SET_SUPPORT } from '../consts/hacks';
 

@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable prefer-const */
+
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -8,6 +10,8 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-export const
-	tmpCycleStr = {},
-	tmpCycle = {};
+import $C from '../core';
+
+$C.cache = {str: {}};
+export const tmpCycle = $C.cache.cycle = {};
+

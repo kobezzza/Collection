@@ -68,3 +68,15 @@ var fLength;
 
 /** @type {?} */
 var link;
+
+/** @type {?} */
+var cache;
+
+/** @type {?} */
+var ready;
+
+/** @type {?} */
+var cycle;
+
+/** @type {?} */
+var str;

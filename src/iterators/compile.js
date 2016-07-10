@@ -8,10 +8,37 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+import $C from '../core';
 import { tmpCycle } from '../consts/cache';
 import { ws } from '../helpers/string';
 import { STRUCT_OPT } from '../helpers/structs';
 import { OBJECT_KEYS_NATIVE_SUPPORT } from '../consts/hacks';
+import { NAMESPACE, CACHE_VERSION, CACHE_KEY, CACHE_VERSION_KEY } from '../consts/base';
+import { IS_NODE, IS_BROWSER, BLOB_SUPPORT, LOCAL_STORAGE_SUPPORT } from '../consts/hacks';
+
+let timeout;
+const
+	cache = $C.cache.str;
+
+/**
+ * Returns a cache string by an object
+ *
+ * @param {?} cache - cache object
+ * @return {string}
+ */
+export function returnCache(cache) {
+	let text = '';
+
+	for (const key in cache) {
+		if (!cache.hasOwnProperty(key)) {
+			continue;
+		}
+
+		text += cache[key];
+	}
+
+	return text;
+}
 
 const cbArgsList = [
 	'el',
@@ -812,6 +839,49 @@ export function compileCycle(key, p) {
 
 	} else {
 		tmpCycle[key] = Function('o', 'p', iFn);
+	}
+
+	if ($C.ready) {
+		const
+			delay = 5e3;
+
+		const text = `${NAMESPACE}.cache.cycle["${key}"] = ${tmpCycle[key].toString()};`;
+		cache[key] = text;
+
+		if (IS_BROWSER && LOCAL_STORAGE_SUPPORT) {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				try {
+					localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+					localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
+
+					if (BLOB_SUPPORT) {
+						const script = document.createElement('script');
+						script.src = URL.createObjectURL(new Blob([text], {type: 'application/javascript'}));
+						document.head.appendChild(script);
+					}
+
+				} catch (ignore) {}
+
+			}, delay);
+
+		} else if (IS_NODE) {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				require('fs').writeFile(
+					require('path').join(__dirname, 'collection.tmp.js'),
+
+					`
+						exports.version = ${CACHE_VERSION};
+						exports.cache = ${JSON.stringify(cache)};
+						exports.exec = function () { ${returnCache(cache)} };
+					`,
+
+					() => {}
+				);
+
+			}, delay);
+		}
 	}
 
 	return tmpCycle[key];

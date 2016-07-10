@@ -23,7 +23,7 @@ export const IS_NODE = (() => {
 export const
 	IS_BROWSER = !IS_NODE && typeof window === 'object',
 	BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function',
-	LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'function',
+	LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'object',
 	OBJECT_KEYS_NATIVE_SUPPORT = (Object.keys && any(Object.keys).toString()) === '[native code]';
 
 export const MAP_SUPPORT = (() => {
@@ -57,6 +57,15 @@ export const SET_SUPPORT = (() => {
 export const DESCRIPTORS_SUPPORT = (() => {
 	try {
 		return Object.getOwnPropertyDescriptor(Object.create(null, {foo: {enumerable: false}}), 'foo').enumerable === false;
+
+	} catch (ignore) {
+		return false;
+	}
+})();
+
+export const JSON_SUPPORT = (() => {
+	try {
+		return JSON.parse(JSON.stringify({foo: 'bar'})).foo === 'bar';
 
 	} catch (ignore) {
 		return false;
