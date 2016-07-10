@@ -212,11 +212,11 @@ Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onCh
 
 					exec--;
 					if (obj.onComplete && obj.onComplete !== onComplete) {
-						obj.onComplete.call(that, obj.result);
+						obj.onComplete(obj.ctx.result);
 					}
 
 				} else if (obj.onChunk) {
-					obj.onChunk.call(that, obj.result);
+					obj.onChunk(obj.ctx);
 				}
 			});
 		});

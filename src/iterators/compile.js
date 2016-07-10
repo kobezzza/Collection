@@ -52,21 +52,7 @@ export function compileCycle(key, p) {
 			link = o.link,
 			onIterationEnd = o.onIterationEnd,
 			onComplete = o.onComplete;
-	`;
 
-	const pop = ws`
-		if (${p.thread}) {
-			link.self.result = o.inject;
-		}
-
-		that._stack.pop();
-	`;
-
-	const push = ws`
-		that._stack.push(ctx);
-	`;
-
-	iFn += ws`
 		var
 			wait = 0,
 			onGlobalComplete,
@@ -127,7 +113,7 @@ export function compileCycle(key, p) {
 		var ctx = {
 			$: $,
 			info: info,
-			inject: o.inject,
+			result: o.result,
 
 			yield: function (opt_val) {
 				if (${!p.thread}) {
@@ -155,25 +141,31 @@ export function compileCycle(key, p) {
 				}
 
 				ctx.yield();
-				link.self.sleep = setTimeout(function () {
-					if (opt_test) {
-						${push}
-						var test = opt_test.call(that);
-						${pop}
+				return new Promise(function (resolve, reject) {
+					link.self.sleep = setTimeout(function () {
+						if (opt_test) {
+							try {
+								var test = opt_test(ctx);
 
-						if (test) {
+								if (test) {
+									resolve();
+									link.self.next();
+
+								} else if (opt_interval) {
+									ctx.sleep(time, opt_test, opt_interval).then(resolve, reject);
+								}
+
+							} catch (err) {
+								reject(err);
+								throw err;
+							}
+
+						} else {
+							resolve();
 							link.self.next();
-
-						} else if (opt_interval) {
-							ctx.sleep(time, opt_test, opt_interval);
 						}
-
-					} else {
-						link.self.next();
-					}
-				}, time);
-
-				return link.self.sleep;
+					}, time);
+				});
 			},
 
 			wait: function (promise) {
@@ -184,7 +176,7 @@ export function compileCycle(key, p) {
 
 					if (!wait) {
 						if (onGlobalComplete) {
-							onGlobalComplete.call(that, results);
+							onGlobalComplete(results);
 							onGlobalComplete = null;
 						}
 
@@ -204,34 +196,34 @@ export function compileCycle(key, p) {
 					}
 
 					results.push(res);
-					${push}
+					that._stack.push(ctx);
 
 					if (onComplete) {
-						onComplete.call(that, res);
+						onComplete(res);
 					}
 
 					if (!wait) {
 						yielder = false;
 						if (onGlobalComplete) {
-							onGlobalComplete.call(that, results);
+							onGlobalComplete(results);
 							onGlobalComplete = null;
 						}
 
 						results = [];
-						${pop}
+						that._stack.pop();
 
 						if (!yielder) {
 							ctx.next;
 						}
 
 					} else {
-						${pop}
+						that._stack.pop();
 					}
 				};
 
 				return promise.catch(function (err) {
 					if (onGlobalError) {
-						onGlobalError.call(that, err);
+						onGlobalError(err);
 						onGlobalError = null;
 					}
 				});
@@ -283,7 +275,7 @@ export function compileCycle(key, p) {
 		var cbCtx = {
 			$: $,
 			info: info,
-			inject: o.inject,
+			result: o.result,
 			ctx: ctx,
 			length: o.cbLength,
 			TRUE: TRUE,
@@ -293,7 +285,7 @@ export function compileCycle(key, p) {
 		var filterCtx = {
 			$: $,
 			info: info,
-			inject: o.inject,
+			result: o.result,
 			ctx: ctx,
 			length: o.fLength,
 			TRUE: TRUE,
@@ -302,7 +294,10 @@ export function compileCycle(key, p) {
 	`;
 
 	if (p.thread) {
-		iFn += 'ctx.thread = link.self;';
+		iFn += ws`
+			ctx.thread = link.self;
+			link.self.ctx = ctx;
+		`;
 	}
 
 	p.startIndex = p.startIndex || 0;
@@ -329,7 +324,7 @@ export function compileCycle(key, p) {
 	if (p.thread) {
 		threadStart = ws`
 			if (timeStart == null) {
-				${push}
+				that._stack.push(ctx);
 				timeStart = new Date().valueOf();
 			}
 		`;
@@ -340,7 +335,7 @@ export function compileCycle(key, p) {
 			timeStart = timeEnd;
 
 			if (time > this._priority[link.self.priority]) {
-				${pop}
+				that._stack.pop();
 				yield n;
 				time = 0;
 				timeStart = null;
@@ -348,7 +343,7 @@ export function compileCycle(key, p) {
 		`;
 
 	} else {
-		iFn += push;
+		iFn += 'that._stack.push(ctx);';
 	}
 
 	iFn += 'while (limit !== looper) {';
@@ -481,25 +476,33 @@ export function compileCycle(key, p) {
 						if (key in data === false) {
 							continue;
 						}
-
-						${maxArgsLength > 3 ? `i = cbCtx.i = filterCtx.i = n + ${p.startIndex};` : ''}
 				`;
+
+				if (maxArgsLength > 3) {
+					iFn += `i = cbCtx.i = filterCtx.i = n + ${p.startIndex};`;
+				}
 
 			} else {
-				iFn += ws`
-					for (key in data) {
-						${p.notOwn === false ?
-							`if (!data.hasOwnProperty(key)) {
-								break;
-							}` : p.notOwn === -1 ?
+				iFn += 'for (key in data) {';
 
-							`if (data.hasOwnProperty(key)) {
-								continue;
-							}` : ''
-						}
+				if (p.notOwn === false) {
+					iFn += ws`
+						if (!data.hasOwnProperty(key)) {
+							break;
+						}`
+					;
 
-						${maxArgsLength > 3 || p.startIndex || p.endIndex !== false ? 'cbCtx.i = filterCtx.i = ++i' : ''};
-				`;
+				} else if (p.notOwn === -1) {
+					iFn += ws`
+						if (!data.hasOwnProperty(key)) {
+							continue;
+						}`
+					;
+				}
+
+				if (maxArgsLength > 3 || p.startIndex || p.endIndex !== false) {
+					iFn += `i = cbCtx.i = filterCtx.i = n + ${p.startIndex};`;
+				}
 
 				if (p.startIndex) {
 					iFn += ws`
@@ -641,7 +644,7 @@ export function compileCycle(key, p) {
 					iFn += ws`
 						for (key = cursor.next(); !key.done; key = cursor.next()) {
 							${maxArgsLength ? 'key = key.value;' : ''}
-							cbCtx.i = filterCtx.i = ++i;
+							i = cbCtx.i = filterCtx.i = i + 1;
 					`;
 
 					if (p.startIndex) {
@@ -686,6 +689,7 @@ export function compileCycle(key, p) {
 			break;
 	}
 
+	iFn += 'ctx.result = cbCtx.result = filterCtx.result = o.result;';
 	iFn += threadStart;
 
 	if (p.count) {
@@ -700,14 +704,7 @@ export function compileCycle(key, p) {
 		iFn += 'if (';
 
 		for (let i = 0; i < p.filter.length; i++) {
-			iFn += `(${p.inverseFilter ? '!' : ''}(f = filters[${i}]${p.this ? '.call(this' : '('}`;
-
-			if (p.this && filterArgs[i].length) {
-				iFn += ',';
-			}
-
-			iFn += `${filterArgs[i]})) || f === ${p.inverseFilter ? 'FALSE' : 'TRUE'})`;
-
+			iFn += `(${p.inverseFilter ? '!' : ''}(f = filters[${i}](${filterArgs[i]})) || f === ${p.inverseFilter ? 'FALSE' : 'TRUE'})`;
 			if (i !== p.filter.length - 1) {
 				iFn += '&&';
 			}
@@ -717,7 +714,7 @@ export function compileCycle(key, p) {
 	}
 
 	const
-		cbCall = `cb${p.this ? '.call(this' : '('}${p.this && cbArgs.length ? ',' : ''}${cbArgs})`;
+		cbCall = `cb(${cbArgs})`;
 
 	let tmp;
 	if (p.mult) {
@@ -756,7 +753,7 @@ export function compileCycle(key, p) {
 
 	const yielder = ws`
 		if (yielder) {
-			${pop}
+			that._stack.pop();
 			yielder = false;
 
 			if (link.self) {
@@ -772,7 +769,7 @@ export function compileCycle(key, p) {
 			delete link.pause;
 
 			yieldVal = void 0;
-			${push}
+			that._stack.push(ctx);
 		}
 	`;
 
@@ -798,11 +795,12 @@ export function compileCycle(key, p) {
 			${threadEnd}
 		}
 
+		ctx.result = cbCtx.result = filterCtx.result = o.result;
 		breaker = false;
 		looper++;
 
 		if (onIterationEnd) {
-			onIterationEnd.call(this, this.result);
+			onIterationEnd(ctx);
 		}
 	`;
 
@@ -813,13 +811,13 @@ export function compileCycle(key, p) {
 	iFn += ws`
 		}
 
-		${pop}
+		that._stack.pop();
 
 		if (onComplete) {
-			onComplete.call(this, o.inject);
+			onComplete(o.result);
 		}
 
-		return o.inject;
+		return o.result;
 	`;
 
 	if (p.thread) {

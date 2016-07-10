@@ -144,7 +144,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filters,
 		fLength,
 		link,
-		inject: p.inject,
+		result: p.result,
 		onComplete: p.onComplete,
 		onIterationEnd: p.onIterationEnd
 	};
@@ -155,12 +155,12 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
 			function wrap(fn) {
-				return function () {
+				return function (el, key, data, o) {
 					try {
-						fn.apply(this, arguments);
+						fn(el, key, data, o);
 
 					} catch (err) {
-						reject.call(this, err);
+						reject(err);
 						throw err;
 					}
 				};
@@ -172,8 +172,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 			const {onComplete} = p;
 			args.onComplete = p.onComplete = function (res) {
-				resolve.call(this, res);
-				onComplete && onComplete.call(this, res);
+				resolve(res);
+				onComplete && onComplete(res);
 			};
 
 			args.cb = wrap(cb);
