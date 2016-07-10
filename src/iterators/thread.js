@@ -156,16 +156,16 @@ let exec = 0;
  * Adds a task to the execution stack
  *
  * @private
- * @param {string} priority - task priority
  * @param {!Generator} obj - generator object
- * @param {?function(this:$C, ?)} [opt_onComplete] - callback function for complete
+ * @param {string} priority - task priority
+ * @param {?function(this:$C, ?)} onComplete - callback function for complete
  * @param {?function(this:$C, ?)} [opt_onChunk] - callback function for chunks
  */
-Collection.prototype._addToStack = function (priority, obj, opt_onComplete, opt_onChunk) {
+Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onChunk) {
 	obj['thread'] = true;
 	obj['priority'] = priority;
 	obj['destroy'] = () => $C.destroy(obj);
-	obj['onComplete'] = opt_onComplete;
+	obj['onComplete'] = onComplete;
 	obj['onChunk'] = opt_onChunk;
 	obj['pause'] = false;
 	obj['sleep'] = null;
@@ -211,8 +211,7 @@ Collection.prototype._addToStack = function (priority, obj, opt_onComplete, opt_
 					}, {startIndex: i + 1});
 
 					exec--;
-
-					if (obj.onComplete && obj.onComplete !== opt_onComplete) {
+					if (obj.onComplete && obj.onComplete !== onComplete) {
 						obj.onComplete.call(that, obj.result);
 					}
 

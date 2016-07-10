@@ -8,38 +8,26 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
 import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
 import { STRUCT_OPT } from '../helpers/structs';
+import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
 import { compileCycle } from './compile';
+import { any } from '../helpers/gcc';
 
 const
-	stack = $C.prototype['_stack'] = [];
+	stack = Collection.prototype['_stack'] = [];
 
-$C.prototype.forEach = function (cb, opt_params) {
-	let p = {
-		mult: true,
-		count: false,
-		from: false,
-		startIndex: false,
-		endIndex: false,
-		reverse: false,
-		inverseFilter: false,
-		notOwn: false,
-		live: false,
-		thread: false,
-		priority: 'normal',
-		this: false,
-		return: false,
-		length: true
-	};
+Collection.prototype.forEach = function (cb, opt_params) {
+	const
+		p = Object.create(this.p);
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = opt_params;
 
 	} else {
-		p = Object.assign(p, opt_params);
+		Object.assign(p, opt_params);
 	}
 
 	if (p.notOwn) {
@@ -47,9 +35,7 @@ $C.prototype.forEach = function (cb, opt_params) {
 	}
 
 	const
-		{data} = this;
-
-	const
+		{data} = this,
 		type = p.type = getType(data, p.use);
 
 	if (!isObjectInstance(data) || {'weakMap': true, 'weakSet': true}[type]) {
@@ -57,12 +43,12 @@ $C.prototype.forEach = function (cb, opt_params) {
 	}
 
 	const
-		filter = p.filter = [].concat(p.filter || []);
+		filters = p.filter = [].concat(p.filter || []);
 
-	// Optimization for length
-	if (!filter.length && cb['__COLLECTION_TMP__lengthQuery']) {
+	// Optimization for the length request
+	if (!filters.length && cb[LENGTH_REQUEST]) {
 		if (type === 'array') {
-			cb['__COLLECTION_TMP__lengthQuery'] = (
+			cb[LENGTH_REQUEST] = (
 				p.startIndex !== false || p.endIndex !== false ?
 					[].slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) :
 					data
@@ -72,7 +58,7 @@ $C.prototype.forEach = function (cb, opt_params) {
 			return this;
 
 		} else if ({'map': true, 'set': true}[type] && p.startIndex === false && p.endIndex === false) {
-			cb['__COLLECTION_TMP__lengthQuery'] = data.size;
+			cb[LENGTH_REQUEST] = data.size;
 			return this;
 		}
 	}
@@ -81,25 +67,56 @@ $C.prototype.forEach = function (cb, opt_params) {
 		cbArgs = false,
 		filterArgs = false;
 
-	const
-		length = '__COLLECTION_TMP__length';
-
 	if (p.length) {
-		cbArgs = p.cbArgs = cb[length] || cb.length;
+		cbArgs = p.cbArgs = cb[FN_LENGTH] || cb.length;
 		p.filterArgs = [];
 
-		for (let i = 0; i < filter.length; i++) {
-			p.filterArgs.push(filter[i][length] || filter[i].length);
+		for (let i = 0; i < filters.length; i++) {
+			p.filterArgs.push(filters[i][FN_LENGTH] || filters[i].length);
 		}
 
 		filterArgs = p.filterArgs.length ? p.filterArgs : false;
+	}
+
+	let cbLength;
+	if (cbArgs && cbArgs > 3) {
+		const p = Object.assign({}, opt_params, {
+			onComplete(val) {
+				cbLength.value = val;
+			}
+		});
+
+		cbLength = (opt_reset) => {
+			if (!cbLength.value || opt_reset) {
+				cbLength.value = this.length(filters, p);
+			}
+
+			return cbLength.value;
+		};
+	}
+
+	let fLength;
+	if (filterArgs && Math.max.apply(null, filterArgs) > 3) {
+		const p = Object.assign({}, opt_params, {
+			onComplete(val) {
+				fLength.value = val;
+			}
+		});
+
+		fLength = (opt_reset) => {
+			if (!fLength.value || opt_reset) {
+				fLength.value = this.length(null, p);
+			}
+
+			return fLength.value;
+		};
 	}
 
 	const key = [
 		STRUCT_OPT,
 		type,
 		cbArgs,
-		filter.length,
+		filters.length,
 		filterArgs,
 		p.this,
 		p.length,
@@ -116,57 +133,86 @@ $C.prototype.forEach = function (cb, opt_params) {
 		p.endIndex
 	].join();
 
-	let fn = tmpCycle[key];
-	if (!fn) {
-		fn = compileCycle(key, p);
-	}
+	const
+		link = {},
+		fn = any(tmpCycle[key] || compileCycle(key, p));
 
-	const link = {};
-	const res = fn.call(
-		this,
+	const args = {
 		data,
 		cb,
-		() => 0,
-		filter,
-		() => 0,
-		p.inject,
+		cbLength,
+		filters,
+		fLength,
 		link,
-		p.onIterationEnd,
-		p.onComplete
-	);
-
-	link.self = res;
-	if (link.pause) {
-		link.self.pause = true;
-	}
+		inject: p.inject,
+		onComplete: p.onComplete,
+		onIterationEnd: p.onIterationEnd
+	};
 
 	//#if iterators.thread
 
 	if (p.thread) {
-		const
-			length = stack.length;
+		let thread;
+		const promise = new Promise((resolve, reject) => {
+			function wrap(fn) {
+				return function () {
+					try {
+						fn.apply(this, arguments);
 
-		let
-			cursor,
-			pos = 1;
-
-		while ((cursor = stack[length - pos])) {
-			if (cursor.thread) {
-				cursor.thread.children.push(res);
-				break;
+					} catch (err) {
+						reject.call(this, err);
+						throw err;
+					}
+				};
 			}
 
-			pos++;
-		}
+			for (let i = 0; i < filters.length; i++) {
+				filters[i] = wrap(filters[i]);
+			}
 
-		this._addToStack(p.priority, res, p.onComplete, p.onChunk);
-	}
+			const {onComplete} = p;
+			args.onComplete = p.onComplete = function (res) {
+				resolve.call(this, res);
+				onComplete && onComplete.call(this, res);
+			};
 
-	if (p.thread) {
-		return res;
+			args.cb = wrap(cb);
+			thread = link.self = fn.call(this, args);
+
+			if (link.pause) {
+				link.self.pause = true;
+			}
+
+			const
+				l = stack.length;
+
+			let
+				cursor,
+				pos = 1;
+
+			while ((cursor = stack[l - pos])) {
+				if (cursor.thread) {
+					cursor.thread.children.push(thread);
+					break;
+				}
+
+				pos++;
+			}
+
+			this._addToStack(thread, p.priority, p.onComplete, p.onChunk);
+		});
+
+		promise.thread = thread;
+		return promise;
 	}
 
 	//#endif
+
+	link.self = fn.call(this, args);
+
+	if (link.pause) {
+		link.self.pause = true;
+	}
 
 	return this;
 };
