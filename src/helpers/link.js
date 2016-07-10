@@ -14,7 +14,7 @@ import { isArray } from './types';
  * Collection context link
  *
  * @constructor
- * @param link - source link
+ * @param {$$CollectionLink} link - source link
  */
 export function Link(link) {
 	this.link = isArray(link) ? [link] : link;
@@ -22,15 +22,16 @@ export function Link(link) {
 
 /**
  * Returns a context link value
+ * @return {?}
  */
 Link.prototype.valueOf = function () {
 	return this.link;
 };
 
 /**
- * Returns true if the specified value is a Link instance
+ * Returns true if the specified object is a Link instance
  *
- * @param {?} obj - source value
+ * @param {?} obj - source object
  * @return {boolean}
  */
 export function isLink(obj) {
