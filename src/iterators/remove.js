@@ -23,7 +23,7 @@ import { byLink } from '../other/link';
  * @see Collection.prototype.forEach
  * @param {($$CollectionFilter|$$CollectionBase|$$CollectionLink)=} [opt_filter] - link, function filter or an array of functions
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
- * @return {({result, key, value}|!Array<{result, key, value}>|!Promise<(({result, key, value}|!Array<{result, key, value}>)>)}
+ * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
  */
 Collection.prototype.remove = function (opt_filter, opt_params) {
 	let p = any(opt_params || {});
@@ -205,7 +205,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	p.filter = opt_filter;
 
 	const
-		returnVal = any(this.forEach(action, p));
+		returnVal = any(this.forEach(any(action), p));
 
 	if (returnVal !== this) {
 		return returnVal;

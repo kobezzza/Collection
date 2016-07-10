@@ -63,7 +63,7 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 	p.filter = opt_filter;
 
 	const
-		returnVal = any(this.forEach(action, p));
+		returnVal = any(this.forEach(any(action), p));
 
 	if (returnVal !== this) {
 		return returnVal;

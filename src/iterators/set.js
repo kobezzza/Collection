@@ -29,7 +29,7 @@ import { byLink } from '../other/link';
  *   *) [key] - key (null for array.push) of a new element (if search elements nof found)
  *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
  *
- * @return {({result, key, value}|!Array<{result, key, value}>|!Promise<(({result, key, value}|!Array<{result, key, value}>)>)}
+ * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
  */
 Collection.prototype.set = function (value, filter, opt_params) {
 	let p = any(opt_params || {});
@@ -258,7 +258,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	};
 
 	const
-		returnVal = any(this.forEach(action, p));
+		returnVal = any(this.forEach(any(action), p));
 
 	if (returnVal !== this) {
 		return returnVal;

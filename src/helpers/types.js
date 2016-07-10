@@ -141,7 +141,7 @@ export function isLikeArray(obj) {
 			// The hack for PhantomJS,
 			// because it has strange bug for HTMLCollection and NodeList:
 			// typeof 'function' && instanceof Function = false
-			isObjectInstance(obj) && !isFuncRgxp.test(toString.call(obj)) &&
+			isObjectInstance(obj) && !isFuncRgxp.test({}.toString.call(obj)) &&
 
 			(
 				// If the object is like an array

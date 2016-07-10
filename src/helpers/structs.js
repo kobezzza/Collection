@@ -1,12 +1,12 @@
-'use strict';
-
 /*!
  * Collection
- * https://github.com/Collection-JS/Collection
+ * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
- * https://github.com/Collection-JS/Collection/blob/master/LICENSE
+ * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
+
+'use strict';
 
 import { GLOBAL, NULL } from '../consts/links';
 import { MAP_SUPPORT, SET_SUPPORT } from '../consts/hacks';

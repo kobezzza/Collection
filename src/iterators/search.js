@@ -51,7 +51,7 @@ Collection.prototype.search = function (opt_filter, opt_params) {
 	}
 
 	const
-		returnVal = any(this.forEach(action, p));
+		returnVal = any(this.forEach(any(action), p));
 
 	if (returnVal !== this) {
 		return returnVal;

@@ -159,8 +159,8 @@ let exec = 0;
  * @private
  * @param {?} obj - generator object
  * @param {string} priority - task priority
- * @param {?function(this:$C, ?)} onComplete - callback function for complete
- * @param {?function(this:$C, ?)} [opt_onChunk] - callback function for chunks
+ * @param {?function(?)} onComplete - callback function for complete
+ * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
  */
 Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onChunk) {
 	obj.thread = true;

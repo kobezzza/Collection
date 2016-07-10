@@ -117,7 +117,7 @@ Collection.prototype.map = function (cb, opt_params) {
 	p.result = res;
 
 	const
-		returnVal = any(this.forEach(action, p));
+		returnVal = any(this.forEach(any(action), p));
 
 	if (returnVal !== this) {
 		return returnVal;

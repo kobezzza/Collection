@@ -8,6 +8,9 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+import { any } from './helpers/gcc';
+import { isString } from './helpers/types';
+
 /**
  * Collection constructor
  *
@@ -16,7 +19,7 @@
  * @param {$$CollectionType} obj
  */
 export function Collection(obj) {
-	this.data = obj;
+	this.data = any(isString(obj) ? obj.split('') : obj);
 	this.p = this._init();
 }
 

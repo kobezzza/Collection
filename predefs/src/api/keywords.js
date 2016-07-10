@@ -7,9 +7,6 @@
  */
 
 /** @type {?} */
-var key;
-
-/** @type {?} */
 var keys;
 
 /** @type {?} */
@@ -22,16 +19,10 @@ var value;
 var values;
 
 /** @type {?} */
-var result;
-
-/** @type {?} */
 var type;
 
 /** @type {?} */
 var done;
-
-/** @type {?} */
-var next;
 
 /** @type {?} */
 var get;
@@ -50,3 +41,30 @@ var ctx;
 
 /** @type {?} */
 var destroy;
+
+/** @type {?} */
+var localStorage;
+
+/** @type {?} */
+var getItem;
+
+/** @type {?} */
+var setItem;
+
+/** @type {?} */
+var data;
+
+/** @type {?} */
+var cb;
+
+/** @type {?} */
+var cbLength;
+
+/** @type {?} */
+var filters;
+
+/** @type {?} */
+var fLength;
+
+/** @type {?} */
+var link;

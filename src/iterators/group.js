@@ -85,7 +85,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	}
 
 	const
-		returnVal = any(this.forEach(action, p));
+		returnVal = any(this.forEach(any(action), p));
 
 	if (returnVal !== this) {
 		return returnVal;

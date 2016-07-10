@@ -6,6 +6,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+
 /** @typedef {(Object|string|undefined)} */
 var $$CollectionType;
 
@@ -399,3 +400,137 @@ $$Collection.prototype.filter = function (filter) {};
  * @return {!$$Collection}
  */
 $$Collection.prototype.thread = function (opt_priority) {};
+
+/** @type {?} */
+var keys;
+
+/** @type {?} */
+var _keys;
+
+/** @type {?} */
+var value;
+
+/** @type {?} */
+var values;
+
+/** @type {?} */
+var type;
+
+/** @type {?} */
+var done;
+
+/** @type {?} */
+var get;
+
+/** @type {?} */
+var set;
+
+/** @type {?} */
+var call;
+
+/** @type {?} */
+var children;
+
+/** @type {?} */
+var ctx;
+
+/** @type {?} */
+var destroy;
+
+/** @type {?} */
+var localStorage;
+
+/** @type {?} */
+var getItem;
+
+/** @type {?} */
+var setItem;
+
+/** @type {?} */
+var data;
+
+/** @type {?} */
+var cb;
+
+/** @type {?} */
+var cbLength;
+
+/** @type {?} */
+var filters;
+
+/** @type {?} */
+var fLength;
+
+/** @type {?} */
+var link;
+
+/**
+ * @abstract
+ * @param {$$CollectionType=} collection
+ * @return {!$$Collection}
+ */
+function $C(collection) {}
+
+/**
+ * @typedef {{
+ *   withAccessors: (boolean|undefined),
+ *   withProto: (boolean|undefined),
+ *   concatArray: (boolean|undefined),
+ *   traits: (boolean|number|null|undefined),
+ *   deep: (boolean|undefined)
+ * }}
+ */
+var $$Collection_extend;
+
+/** @type {?} */
+var withAccessors;
+
+/** @type {?} */
+var withProto;
+
+/** @type {?} */
+var concatArray;
+
+/** @type {?} */
+var traits;
+
+/** @type {?} */
+var deep;
+
+/**
+ * @abstract
+ * @param {(boolean|$$Collection_extend)} deepOrParams
+ * @param {Object} target
+ * @param {...Object} args
+ * @return {!Object}
+ */
+$C.extend = function (deepOrParams, target, args) {};
+
+/** @typedef {(?|Array)} */
+var $$CollectionLink;
+
+/**
+ * @typedef {{
+ *   test: (boolean|undefined),
+ *   error: (boolean|undefined),
+ *   delete: (boolean|undefined),
+ *   value: (?|undefined),
+ *   create: (boolean|undefined)
+ * }}
+ */
+var $$Collection_byLink;
+
+/**
+ * @abstract
+ * @param {$$CollectionLink} link
+ * @param {!Object} obj
+ * @return {boolean}
+ */
+$C.in = function (link, obj) {};
+
+/**
+ * @abstract
+ * @param {(Generator|?)} obj
+ * @return {boolean}
+ */
+$C.destroy = function (obj) {};
