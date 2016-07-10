@@ -15,10 +15,17 @@ import { STRUCT_OPT } from '../helpers/structs';
 import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
 import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
+import './length';
 
 const
 	stack = Collection.prototype['_stack'] = [];
 
+/**
+ *
+ * @param cb
+ * @param opt_params
+ * @return {*}
+ */
 Collection.prototype.forEach = function (cb, opt_params) {
 	const
 		p = Object.create(this.p);

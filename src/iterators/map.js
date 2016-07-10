@@ -8,10 +8,12 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
 import { getType, isArray, isFunction } from '../helpers/types';
 
-$C.prototype.map = function (cb, opt_params) {
+Collection.prototype.map = function (cb, opt_params) {
+	cb = cb || ((el) => el);
+
 	let p;
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p = {filter: opt_params};
@@ -104,7 +106,7 @@ $C.prototype.map = function (cb, opt_params) {
 	const
 		{onComplete} = p;
 
-	p.inject = res;
+	p.result = res;
 	p.onComplete = function () {
 		onComplete && onComplete.call(this, res);
 	};

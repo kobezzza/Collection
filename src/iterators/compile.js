@@ -36,11 +36,11 @@ const filterArgsList = [
  */
 export function compileCycle(key, p) {
 	const isMapSet = {'map': true, 'set': true}[p.type];
-	const cantModI = (isMapSet && STRUCT_OPT) || (
-		p.type !== 'array' && (
-			(p.type === 'object' && (p.notOwn || !OBJECT_KEYS_NATIVE_SUPPORT)) ||
-			(!p.reverse && (p.type !== 'object' || !OBJECT_KEYS_NATIVE_SUPPORT || p.notOwn))
-		)
+	const cantModI = !(
+		p.type === 'array' ||
+		p.reverse ||
+		p.type === 'object' && p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT ||
+		isMapSet && STRUCT_OPT
 	);
 
 	let iFn = ws`
@@ -255,7 +255,7 @@ export function compileCycle(key, p) {
 				if (val === undefined) {
 					return i;
 				}
-			
+
 				if (${cantModI}) {
 					return false;
 				}

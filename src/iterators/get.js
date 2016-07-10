@@ -8,7 +8,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
 import { isLink } from '../helpers/link';
 import { isFunction, isArray } from '../helpers/types';
 
@@ -16,7 +16,7 @@ import { isFunction, isArray } from '../helpers/types';
 import { byLink } from '../other/link';
 //#endif
 
-$C.prototype.get = function (opt_filter, opt_params) {
+Collection.prototype.get = function (opt_filter, opt_params) {
 	const p = opt_params || {};
 
 	/* eslint-disable no-constant-condition */
