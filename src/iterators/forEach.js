@@ -120,9 +120,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	let cbLength;
 	if (cbArgs && cbArgs > 3) {
 		const p = Object.assign({}, opt_params, {
-			thread: false,
-			onChunks: null,
-			priority: null,
+			onChunk: null,
+			onIterationEnd: null,
 			onComplete(val) {
 				cbLength.value = val;
 			}
@@ -140,9 +139,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	let fLength;
 	if (filterArgs && Math.max.apply(null, filterArgs) > 3) {
 		const p = Object.assign({}, opt_params, {
-			thread: false,
-			onChunks: null,
-			priority: null,
+			onChunk: null,
+			onIterationEnd: null,
 			onComplete(val) {
 				fLength.value = val;
 			}
@@ -246,12 +244,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				pos++;
 			}
 
-			try {
-				this._addToStack(thread, p.priority, p.onComplete, p.onChunk);
-			} catch (e) {
-				console.log(121);
-				console.log(this);
-			}
+			this._addToStack(thread, p.priority, p.onComplete, p.onChunk);
 		});
 
 		promise.thread = thread;

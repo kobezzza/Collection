@@ -22,6 +22,8 @@ import './iterators/some';
 import './iterators/search';
 import './iterators/includes';
 import './iterators/group';
+import './iterators/remove';
+import './iterators/set';
 
 //#if iterators.thread
 import './iterators/thread';

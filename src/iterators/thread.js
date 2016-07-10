@@ -250,7 +250,7 @@ $C.destroy = function (obj) {
 	const {thread} = obj;
 	clearTimeout(thread.sleep);
 	$C(thread.children).forEach((child) => $C.destroy(child));
-	$C(execStack[thread.priority]).remove((el) => el === obj, {mult: false});
+	$C(execStack[thread.priority]).remove((el) => el === thread, {mult: false});
 
 	return true;
 };

@@ -48,5 +48,5 @@ Collection.prototype.length = function (opt_filter, opt_params) {
 		return returnVal;
 	}
 
-	return length;
+	return p.result;
 };

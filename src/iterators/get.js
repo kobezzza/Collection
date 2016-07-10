@@ -29,8 +29,6 @@ import { byLink } from '../other/link';
 Collection.prototype.get = function (opt_filter, opt_params) {
 	let p = any(opt_params || {});
 
-	/* eslint-disable no-constant-condition */
-
 	if (
 		isLink(opt_filter) ||
 		!isFunction(opt_filter) && (
@@ -40,7 +38,7 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 
 	) {
 		const tmp = byLink(this.data, opt_filter);
-		p.onComplete && p.onComplete.call(this, tmp);
+		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
 
@@ -49,10 +47,7 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	/* eslint-enable no-constant-condition */
-
 	let action;
-
 	if (p.mult !== false) {
 		const res = p.result = [];
 		action = (el, key) => res.push(key);
