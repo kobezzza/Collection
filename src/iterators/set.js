@@ -37,6 +37,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	const
 		{data} = this;
 
+	//#if link
+
 	if (
 		isLink(filter) ||
 		!isFunction(filter) && (
@@ -49,6 +51,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
+
+	//#endif
 
 	if (!isArray(filter) && !isFunction(filter)) {
 		p = filter || p;

@@ -13,17 +13,47 @@
 export { default as default } from './core';
 
 import './iterators/forEach';
-import './iterators/map';
 import './iterators/filter';
+
+//#if iterators.map
+import './iterators/map';
+//#endif
+
+//#if iterators.get
 import './iterators/get';
+//#endif
+
+//#if iterators.reduce
 import './iterators/reduce';
+//#endif
+
+//#if iterators.every
 import './iterators/every';
+//#endif
+
+//#if iterators.some
 import './iterators/some';
+//#endif
+
+//#if iterators.search
 import './iterators/search';
+//#endif
+
+//#if iterators.includes
 import './iterators/includes';
+//#endif
+
+//#if iterators.group
 import './iterators/group';
+//#endif
+
+//#if iterators.remove
 import './iterators/remove';
+//#endif
+
+//#if iterators.set
 import './iterators/set';
+//#endif
 
 //#if iterators.thread
 import './iterators/thread';

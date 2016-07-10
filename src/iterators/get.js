@@ -29,6 +29,8 @@ import { byLink } from '../other/link';
 Collection.prototype.get = function (opt_filter, opt_params) {
 	let p = any(opt_params || {});
 
+	//#if link
+
 	if (
 		isLink(opt_filter) ||
 		!isFunction(opt_filter) && (
@@ -41,6 +43,8 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
+
+	//#endif
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
