@@ -126,7 +126,7 @@ var $$Collection_forEach;
 /**
  * @param {$$CollectionCb} cb
  * @param {?$$Collection_forEach=} [opt_params]
- * @return {(!Collection|!Promise)}
+ * @return {(!$$Collection|!Promise)}
  */
 $$Collection.prototype.forEach = function (cb, opt_params) {};
 
@@ -240,3 +240,18 @@ var onIterationEnd;
 
 /** @type {?} */
 var onComplete;
+
+/** @typedef {function(?, ?, ?, !Object, $$CollectionCbCtx): ?} */
+var $$CollectionReduceCb;
+
+/**
+ * @param {$$CollectionFilter} filter
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.filter = function (filter) {};
+
+/**
+ * @param {?string=} [opt_priority]
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.thread = function (opt_priority) {};

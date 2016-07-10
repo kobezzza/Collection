@@ -8,37 +8,48 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
+import { FN_LENGTH } from '../consts/base';
+import { isArray, isFunction } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
-$C.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
-	const p = opt_params || {};
+/**
+ * Reduces the collection by the specified condition
+ *
+ * @see Collection.prototype.forEach
+ * @param {$$CollectionReduceCb} cb - callback function
+ * @param {?=} [opt_initialValue] - initial value
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
+ * @param {?$$CollectionBase=} [opt_params] - additional parameters
+ * @return {(?|!Promise)}
+ */
+Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
+	let p = any(opt_params || {});
+	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+		p = opt_filter || p;
+		opt_filter = null;
+	}
+
+	p.result = opt_initialValue;
 	p.filter = opt_filter;
 
-	let res = opt_initialValue;
+	fn[FN_LENGTH] = cb.length - 1;
 	function fn(el) {
 		if (opt_initialValue == null) {
-			res = el;
+			p.result = el;
 			opt_initialValue = true;
 
 		} else {
-			res = cb.apply(this, [res].concat([].slice.call(arguments)));
+			p.result = cb.apply(null, [p.result].concat([].slice.call(arguments)));
 		}
 	}
 
-	fn['__COLLECTION_TMP__length'] = cb.length - 1;
-	p.inject = res;
-
-	const {onComplete} = p;
-	p.onComplete = function () {
-		onComplete && onComplete.call(this, res);
-	};
-
 	const
-		returnVal = this.forEach(fn, p);
+		returnVal = any(this.forEach(fn, p));
 
 	if (returnVal !== this) {
 		return returnVal;
 	}
 
-	return res;
+	return p.result;
 };

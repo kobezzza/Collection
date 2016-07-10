@@ -17,7 +17,15 @@
  */
 export function Collection(obj) {
 	this.data = obj;
-	this.p = {
+	this.p = this._init();
+}
+
+/**
+ * @private
+ * @return {!Object}
+ */
+Collection.prototype._init = function () {
+	return {
 		mult: true,
 		count: false,
 		from: false,
@@ -29,11 +37,10 @@ export function Collection(obj) {
 		live: false,
 		thread: false,
 		priority: 'normal',
-		return: false,
 		length: true,
 		filter: []
 	};
-}
+};
 
 /**
  * Library version

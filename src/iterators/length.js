@@ -17,7 +17,7 @@ import { any } from '../helpers/gcc';
  * Returns the number of elements in the collection by the specified parameters
  *
  * @see Collection.prototype.forEach
- * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or array of functions
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
  * @return {(number|!Promise)}
  */

@@ -26,7 +26,7 @@ const
  * @param {$$CollectionCb} cb - callback function
  * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
  *
- *   *) [filter] - function filter or array of functions;
+ *   *) [filter] - function filter or an array of functions;
  *   *) [mult = true] - if false, then after the first successful iteration the operation will be broken;
  *   *) [count] - maximum number of elements in the response (by default all object);
  *   *) [from = 0] - number of skipping successful iterations;
@@ -55,6 +55,7 @@ const
  */
 Collection.prototype.forEach = function (cb, opt_params) {
 	const p = any(Object.create(this.p));
+	this.p = this._init();
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = opt_params;
@@ -65,6 +66,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	if (p.notOwn) {
 		p.use = 'for in';
+	}
+
+	if (p.hasOwnProperty('priority') || p.onChunk) {
+		p.thread = true;
 	}
 
 	const
@@ -114,6 +119,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	let cbLength;
 	if (cbArgs && cbArgs > 3) {
 		const p = Object.assign({}, opt_params, {
+			thread: false,
+			onChunks: null,
+			priority: null,
 			onComplete(val) {
 				cbLength.value = val;
 			}
@@ -131,6 +139,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	let fLength;
 	if (filterArgs && Math.max.apply(null, filterArgs) > 3) {
 		const p = Object.assign({}, opt_params, {
+			thread: false,
+			onChunks: null,
+			priority: null,
 			onComplete(val) {
 				fLength.value = val;
 			}
@@ -151,7 +162,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		cbArgs,
 		filters.length,
 		filterArgs,
-		p.this,
 		p.length,
 		p.thread,
 		p.notOwn,
@@ -235,7 +245,12 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				pos++;
 			}
 
-			this._addToStack(thread, p.priority, p.onComplete, p.onChunk);
+			try {
+				this._addToStack(thread, p.priority, p.onComplete, p.onChunk);
+			} catch (e) {
+				console.log(121);
+				console.log(this);
+			}
 		});
 
 		promise.thread = thread;
