@@ -51,3 +51,13 @@ $C.extend = function (deepOrParams, target, args) {};
 /** @typedef {(?|Array)} */
 var $$CollectionLink;
 
+/**
+ * @typedef {{
+ *   test: (boolean|undefined),
+ *   error: (boolean|undefined),
+ *   delete: (boolean|undefined),
+ *   value: (?|undefined),
+ *   create: (boolean|undefined)
+ * }}
+ */
+var $$Collection_byLink;

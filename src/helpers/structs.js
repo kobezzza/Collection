@@ -36,7 +36,7 @@ if (MAP_SUPPORT) {
 			obj = new Map();
 
 		obj.constructor = GLOBAL['Map'];
-		obj._keys = obj['_keys'] = [];
+		obj._keys = [];
 		obj._keysMap = new Map();
 
 		$C(opt_iterable).forEach((el) => {
@@ -139,7 +139,7 @@ if (SET_SUPPORT) {
 			obj = new Set();
 
 		obj.constructor = GLOBAL['Set'];
-		obj._keys = obj['_keys'] = [];
+		obj._keys = [];
 		obj._keysMap = new Map();
 
 		$C(opt_iterable).forEach((el) => {

@@ -8,7 +8,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import { OBJECT_KEYS_NATIVE_SUPPORT, DESCRIPTORS_SUPPORT } from '../consts/hacks';
+import { DESCRIPTORS_SUPPORT } from '../consts/hacks';
 import { isArray, isBoolean, isObjectInstance, isExtensible } from './types';
 import { any } from './gcc';
 
@@ -22,6 +22,24 @@ export function clone(obj) {
 	return JSON.parse(JSON.stringify(obj));
 }
 
+/**
+ * Extends the specified object by another objects
+ *
+ * @param {(boolean|?$$Collection_extend)} deepOrParams - if true, then properties will be copied recursively
+ *   OR additional parameters for extending:
+ *
+ *   *) [withAccessors = false] - if true, then accessors will be copied too;
+ *   *) [withProto = false] - if true, then properties will be copied with prototypes;
+ *   *) [deepOrParams.concatArray = false] - if true, then array properties will be concatenated
+ *        (only if extending by an another array);
+ *
+ *   *) [deepOrParams.traits = false] - if true, then will be copied only new properties, or if -1, only old;
+ *   *) [deepOrParams.deep = false] - if true, then properties will be copied recursively.
+ *
+ * @param {Object} target - source object
+ * @param {...Object} args - objects for extending
+ * @return {!Object}
+ */
 export function extend(deepOrParams, target, args) {
 	const
 		params = any(deepOrParams);
@@ -45,12 +63,8 @@ export function extend(deepOrParams, target, args) {
 		deep = deepOrParams || false;
 	}
 
-	/** @type {!Object} */
-	const current = any(
-		isObjectInstance(target) ? target : isArray(arguments[2]) ? [] : {}
-	);
-
 	const
+		current = any(isObjectInstance(target) ? target : isArray(arguments[2]) ? [] : {}),
 		length = arguments.length;
 
 	let i = 1;
@@ -149,48 +163,3 @@ export function extend(deepOrParams, target, args) {
 
 	return current;
 }
-
-//#if static.toArray
-
-/**
- * Converts an object to an array
- *
- * @param {!Object} obj - source object
- * @return {!Array}
- */
-export function toArray(obj) {
-	const
-		v = any(obj);
-
-	if (v.length) {
-		return [].slice.call(v);
-	}
-
-	const
-		arr = [];
-
-	if (OBJECT_KEYS_NATIVE_SUPPORT) {
-		const
-			list = Object.keys(v),
-			length = list.length;
-
-		for (let i = -1; ++i < length;) {
-			arr[i] = v[list[i]];
-		}
-
-	} else {
-		let i = 0;
-		for (const key in v) {
-			if (!v.hasOwnProperty(key)) {
-				continue;
-			}
-
-			arr[i] = v[key];
-			i++;
-		}
-	}
-
-	return arr;
-}
-
-//#endif

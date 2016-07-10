@@ -10,16 +10,8 @@
 
 import $C, { Collection } from '../core';
 import { isLink } from '../helpers/link';
-import {
-
-	isString,
-	isLikeArray,
-	isMap,
-	isWeakMap,
-	isSet,
-	isWeakSet
-
-} from '../helpers/types';
+import { isString, isLikeArray, isMap, isWeakMap, isSet, isWeakSet } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
 /**
  * Sets a value to an object property by a link or returns/deletes the property.
@@ -39,7 +31,13 @@ import {
  *   ARRAY-LINK:
  *   [{}, 1, null] ~ obj[{}][1][null]
  *
- * @param [opt_params]
+ * @param {$$Collection_byLink=} [opt_params] - additional parameters:
+ *
+ *   [value] - value to set
+ *   [delete = delete] - if true, then the property will be deleted
+ *   [create = false] - if true, then the property will be created if it's not defined
+ *   [test = false] - if is true, then will be returned false if the property is not defined
+ *
  * @return {({key, result: boolean, value}|?)}
  */
 export function byLink(obj, link, opt_params) {
@@ -51,7 +49,7 @@ export function byLink(obj, link, opt_params) {
 	}
 
 	const
-		linkList = isString(link) ? link.split('.') : [].concat(link),
+		linkList = isString(link) ? any(link).split('.') : [].concat(link),
 		length = linkList.length,
 		last = length - 1;
 
@@ -196,12 +194,11 @@ export function byLink(obj, link, opt_params) {
 }
 
 /**
- * Returns true if the specified object
- * contains a property by a link
+ * Returns true if an object contains a property by a link
  *
  * @see byLink
- * @param link
- * @param {!Object} obj
+ * @param {$$CollectionLink} link - source link
+ * @param {!Object} obj - source object
  * @return {boolean}
  */
 $C.in = function (link, obj) {
@@ -209,11 +206,10 @@ $C.in = function (link, obj) {
 };
 
 /**
- * Returns true if the specified collection
- * contains a property by a link
+ * Returns true if the collection contains a property by a link
  *
  * @see byLink
- * @param link
+ * @param {$$CollectionLink} link - source link
  * @return {boolean}
  */
 Collection.prototype.in = function (link) {

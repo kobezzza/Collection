@@ -21,16 +21,6 @@ export function isFunction(obj) {
 }
 
 /**
- * Returns true if the specified value is a number
- *
- * @param {?} obj - source value
- * @return {boolean}
- */
-export function isNumber(obj) {
-	return typeof obj === 'number';
-}
-
-/**
  * Returns true if the specified value is a string
  *
  * @param {?} obj - source value
@@ -58,16 +48,6 @@ export function isBoolean(obj) {
  */
 export function isArray(obj) {
 	return Array.isArray(obj);
-}
-
-/**
- * Returns true if the specified value is a plain object
- *
- * @param {?} obj - source value
- * @return {boolean}
- */
-export function isObject(obj) {
-	return Boolean(obj) && obj.constructor === Object;
 }
 
 /**
