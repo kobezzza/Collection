@@ -61,3 +61,18 @@ var $$CollectionLink;
  * }}
  */
 var $$Collection_byLink;
+
+/**
+ * @abstract
+ * @param {$$CollectionLink} link
+ * @param {!Object} obj
+ * @return {boolean}
+ */
+$C.in = function (link, obj) {};
+
+/**
+ * @abstract
+ * @param {(Generator|?)} obj
+ * @return {boolean}
+ */
+$C.destroy = function (obj) {};

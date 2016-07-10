@@ -8,7 +8,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import $C, { Collection } from '../core';
 import { getRandomInt } from '../helpers/math';
 import { maxPriority, priority } from '../consts/thread';
 
@@ -35,7 +35,7 @@ const intervals = [
 ];
 
 /** @private */
-$C.prototype['_priority'] = priority;
+Collection.prototype['_priority'] = priority;
 
 const
 	lastPos = {},
@@ -45,8 +45,7 @@ $C(priority).forEach((el, key) => lastPos[key] = 0);
 $C(priority).forEach((el, key) => execStack[key] = []);
 
 /**
- * Returns a work plan for the current iteration of the event cycle
- *
+ * Returns a working plan for the current iteration of the event loop
  * @return {!Object}
  */
 function getTasks() {
@@ -157,22 +156,17 @@ let exec = 0;
  * Adds a task to the execution stack
  *
  * @private
- * @param {string} priority - priority
+ * @param {string} priority - task priority
  * @param {!Generator} obj - generator object
  * @param {?function(this:$C, ?)} [opt_onComplete] - callback function for complete
  * @param {?function(this:$C, ?)} [opt_onChunk] - callback function for chunks
  */
-$C.prototype._addToStack = function (priority, obj, opt_onComplete, opt_onChunk) {
+Collection.prototype._addToStack = function (priority, obj, opt_onComplete, opt_onChunk) {
 	obj['thread'] = true;
 	obj['priority'] = priority;
-
-	obj['destroy'] = function () {
-		return $C.destroy(obj);
-	};
-
+	obj['destroy'] = () => $C.destroy(obj);
 	obj['onComplete'] = opt_onComplete;
 	obj['onChunk'] = opt_onChunk;
-
 	obj['pause'] = false;
 	obj['sleep'] = null;
 	obj['children'] = [];
@@ -255,14 +249,8 @@ $C.destroy = function (obj) {
 	}
 
 	clearTimeout(obj['sleep']);
-
-	$C(obj['children']).forEach((child) =>
-		$C.destroy(child));
-
-	$C(execStack[obj['priority']]).remove({
-		filter: (el) => el === obj,
-		mult: false
-	});
+	$C(obj['children']).forEach((child) => $C.destroy(child));
+	$C(execStack[obj['priority']]).remove((el) => el === obj, {mult: false});
 
 	return true;
 };
