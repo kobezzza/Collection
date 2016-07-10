@@ -44,70 +44,33 @@ export function compileCycle(key, p) {
 	);
 
 	let iFn = ws`
-		var that = this;
-
-		function decl() {
-			var last = that._stack[that._stack.length - 1];
-
-			function empty() {
-				return false;
-			}
-
-			that.yield = last ?
-				last.yield : empty;
-
-			that.sleep = last ?
-				last.sleep : empty;
-
-			that.next = last ?
-				last.next : empty;
-
-			that.wait = last ?
-				last.wait : empty;
-
-			that.onComplete = last ?
-				last.onComplete : empty;
-
-			that.break = last ?
-				last.break : empty;
-
-			that.i = last ?
-				last.i : empty;
-
-			that.jump = last ?
-				last.jump : empty;
-
-			that.reset = last ?
-				last.reset : empty;
-
-			that.$ = last ?
-				last.$ : null;
-
-			that._ = last ?
-				last.info : null;
-
-			that.result = last && last.inject;
-		}
+		var 
+			that = this,
+			data = o.data,
+			cb = o.cb,
+			filters = o.filters,
+			link = o.link,
+			onIterationEnd = o.onIterationEnd,
+			onComplete = o.onComplete;
 	`;
 
 	const pop = ws`
 		if (${p.thread}) {
-			link.self.result = that.result;
+			link.self.result = o.inject;
 		}
 
 		that._stack.pop();
-		decl();
 	`;
 
 	const push = ws`
 		that._stack.push(ctx);
-		decl();
 	`;
 
 	iFn += ws`
 		var
 			wait = 0,
-			onGlobalComplete;
+			onGlobalComplete,
+			onGlobalError;
 
 		var
 			i = -1,
@@ -158,13 +121,14 @@ export function compileCycle(key, p) {
 			notOwn: ${p.notOwn},
 			inverseFilter: ${p.inverseFilter},
 			type: '${p.type}',
-			thread: ${p.thread} && link.self
+			thread: ${p.thread}
 		};
 
 		var ctx = {
 			$: $,
 			info: info,
-			inject: inject,
+			inject: o.inject,
+
 			yield: function (opt_val) {
 				if (${!p.thread}) {
 					return false;
@@ -176,7 +140,7 @@ export function compileCycle(key, p) {
 				return true;
 			},
 
-			next: function () {
+			get next() {
 				if (${!p.thread}) {
 					return false;
 				}
@@ -212,12 +176,10 @@ export function compileCycle(key, p) {
 				return link.self.sleep;
 			},
 
-			wait: function (thread, opt_onComplete) {
-				if (!thread || !thread.thread) {
-					if (opt_onComplete) {
-						opt_onComplete.call(that, thread);
-					}
+			wait: function (promise) {
+				var thread = promise.thread;
 
+				if (!thread || !thread.thread) {
 					results.push(thread);
 
 					if (!wait) {
@@ -236,25 +198,20 @@ export function compileCycle(key, p) {
 				wait++;
 
 				var onComplete = thread.onComplete;
-				thread.onComplete = function (val) {
+				thread.onComplete = function (res) {
 					if (wait) {
 						wait--;
 					}
 
-					results.push(val);
+					results.push(res);
 					${push}
 
-					if (opt_onComplete) {
-						opt_onComplete.call(that, val);
-					}
-
 					if (onComplete) {
-						onComplete.call(that, val);
+						onComplete.call(that, res);
 					}
 
 					if (!wait) {
 						yielder = false;
-
 						if (onGlobalComplete) {
 							onGlobalComplete.call(that, results);
 							onGlobalComplete = null;
@@ -264,7 +221,7 @@ export function compileCycle(key, p) {
 						${pop}
 
 						if (!yielder) {
-							ctx.next();
+							ctx.next;
 						}
 
 					} else {
@@ -272,18 +229,25 @@ export function compileCycle(key, p) {
 					}
 				};
 
-				return true;
+				return promise.catch(function (err) {
+					if (onGlobalError) {
+						onGlobalError.call(that, err);
+						onGlobalError = null;
+					}
+				});
 			},
 
-			onComplete: function (callback) {
-				if (!wait) {
-					callback.call(that, results);
-					results = [];
-					return false;
-				}
+			get complete() {
+				return new Promise(function (resolve, reject) {
+					if (!wait) {
+						resolve(that, results);
+						results = [];
+						return false;
+					}
 
-				onGlobalComplete = callback;
-				return true;
+					onGlobalComplete = resolve;
+					onGlobalError = reject;
+				});
 			},
 
 			jump: function (val) {
@@ -304,34 +268,34 @@ export function compileCycle(key, p) {
 				return n;
 			},
 
-			reset: function () {
+			get reset() {
 				breaker = true;
 				limit++;
 				return true;
 			},
-			
-			break: function () {
+
+			get break() {
 				breaker = true;
 				return true;
 			}
 		};
-		
+
 		var cbCtx = {
 			$: $,
 			info: info,
-			inject: inject,
+			inject: o.inject,
 			ctx: ctx,
-			length: cbLength,
+			length: o.cbLength,
 			TRUE: TRUE,
 			FALSE: FALSE
 		};
-		
+
 		var filterCtx = {
 			$: $,
 			info: info,
-			inject: inject,
+			inject: o.inject,
 			ctx: ctx,
-			length: filterLength,
+			length: o.fLength,
 			TRUE: TRUE,
 			FALSE: FALSE
 		};
@@ -352,7 +316,7 @@ export function compileCycle(key, p) {
 	}
 
 	const
-		maxArgsLength = p.length ? Math.max(p.cbArgs, ...(p.filterArgs)) : cbArgsList.length;
+		maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length;
 
 	if (p.from) {
 		iFn += `var from = ${p.from};`;
@@ -849,42 +813,20 @@ export function compileCycle(key, p) {
 	iFn += ws`
 		}
 
-		var final = this.result;
 		${pop}
 
 		if (onComplete) {
-			onComplete.call(this, final);
+			onComplete.call(this, o.inject);
 		}
 
-		return final;
+		return o.inject;
 	`;
 
 	if (p.thread) {
-		tmpCycle[key] = eval(ws`(function *(
-			data,
-			cb,
-			cbLength,
-			filters,
-			filterLength,
-			inject,
-			link,
-			onIterationEnd,
-			onComplete
-		) { ${iFn} })`);
+		tmpCycle[key] = eval(ws`(function *(o) { ${iFn} })`);
 
 	} else {
-		tmpCycle[key] = Function(
-			'data',
-			'cb',
-			'cbLength',
-			'filters',
-			'filterLength',
-			'inject',
-			'link',
-			'onIterationEnd',
-			'onComplete',
-			iFn
-		);
+		tmpCycle[key] = Function('o', iFn);
 	}
 
 	return tmpCycle[key];
