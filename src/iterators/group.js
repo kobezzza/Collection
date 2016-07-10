@@ -24,7 +24,11 @@ import { byLink } from '../other/link';
  * @see Collection.prototype.forEach
  * @param {($$CollectionLink|$$CollectionCb)=} [opt_field] - link for the group field or a function which returns the group field
  * @param {($$CollectionFilter|$$Collection_group)=} [opt_filter] - function filter or an array of functions
- * @param {?$$Collection_group=} [opt_params] - additional parameters
+ * @param {?$$Collection_group=} [opt_params] - additional parameters:
+ *
+ *   *) [saveKeys = false] - if true, then will be saved keys, but not values
+ *   *) [useMap = false] - if true, then for saving data will be used Map
+ *
  * @return {(!Object|!Map|!Promise<(!Object|!Map)>)}
  */
 Collection.prototype.group = function (opt_field, opt_filter, opt_params) {

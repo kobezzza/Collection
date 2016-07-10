@@ -329,6 +329,12 @@ $$Collection.prototype.includes = function (searchElement, opt_filter, opt_param
  */
 var $$Collection_group;
 
+/** @type {?} */
+var useMap;
+
+/** @type {?} */
+var saveKeys;
+
 /**
  * @param {($$CollectionLink|$$CollectionCb)=} [opt_field]
  * @param {($$CollectionFilter|$$Collection_group)=} [opt_filter]
@@ -367,6 +373,9 @@ $$Collection.prototype.remove = function (opt_filter, opt_params) {};
  * }}
  */
 var $$Collection_set;
+
+/** @type {?} */
+var create;
 
 /**
  * @param {(?|$$CollectionCb)} value

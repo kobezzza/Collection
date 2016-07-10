@@ -24,7 +24,11 @@ import { byLink } from '../other/link';
  * @see Collection.prototype.forEach
  * @param {(?|$$CollectionCb)} value - new value (function will execute)
  * @param {($$CollectionFilter|$$Collection_set|$$CollectionLink)=} filter - link, function filter or an array of functions
- * @param {?$$Collection_set=} [opt_params] - additional parameters
+ * @param {?$$Collection_set=} [opt_params] - additional parameters:
+ *
+ *   *) [key] - key (null for array.push) of a new element (if search elements nof found)
+ *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
+ *
  * @return {({result, key, value}|!Array<{result, key, value}>|!Promise<(({result, key, value}|!Array<{result, key, value}>)>)}
  */
 Collection.prototype.set = function (value, filter, opt_params) {
@@ -41,7 +45,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		)
 
 	) {
-		const tmp = byLink(data, filter, {value, create: p.create !== false});
+		const tmp = byLink(data, filter, {value, create: p.create !== false, error: true});
 		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
