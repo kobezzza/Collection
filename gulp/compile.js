@@ -35,8 +35,8 @@ function compile(cb) {
 				gccFlags = Object.assign({fileName: `${key}.min.js`}, require('../gcc.json'));
 
 			const head =
-				`/*! Snakeskin v${helpers.getVersion()}${name}` +
-				' | https://github.com/SnakeskinTpl/Snakeskin/blob/master/LICENSE */\n';
+				`/*! Collection v${helpers.getVersion()}${name}` +
+				' | https://github.com/kobezzza/Collection/blob/master/LICENSE */\n';
 
 			gulp.src(`./dist/${key}.js`)
 				.pipe(cached('compile'))

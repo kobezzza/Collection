@@ -52,8 +52,8 @@ gulp.task('build', (cb) => {
 						allowRealFiles: true,
 						entry: `./src/${name}`,
 						format: 'umd',
-						moduleId: 'Snakeskin',
-						moduleName: 'Snakeskin',
+						moduleId: 'Collection',
+						moduleName: '$C',
 						plugins: [babel()]
 					}))
 
