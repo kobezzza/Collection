@@ -8,27 +8,26 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
+import { LENGTH_REQUEST } from '../consts/base';
+import { any } from '../helpers/gcc';
 
-$C.prototype.length = function (opt_filter, opt_params) {
-	const p = opt_params || {};
+Collection.prototype.length = function (opt_filter, opt_params) {
+	const
+		p = opt_params || {};
+
 	p.filter = opt_filter;
+	p.result = 0;
 
-	let length = 0;
-	const calc = () => {
-		length++;
-		this.result = length;
-	};
+	const calc = () => p.result++;
+	calc[LENGTH_REQUEST] = true;
 
-	p.inject = length;
-	calc['__COLLECTION_TMP__lengthQuery'] = true;
+	const
+		returnVal = any(this.forEach(calc, p));
 
-	/** @type {?} */
-	const returnVal = this.forEach(calc, p);
-
-	if (calc['__COLLECTION_TMP__lengthQuery'] !== true) {
-		this.result = length = calc['__COLLECTION_TMP__lengthQuery'];
-		p.onComplete && p.onComplete.call(this, length);
+	if (calc[LENGTH_REQUEST] !== true) {
+		p.result = calc[LENGTH_REQUEST];
+		p.onComplete && p.onComplete(p.result);
 	}
 
 	if (returnVal !== this) {

@@ -17,7 +17,22 @@
  */
 export function Collection(obj) {
 	this.data = obj;
-	this.p = {filter: []};
+	this.p = {
+		mult: true,
+		count: false,
+		from: false,
+		startIndex: false,
+		endIndex: false,
+		reverse: false,
+		inverseFilter: false,
+		notOwn: false,
+		live: false,
+		thread: false,
+		priority: 'normal',
+		return: false,
+		length: true,
+		filter: []
+	};
 }
 
 /**

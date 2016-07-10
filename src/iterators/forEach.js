@@ -49,7 +49,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	if (!filters.length && cb[LENGTH_REQUEST]) {
 		if (type === 'array') {
 			cb[LENGTH_REQUEST] = (
-				p.startIndex !== false || p.endIndex !== false ?
+				p.startIndex || p.endIndex !== false ?
 					[].slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) :
 					data
 
@@ -57,7 +57,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 			return this;
 
-		} else if ({'map': true, 'set': true}[type] && p.startIndex === false && p.endIndex === false) {
+		} else if ({'map': true, 'set': true}[type] && !p.startIndex && p.endIndex === false) {
 			cb[LENGTH_REQUEST] = data.size;
 			return this;
 		}
@@ -144,7 +144,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filters,
 		fLength,
 		link,
-		result: p.result,
 		onComplete: p.onComplete,
 		onIterationEnd: p.onIterationEnd
 	};
@@ -155,9 +154,13 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
 			function wrap(fn) {
+				if (!fn) {
+					return undefined;
+				}
+
 				return function (el, key, data, o) {
 					try {
-						fn(el, key, data, o);
+						return fn(el, key, data, o);
 
 					} catch (err) {
 						reject(err);
@@ -171,13 +174,14 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			}
 
 			const {onComplete} = p;
-			args.onComplete = p.onComplete = function (res) {
-				resolve(res);
+			args.onComplete = p.onComplete = wrap((res) => {
 				onComplete && onComplete(res);
-			};
+				resolve(res);
+			});
 
 			args.cb = wrap(cb);
-			thread = link.self = fn.call(this, args);
+			args.onIterationEnd = wrap(p.onIterationEnd);
+			thread = link.self = fn.call(this, args, opt_params || p);
 
 			if (link.pause) {
 				link.self.pause = true;
@@ -208,7 +212,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	//#endif
 
-	link.self = fn.call(this, args);
+	link.self = fn.call(this, args, opt_params || p);
 
 	if (link.pause) {
 		link.self.pause = true;

@@ -60,14 +60,12 @@ export function compileCycle(key, p) {
 
 		var
 			i = -1,
-			j = 0;
-
-		var
-			n = null,
-			breaker = false;
+			j = 0,
+			n = -1;
 
 		var
 			results = [],
+			breaker = false,
 			yielder = false,
 			yieldVal;
 
@@ -113,7 +111,9 @@ export function compileCycle(key, p) {
 		var ctx = {
 			$: $,
 			info: info,
-			result: o.result,
+			get result() {
+				return p.result;
+			},
 
 			yield: function (opt_val) {
 				if (${!p.thread}) {
@@ -252,6 +252,10 @@ export function compileCycle(key, p) {
 			},
 
 			i: function (val) {
+				if (val === undefined) {
+					return i;
+				}
+			
 				if (${cantModI}) {
 					return false;
 				}
@@ -272,25 +276,11 @@ export function compileCycle(key, p) {
 			}
 		};
 
-		var cbCtx = {
-			$: $,
-			info: info,
-			result: o.result,
-			ctx: ctx,
-			length: o.cbLength,
-			TRUE: TRUE,
-			FALSE: FALSE
-		};
-
-		var filterCtx = {
-			$: $,
-			info: info,
-			result: o.result,
-			ctx: ctx,
-			length: o.fLength,
-			TRUE: TRUE,
-			FALSE: FALSE
-		};
+		var cbCtx = Object.create(ctx);
+		cbCtx.length = o.cbLength;
+		
+		var filterCtx = Object.create(ctx);
+		filterCtx.length = o.fLength;
 	`;
 
 	if (p.thread) {
@@ -300,7 +290,9 @@ export function compileCycle(key, p) {
 		`;
 	}
 
-	p.startIndex = p.startIndex || 0;
+	const
+		startIndex = p.startIndex || 0,
+		endIndex = p.endIndex !== false ? p.endIndex + 1 : 0;
 
 	const
 		cbArgs = cbArgsList.slice(0, p.length ? p.cbArgs : cbArgsList.length),
@@ -360,26 +352,29 @@ export function compileCycle(key, p) {
 				iFn += 'clone = arr.slice.call(clone).reverse();';
 			}
 
-			if ((p.reverse || !p.live) && (p.startIndex || p.endIndex !== false)) {
+			if ((p.reverse || !p.live) && (startIndex || endIndex)) {
 				iFn += ws`
-					clone = arr.slice.call(clone, ${p.startIndex}, ${p.endIndex !== false ? p.endIndex + 1 : 'data.length'});
+					clone = arr.slice.call(clone, ${startIndex}, ${endIndex || 'data.length'});
 				`;
 			}
 
 			if (!p.reverse && p.live) {
-				iFn += `for (n = ${p.startIndex - 1}; ++n < clone.length;) {`;
+				iFn += ws`
+					for (n = ${startIndex - 1}; ++n < clone.length;) {
+						i = n;
+				`;
 
-				if (p.startIndex) {
+				if (startIndex) {
 					iFn += ws`
-						if (n < ${p.startIndex}) {
+						if (n < ${startIndex}) {
 							continue;
 						}
 					`;
 				}
 
-				if (p.endIndex !== false) {
+				if (endIndex) {
 					iFn += ws`
-						if (n > ${p.endIndex}) {
+						if (n > ${endIndex}) {
 							break;
 						};
 					`;
@@ -389,13 +384,14 @@ export function compileCycle(key, p) {
 				iFn += ws`
 					length = clone.length;
 					for (n = -1; ++n < length;) {
+						i = n + ${startIndex};
 				`;
 			}
 
 			if (maxArgsLength) {
 				if (maxArgsLength > 1) {
-					if (p.startIndex) {
-						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + ${p.startIndex + (p.reverse ? ')' : '')};`;
+					if (startIndex) {
+						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + ${startIndex + (p.reverse ? ')' : '')};`;
 
 					} else {
 						iFn += `key = ${p.reverse ? 'dLength - ' : ''} n;`;
@@ -403,10 +399,6 @@ export function compileCycle(key, p) {
 				}
 
 				iFn += 'el = clone[n];';
-
-				if (maxArgsLength > 3) {
-					iFn += `i = cbCtx.i = filterCtx.i = n + ${p.startIndex};`;
-				}
 			}
 
 			break;
@@ -450,7 +442,7 @@ export function compileCycle(key, p) {
 							for (var key in data) {
 								${threadStart}
 								if (!data.hasOwnProperty(key)) {
-									continue;
+									break;
 								}
 
 								tmpArray.push(key);
@@ -464,8 +456,8 @@ export function compileCycle(key, p) {
 					iFn += 'tmpArray.reverse();';
 				}
 
-				if (p.startIndex || p.endIndex !== false) {
-					iFn += `tmpArray = tmpArray.slice(${p.startIndex}, ${p.endIndex !== false ? p.endIndex + 1 : 'tmpArray.length'});`;
+				if (startIndex || endIndex) {
+					iFn += `tmpArray = tmpArray.slice(${startIndex}, ${endIndex || 'tmpArray.length'});`;
 				}
 
 				iFn += ws`
@@ -476,11 +468,9 @@ export function compileCycle(key, p) {
 						if (key in data === false) {
 							continue;
 						}
+						
+						i = n + ${startIndex};
 				`;
-
-				if (maxArgsLength > 3) {
-					iFn += `i = cbCtx.i = filterCtx.i = n + ${p.startIndex};`;
-				}
 
 			} else {
 				iFn += 'for (key in data) {';
@@ -500,21 +490,22 @@ export function compileCycle(key, p) {
 					;
 				}
 
-				if (maxArgsLength > 3 || p.startIndex || p.endIndex !== false) {
-					iFn += `i = cbCtx.i = filterCtx.i = n + ${p.startIndex};`;
-				}
+				iFn += ws`
+					n++;
+					i = n;
+				`;
 
-				if (p.startIndex) {
+				if (startIndex) {
 					iFn += ws`
-						if (i < ${p.startIndex}) {
+						if (n < ${startIndex}) {
 							continue;
 						}
 					`;
 				}
 
-				if (p.endIndex !== false) {
+				if (endIndex) {
 					iFn += ws`
-						if (i > ${p.endIndex}) {
+						if (n > ${endIndex}) {
 							break;
 						};
 					`;
@@ -557,7 +548,7 @@ export function compileCycle(key, p) {
 
 				iFn += ws`
 					length = tmpArray.length;
-					for (n = ${p.startIndex - 1}; ++n < ${!p.reverse && p.live ? 'tmpArray.length' : 'length'};) {
+					for (n = ${startIndex - 1}; ++n < ${!p.reverse && p.live ? 'tmpArray.length' : 'length'};) {
 						key = tmpArray[n];
 
 						if (key === NULL) {
@@ -565,20 +556,20 @@ export function compileCycle(key, p) {
 							continue;
 						}
 
-						i = cbCtx.i = filterCtx.i = n - skip;
+						i = n + skip;
 				`;
 
-				if (p.startIndex) {
+				if (startIndex) {
 					iFn += ws`
-						if (i < ${p.startIndex}) {
+						if (i < ${startIndex}) {
 							continue;
 						}
 					`;
 				}
 
-				if (p.endIndex !== false) {
+				if (endIndex) {
 					iFn += ws`
-						if (i > ${p.endIndex}) {
+						if (i > ${endIndex}) {
 							break;
 						};
 					`;
@@ -627,15 +618,15 @@ export function compileCycle(key, p) {
 						var size = tmpArray.length;
 					`;
 
-					if (p.startIndex || p.endIndex !== false) {
-						iFn += `tmpArray = tmpArray.slice(${p.startIndex}, ${p.endIndex !== false ? p.endIndex + 1 : 'tmpArray.length'});`;
+					if (startIndex || endIndex) {
+						iFn += `tmpArray = tmpArray.slice(${startIndex}, ${endIndex || 'tmpArray.length'});`;
 					}
 
 					iFn += ws`
 						length = tmpArray.length;
 						for (n = -1; ++n < length;) {
 							${maxArgsLength ? 'key = tmpArray[n];' : ''}
-							i = cbCtx.i = filterCtx.i = n + ${p.startIndex};
+							i = n + ${startIndex};
 					`;
 
 				} else {
@@ -644,20 +635,21 @@ export function compileCycle(key, p) {
 					iFn += ws`
 						for (key = cursor.next(); !key.done; key = cursor.next()) {
 							${maxArgsLength ? 'key = key.value;' : ''}
-							i = cbCtx.i = filterCtx.i = i + 1;
+							n++;
+							i = n;
 					`;
 
-					if (p.startIndex) {
+					if (startIndex) {
 						iFn += ws`
-							if (i < ${p.startIndex}) {
+							if (n < ${startIndex}) {
 								continue;
 							}
 						`;
 					}
 
-					if (p.endIndex !== false) {
+					if (endIndex) {
 						iFn += ws`
-							if (i > ${p.endIndex}) {
+							if (n > ${endIndex}) {
 								break;
 							};
 						`;
@@ -689,7 +681,6 @@ export function compileCycle(key, p) {
 			break;
 	}
 
-	iFn += 'ctx.result = cbCtx.result = filterCtx.result = o.result;';
 	iFn += threadStart;
 
 	if (p.count) {
@@ -713,20 +704,17 @@ export function compileCycle(key, p) {
 		iFn += ') {';
 	}
 
-	const
-		cbCall = `cb(${cbArgs})`;
-
 	let tmp;
 	if (p.mult) {
 		if (p.return) {
-			tmp = `if (${cbCall} === FALSE) { breaker = true; }`;
+			tmp = `if (cb(${cbArgs}) === FALSE) { breaker = true; }`;
 
 		} else {
-			tmp = `${cbCall};`;
+			tmp = `cb(${cbArgs});`;
 		}
 
 	} else {
-		tmp = `${cbCall}; breaker = true;`;
+		tmp = `cb(${cbArgs}); breaker = true;`;
 	}
 
 	if (p.count) {
@@ -795,7 +783,6 @@ export function compileCycle(key, p) {
 			${threadEnd}
 		}
 
-		ctx.result = cbCtx.result = filterCtx.result = o.result;
 		breaker = false;
 		looper++;
 
@@ -814,17 +801,17 @@ export function compileCycle(key, p) {
 		that._stack.pop();
 
 		if (onComplete) {
-			onComplete(o.result);
+			onComplete(p.result);
 		}
 
-		return o.result;
+		return p.result;
 	`;
 
 	if (p.thread) {
-		tmpCycle[key] = eval(ws`(function *(o) { ${iFn} })`);
+		tmpCycle[key] = eval(ws`(function *(o, p) { ${iFn} })`);
 
 	} else {
-		tmpCycle[key] = Function('o', iFn);
+		tmpCycle[key] = Function('o', 'p', iFn);
 	}
 
 	return tmpCycle[key];
