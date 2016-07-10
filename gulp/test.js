@@ -13,7 +13,7 @@ const
 	helpers = require('./helpers'),
 	run = require('gulp-run');
 
-gulp.task('full-build', ['compile'], test);
+gulp.task('full-build', ['compile']);
 gulp.task('test', test);
 
 function test(cb) {
