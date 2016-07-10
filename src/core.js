@@ -17,6 +17,7 @@
  */
 export function Collection(obj) {
 	this.data = obj;
+	this.p = {filter: []};
 }
 
 /**
