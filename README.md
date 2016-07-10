@@ -47,7 +47,7 @@ $C([1, 2, 3, 4]).get((el) => el % 2 === 0);
 $C({a: 4, b: 16}).map(Math.sqrt);
 
 // Iterate very large object in the lightweight thread
-$C(new Array(1e8)).thread().forEach(() => {
+await $C(new Array(1e8)).thread().forEach(() => {
   ...
 });
 ```
