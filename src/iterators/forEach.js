@@ -26,13 +26,13 @@ const
  * @param {$$CollectionCb} cb - callback function
  * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
  *
- *   *) [filter] - function filter or an array of functions;
- *   *) [mult = true] - if false, then after the first successful iteration the operation will be broken;
- *   *) [count] - maximum number of elements in the response (by default all object);
- *   *) [from = 0] - number of skipping successful iterations;
- *   *) [startIndex = 0] - number of skipping successful iterations;
- *   *) [endIndex] - end iteration position;
- *   *) [opt_inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter;
+ *   *) [filter] - function filter or an array of functions
+ *   *) [mult = true] - if false, then after the first successful iteration the operation will be broken
+ *   *) [count] - maximum number of elements in the response (by default all object)
+ *   *) [from = 0] - number of skipping successful iterations
+ *   *) [startIndex = 0] - number of skipping successful iterations
+ *   *) [endIndex] - end iteration position
+ *   *) [opt_inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
  *   *) [notOwn = false] - iteration type:
  *
  *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
@@ -40,7 +40,7 @@ const
  *     3) if -1, then hasOwnProperty test is enabled and all own properties will be skipped.
  *
  *   *) [live = false] - if true, the initial collection length won't be cached (not for all data types),
- *      ie all elements which will be added to the collection during the iteration will be included to the processing;
+ *      ie all elements which will be added to the collection during the iteration will be included to the processing
  *
  *   *) [use] - type of the using iterator (for, for of, for in)
  *   *) [length = true] - if false, then function parameters optimization won't be apply
@@ -54,9 +54,10 @@ const
  * @return {(!Collection|!Promise)}
  */
 Collection.prototype.forEach = function (cb, opt_params) {
-	const p = any(Object.create(this.p));
-	this.p = this._init();
+	const
+		p = any(Object.create(this.p));
 
+	this.p = this._init();
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = opt_params;
 

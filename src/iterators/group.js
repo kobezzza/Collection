@@ -8,27 +8,49 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
 import { GLOBAL } from '../consts/links';
-import { isFunction } from '../helpers/types';
+import { FN_LENGTH } from '../consts/base';
+import { isArray, isFunction } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
 //#if link
 import { byLink } from '../other/link';
 //#endif
 
-$C.prototype.group = function (field, opt_filter, opt_params) {
-	const p = opt_params || {};
+/**
+ * Groups elements in the collection by the specified condition and returns a new collection
+ *
+ * @see Collection.prototype.forEach
+ * @param {($$CollectionLink|$$CollectionCb)=} [opt_field] - link for the group field or a function which returns the group field
+ * @param {($$CollectionFilter|$$Collection_group)=} [opt_filter] - function filter or an array of functions
+ * @param {?$$Collection_group=} [opt_params] - additional parameters
+ * @return {(!Object|!Map|!Promise<(!Object|!Map)>)}
+ */
+Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
+	const
+		field = opt_field || ((el) => el);
+
+	let
+		p = any(opt_params || {});
+
+	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+		p = opt_filter || p;
+		opt_filter = null;
+	}
+
 	p.filter = opt_filter;
+	p.mult = true;
 
 	const
 		isFunc = isFunction(field),
-		res = p.useMap ? new GLOBAL['Map']() : {};
+		res = p.result = p.useMap ? new GLOBAL['Map']() : {};
 
 	let action;
 	if (p.useMap) {
 		action = function (el, key) {
 			const
-				param = isFunc ? field.apply(this, arguments) : byLink(el, field),
+				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
 			if (res.has(param)) {
@@ -42,7 +64,7 @@ $C.prototype.group = function (field, opt_filter, opt_params) {
 	} else {
 		action = function (el, key) {
 			const
-				param = isFunc ? field.apply(this, arguments) : byLink(el, field),
+				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
 			if (res[param]) {
@@ -55,22 +77,15 @@ $C.prototype.group = function (field, opt_filter, opt_params) {
 	}
 
 	if (isFunc) {
-		action['__COLLECTION_TMP__length'] = action.length > field.length ? action.length : field.length;
+		action[FN_LENGTH] = action.length > field.length ? action.length : field.length;
 	}
 
-	p.mult = true;
-	p.inject = res;
-
-	const {onComplete} = p;
-	p.onComplete = function () {
-		onComplete && onComplete.call(this, res);
-	};
-
-	const returnVal = this.forEach(action, p);
+	const
+		returnVal = any(this.forEach(action, p));
 
 	if (returnVal !== this) {
 		return returnVal;
 	}
 
-	return res;
+	return p.result;
 };

@@ -22,7 +22,9 @@ import { any } from '../helpers/gcc';
  * @return {(number|!Promise<number>)}
  */
 Collection.prototype.length = function (opt_filter, opt_params) {
-	let p = any(opt_params || {});
+	let
+		p = any(opt_params || {});
+
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;

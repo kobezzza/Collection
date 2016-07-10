@@ -306,6 +306,37 @@ $$Collection.prototype.search = function (opt_filter, opt_params) {};
  */
 $$Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {};
 
+/** @typedef {{
+ *   useMap: (?boolean|undefined),
+ *   saveKeys: (?boolean|undefined),
+ *   filter: $$CollectionFilter,
+ *   count: (number|number|null|undefined),
+ *   from: (number|number|null|undefined),
+ *   startIndex: (number|number|null|undefined),
+ *   endIndex: (number|number|null|undefined),
+ *   reverse: (?boolean|undefined),
+ *   inverseFilter: (?boolean|undefined),
+ *   notOwn: (boolean|number|null|undefined),
+ *   live: (?boolean|undefined),
+ *   use: (?string|undefined),
+ *   length: (?boolean|undefined),
+ *   thread: (?boolean|undefined)
+ *   priority: (?string|undefined),
+ *   onChunk: (?$$CollectionThreadCb|undefined),
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined),
+ *   onComplete: (?function(?)|undefined)
+ * }}
+ */
+var $$Collection_group;
+
+/**
+ * @param {($$CollectionLink|$$CollectionCb)=} [opt_field]
+ * @param {($$CollectionFilter|$$Collection_group)=} [opt_filter]
+ * @param {?$$Collection_group=} [opt_params]
+ * @return {(!Object|!Map|!Promise<(!Object|!Map)>)}
+ */
+$$Collection.prototype.group = function (opt_field, opt_filter, opt_params) {};
+
 /**
  * @param {$$CollectionFilter} filter
  * @return {!$$Collection}

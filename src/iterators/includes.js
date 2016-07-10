@@ -19,10 +19,12 @@ import { any } from '../helpers/gcc';
  * @param {?} searchElement - element for search
  * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter] - function filter or an array of functions
  * @param {?$$CollectionSingleBase=} [opt_params] - additional parameters
- * @return {(?|!Array|!Promise<(?|!Array)>)}
+ * @return {(boolean|!Promise<boolean>)}
  */
 Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {
-	let p = any(opt_params || {});
+	let
+		p = any(opt_params || {});
+
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;

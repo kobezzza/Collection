@@ -24,7 +24,9 @@ import { any } from '../helpers/gcc';
  * @return {(!Object|!Promise<!Object>)}
  */
 Collection.prototype.map = function (cb, opt_params) {
-	let p = any(opt_params || {});
+	let
+		p = any(opt_params || {});
+
 	if (!isFunction(cb)) {
 		p = cb || p;
 		cb = (el) => el;

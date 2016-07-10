@@ -21,7 +21,9 @@ import { any } from '../helpers/gcc';
  * @return {(boolean|!Promise<boolean>)}
  */
 Collection.prototype.some = function (opt_filter, opt_params) {
-	let p = any(opt_params || {});
+	let
+		p = any(opt_params || {});
+
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
