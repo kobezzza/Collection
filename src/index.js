@@ -17,6 +17,8 @@ import './iterators/map';
 import './iterators/filter';
 import './iterators/get';
 import './iterators/reduce';
+import './iterators/every';
+import './iterators/some';
 
 //#if iterators.thread
 import './iterators/thread';

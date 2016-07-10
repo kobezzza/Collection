@@ -8,30 +8,35 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
+import { isArray, isFunction } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
-$C.prototype.some = function (opt_filter, opt_params) {
-	const
-		p = opt_params || {};
+/**
+ * Returns true if in the collection exists at least one element which matches by the specified condition
+ *
+ * @see Collection.prototype.forEach
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
+ * @param {?$$CollectionBase=} [opt_params] - additional parameters
+ * @return {(boolean|!Promise<boolean>)}
+ */
+Collection.prototype.some = function (opt_filter, opt_params) {
+	let p = any(opt_params || {});
+	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+		p = opt_filter || p;
+		opt_filter = null;
+	}
 
-	let res = true;
 	p.filter = opt_filter;
 	p.mult = false;
-	p.inject = res;
+	p.result = false;
 
-	/** @type {?} */
-	const returnVal = this.forEach(
-		() => {
-			res = false;
-			this.result = res;
-		},
-
-		p
-	);
+	const
+		returnVal = any(this.forEach(() => p.result = true, p));
 
 	if (returnVal !== this) {
 		return returnVal;
 	}
 
-	return res;
+	return p.result;
 };

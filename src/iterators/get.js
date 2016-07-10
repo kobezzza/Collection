@@ -24,7 +24,7 @@ import { byLink } from '../other/link';
  * @see Collection.prototype.forEach
  * @param {($$CollectionFilter|$$CollectionBase|$$CollectionLink)=} [opt_filter] - link, function filter or an array of functions
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
- * @return {(?|!Array|!Promise)}
+ * @return {(?|!Array|!Promise<(?|!Array)>)}
  */
 Collection.prototype.get = function (opt_filter, opt_params) {
 	let p = any(opt_params || {});

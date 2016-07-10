@@ -19,7 +19,7 @@ import { any } from '../helpers/gcc';
  * @see Collection.prototype.forEach
  * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
- * @return {(number|!Promise)}
+ * @return {(number|!Promise<number>)}
  */
 Collection.prototype.length = function (opt_filter, opt_params) {
 	let p = any(opt_params || {});

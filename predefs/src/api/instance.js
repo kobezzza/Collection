@@ -245,6 +245,29 @@ var onComplete;
 var $$CollectionReduceCb;
 
 /**
+ * @param {$$CollectionReduceCb} cb
+ * @param {?=} [opt_initialValue]
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter]
+ * @param {?$$CollectionBase=} [opt_params]
+ * @return {(?|!Promise)}
+ */
+$$Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {};
+
+/**
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter]
+ * @param {?$$CollectionBase=} [opt_params]
+ * @return {(boolean|!Promise)}
+ */
+$$Collection.prototype.every = function (opt_filter, opt_params) {};
+
+/**
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter]
+ * @param {?$$CollectionBase=} [opt_params]
+ * @return {(boolean|!Promise)}
+ */
+$$Collection.prototype.some = function (opt_filter, opt_params) {};
+
+/**
  * @param {$$CollectionFilter} filter
  * @return {!$$Collection}
  */
