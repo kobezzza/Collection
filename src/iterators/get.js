@@ -31,7 +31,14 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 
 	/* eslint-disable no-constant-condition */
 
-	if (isLink(opt_filter) || !isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || true)) {
+	if (
+		isLink(opt_filter) ||
+		!isFunction(opt_filter) && (
+			isArray(opt_filter) && !isFunction(opt_filter[1]) ||
+			opt_filter != null && typeof opt_filter !== 'object'
+		)
+
+	) {
 		const tmp = byLink(this.data, opt_filter);
 		p.onComplete && p.onComplete.call(this, tmp);
 		return tmp;
@@ -44,15 +51,24 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 
 	/* eslint-enable no-constant-condition */
 
-	const res = p.result = [];
+	let action;
+
+	if (p.mult !== false) {
+		const res = p.result = [];
+		action = (el, key) => res.push(key);
+
+	} else {
+		action = (el) => p.result = el;
+	}
+
 	p.filter = opt_filter;
 
 	const
-		returnVal = any(this.forEach(p.mult ? (el) => res.push(el) : (el) => p.result = el, p));
+		returnVal = any(this.forEach(action, p));
 
 	if (returnVal !== this) {
 		return returnVal;
 	}
 
-	return res;
+	return p.result;
 };

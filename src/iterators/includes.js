@@ -8,18 +8,24 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
+import { Collection } from '../core';
 import { isFunction, isArray } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
-$C.prototype.includes = function (searchElement, opt_filter, opt_params) {
-	const
-		p = opt_params || {};
-
-	if (isFunction(opt_filter) || isArray(opt_filter)) {
-		p.filter = opt_filter;
-
-	} else {
-		p.startIndex = opt_filter;
+/**
+ * Returns true if the specified element contains in the collection
+ *
+ * @see Collection.prototype.forEach
+ * @param {?} searchElement - element for search
+ * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter] - function filter or an array of functions
+ * @param {?$$CollectionSingleBase=} [opt_params] - additional parameters
+ * @return {(?|!Array|!Promise<(?|!Array)>)}
+ */
+Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {
+	let p = any(opt_params || {});
+	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+		p = opt_filter || p;
+		opt_filter = null;
 	}
 
 	p.filter = [
@@ -27,24 +33,17 @@ $C.prototype.includes = function (searchElement, opt_filter, opt_params) {
 			(el) => Number.isNaN(el) :
 			(el) => el === searchElement
 
-	].concat(p.filter || []);
+	].concat(opt_filter || []);
 
-	let res = false;
 	p.mult = false;
-	p.inject = res;
+	p.result = false;
 
-	const returnVal = this.forEach(
-		() => {
-			res = true;
-			this.result = res;
-		},
-
-		p
-	);
+	const
+		returnVal = any(this.forEach(() => p.result = true, p));
 
 	if (returnVal !== this) {
 		return returnVal;
 	}
 
-	return res;
+	return p.result;
 };

@@ -152,6 +152,27 @@ $$Collection.prototype.forEach = function (cb, opt_params) {};
  */
 var $$CollectionBase;
 
+/** @typedef {{
+ *   filter: $$CollectionFilter,
+ *   count: (number|number|null|undefined),
+ *   from: (number|number|null|undefined),
+ *   startIndex: (number|number|null|undefined),
+ *   endIndex: (number|number|null|undefined),
+ *   reverse: (?boolean|undefined),
+ *   inverseFilter: (?boolean|undefined),
+ *   notOwn: (boolean|number|null|undefined),
+ *   live: (?boolean|undefined),
+ *   use: (?string|undefined),
+ *   length: (?boolean|undefined),
+ *   thread: (?boolean|undefined)
+ *   priority: (?string|undefined),
+ *   onChunk: (?$$CollectionThreadCb|undefined),
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined),
+ *   onComplete: (?function(?)|undefined)
+ * }}
+ */
+var $$CollectionSingleBase;
+
 /**
  * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter]
  * @param {?$$CollectionBase=} [opt_params]
@@ -188,6 +209,9 @@ $$Collection.prototype.get = function (opt_filter, opt_params) {};
  * }}
  */
 var $$Collection_map;
+
+/** @type {?} */
+var initial;
 
 /**
  * @param {($$CollectionCb|$$Collection_map)} cb
@@ -254,18 +278,33 @@ var $$CollectionReduceCb;
 $$Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {};
 
 /**
- * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter]
- * @param {?$$CollectionBase=} [opt_params]
+ * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter]
+ * @param {?$$CollectionSingleBase=} [opt_params]
  * @return {(boolean|!Promise)}
  */
 $$Collection.prototype.every = function (opt_filter, opt_params) {};
 
 /**
- * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter]
- * @param {?$$CollectionBase=} [opt_params]
+ * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter]
+ * @param {?$$CollectionSingleBase=} [opt_params]
  * @return {(boolean|!Promise)}
  */
 $$Collection.prototype.some = function (opt_filter, opt_params) {};
+
+/**
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter]
+ * @param {?$$CollectionBase=} [opt_params]
+ * @return {(?|!Array|!Promise<(?|!Array)>)}
+ */
+$$Collection.prototype.search = function (opt_filter, opt_params) {};
+
+/**
+ * @param {?} searchElement
+ * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter]
+ * @param {?$$CollectionSingleBase=} [opt_params]
+ * @return {(boolean|!Promise<boolean>)}
+ */
+$$Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {};
 
 /**
  * @param {$$CollectionFilter} filter

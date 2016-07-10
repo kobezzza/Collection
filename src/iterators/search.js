@@ -8,58 +8,52 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C from '../core';
-import { isSet, isMap } from '../helpers/types';
+import { Collection } from '../core';
+import { isArray, isFunction, isSet, isMap } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
-$C.prototype.search = function (opt_filter, opt_params) {
-	const p = opt_params || {};
+/**
+ * Searches elements in the collection by the specified condition.
+ * The method returns an array of found indexes/keys or an index/key (if mult = false) or null.
+ * If the data is Map or Set and mult = false, then the method will return an object {value: key} or null
+ *
+ * @see Collection.prototype.forEach
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
+ * @param {?$$CollectionBase=} [opt_params] - additional parameters
+ * @return {(?|!Array|!Promise<(?|!Array)>)}
+ */
+Collection.prototype.search = function (opt_filter, opt_params) {
+	let p = any(opt_params || {});
+	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+		p = opt_filter || p;
+		opt_filter = null;
+	}
+
 	p.filter = opt_filter;
 
-	const
-		{data} = this;
+	let action;
+	if (p.mult !== false) {
+		const
+			res = p.result = [];
 
-	const
-		dataIsSet = isSet(data),
-		size = dataIsSet ? data.size : 0;
-
-	let
-		action,
-		res = [];
-
-	if (dataIsSet) {
-		if (p.reverse) {
-			action = (el, key, data, o) => res.push(size - o.i - 1);
+		if (isSet(this.data)) {
+			action = (el) => res.push(el);
 
 		} else {
-			action = (el, key, data, o) => res.push(o.i);
+			action = (el, key) => res.push(key);
 		}
 
 	} else {
-		action = (el, key) => res.push(key);
+		p.result = null;
+		action = (el, key) => p.result = isMap(this.data) ? {value: key} : isSet(this.data) ? {value: el} : key;
 	}
 
-	p.inject = res;
-
-	const {onComplete} = p;
-	p.onComplete = function () {
-		if (p.mult === false) {
-			if (0 in res) {
-				res = isMap(data) ? {value: res[0]} : res[0];
-
-			} else {
-				res = null;
-			}
-		}
-
-		onComplete && onComplete.call(this, res);
-	};
-
 	const
-		returnVal = this.forEach(action, p);
+		returnVal = any(this.forEach(action, p));
 
 	if (returnVal !== this) {
 		return returnVal;
 	}
 
-	return res;
+	return p.result;
 };

@@ -19,8 +19,8 @@ import { any } from '../helpers/gcc';
  *
  *   {
  *     result: boolean,
- *     key: ?,
- *     value: ?
+ *     key,
+ *     value
  *   }
  *
  * @param {?} obj

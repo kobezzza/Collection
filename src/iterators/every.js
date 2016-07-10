@@ -16,8 +16,8 @@ import { any } from '../helpers/gcc';
  * Returns true if all elements in the collection matches by the specified condition
  *
  * @see Collection.prototype.forEach
- * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
- * @param {?$$CollectionBase=} [opt_params] - additional parameters
+ * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter] - function filter or an array of functions
+ * @param {?$$CollectionSingleBase=} [opt_params] - additional parameters
  * @return {(boolean|!Promise<boolean>)}
  */
 Collection.prototype.every = function (opt_filter, opt_params) {

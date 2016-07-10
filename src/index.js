@@ -19,6 +19,8 @@ import './iterators/get';
 import './iterators/reduce';
 import './iterators/every';
 import './iterators/some';
+import './iterators/search';
+import './iterators/includes';
 
 //#if iterators.thread
 import './iterators/thread';

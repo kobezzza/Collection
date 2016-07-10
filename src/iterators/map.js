@@ -34,9 +34,6 @@ Collection.prototype.map = function (cb, opt_params) {
 		p = {filter: p};
 	}
 
-	const
-		{data} = this;
-
 	let type = 'object';
 	if ((p.use || p.notOwn) && !p.initial) {
 		p.initial = {};
@@ -45,11 +42,11 @@ Collection.prototype.map = function (cb, opt_params) {
 		type = getType(p.initial);
 
 	} else {
-		type = getType(data, p.use);
+		type = getType(this.data, p.use);
 	}
 
 	const
-		source = p.initial || data;
+		source = p.initial || this.data;
 
 	let res;
 	switch (type) {
@@ -124,5 +121,5 @@ Collection.prototype.map = function (cb, opt_params) {
 		return returnVal;
 	}
 
-	return res;
+	return p.result;
 };
