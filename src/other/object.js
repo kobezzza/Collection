@@ -8,9 +8,10 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+import $C from '../core';
 import { DESCRIPTORS_SUPPORT } from '../consts/hacks';
-import { isArray, isBoolean, isObjectInstance, isExtensible } from './types';
-import { any } from './gcc';
+import { isArray, isBoolean, isObjectInstance, isExtensible } from '../helpers/types';
+import { any } from '../helpers/gcc';
 
 /**
  * Clones an object
@@ -18,9 +19,9 @@ import { any } from './gcc';
  * @param {?} obj - source object
  * @return {?}
  */
-export function clone(obj) {
+$C.clone = function (obj) {
 	return JSON.parse(JSON.stringify(obj));
-}
+};
 
 /**
  * Extends the specified object by another objects
@@ -40,7 +41,7 @@ export function clone(obj) {
  * @param {...Object} args - objects for extending
  * @return {!Object}
  */
-export function extend(deepOrParams, target, args) {
+$C.extend = function (deepOrParams, target, args) {
 	const
 		params = any(deepOrParams);
 
@@ -145,7 +146,7 @@ export function extend(deepOrParams, target, args) {
 						}
 					}
 
-					current[key] = extend(params, clone, copy);
+					current[key] = $C.extend(params, clone, copy);
 
 				} else if (copy !== undefined) {
 					if (traits) {
@@ -162,4 +163,6 @@ export function extend(deepOrParams, target, args) {
 	}
 
 	return current;
-}
+};
+
+Object.assign($C, {extend: $C.extend, clone: $C.clone});

@@ -10,6 +10,7 @@
 
 module.exports = {
 	'collection': {
+		'static.object': true,
 		'iterators.map': true,
 		'iterators.get': true,
 		'iterators.reduce': true,

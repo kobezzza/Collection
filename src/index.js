@@ -16,6 +16,10 @@ import './iterators/cache';
 import './iterators/forEach';
 import './iterators/filter';
 
+//#if static.object
+import './other/object';
+//#endif
+
 //#if iterators.map
 import './iterators/map';
 //#endif

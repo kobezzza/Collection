@@ -515,6 +515,12 @@ var deep;
  */
 $C.extend = function (deepOrParams, target, args) {};
 
+/**
+ * @param {?} obj
+ * @return {?}
+ */
+$C.clone = function clone(obj) {};
+
 /** @typedef {(?|Array)} */
 var $$CollectionLink;
 

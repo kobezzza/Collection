@@ -12,6 +12,7 @@ module.exports = require('./dist/node/core').default;
 require('./dist/node/iterators/cache');
 require('./dist/node/iterators/forEach');
 require('./dist/node/iterators/filter');
+require('./dist/node/other/object');
 require('./dist/node/iterators/map');
 require('./dist/node/iterators/get');
 require('./dist/node/iterators/reduce');
