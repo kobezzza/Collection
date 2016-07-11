@@ -12,6 +12,7 @@ import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
 import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
 import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
+import { priority } from '../consts/thread';
 import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
 import './length';
@@ -70,6 +71,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	if (p.hasOwnProperty('priority') || p.onChunk) {
 		p.thread = true;
+	}
+
+	if (!priority[p.priority]) {
+		priority[p.priority] = 'normal';
 	}
 
 	const

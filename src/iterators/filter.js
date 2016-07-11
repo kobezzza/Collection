@@ -29,6 +29,10 @@ Collection.prototype.filter = function (filter) {
  */
 Collection.prototype.thread = function (opt_priority) {
 	this.p.thread = true;
-	this.p.priority = opt_priority;
+
+	if (opt_priority) {
+		this.p.priority = opt_priority;
+	}
+
 	return this;
 };
