@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Collection threads</title>
+
+		<style>
+			.sq {
+				width: 50px;
+				height: 50px;
+				background-color: blue;
+			}
+
+			.sq:hover {
+				background-color: red;
+			}
+		</style>
+
+		<script src="../dist/collection.min.js"></script>
+	</head>
+
+	<body>
+		<div class="sq"></div>
+		<div id="results"></div>
+
+		<script>
+			var
+				threads = 50,
+				iterations = 1e7;
+
+			function getRandomInt(min, max) {
+				return Math.floor(Math.random() * (max - min + 1)) + min;
+			}
+
+			var
+				str = '',
+				chunks = [];
+
+			var ii = $C(new Array(threads)).map(function (el, i) {
+				str += '<div id="result' + i + '">0</div>';
+				chunks.push(0);
+				return i;
+			});
+
+			document.getElementById('results').innerHTML = str;
+
+			var j = 0;
+			var colors = {
+				'critical': 'red',
+				'hight': 'magenta',
+				'normal': 'green',
+				'low': 'blue'
+			};
+
+			$C(chunks).forEach(function (el, i, data, o) {
+				var priority = [
+					'low',
+					'normal',
+					'hight',
+					'critical'
+				];
+
+				priority = priority[getRandomInt(0, priority.length - 1)];
+				var info = ' → <span style="color:' + colors[priority] + '">' + priority + '</span>';
+
+				/*o.wait(*/$C(new Array(iterations)).thread().forEach(function (el, i) {
+					j += i;
+
+				}, {
+					priority: priority,
+					onChunk: function () {
+						chunks[i]++;
+						document.getElementById('result' + i).innerHTML = chunks[i] + info;
+					},
+
+					onComplete: function () {
+						document.getElementById('result' + i).innerHTML = '<b>finish</b> (' + chunks[i] + ')' + info;
+					}
+				})/*)*/;
+			}/*, {thread: true}*/);
+		</script>
+	</body>
+</html>
