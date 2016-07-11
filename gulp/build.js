@@ -59,6 +59,8 @@ gulp.task('build', (cb) => {
 					}))
 
 					.on('error', helpers.error(cb))
+					.pipe(replace(/(\\t)+/g, ''))
+					.pipe(replace(/(\\n){2,}/g, '\\n'))
 					.pipe(replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
 					.pipe(replace(headRgxp.addFlag('g'), ''))
 					.pipe(header(fullHead))
