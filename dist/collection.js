@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.1
+ * Collection v6.0.0-beta.2
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 11 Jul 2016 09:36:51 GMT
+ * Date: 'Mon, 11 Jul 2016 11:16:26 GMT
  */
 
 (function (global, factory) {
@@ -168,7 +168,7 @@
      * @return {boolean}
      */
     function isMap(obj) {
-    	return obj instanceof Map;
+    	return typeof Map === 'function' && obj instanceof Map;
     }
 
     /**
@@ -178,7 +178,7 @@
      * @return {boolean}
      */
     function isWeakMap(obj) {
-    	return obj instanceof WeakMap;
+    	return typeof WeakMap === 'function' && obj instanceof WeakMap;
     }
 
     /**
@@ -188,7 +188,7 @@
      * @return {boolean}
      */
     function isSet(obj) {
-    	return obj instanceof Set;
+    	return typeof Set === 'function' && obj instanceof Set;
     }
 
     /**
@@ -198,7 +198,7 @@
      * @return {boolean}
      */
     function isWeakSet(obj) {
-    	return obj instanceof WeakSet;
+    	return typeof WeakSet === 'function' && obj instanceof WeakSet;
     }
 
     /**
@@ -423,7 +423,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.1'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.2'];
 
     /**
      * Creates an instance of Collection

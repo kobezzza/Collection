@@ -85,7 +85,7 @@ function isArray(obj) {
  * @return {boolean}
  */
 function isMap(obj) {
-	return obj instanceof Map;
+	return typeof Map === 'function' && obj instanceof Map;
 }
 
 /**
@@ -95,7 +95,7 @@ function isMap(obj) {
  * @return {boolean}
  */
 function isWeakMap(obj) {
-	return obj instanceof WeakMap;
+	return typeof WeakMap === 'function' && obj instanceof WeakMap;
 }
 
 /**
@@ -105,7 +105,7 @@ function isWeakMap(obj) {
  * @return {boolean}
  */
 function isSet(obj) {
-	return obj instanceof Set;
+	return typeof Set === 'function' && obj instanceof Set;
 }
 
 /**
@@ -115,7 +115,7 @@ function isSet(obj) {
  * @return {boolean}
  */
 function isWeakSet(obj) {
-	return obj instanceof WeakSet;
+	return typeof WeakSet === 'function' && obj instanceof WeakSet;
 }
 
 /**
