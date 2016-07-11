@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.3
+ * Collection v6.0.0-beta.4
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 11 Jul 2016 11:59:44 GMT
+ * Date: 'Mon, 11 Jul 2016 19:46:03 GMT
  */
 
 (function (global, factory) {
@@ -423,7 +423,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.3'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.4'];
 
     /**
      * Creates an instance of Collection
@@ -458,7 +458,7 @@
     var CACHE_KEY = '__COLLECTION_CACHE_VERSION__';
     var CACHE_VERSION_KEY = '__COLLECTION_CACHE__';
 
-var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\nlink = o.link,\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete;\nvar\nwait = 0,\nonGlobalComplete,\nonGlobalError;\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nresults = [],\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nlength,\nf;\nvar\nTRUE = this.TRUE,\nFALSE = this.FALSE,\nNULL = this.NULL;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nthread: ', '\n};\nvar ctx = {\n$: $,\ninfo: info,\nget result() {\nreturn p.result;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nget next() {\nif (', ') {\nreturn false;\n}\nlink.self.next();\nreturn true;\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nlink.self.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nlink.self.next();\n} else if (opt_interval) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nthrow err;\n}\n} else {\nresolve();\nlink.self.next();\n}\n}, time);\n});\n},\nwait: function (promise) {\nvar thread = promise.thread;\nif (!thread || !thread.thread) {\nresults.push(thread);\nif (!wait) {\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\n}\nreturn false;\n}\nctx.yield();\nwait++;\nvar onComplete = thread.onComplete;\nthread.onComplete = function (res) {\nif (wait) {\nwait--;\n}\nresults.push(res);\nthat._stack.push(ctx);\nif (onComplete) {\nonComplete(res);\n}\nif (!wait) {\nyielder = false;\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\nthat._stack.pop();\nif (!yielder) {\nctx.next;\n}\n} else {\nthat._stack.pop();\n}\n};\nreturn promise.catch(function (err) {\nif (onGlobalError) {\nonGlobalError(err);\nonGlobalError = null;\n}\n});\n},\nget complete() {\nreturn new Promise(function (resolve, reject) {\nif (!wait) {\nresolve(that, results);\nresults = [];\nreturn false;\n}\nonGlobalComplete = resolve;\nonGlobalError = reject;\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn true;\n},\nget break() {\nbreaker = true;\nreturn true;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n'], ['\nvar \nthat = this,\ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\nlink = o.link,\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete;\nvar\nwait = 0,\nonGlobalComplete,\nonGlobalError;\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nresults = [],\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nlength,\nf;\nvar\nTRUE = this.TRUE,\nFALSE = this.FALSE,\nNULL = this.NULL;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nthread: ', '\n};\nvar ctx = {\n$: $,\ninfo: info,\nget result() {\nreturn p.result;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nget next() {\nif (', ') {\nreturn false;\n}\nlink.self.next();\nreturn true;\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nlink.self.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nlink.self.next();\n} else if (opt_interval) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nthrow err;\n}\n} else {\nresolve();\nlink.self.next();\n}\n}, time);\n});\n},\nwait: function (promise) {\nvar thread = promise.thread;\nif (!thread || !thread.thread) {\nresults.push(thread);\nif (!wait) {\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\n}\nreturn false;\n}\nctx.yield();\nwait++;\nvar onComplete = thread.onComplete;\nthread.onComplete = function (res) {\nif (wait) {\nwait--;\n}\nresults.push(res);\nthat._stack.push(ctx);\nif (onComplete) {\nonComplete(res);\n}\nif (!wait) {\nyielder = false;\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\nthat._stack.pop();\nif (!yielder) {\nctx.next;\n}\n} else {\nthat._stack.pop();\n}\n};\nreturn promise.catch(function (err) {\nif (onGlobalError) {\nonGlobalError(err);\nonGlobalError = null;\n}\n});\n},\nget complete() {\nreturn new Promise(function (resolve, reject) {\nif (!wait) {\nresolve(that, results);\nresults = [];\nreturn false;\n}\nonGlobalComplete = resolve;\nonGlobalError = reject;\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn true;\n},\nget break() {\nbreaker = true;\nreturn true;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n']);
+var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\nlink = o.link,\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete;\nvar\nwait = 0,\nonGlobalComplete,\nonGlobalError;\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nresults = [],\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nlength,\nf;\nvar\nTRUE = this.TRUE,\nFALSE = this.FALSE,\nNULL = this.NULL;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nthread: ', '\n};\nvar ctx = {\n$: $,\ninfo: info,\nget result() {\nreturn p.result;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nget next() {\nif (', ') {\nreturn false;\n}\nlink.self.next();\nreturn true;\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nlink.self.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nlink.self.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nthrow err;\n}\n} else {\nresolve();\nlink.self.next();\n}\n}, time);\n});\n},\nwait: function (promise) {\nvar thread = promise.thread;\nif (!thread || !thread.thread) {\nresults.push(thread);\nif (!wait) {\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\n}\nreturn false;\n}\nctx.yield();\nwait++;\nvar onComplete = thread.onComplete;\nthread.onComplete = function (res) {\nif (wait) {\nwait--;\n}\nresults.push(res);\nthat._stack.push(ctx);\nif (onComplete) {\nonComplete(res);\n}\nif (!wait) {\nyielder = false;\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\nthat._stack.pop();\nif (!yielder) {\nctx.next;\n}\n} else {\nthat._stack.pop();\n}\n};\nreturn promise.catch(function (err) {\nif (onGlobalError) {\nonGlobalError(err);\nonGlobalError = null;\n}\n});\n},\nget complete() {\nreturn new Promise(function (resolve, reject) {\nif (!wait) {\nresolve(that, results);\nresults = [];\nreturn false;\n}\nonGlobalComplete = resolve;\nonGlobalError = reject;\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn true;\n},\nget break() {\nbreaker = true;\nreturn true;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n'], ['\nvar \nthat = this,\ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\nlink = o.link,\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete;\nvar\nwait = 0,\nonGlobalComplete,\nonGlobalError;\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nresults = [],\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nlength,\nf;\nvar\nTRUE = this.TRUE,\nFALSE = this.FALSE,\nNULL = this.NULL;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nthread: ', '\n};\nvar ctx = {\n$: $,\ninfo: info,\nget result() {\nreturn p.result;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nget next() {\nif (', ') {\nreturn false;\n}\nlink.self.next();\nreturn true;\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nlink.self.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nlink.self.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nthrow err;\n}\n} else {\nresolve();\nlink.self.next();\n}\n}, time);\n});\n},\nwait: function (promise) {\nvar thread = promise.thread;\nif (!thread || !thread.thread) {\nresults.push(thread);\nif (!wait) {\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\n}\nreturn false;\n}\nctx.yield();\nwait++;\nvar onComplete = thread.onComplete;\nthread.onComplete = function (res) {\nif (wait) {\nwait--;\n}\nresults.push(res);\nthat._stack.push(ctx);\nif (onComplete) {\nonComplete(res);\n}\nif (!wait) {\nyielder = false;\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\nthat._stack.pop();\nif (!yielder) {\nctx.next;\n}\n} else {\nthat._stack.pop();\n}\n};\nreturn promise.catch(function (err) {\nif (onGlobalError) {\nonGlobalError(err);\nonGlobalError = null;\n}\n});\n},\nget complete() {\nreturn new Promise(function (resolve, reject) {\nif (!wait) {\nresolve(that, results);\nresults = [];\nreturn false;\n}\nonGlobalComplete = resolve;\nonGlobalError = reject;\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn true;\n},\nget break() {\nbreaker = true;\nreturn true;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n']);
     var _templateObject2 = taggedTemplateLiteral(['\nctx.thread = link.self;\nlink.self.ctx = ctx;\n'], ['\nctx.thread = link.self;\nlink.self.ctx = ctx;\n']);
     var _templateObject3 = taggedTemplateLiteral(['\nif (timeStart == null) {\nthat._stack.push(ctx);\ntimeStart = new Date().valueOf();\n}\n'], ['\nif (timeStart == null) {\nthat._stack.push(ctx);\ntimeStart = new Date().valueOf();\n}\n']);
     var _templateObject4 = taggedTemplateLiteral(['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > this._priority[link.self.priority]) {\nthat._stack.pop();\nyield n;\ntime = 0;\ntimeStart = null;\n}\n'], ['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > this._priority[link.self.priority]) {\nthat._stack.pop();\nyield n;\ntime = 0;\ntimeStart = null;\n}\n']);
@@ -869,7 +869,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	p.filter = opt_filter;
+    	p.filter = [].concat(opt_filter || []);
     	p.result = 0;
 
     	var calc = function () {
@@ -905,7 +905,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      *   *) [from = 0] - number of skipping successful iterations
      *   *) [startIndex = 0] - number of skipping successful iterations
      *   *) [endIndex] - end iteration position
-     *   *) [opt_inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
+     *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
      *   *) [notOwn = false] - iteration type:
      *
      *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
@@ -1123,29 +1123,121 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     /**
      * Appends a filter to the operation
      *
-     * @param {$$CollectionFilter} filter - filter or an array of filters
+     * @param {...$$CollectionFilter} filter - function filter
      * @return {!Collection}
      */
     Collection.prototype.filter = function (filter) {
-      this.p.filter = this.p.filter.concat(filter);
-      return this;
+    	this.p.filter = this.p.filter.concat([].slice.call(arguments));
+    	return this;
     };
 
     /**
      * Marks the operation as thread
      *
-     * @param {?string=} [opt_priority] - thread priority (low, normal, hight, critical)
+     * @param {(?string|$$CollectionThreadCb)=} [opt_priority] - thread priority (low, normal, hight, critical)
+     * @param {?$$CollectionThreadCb=} [opt_onChunk] - callback function for chunks
      * @return {!Collection}
      */
-    Collection.prototype.thread = function (opt_priority) {
-      this.p.thread = true;
+    Collection.prototype.thread = function (opt_priority, opt_onChunk) {
+    	if (isFunction(opt_priority)) {
+    		opt_onChunk = any(opt_priority);
+    		opt_priority = null;
+    	}
 
-      if (opt_priority) {
-        this.p.priority = opt_priority;
-      }
+    	this.p.thread = true;
 
-      return this;
+    	if (opt_priority) {
+    		this.p.priority = opt_priority;
+    	}
+
+    	if (opt_onChunk) {
+    		this.p.onChunk = opt_onChunk;
+    	}
+
+    	return this;
     };
+
+    /**
+     * Sets .startIndex for the operation
+     *
+     * @param {number} value - source value
+     * @return {!Collection}
+     */
+    Collection.prototype.start = function (value) {
+    	this.p.startIndex = value;
+    	return this;
+    };
+
+    /**
+     * Sets .endIndex for the operation
+     *
+     * @param {number} value - source value
+     * @return {!Collection}
+     */
+    Collection.prototype.end = function (value) {
+    	this.p.endIndex = value;
+    	return this;
+    };
+
+    /**
+     * Sets .from for the operation
+     *
+     * @param {number} value - source value
+     * @return {!Collection}
+     */
+    Collection.prototype.from = function (value) {
+    	this.p.from = value;
+    	return this;
+    };
+
+    /**
+     * Sets .count for the operation
+     *
+     * @param {number} value - source value
+     * @return {!Collection}
+     */
+    Collection.prototype.count = function (value) {
+    	this.p.count = value;
+    	return this;
+    };
+
+    Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} */{
+    	one: {
+    		/**
+       * Sets .mult to false for the operation
+       * @return {!Collection}
+       */
+
+    		get: function () {
+    			this.p.mult = false;
+    			return this;
+    		}
+    	},
+
+    	inverse: {
+    		/**
+       * Sets .inverseFilter to true for the operation
+       * @return {!Collection}
+       */
+
+    		get: function () {
+    			this.p.inverseFilter = true;
+    			return this;
+    		}
+    	},
+
+    	reverse: {
+    		/**
+       * Sets .reverse to true for the operation
+       * @return {!Collection}
+       */
+
+    		get: function () {
+    			this.p.reverse = true;
+    			return this;
+    		}
+    	}
+    });
 
     /**
      * Clones an object
@@ -1638,11 +1730,11 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	}
 
     	var action = void 0;
-    	if (p.mult !== false) {
+    	if (p.mult !== false && this.p.mult !== false) {
     		(function () {
     			var res = p.result = [];
-    			action = function (el, key) {
-    				return res.push(key);
+    			action = function (el) {
+    				return res.push(el);
     			};
     		})();
     	} else {
@@ -1651,7 +1743,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		};
     	}
 
-    	p.filter = opt_filter;
+    	p.filter = [].concat(opt_filter || []);
 
     	var returnVal = any(this.forEach(any(action), p));
 
@@ -1681,7 +1773,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	}
 
     	p.result = opt_initialValue;
-    	p.filter = opt_filter;
+    	p.filter = [].concat(opt_filter || []);
 
     	fn[FN_LENGTH] = cb.length - 1;
     	function fn(el) {
@@ -1718,7 +1810,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	p.filter = opt_filter;
+    	p.filter = [].concat(opt_filter || []);
     	p.mult = false;
     	p.inverseFilter = !p.inverseFilter;
     	p.result = true;
@@ -1750,7 +1842,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	p.filter = opt_filter;
+    	p.filter = [].concat(opt_filter || []);
     	p.mult = false;
     	p.result = false;
 
@@ -1785,10 +1877,8 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	p.filter = opt_filter;
-
     	var action = void 0;
-    	if (p.mult !== false) {
+    	if (p.mult !== false && this.p.mult !== false) {
     		(function () {
     			var res = p.result = [];
 
@@ -1808,6 +1898,8 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			return p.result = isMap(_this.data) ? { value: key } : isSet(_this.data) ? { value: el } : key;
     		};
     	}
+
+    	p.filter = [].concat(opt_filter || []);
 
     	var returnVal = any(this.forEach(any(action), p));
 
@@ -1882,9 +1974,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	p.filter = opt_filter;
-    	p.mult = true;
-
     	var isFunc = isFunction(field),
     	    res = p.result = p.useMap ? new GLOBAL['Map']() : {};
 
@@ -1916,6 +2005,9 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	if (isFunc) {
     		action[FN_LENGTH] = action.length > field.length ? action.length : field.length;
     	}
+
+    	p.filter = [].concat(opt_filter || []);
+    	p.mult = true;
 
     	var returnVal = any(this.forEach(any(action), p));
 
@@ -1960,7 +2052,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		throw new TypeError('Incorrect data type');
     	}
 
-    	var mult = p.mult !== false,
+    	var mult = p.mult !== false && this.p.mult !== false,
     	    res = [],
     	    splice = [].splice;
 
@@ -2097,7 +2189,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			};
     	}
 
-    	p.filter = opt_filter;
+    	p.filter = [].concat(opt_filter || []);
 
     	var returnVal = any(this.forEach(any(action), p));
 
@@ -2146,7 +2238,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	var type = getType(data, p.use),
     	    isFunc = isFunction(value);
 
-    	var mult = p.mult !== false,
+    	var mult = p.mult !== false && this.p.mult !== false,
     	    report = [];
 
     	if (mult) {
@@ -2311,7 +2403,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	var onIterationEnd = _p.onIterationEnd;
 
 
-    	p.filter = filter;
+    	p.filter = [].concat(filter || []);
     	p.onIterationEnd = function (ctx) {
     		if ((!p.result || !p.result.length) && 'key' in p) {
     			if (p.key == null && isArray(data)) {

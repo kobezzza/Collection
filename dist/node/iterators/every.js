@@ -30,7 +30,7 @@ _core.Collection.prototype.every = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	p.filter = opt_filter;
+	p.filter = [].concat(opt_filter || []);
 	p.mult = false;
 	p.inverseFilter = !p.inverseFilter;
 	p.result = true;

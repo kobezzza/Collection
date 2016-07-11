@@ -396,10 +396,44 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
 $$Collection.prototype.filter = function (filter) {};
 
 /**
- * @param {?string=} [opt_priority]
+ * @param {(?string|$$CollectionThreadCb)=} [opt_priority]
+ * @param {?$$CollectionThreadCb=} [opt_onChunk]
  * @return {!$$Collection}
  */
-$$Collection.prototype.thread = function (opt_priority) {};
+$$Collection.prototype.thread = function (opt_priority, opt_onChunk) {};
+
+/**
+ * @param {number} value
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.start = function (value) {};
+
+/**
+ * @param {number} value
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.end = function (value) {};
+
+/**
+ * @param {number} value
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.from = function (value) {};
+
+/**
+ * @param {number} value
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.count = function (value) {};
+
+/** @type {{get: function (): $$Collection}} */
+$$Collection.prototype.one;
+
+/** @type {{get: function (): $$Collection}} */
+$$Collection.prototype.inverse;
+
+/** @type {{get: function (): $$Collection}} */
+$$Collection.prototype.reverse;
 
 /** @type {?} */
 var keys;

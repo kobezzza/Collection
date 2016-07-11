@@ -32,7 +32,7 @@ _core.Collection.prototype.length = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	p.filter = opt_filter;
+	p.filter = [].concat(opt_filter || []);
 	p.result = 0;
 
 	const calc = () => p.result++;

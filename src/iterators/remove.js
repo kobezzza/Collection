@@ -58,7 +58,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	}
 
 	const
-		mult = p.mult !== false,
+		mult = p.mult !== false && this.p.mult !== false,
 		res = [],
 		splice = [].splice;
 
@@ -202,7 +202,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 			};
 	}
 
-	p.filter = opt_filter;
+	p.filter = [].concat(opt_filter || []);
 
 	const
 		returnVal = any(this.forEach(any(action), p));

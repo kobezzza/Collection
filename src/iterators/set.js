@@ -64,7 +64,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		isFunc = isFunction(value);
 
 	const
-		mult = p.mult !== false,
+		mult = p.mult !== false && this.p.mult !== false,
 		report = [];
 
 	if (mult) {
@@ -241,7 +241,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	const
 		{onIterationEnd} = p;
 
-	p.filter = filter;
+	p.filter = [].concat(filter || []);
 	p.onIterationEnd = (ctx) => {
 		if ((!p.result || !p.result.length) && 'key' in p) {
 			if (p.key == null && isArray(data)) {

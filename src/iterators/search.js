@@ -31,10 +31,8 @@ Collection.prototype.search = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	p.filter = opt_filter;
-
 	let action;
-	if (p.mult !== false) {
+	if (p.mult !== false && this.p.mult !== false) {
 		const
 			res = p.result = [];
 
@@ -49,6 +47,8 @@ Collection.prototype.search = function (opt_filter, opt_params) {
 		p.result = null;
 		action = (el, key) => p.result = isMap(this.data) ? {value: key} : isSet(this.data) ? {value: el} : key;
 	}
+
+	p.filter = [].concat(opt_filter || []);
 
 	const
 		returnVal = any(this.forEach(any(action), p));

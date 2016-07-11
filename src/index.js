@@ -14,7 +14,7 @@ export { default as default } from './core';
 
 import './iterators/cache';
 import './iterators/forEach';
-import './iterators/filter';
+import './iterators/helpers';
 
 //#if static.object
 import './other/object';

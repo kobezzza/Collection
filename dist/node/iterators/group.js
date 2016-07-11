@@ -45,9 +45,6 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 		opt_filter = null;
 	}
 
-	p.filter = opt_filter;
-	p.mult = true;
-
 	const isFunc = (0, _types.isFunction)(field),
 	      res = p.result = p.useMap ? new _links.GLOBAL['Map']() : {};
 
@@ -79,6 +76,9 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 	if (isFunc) {
 		action[_base.FN_LENGTH] = action.length > field.length ? action.length : field.length;
 	}
+
+	p.filter = [].concat(opt_filter || []);
+	p.mult = true;
 
 	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
 

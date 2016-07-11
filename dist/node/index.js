@@ -26,7 +26,7 @@ require('./iterators/cache');
 
 require('./iterators/forEach');
 
-require('./iterators/filter');
+require('./iterators/helpers');
 
 require('./other/object');
 

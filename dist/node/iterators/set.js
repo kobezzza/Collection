@@ -58,7 +58,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 	const type = (0, _types.getType)(data, p.use),
 	      isFunc = (0, _types.isFunction)(value);
 
-	const mult = p.mult !== false,
+	const mult = p.mult !== false && this.p.mult !== false,
 	      report = [];
 
 	if (mult) {
@@ -221,7 +221,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 	const { onIterationEnd } = p;
 
-	p.filter = filter;
+	p.filter = [].concat(filter || []);
 	p.onIterationEnd = ctx => {
 		if ((!p.result || !p.result.length) && 'key' in p) {
 			if (p.key == null && (0, _types.isArray)(data)) {

@@ -52,7 +52,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 		throw new TypeError('Incorrect data type');
 	}
 
-	const mult = p.mult !== false,
+	const mult = p.mult !== false && this.p.mult !== false,
 	      res = [],
 	      splice = [].splice;
 
@@ -187,7 +187,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 			};
 	}
 
-	p.filter = opt_filter;
+	p.filter = [].concat(opt_filter || []);
 
 	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
 

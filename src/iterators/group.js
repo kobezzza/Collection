@@ -43,9 +43,6 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	p.filter = opt_filter;
-	p.mult = true;
-
 	const
 		isFunc = isFunction(field),
 		res = p.result = p.useMap ? new GLOBAL['Map']() : {};
@@ -83,6 +80,9 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	if (isFunc) {
 		action[FN_LENGTH] = action.length > field.length ? action.length : field.length;
 	}
+
+	p.filter = [].concat(opt_filter || []);
+	p.mult = true;
 
 	const
 		returnVal = any(this.forEach(any(action), p));

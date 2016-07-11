@@ -35,7 +35,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 	}
 
 	p.result = opt_initialValue;
-	p.filter = opt_filter;
+	p.filter = [].concat(opt_filter || []);
 
 	fn[_base.FN_LENGTH] = cb.length - 1;
 	function fn(el) {

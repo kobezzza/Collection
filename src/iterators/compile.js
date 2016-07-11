@@ -176,7 +176,7 @@ export function compileCycle(key, p) {
 									resolve();
 									link.self.next();
 
-								} else if (opt_interval) {
+								} else if (opt_interval !== false) {
 									ctx.sleep(time, opt_test, opt_interval).then(resolve, reject);
 								}
 

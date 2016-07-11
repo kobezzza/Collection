@@ -52,15 +52,15 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 	}
 
 	let action;
-	if (p.mult !== false) {
+	if (p.mult !== false && this.p.mult !== false) {
 		const res = p.result = [];
-		action = (el, key) => res.push(key);
+		action = (el) => res.push(el);
 
 	} else {
 		action = (el) => p.result = el;
 	}
 
-	p.filter = opt_filter;
+	p.filter = [].concat(opt_filter || []);
 
 	const
 		returnVal = any(this.forEach(any(action), p));

@@ -38,7 +38,7 @@ const stack = _core.Collection.prototype['_stack'] = [];
  *   *) [from = 0] - number of skipping successful iterations
  *   *) [startIndex = 0] - number of skipping successful iterations
  *   *) [endIndex] - end iteration position
- *   *) [opt_inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
+ *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
  *   *) [notOwn = false] - iteration type:
  *
  *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
