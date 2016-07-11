@@ -33,7 +33,7 @@ function Collection(obj) {
  * @return {!Object}
  */
 Collection.prototype._init = function () {
-  return {
+  return Object.assign({
     mult: true,
     count: false,
     from: false,
@@ -47,8 +47,10 @@ Collection.prototype._init = function () {
     priority: 'normal',
     length: true,
     filter: []
-  };
+  }, $C.config);
 };
+
+Object.assign($C, { config: { localCache: true } });
 
 /**
  * Library version

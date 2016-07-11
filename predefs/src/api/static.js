@@ -25,6 +25,15 @@ $C.cache = {
 /** @type {?} */
 $C.ready;
 
+/** @type {?} */
+$C.config = {
+	/** @type {?} */
+	localCache: null,
+
+	/** @type {?} */
+	length: null
+};
+
 /**
  * @typedef {{
  *   withAccessors: (boolean|undefined),

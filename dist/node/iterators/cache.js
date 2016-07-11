@@ -24,31 +24,33 @@ require('../consts/cache');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-if (_hacks.IS_BROWSER && _hacks.JSON_SUPPORT && _hacks.LOCAL_STORAGE_SUPPORT) {
-	try {
-		if (document.readyState === 'loading') {
-			const version = localStorage.getItem(_base.CACHE_VERSION_KEY),
-			      cache = localStorage.getItem(_base.CACHE_KEY);
+if (_core2.default.config.localCache) {
+	if (_hacks.IS_BROWSER && _hacks.JSON_SUPPORT && _hacks.LOCAL_STORAGE_SUPPORT) {
+		try {
+			if (document.readyState === 'loading') {
+				const version = localStorage.getItem(_base.CACHE_VERSION_KEY),
+				      cache = localStorage.getItem(_base.CACHE_KEY);
 
-			if (cache && version == _base.CACHE_VERSION) {
-				_core2.default.cache.str = JSON.parse(cache);
-				document.write('<script type="text/javascript">' + (0, _compile.returnCache)(_core2.default.cache.str) + `${ _base.NAMESPACE }.ready = true;` + '</script>');
-			} else {
-				localStorage.removeItem(_base.CACHE_KEY);
-				localStorage.removeItem(_base.CACHE_VERSION_KEY);
-				_core2.default.ready = true;
+				if (cache && version == _base.CACHE_VERSION) {
+					_core2.default.cache.str = JSON.parse(cache);
+					document.write('<script type="text/javascript">' + (0, _compile.returnCache)(_core2.default.cache.str) + `${ _base.NAMESPACE }.ready = true;` + '</script>');
+				} else {
+					localStorage.removeItem(_base.CACHE_KEY);
+					localStorage.removeItem(_base.CACHE_VERSION_KEY);
+					_core2.default.ready = true;
+				}
 			}
-		}
-	} catch (ignore) {}
-} else if (_hacks.IS_NODE) {
-	try {
-		const cache = require(require('path').join(__dirname, 'collection.tmp.js'));
+		} catch (ignore) {}
+	} else if (_hacks.IS_NODE) {
+		try {
+			const cache = require(require('path').join(__dirname, 'collection.tmp.js'));
 
-		if (cache['version'] === _base.CACHE_VERSION) {
-			cache['exec']();
-			_core2.default.cache.str = cache['cache'];
+			if (cache['version'] === _base.CACHE_VERSION) {
+				cache['exec']();
+				_core2.default.cache.str = cache['cache'];
+			}
+		} catch (ignore) {} finally {
+			_core2.default.ready = true;
 		}
-	} catch (ignore) {} finally {
-		_core2.default.ready = true;
 	}
 }

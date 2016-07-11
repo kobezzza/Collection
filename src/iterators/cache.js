@@ -16,44 +16,47 @@ import { NAMESPACE, CACHE_VERSION, CACHE_KEY, CACHE_VERSION_KEY } from '../const
 import { IS_NODE, IS_BROWSER, JSON_SUPPORT, LOCAL_STORAGE_SUPPORT } from '../consts/hacks';
 import '../consts/cache';
 
-if (IS_BROWSER && JSON_SUPPORT && LOCAL_STORAGE_SUPPORT) {
-	try {
-		if (document.readyState === 'loading') {
-			const
-				version = localStorage.getItem(CACHE_VERSION_KEY),
-				cache = localStorage.getItem(CACHE_KEY);
+if ($C.config.localCache) {
+	if (IS_BROWSER && JSON_SUPPORT && LOCAL_STORAGE_SUPPORT) {
+		try {
+			if (document.readyState === 'loading') {
+				const
+					version = localStorage.getItem(CACHE_VERSION_KEY),
+					cache = localStorage.getItem(CACHE_KEY);
 
-			if (cache && version == CACHE_VERSION) {
-				$C.cache.str = JSON.parse(cache);
-				document.write(
-					'<script type="text/javascript">' +
+				if (cache && version == CACHE_VERSION) {
+					$C.cache.str = JSON.parse(cache);
+					document.write(
+						'<script type="text/javascript">' +
 						returnCache($C.cache.str) +
 						`${NAMESPACE}.ready = true;` +
-					'</script>'
-				);
+						'</script>'
+					);
 
-			} else {
-				localStorage.removeItem(CACHE_KEY);
-				localStorage.removeItem(CACHE_VERSION_KEY);
-				$C.ready = true;
+				} else {
+					localStorage.removeItem(CACHE_KEY);
+					localStorage.removeItem(CACHE_VERSION_KEY);
+					$C.ready = true;
+				}
 			}
+
+		} catch (ignore) {
 		}
 
-	} catch (ignore) { }
+	} else if (IS_NODE) {
+		try {
+			const
+				cache = require(require('path').join(__dirname, 'collection.tmp.js'));
 
-} else if (IS_NODE) {
-	try {
-		const
-			cache = require(require('path').join(__dirname, 'collection.tmp.js'));
+			if (cache['version'] === CACHE_VERSION) {
+				cache['exec']();
+				$C.cache.str = cache['cache'];
+			}
 
-		if (cache['version'] === CACHE_VERSION) {
-			cache['exec']();
-			$C.cache.str = cache['cache'];
+		} catch (ignore) {
+
+		} finally {
+			$C.ready = true;
 		}
-
-	} catch (ignore) {
-
-	} finally {
-		$C.ready = true;
 	}
 }

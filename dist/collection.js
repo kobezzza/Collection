@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 11 Jul 2016 09:15:53 GMT
+ * Date: 'Mon, 11 Jul 2016 09:32:20 GMT
  */
 
 (function (global, factory) {
@@ -400,7 +400,7 @@
      * @return {!Object}
      */
     Collection.prototype._init = function () {
-      return {
+      return Object.assign({
         mult: true,
         count: false,
         from: false,
@@ -414,8 +414,10 @@
         priority: 'normal',
         length: true,
         filter: []
-      };
+      }, $C.config);
     };
+
+    Object.assign($C, { config: { localCache: true } });
 
     /**
      * Library version
@@ -812,32 +814,34 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	return tmpCycle[key];
     }
 
-    if (IS_BROWSER && JSON_SUPPORT && LOCAL_STORAGE_SUPPORT) {
-    	try {
-    		if (document.readyState === 'loading') {
-    			var version = localStorage.getItem(CACHE_VERSION_KEY),
-    			    cache = localStorage.getItem(CACHE_KEY);
+    if ($C.config.localCache) {
+    	if (IS_BROWSER && JSON_SUPPORT && LOCAL_STORAGE_SUPPORT) {
+    		try {
+    			if (document.readyState === 'loading') {
+    				var version = localStorage.getItem(CACHE_VERSION_KEY),
+    				    cache = localStorage.getItem(CACHE_KEY);
 
-    			if (cache && version == CACHE_VERSION) {
-    				$C.cache.str = JSON.parse(cache);
-    				document.write('<script type="text/javascript">' + returnCache($C.cache.str) + (NAMESPACE + '.ready = true;') + '</script>');
-    			} else {
-    				localStorage.removeItem(CACHE_KEY);
-    				localStorage.removeItem(CACHE_VERSION_KEY);
-    				$C.ready = true;
+    				if (cache && version == CACHE_VERSION) {
+    					$C.cache.str = JSON.parse(cache);
+    					document.write('<script type="text/javascript">' + returnCache($C.cache.str) + (NAMESPACE + '.ready = true;') + '</script>');
+    				} else {
+    					localStorage.removeItem(CACHE_KEY);
+    					localStorage.removeItem(CACHE_VERSION_KEY);
+    					$C.ready = true;
+    				}
     			}
-    		}
-    	} catch (ignore) {}
-    } else if (IS_NODE) {
-    	try {
-    		var _cache = require(require('path').join(__dirname, 'collection.tmp.js'));
+    		} catch (ignore) {}
+    	} else if (IS_NODE) {
+    		try {
+    			var _cache = require(require('path').join(__dirname, 'collection.tmp.js'));
 
-    		if (_cache['version'] === CACHE_VERSION) {
-    			_cache['exec']();
-    			$C.cache.str = _cache['cache'];
+    			if (_cache['version'] === CACHE_VERSION) {
+    				_cache['exec']();
+    				$C.cache.str = _cache['cache'];
+    			}
+    		} catch (ignore) {} finally {
+    			$C.ready = true;
     		}
-    	} catch (ignore) {} finally {
-    		$C.ready = true;
     	}
     }
 
