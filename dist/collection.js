@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.2
+ * Collection v6.0.0-beta.3
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 11 Jul 2016 11:16:26 GMT
+ * Date: 'Mon, 11 Jul 2016 11:59:44 GMT
  */
 
 (function (global, factory) {
@@ -391,7 +391,7 @@
      * @param {$$CollectionType} obj
      */
     function Collection(obj) {
-      this.data = any(isString(obj) ? obj.split('') : obj);
+      this.data = any(isString(obj) ? obj.split('') : obj || []);
       this.p = this._init();
     }
 
@@ -423,7 +423,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.2'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.3'];
 
     /**
      * Creates an instance of Collection

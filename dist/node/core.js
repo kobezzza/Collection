@@ -24,7 +24,7 @@ var _types = require('./helpers/types');
  * @param {$$CollectionType} obj
  */
 function Collection(obj) {
-  this.data = (0, _gcc.any)((0, _types.isString)(obj) ? obj.split('') : obj);
+  this.data = (0, _gcc.any)((0, _types.isString)(obj) ? obj.split('') : obj || []);
   this.p = this._init();
 }
 
@@ -56,7 +56,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 0, 0, 'beta.2'];
+Collection.prototype.VERSION = [6, 0, 0, 'beta.3'];
 
 /**
  * Creates an instance of Collection
