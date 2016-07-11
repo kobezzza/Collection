@@ -205,6 +205,8 @@ $C.in = function (link, obj) {
 	return byLink(obj, link, {test: true});
 };
 
+Object.assign($C, {in: $C.in});
+
 /**
  * Returns true if the collection contains a property by a link
  *

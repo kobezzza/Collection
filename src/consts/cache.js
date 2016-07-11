@@ -12,6 +12,13 @@
 
 import $C from '../core';
 
-$C.cache = {str: {}};
-export const tmpCycle = $C.cache.cycle = {};
+Object.assign($C, {
+	ready: false,
+	cache: {
+		str: {},
+		cycle: {}
+	}
+});
+
+export const tmpCycle = $C.cache.cycle;
 

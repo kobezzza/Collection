@@ -11,7 +11,6 @@
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
 import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
-import { STRUCT_OPT } from '../helpers/structs';
 import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
 import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
@@ -156,7 +155,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	const key = [
-		STRUCT_OPT,
 		type,
 		cbArgs,
 		filters.length,

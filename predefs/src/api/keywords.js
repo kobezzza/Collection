@@ -10,9 +10,6 @@
 var keys;
 
 /** @type {?} */
-var _keys;
-
-/** @type {?} */
 var value;
 
 /** @type {?} */
@@ -68,15 +65,3 @@ var fLength;
 
 /** @type {?} */
 var link;
-
-/** @type {?} */
-var cache;
-
-/** @type {?} */
-var ready;
-
-/** @type {?} */
-var cycle;
-
-/** @type {?} */
-var str;

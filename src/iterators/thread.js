@@ -260,3 +260,5 @@ $C.destroy = function (obj) {
 
 	return true;
 };
+
+Object.assign($C, {destroy: $C.destroy});

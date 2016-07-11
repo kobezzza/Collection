@@ -11,7 +11,6 @@
 import $C from '../core';
 import { tmpCycle } from '../consts/cache';
 import { ws } from '../helpers/string';
-import { STRUCT_OPT } from '../helpers/structs';
 import { OBJECT_KEYS_NATIVE_SUPPORT } from '../consts/hacks';
 import { NAMESPACE, CACHE_VERSION, CACHE_KEY, CACHE_VERSION_KEY } from '../consts/base';
 import { IS_NODE, IS_BROWSER, BLOB_SUPPORT, LOCAL_STORAGE_SUPPORT } from '../consts/hacks';
@@ -66,8 +65,7 @@ export function compileCycle(key, p) {
 	const cantModI = !(
 		p.type === 'array' ||
 		p.reverse ||
-		p.type === 'object' && p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT ||
-		isMapSet && STRUCT_OPT
+		p.type === 'object' && p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT
 	);
 
 	let iFn = ws`
@@ -554,46 +552,72 @@ export function compileCycle(key, p) {
 		case 'set':
 		case 'generator':
 		case 'iterator':
-			if (isMapSet && STRUCT_OPT) {
+			const gen = () => {
+				if (isMapSet) {
+					iFn += 'var cursor = data.keys();';
+
+					if (!p.live && !p.reverse) {
+						iFn += 'var size = data.size;';
+					}
+
+				} else if (p.type === 'generator') {
+					iFn += 'var cursor = data();';
+
+				} else {
+					iFn += ws`
+						var
+							iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
+							cursor;
+
+						if ('next' in data) {
+							cursor = data;
+
+						} else {
+							cursor = (iteratorKey ? data[iteratorKey]() : data['@@iterator'] && data['@@iterator']()) || data;
+						}
+					`;
+				}
+			};
+
+			if (p.reverse) {
+				gen();
 				iFn += ws`
-					var
-						tmpArray = data._keys,
-						skip = 0;
+					var tmpArray = [];
+
+					for (var step = cursor.next(); !step.done; step = cursor.next()) {
+						${threadStart}
+						tmpArray.push(step.value);
+						${threadEnd}
+					}
+
+					tmpArray.reverse();
+					var size = tmpArray.length;
 				`;
 
-				if (!p.live && !p.reverse) {
-					iFn += 'var size = data.size;';
-				}
-
-				if (!p.live) {
-					iFn += 'tmpArray = tmpArray.slice();';
-				}
-
-				if (p.reverse) {
-					if (p.live) {
-						iFn += 'tmpArray = tmpArray.slice().reverse();';
-
-					} else {
-						iFn += 'tmpArray.reverse();';
-					}
+				if (startIndex || endIndex) {
+					iFn += `tmpArray = tmpArray.slice(${startIndex}, ${endIndex || 'tmpArray.length'});`;
 				}
 
 				iFn += ws`
 					length = tmpArray.length;
-					for (n = ${startIndex - 1}; ++n < ${!p.reverse && p.live ? 'tmpArray.length' : 'length'};) {
-						key = tmpArray[n];
+					for (n = -1; ++n < length;) {
+						${maxArgsLength ? 'key = tmpArray[n];' : ''}
+						i = n + ${startIndex};
+				`;
 
-						if (key === NULL) {
-							skip++;
-							continue;
-						}
+			} else {
+				gen();
 
-						i = n + skip;
+				iFn += ws`
+					for (key = cursor.next(); !key.done; key = cursor.next()) {
+						${maxArgsLength ? 'key = key.value;' : ''}
+						n++;
+						i = n;
 				`;
 
 				if (startIndex) {
 					iFn += ws`
-						if (i < ${startIndex}) {
+						if (n < ${startIndex}) {
 							continue;
 						}
 					`;
@@ -601,91 +625,10 @@ export function compileCycle(key, p) {
 
 				if (endIndex) {
 					iFn += ws`
-						if (i > ${endIndex}) {
+						if (n > ${endIndex}) {
 							break;
 						};
 					`;
-				}
-
-			} else {
-				const gen = () => {
-					if (isMapSet) {
-						iFn += 'var cursor = data.keys();';
-
-						if (!p.live && !p.reverse) {
-							iFn += 'var size = data.size;';
-						}
-
-					} else if (p.type === 'generator') {
-						iFn += 'var cursor = data();';
-
-					} else {
-						iFn += ws`
-							var
-								iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
-								cursor;
-
-							if ('next' in data) {
-								cursor = data;
-
-							} else {
-								cursor = (iteratorKey ? data[iteratorKey]() : data['@@iterator'] && data['@@iterator']()) || data;
-							}
-						`;
-					}
-				};
-
-				if (p.reverse) {
-					gen();
-					iFn += ws`
-						var tmpArray = [];
-
-						for (var step = cursor.next(); !step.done; step = cursor.next()) {
-							${threadStart}
-							tmpArray.push(step.value);
-							${threadEnd}
-						}
-
-						tmpArray.reverse();
-						var size = tmpArray.length;
-					`;
-
-					if (startIndex || endIndex) {
-						iFn += `tmpArray = tmpArray.slice(${startIndex}, ${endIndex || 'tmpArray.length'});`;
-					}
-
-					iFn += ws`
-						length = tmpArray.length;
-						for (n = -1; ++n < length;) {
-							${maxArgsLength ? 'key = tmpArray[n];' : ''}
-							i = n + ${startIndex};
-					`;
-
-				} else {
-					gen();
-
-					iFn += ws`
-						for (key = cursor.next(); !key.done; key = cursor.next()) {
-							${maxArgsLength ? 'key = key.value;' : ''}
-							n++;
-							i = n;
-					`;
-
-					if (startIndex) {
-						iFn += ws`
-							if (n < ${startIndex}) {
-								continue;
-							}
-						`;
-					}
-
-					if (endIndex) {
-						iFn += ws`
-							if (n > ${endIndex}) {
-								break;
-							};
-						`;
-					}
 				}
 			}
 
@@ -881,6 +824,7 @@ export function compileCycle(key, p) {
 				);
 
 			}, delay);
+			timeout['unref']();
 		}
 	}
 

@@ -13,6 +13,18 @@
  */
 function $C(collection) {}
 
+/** @type {?} */
+$C.cache = {
+	/** @type {?} */
+	cycle: {},
+
+	/** @type {?} */
+	str: {}
+};
+
+/** @type {?} */
+$C.ready;
+
 /**
  * @typedef {{
  *   withAccessors: (boolean|undefined),
