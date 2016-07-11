@@ -10,7 +10,6 @@
 
 module.exports = {
 	'collection': {
-		'map_set.keys': true,
 		'iterators.map': true,
 		'iterators.get': true,
 		'iterators.reduce': true,

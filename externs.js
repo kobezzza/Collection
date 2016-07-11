@@ -405,9 +405,6 @@ $$Collection.prototype.thread = function (opt_priority) {};
 var keys;
 
 /** @type {?} */
-var _keys;
-
-/** @type {?} */
 var value;
 
 /** @type {?} */
@@ -464,24 +461,24 @@ var fLength;
 /** @type {?} */
 var link;
 
-/** @type {?} */
-var cache;
-
-/** @type {?} */
-var ready;
-
-/** @type {?} */
-var cycle;
-
-/** @type {?} */
-var str;
-
 /**
  * @abstract
  * @param {$$CollectionType=} collection
  * @return {!$$Collection}
  */
 function $C(collection) {}
+
+/** @type {?} */
+$C.cache = {
+	/** @type {?} */
+	cycle: {},
+
+	/** @type {?} */
+	str: {}
+};
+
+/** @type {?} */
+$C.ready;
 
 /**
  * @typedef {{
