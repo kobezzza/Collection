@@ -49,4 +49,5 @@ node_modules
 
 # Temporary
 *.tmp
+*.tmp.js
 /test/tmp
