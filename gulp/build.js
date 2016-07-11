@@ -19,7 +19,8 @@ const
 const
 	rollup = require('gulp-rollup'),
 	monic = require('gulp-monic'),
-	babel = require('rollup-plugin-babel'),
+	babelRollup = require('rollup-plugin-babel'),
+	babel = require('gulp-babel'),
 	replace = require('gulp-replace'),
 	rename = require('gulp-rename'),
 	header = require('gulp-header'),
@@ -54,7 +55,7 @@ gulp.task('build', (cb) => {
 						format: 'umd',
 						moduleId: 'Collection',
 						moduleName: '$C',
-						plugins: [babel()]
+						plugins: [babelRollup()]
 					}))
 
 					.on('error', helpers.error(cb))
@@ -74,4 +75,16 @@ gulp.task('build', (cb) => {
 	});
 
 	async.parallel(tasks, cb);
+});
+
+gulp.task('build-node', (cb) => {
+	gulp.src('./src/**/*.js')
+		.pipe(babel({
+			babelrc: false,
+			plugins: [['transform-es2015-modules-commonjs', {loose: true}]]
+		}))
+
+		.on('error', helpers.error(cb))
+		.pipe(gulp.dest('./dist/node'))
+		.on('end', cb);
 });
