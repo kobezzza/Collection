@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.4
+ * Collection v6.0.0-beta.5
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 11 Jul 2016 19:46:03 GMT
+ * Date: 'Mon, 11 Jul 2016 19:55:29 GMT
  */
 
 (function (global, factory) {
@@ -423,7 +423,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.4'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.5'];
 
     /**
      * Creates an instance of Collection
@@ -869,8 +869,8 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	p.filter = [].concat(opt_filter || []);
     	p.result = 0;
+    	p.filter = [].concat(p.filter || [], opt_filter || []);
 
     	var calc = function () {
     		return p.result++;
@@ -1743,7 +1743,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		};
     	}
 
-    	p.filter = [].concat(opt_filter || []);
+    	p.filter = [].concat(p.filter || [], opt_filter || []);
 
     	var returnVal = any(this.forEach(any(action), p));
 
@@ -1773,7 +1773,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	}
 
     	p.result = opt_initialValue;
-    	p.filter = [].concat(opt_filter || []);
+    	p.filter = [].concat(p.filter || [], opt_filter || []);
 
     	fn[FN_LENGTH] = cb.length - 1;
     	function fn(el) {
@@ -1810,10 +1810,10 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	p.filter = [].concat(opt_filter || []);
-    	p.mult = false;
-    	p.inverseFilter = !p.inverseFilter;
     	p.result = true;
+    	p.filter = [].concat(p.filter || [], opt_filter || []);
+    	p.inverseFilter = !p.inverseFilter;
+    	p.mult = false;
 
     	var returnVal = any(this.forEach(function () {
     		return p.result = false;
@@ -1842,9 +1842,9 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	p.filter = [].concat(opt_filter || []);
-    	p.mult = false;
     	p.result = false;
+    	p.filter = [].concat(p.filter || [], opt_filter || []);
+    	p.mult = false;
 
     	var returnVal = any(this.forEach(function () {
     		return p.result = true;
@@ -1899,7 +1899,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		};
     	}
 
-    	p.filter = [].concat(opt_filter || []);
+    	p.filter = [].concat(p.filter || [], opt_filter || []);
 
     	var returnVal = any(this.forEach(any(action), p));
 
@@ -2006,7 +2006,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		action[FN_LENGTH] = action.length > field.length ? action.length : field.length;
     	}
 
-    	p.filter = [].concat(opt_filter || []);
+    	p.filter = [].concat(p.filter || [], opt_filter || []);
     	p.mult = true;
 
     	var returnVal = any(this.forEach(any(action), p));
@@ -2189,7 +2189,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			};
     	}
 
-    	p.filter = [].concat(opt_filter || []);
+    	p.filter = [].concat(p.filter || [], opt_filter || []);
 
     	var returnVal = any(this.forEach(any(action), p));
 
@@ -2403,7 +2403,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	var onIterationEnd = _p.onIterationEnd;
 
 
-    	p.filter = [].concat(filter || []);
+    	p.filter = [].concat(p.filter || [], filter || []);
     	p.onIterationEnd = function (ctx) {
     		if ((!p.result || !p.result.length) && 'key' in p) {
     			if (p.key == null && isArray(data)) {

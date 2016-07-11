@@ -81,7 +81,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		action[FN_LENGTH] = action.length > field.length ? action.length : field.length;
 	}
 
-	p.filter = [].concat(opt_filter || []);
+	p.filter = [].concat(p.filter || [], opt_filter || []);
 	p.mult = true;
 
 	const

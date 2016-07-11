@@ -60,7 +60,7 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 		action = (el) => p.result = el;
 	}
 
-	p.filter = [].concat(opt_filter || []);
+	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const
 		returnVal = any(this.forEach(any(action), p));

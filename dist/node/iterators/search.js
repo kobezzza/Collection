@@ -46,7 +46,7 @@ _core.Collection.prototype.search = function (opt_filter, opt_params) {
 		action = (el, key) => p.result = (0, _types.isMap)(this.data) ? { value: key } : (0, _types.isSet)(this.data) ? { value: el } : key;
 	}
 
-	p.filter = [].concat(opt_filter || []);
+	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
 

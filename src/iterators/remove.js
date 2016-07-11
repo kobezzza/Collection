@@ -202,7 +202,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 			};
 	}
 
-	p.filter = [].concat(opt_filter || []);
+	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const
 		returnVal = any(this.forEach(any(action), p));

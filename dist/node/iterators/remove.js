@@ -187,7 +187,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 			};
 	}
 
-	p.filter = [].concat(opt_filter || []);
+	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
 

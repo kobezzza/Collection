@@ -30,8 +30,8 @@ Collection.prototype.length = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	p.filter = [].concat(opt_filter || []);
 	p.result = 0;
+	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const calc = () => p.result++;
 	calc[LENGTH_REQUEST] = true;

@@ -29,9 +29,9 @@ Collection.prototype.some = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	p.filter = [].concat(opt_filter || []);
-	p.mult = false;
 	p.result = false;
+	p.filter = [].concat(p.filter || [], opt_filter || []);
+	p.mult = false;
 
 	const
 		returnVal = any(this.forEach(() => p.result = true, p));

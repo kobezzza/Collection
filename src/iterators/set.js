@@ -241,7 +241,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	const
 		{onIterationEnd} = p;
 
-	p.filter = [].concat(filter || []);
+	p.filter = [].concat(p.filter || [], filter || []);
 	p.onIterationEnd = (ctx) => {
 		if ((!p.result || !p.result.length) && 'key' in p) {
 			if (p.key == null && isArray(data)) {
