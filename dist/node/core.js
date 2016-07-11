@@ -50,7 +50,7 @@ Collection.prototype._init = function () {
   }, $C.config);
 };
 
-Object.assign($C, { config: { localCache: true } });
+Object.assign($C, { config: {} });
 
 /**
  * Library version

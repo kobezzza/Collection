@@ -16,6 +16,8 @@ var _core2 = _interopRequireDefault(_core);
 
 var _compile = require('./compile');
 
+var _links = require('../consts/links');
+
 var _base = require('../consts/base');
 
 var _hacks = require('../consts/hacks');
@@ -24,7 +26,7 @@ require('../consts/cache');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-if (_core2.default.config.localCache) {
+if (_links.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 	if (_hacks.IS_BROWSER && _hacks.JSON_SUPPORT && _hacks.LOCAL_STORAGE_SUPPORT) {
 		try {
 			if (document.readyState === 'loading') {

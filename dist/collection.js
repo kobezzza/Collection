@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 11 Jul 2016 09:32:20 GMT
+ * Date: 'Mon, 11 Jul 2016 09:36:51 GMT
  */
 
 (function (global, factory) {
@@ -417,7 +417,7 @@
       }, $C.config);
     };
 
-    Object.assign($C, { config: { localCache: true } });
+    Object.assign($C, { config: {} });
 
     /**
      * Library version
@@ -814,7 +814,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	return tmpCycle[key];
     }
 
-    if ($C.config.localCache) {
+    if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
     	if (IS_BROWSER && JSON_SUPPORT && LOCAL_STORAGE_SUPPORT) {
     		try {
     			if (document.readyState === 'loading') {

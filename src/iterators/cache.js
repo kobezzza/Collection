@@ -12,11 +12,12 @@
 
 import $C from '../core';
 import { returnCache } from './compile';
+import { GLOBAL } from '../consts/links';
 import { NAMESPACE, CACHE_VERSION, CACHE_KEY, CACHE_VERSION_KEY } from '../consts/base';
 import { IS_NODE, IS_BROWSER, JSON_SUPPORT, LOCAL_STORAGE_SUPPORT } from '../consts/hacks';
 import '../consts/cache';
 
-if ($C.config.localCache) {
+if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 	if (IS_BROWSER && JSON_SUPPORT && LOCAL_STORAGE_SUPPORT) {
 		try {
 			if (document.readyState === 'loading') {
