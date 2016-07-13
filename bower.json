@@ -26,7 +26,6 @@
     "/CODE_OF_CONDUCT.md",
     "/package.json",
     "/gulpfile.js",
-    "/externs.js",
     "/builds.js",
     "/gcc.json",
     "/.babelrc",
