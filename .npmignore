@@ -56,7 +56,6 @@ node_modules
 /src
 /gulp
 /predefs
-/spec
 /CODE_OF_CONDUCT.md
 /bower.json
 /gulpfile.js
