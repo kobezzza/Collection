@@ -20,7 +20,7 @@ import { isString } from './helpers/types';
  */
 export function Collection(obj) {
 	this.data = any(isString(obj) ? obj.split('') : obj || []);
-	this.p = this._init();
+	this._init();
 }
 
 /**
@@ -28,7 +28,10 @@ export function Collection(obj) {
  * @return {!Object}
  */
 Collection.prototype._init = function () {
-	return Object.assign({
+	const
+		old = this.p;
+
+	this.p = Object.assign({
 		mult: true,
 		count: false,
 		from: false,
@@ -43,6 +46,8 @@ Collection.prototype._init = function () {
 		length: true,
 		filter: []
 	}, $C.config);
+
+	return old;
 };
 
 Object.assign($C, {config: {}});

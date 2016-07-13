@@ -25,7 +25,7 @@ var _types = require('./helpers/types');
  */
 function Collection(obj) {
   this.data = (0, _gcc.any)((0, _types.isString)(obj) ? obj.split('') : obj || []);
-  this.p = this._init();
+  this._init();
 }
 
 /**
@@ -33,7 +33,9 @@ function Collection(obj) {
  * @return {!Object}
  */
 Collection.prototype._init = function () {
-  return Object.assign({
+  const old = this.p;
+
+  this.p = Object.assign({
     mult: true,
     count: false,
     from: false,
@@ -48,6 +50,8 @@ Collection.prototype._init = function () {
     length: true,
     filter: []
   }, $C.config);
+
+  return old;
 };
 
 Object.assign($C, { config: {} });

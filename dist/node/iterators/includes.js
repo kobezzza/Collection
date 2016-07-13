@@ -24,17 +24,17 @@ var _gcc = require('../helpers/gcc');
  * @return {(boolean|!Promise<boolean>)}
  */
 _core.Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {
-	let p = (0, _gcc.any)(opt_params || {});
+	let p = opt_params || {};
 
 	if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
 	}
 
-	p.filter = [Number.isNaN(searchElement) ? el => Number.isNaN(el) : el => el === searchElement].concat(opt_filter || []);
+	const f = Number.isNaN(searchElement) ? el => Number.isNaN(el) : el => el === searchElement;
 
-	p.mult = false;
-	p.result = false;
+	this.filter(p && p.filter, (0, _gcc.any)(opt_filter), f);
+	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
 	const returnVal = (0, _gcc.any)(this.forEach(() => p.result = true, p));
 

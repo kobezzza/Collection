@@ -38,12 +38,15 @@ var _link = require('../other/link');
 _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	const field = opt_field || (el => el);
 
-	let p = (0, _gcc.any)(opt_params || {});
+	let p = opt_params || {};
 
 	if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
 	}
+
+	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	const isFunc = (0, _types.isFunction)(field),
 	      res = p.result = p.useMap ? new _links.GLOBAL['Map']() : {};
@@ -76,9 +79,6 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 	if (isFunc) {
 		action[_base.FN_LENGTH] = action.length > field.length ? action.length : field.length;
 	}
-
-	p.filter = [].concat(p.filter || [], opt_filter || []);
-	p.mult = true;
 
 	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
 

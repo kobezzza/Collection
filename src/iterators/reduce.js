@@ -24,16 +24,15 @@ import { any } from '../helpers/gcc';
  * @return {(?|!Promise)}
  */
 Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
-	let
-		p = any(opt_params || {});
+	let p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
 	}
 
-	p.result = opt_initialValue;
-	p.filter = [].concat(p.filter || [], opt_filter || []);
+	this.filter(p && p.filter, any(opt_filter));
+	p = any(Object.assign(Object.create(this.p), p, {result: opt_initialValue}));
 
 	fn[FN_LENGTH] = cb.length - 1;
 	function fn(el) {

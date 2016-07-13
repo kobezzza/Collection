@@ -55,13 +55,16 @@ const
  */
 Collection.prototype.forEach = function (cb, opt_params) {
 	const
-		p = any(Object.create(this.p));
+		p = any(Object.create(this._init()));
 
-	this.p = this._init();
 	if (isArray(opt_params) || isFunction(opt_params)) {
-		p.filter = opt_params;
+		p.filter = p.filter.concat(opt_params);
 
 	} else {
+		if (opt_params && opt_params.filter) {
+			opt_params.filter = p.filter.concat(opt_params.filter);
+		}
+
 		Object.assign(p, opt_params);
 	}
 
@@ -78,15 +81,15 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	const
-		{data} = this,
-		type = p.type = getType(data, p.use);
+		{data} = this;
+
+	const
+		type = p.type = getType(data, p.use),
+		filters = p.filter;
 
 	if (!isObjectInstance(data) || {'weakMap': true, 'weakSet': true}[type]) {
 		throw new TypeError('Incorrect data type');
 	}
-
-	const
-		filters = p.filter = [].concat(p.filter || []);
 
 	// Optimization for the length request
 	if (!filters.length && cb[LENGTH_REQUEST]) {

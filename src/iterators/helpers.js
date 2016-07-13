@@ -15,11 +15,21 @@ import { any } from '../helpers/gcc';
 /**
  * Appends a filter to the operation
  *
- * @param {...$$CollectionFilter} filter - function filter
+ * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filter - function filter
  * @return {!Collection}
  */
 Collection.prototype.filter = function (filter) {
-	this.p.filter = this.p.filter.concat([].slice.call(arguments));
+	let args = [];
+	for (let i = 0; i < arguments.length; i++) {
+		const
+			el = arguments[i];
+
+		if (el) {
+			args = args.concat(el);
+		}
+	}
+
+	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
 	return this;
 };
 

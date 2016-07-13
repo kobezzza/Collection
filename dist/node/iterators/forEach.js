@@ -60,12 +60,15 @@ const stack = _core.Collection.prototype['_stack'] = [];
  * @return {(!Collection|!Promise)}
  */
 _core.Collection.prototype.forEach = function (cb, opt_params) {
-	const p = (0, _gcc.any)(Object.create(this.p));
+	const p = (0, _gcc.any)(Object.create(this._init()));
 
-	this.p = this._init();
 	if ((0, _types.isArray)(opt_params) || (0, _types.isFunction)(opt_params)) {
-		p.filter = opt_params;
+		p.filter = p.filter.concat(opt_params);
 	} else {
+		if (opt_params && opt_params.filter) {
+			opt_params.filter = p.filter.concat(opt_params.filter);
+		}
+
 		Object.assign(p, opt_params);
 	}
 
@@ -81,14 +84,14 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		_thread.priority[p.priority] = 'normal';
 	}
 
-	const { data } = this,
-	      type = p.type = (0, _types.getType)(data, p.use);
+	const { data } = this;
+
+	const type = p.type = (0, _types.getType)(data, p.use),
+	      filters = p.filter;
 
 	if (!(0, _types.isObjectInstance)(data) || { 'weakMap': true, 'weakSet': true }[type]) {
 		throw new TypeError('Incorrect data type');
 	}
-
-	const filters = p.filter = [].concat(p.filter || []);
 
 	// Optimization for the length request
 	if (!filters.length && cb[_base.LENGTH_REQUEST]) {

@@ -27,7 +27,7 @@ var _gcc = require('../helpers/gcc');
  * @return {(!Object|!Promise<!Object>)}
  */
 _core.Collection.prototype.map = function (cb, opt_params) {
-	let p = (0, _gcc.any)(opt_params || {});
+	let p = opt_params || {};
 
 	if (!(0, _types.isFunction)(cb)) {
 		p = cb || p;
@@ -37,6 +37,9 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 	if ((0, _types.isArray)(p) || (0, _types.isFunction)(p)) {
 		p = { filter: p };
 	}
+
+	this.filter((0, _gcc.any)(p && p.filter));
+	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
 	let type = 'object';
 	if ((p.use || p.notOwn) && !p.initial) {

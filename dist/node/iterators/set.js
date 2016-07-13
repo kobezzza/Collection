@@ -36,7 +36,7 @@ var _link2 = require('../other/link');
  * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
  */
 _core.Collection.prototype.set = function (value, filter, opt_params) {
-	let p = (0, _gcc.any)(opt_params || {});
+	let p = opt_params || {};
 
 	const { data } = this;
 
@@ -55,10 +55,13 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
+	this.filter(p && p.filter, (0, _gcc.any)(filter));
+	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+
 	const type = (0, _types.getType)(data, p.use),
 	      isFunc = (0, _types.isFunction)(value);
 
-	const mult = p.mult !== false && this.p.mult !== false,
+	const mult = p.mult !== false,
 	      report = [];
 
 	if (mult) {
@@ -220,8 +223,6 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 	}
 
 	const { onIterationEnd } = p;
-
-	p.filter = [].concat(p.filter || [], filter || []);
 	p.onIterationEnd = ctx => {
 		if ((!p.result || !p.result.length) && 'key' in p) {
 			if (p.key == null && (0, _types.isArray)(data)) {

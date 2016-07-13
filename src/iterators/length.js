@@ -22,16 +22,15 @@ import { any } from '../helpers/gcc';
  * @return {(number|!Promise<number>)}
  */
 Collection.prototype.length = function (opt_filter, opt_params) {
-	let
-		p = any(opt_params || {});
+	let p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
 	}
 
-	p.result = 0;
-	p.filter = [].concat(p.filter || [], opt_filter || []);
+	this.filter(p && p.filter, any(opt_filter));
+	p = any(Object.assign(Object.create(this.p), p, {result: 0}));
 
 	const calc = () => p.result++;
 	calc[LENGTH_REQUEST] = true;

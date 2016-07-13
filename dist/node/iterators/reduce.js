@@ -27,15 +27,15 @@ var _gcc = require('../helpers/gcc');
  * @return {(?|!Promise)}
  */
 _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
-	let p = (0, _gcc.any)(opt_params || {});
+	let p = opt_params || {};
 
 	if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
 	}
 
-	p.result = opt_initialValue;
-	p.filter = [].concat(p.filter || [], opt_filter || []);
+	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
 
 	fn[_base.FN_LENGTH] = cb.length - 1;
 	function fn(el) {

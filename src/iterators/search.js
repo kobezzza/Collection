@@ -23,16 +23,18 @@ import { any } from '../helpers/gcc';
  * @return {(?|!Array|!Promise<(?|!Array)>)}
  */
 Collection.prototype.search = function (opt_filter, opt_params) {
-	let
-		p = any(opt_params || {});
+	let p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
 	}
 
+	this.filter(p && p.filter, any(opt_filter));
+	p = any(Object.assign(Object.create(this.p), p));
+
 	let action;
-	if (p.mult !== false && this.p.mult !== false) {
+	if (p.mult !== false) {
 		const
 			res = p.result = [];
 
@@ -47,8 +49,6 @@ Collection.prototype.search = function (opt_filter, opt_params) {
 		p.result = null;
 		action = (el, key) => p.result = isMap(this.data) ? {value: key} : isSet(this.data) ? {value: el} : key;
 	}
-
-	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const
 		returnVal = any(this.forEach(any(action), p));

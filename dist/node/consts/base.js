@@ -25,6 +25,6 @@ _links.GLOBAL[NAMESPACE] = _core2.default;
 const LENGTH_REQUEST = exports.LENGTH_REQUEST = '__COLLECTION_TMP__lengthQuery',
       FN_LENGTH = exports.FN_LENGTH = '__COLLECTION_TMP__length';
 
-const CACHE_VERSION = exports.CACHE_VERSION = 16,
+const CACHE_VERSION = exports.CACHE_VERSION = 17,
       CACHE_KEY = exports.CACHE_KEY = '__COLLECTION_CACHE_VERSION__',
       CACHE_VERSION_KEY = exports.CACHE_VERSION_KEY = '__COLLECTION_CACHE__';

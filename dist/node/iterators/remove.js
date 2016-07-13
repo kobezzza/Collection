@@ -29,7 +29,7 @@ var _link2 = require('../other/link');
  * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
  */
 _core.Collection.prototype.remove = function (opt_filter, opt_params) {
-	let p = (0, _gcc.any)(opt_params || {});
+	let p = opt_params || {};
 
 	//#if link
 
@@ -46,13 +46,16 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
+	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+
 	const type = (0, _types.getType)(this.data, p.use);
 
 	if ({ 'iterator': true, 'generator': true }[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
-	const mult = p.mult !== false && this.p.mult !== false,
+	const mult = p.mult !== false,
 	      res = [],
 	      splice = [].splice;
 
@@ -186,8 +189,6 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 				}
 			};
 	}
-
-	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
 

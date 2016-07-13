@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 11 Jul 2016 19:55:29 GMT
+ * Date: 'Wed, 13 Jul 2016 08:48:55 GMT
  */
 
 (function (global, factory) {
@@ -36,7 +36,7 @@
      * @return {string}
      */
     function ws(strings, expr) {
-      expr = [].slice.call(arguments, 1);
+      expr = Array.from(arguments).slice(1);
 
       var res = '';
 
@@ -392,7 +392,7 @@
      */
     function Collection(obj) {
       this.data = any(isString(obj) ? obj.split('') : obj || []);
-      this.p = this._init();
+      this._init();
     }
 
     /**
@@ -400,7 +400,9 @@
      * @return {!Object}
      */
     Collection.prototype._init = function () {
-      return Object.assign({
+      var old = this.p;
+
+      this.p = Object.assign({
         mult: true,
         count: false,
         from: false,
@@ -415,6 +417,8 @@
         length: true,
         filter: []
       }, $C.config);
+
+      return old;
     };
 
     Object.assign($C, { config: {} });
@@ -454,7 +458,7 @@
 
     var LENGTH_REQUEST = '__COLLECTION_TMP__lengthQuery';
     var FN_LENGTH = '__COLLECTION_TMP__length';
-    var CACHE_VERSION = 16;
+    var CACHE_VERSION = 17;
     var CACHE_KEY = '__COLLECTION_CACHE_VERSION__';
     var CACHE_VERSION_KEY = '__COLLECTION_CACHE__';
 
@@ -862,15 +866,15 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {(number|!Promise<number>)}
      */
     Collection.prototype.length = function (opt_filter, opt_params) {
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
     		p = opt_filter || p;
     		opt_filter = null;
     	}
 
-    	p.result = 0;
-    	p.filter = [].concat(p.filter || [], opt_filter || []);
+    	this.filter(p && p.filter, any(opt_filter));
+    	p = any(Object.assign(Object.create(this.p), p, { result: 0 }));
 
     	var calc = function () {
     		return p.result++;
@@ -929,12 +933,15 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     Collection.prototype.forEach = function (cb, opt_params) {
     	var _this = this;
 
-    	var p = any(Object.create(this.p));
+    	var p = any(Object.create(this._init()));
 
-    	this.p = this._init();
     	if (isArray(opt_params) || isFunction(opt_params)) {
-    		p.filter = opt_params;
+    		p.filter = p.filter.concat(opt_params);
     	} else {
+    		if (opt_params && opt_params.filter) {
+    			opt_params.filter = p.filter.concat(opt_params.filter);
+    		}
+
     		Object.assign(p, opt_params);
     	}
 
@@ -951,13 +958,14 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	}
 
     	var data = this.data;
-    	var type = p.type = getType(data, p.use);
+
+
+    	var type = p.type = getType(data, p.use),
+    	    filters = p.filter;
 
     	if (!isObjectInstance(data) || { 'weakMap': true, 'weakSet': true }[type]) {
     		throw new TypeError('Incorrect data type');
     	}
-
-    	var filters = p.filter = [].concat(p.filter || []);
 
     	// Optimization for the length request
     	if (!filters.length && cb[LENGTH_REQUEST]) {
@@ -1123,11 +1131,20 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     /**
      * Appends a filter to the operation
      *
-     * @param {...$$CollectionFilter} filter - function filter
+     * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filter - function filter
      * @return {!Collection}
      */
     Collection.prototype.filter = function (filter) {
-    	this.p.filter = this.p.filter.concat([].slice.call(arguments));
+    	var args = [];
+    	for (var i = 0; i < arguments.length; i++) {
+    		var el = arguments[i];
+
+    		if (el) {
+    			args = args.concat(el);
+    		}
+    	}
+
+    	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
     	return this;
     };
 
@@ -1388,7 +1405,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {(!Object|!Promise<!Object>)}
      */
     Collection.prototype.map = function (cb, opt_params) {
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	if (!isFunction(cb)) {
     		p = cb || p;
@@ -1400,6 +1417,9 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	if (isArray(p) || isFunction(p)) {
     		p = { filter: p };
     	}
+
+    	this.filter(any(p && p.filter));
+    	p = any(Object.assign(Object.create(this.p), p));
 
     	var type = 'object';
     	if ((p.use || p.notOwn) && !p.initial) {
@@ -1712,12 +1732,12 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {(?|!Array|!Promise<(?|!Array)>)}
      */
     Collection.prototype.get = function (opt_filter, opt_params) {
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	//#if link
 
     	if (isLink(opt_filter) || !isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
-    		var tmp = byLink(this.data, opt_filter);
+    		var tmp = byLink(this.data, any(opt_filter));
     		p.onComplete && p.onComplete(tmp);
     		return tmp;
     	}
@@ -1729,8 +1749,11 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
+    	this.filter(p && p.filter, any(opt_filter));
+    	p = any(Object.assign(Object.create(this.p), p));
+
     	var action = void 0;
-    	if (p.mult !== false && this.p.mult !== false) {
+    	if (p.mult !== false) {
     		(function () {
     			var res = p.result = [];
     			action = function (el) {
@@ -1742,8 +1765,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			return p.result = el;
     		};
     	}
-
-    	p.filter = [].concat(p.filter || [], opt_filter || []);
 
     	var returnVal = any(this.forEach(any(action), p));
 
@@ -1765,15 +1786,15 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {(?|!Promise)}
      */
     Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
     		p = opt_filter || p;
     		opt_filter = null;
     	}
 
-    	p.result = opt_initialValue;
-    	p.filter = [].concat(p.filter || [], opt_filter || []);
+    	this.filter(p && p.filter, any(opt_filter));
+    	p = any(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
 
     	fn[FN_LENGTH] = cb.length - 1;
     	function fn(el) {
@@ -1803,17 +1824,16 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {(boolean|!Promise<boolean>)}
      */
     Collection.prototype.every = function (opt_filter, opt_params) {
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
     		p = opt_filter || p;
     		opt_filter = null;
     	}
 
-    	p.result = true;
-    	p.filter = [].concat(p.filter || [], opt_filter || []);
+    	this.filter(p && p.filter, any(opt_filter));
+    	p = any(Object.assign(Object.create(this.p), p, { result: true, mult: false }));
     	p.inverseFilter = !p.inverseFilter;
-    	p.mult = false;
 
     	var returnVal = any(this.forEach(function () {
     		return p.result = false;
@@ -1835,26 +1855,25 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {(boolean|!Promise<boolean>)}
      */
     Collection.prototype.some = function (opt_filter, opt_params) {
-    	var p = any(opt_params || {});
+      var p = opt_params || {};
 
-    	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
-    		p = opt_filter || p;
-    		opt_filter = null;
-    	}
+      if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+        p = opt_filter || p;
+        opt_filter = null;
+      }
 
-    	p.result = false;
-    	p.filter = [].concat(p.filter || [], opt_filter || []);
-    	p.mult = false;
+      this.filter(p && p.filter, any(opt_filter));
+      p = any(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
-    	var returnVal = any(this.forEach(function () {
-    		return p.result = true;
-    	}, p));
+      var returnVal = any(this.forEach(function () {
+        return p.result = true;
+      }, p));
 
-    	if (returnVal !== this) {
-    		return returnVal;
-    	}
+      if (returnVal !== this) {
+        return returnVal;
+      }
 
-    	return p.result;
+      return p.result;
     };
 
     /**
@@ -1870,15 +1889,18 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     Collection.prototype.search = function (opt_filter, opt_params) {
     	var _this = this;
 
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
     		p = opt_filter || p;
     		opt_filter = null;
     	}
 
+    	this.filter(p && p.filter, any(opt_filter));
+    	p = any(Object.assign(Object.create(this.p), p));
+
     	var action = void 0;
-    	if (p.mult !== false && this.p.mult !== false) {
+    	if (p.mult !== false) {
     		(function () {
     			var res = p.result = [];
 
@@ -1899,8 +1921,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		};
     	}
 
-    	p.filter = [].concat(p.filter || [], opt_filter || []);
-
     	var returnVal = any(this.forEach(any(action), p));
 
     	if (returnVal !== this) {
@@ -1920,21 +1940,21 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {(boolean|!Promise<boolean>)}
      */
     Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
     		p = opt_filter || p;
     		opt_filter = null;
     	}
 
-    	p.filter = [Number.isNaN(searchElement) ? function (el) {
+    	var f = Number.isNaN(searchElement) ? function (el) {
     		return Number.isNaN(el);
     	} : function (el) {
     		return el === searchElement;
-    	}].concat(opt_filter || []);
+    	};
 
-    	p.mult = false;
-    	p.result = false;
+    	this.filter(p && p.filter, any(opt_filter), f);
+    	p = any(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
     	var returnVal = any(this.forEach(function () {
     		return p.result = true;
@@ -1967,12 +1987,15 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		return el;
     	};
 
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
     		p = opt_filter || p;
     		opt_filter = null;
     	}
+
+    	this.filter(p && p.filter, any(opt_filter));
+    	p = any(Object.assign(Object.create(this.p), p, { mult: true }));
 
     	var isFunc = isFunction(field),
     	    res = p.result = p.useMap ? new GLOBAL['Map']() : {};
@@ -2006,9 +2029,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		action[FN_LENGTH] = action.length > field.length ? action.length : field.length;
     	}
 
-    	p.filter = [].concat(p.filter || [], opt_filter || []);
-    	p.mult = true;
-
     	var returnVal = any(this.forEach(any(action), p));
 
     	if (returnVal !== this) {
@@ -2029,7 +2049,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
      */
     Collection.prototype.remove = function (opt_filter, opt_params) {
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	//#if link
 
@@ -2046,13 +2066,16 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
+    	this.filter(p && p.filter, any(opt_filter));
+    	p = any(Object.assign(Object.create(this.p), p));
+
     	var type = getType(this.data, p.use);
 
     	if ({ 'iterator': true, 'generator': true }[type]) {
     		throw new TypeError('Incorrect data type');
     	}
 
-    	var mult = p.mult !== false && this.p.mult !== false,
+    	var mult = p.mult !== false,
     	    res = [],
     	    splice = [].splice;
 
@@ -2189,8 +2212,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			};
     	}
 
-    	p.filter = [].concat(p.filter || [], opt_filter || []);
-
     	var returnVal = any(this.forEach(any(action), p));
 
     	if (returnVal !== this) {
@@ -2216,7 +2237,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
      */
     Collection.prototype.set = function (value, filter, opt_params) {
-    	var p = any(opt_params || {});
+    	var p = opt_params || {};
 
     	var data = this.data;
 
@@ -2235,10 +2256,13 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		filter = null;
     	}
 
+    	this.filter(p && p.filter, any(filter));
+    	p = any(Object.assign(Object.create(this.p), p));
+
     	var type = getType(data, p.use),
     	    isFunc = isFunction(value);
 
-    	var mult = p.mult !== false && this.p.mult !== false,
+    	var mult = p.mult !== false,
     	    report = [];
 
     	if (mult) {
@@ -2402,8 +2426,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	var _p = p;
     	var onIterationEnd = _p.onIterationEnd;
 
-
-    	p.filter = [].concat(p.filter || [], filter || []);
     	p.onIterationEnd = function (ctx) {
     		if ((!p.result || !p.result.length) && 'key' in p) {
     			if (p.key == null && isArray(data)) {

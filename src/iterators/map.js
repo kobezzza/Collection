@@ -24,8 +24,7 @@ import { any } from '../helpers/gcc';
  * @return {(!Object|!Promise<!Object>)}
  */
 Collection.prototype.map = function (cb, opt_params) {
-	let
-		p = any(opt_params || {});
+	let p = opt_params || {};
 
 	if (!isFunction(cb)) {
 		p = cb || p;
@@ -35,6 +34,9 @@ Collection.prototype.map = function (cb, opt_params) {
 	if (isArray(p) || isFunction(p)) {
 		p = {filter: p};
 	}
+
+	this.filter(any(p && p.filter));
+	p = any(Object.assign(Object.create(this.p), p));
 
 	let type = 'object';
 	if ((p.use || p.notOwn) && !p.initial) {

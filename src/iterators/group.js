@@ -36,12 +36,15 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		field = opt_field || ((el) => el);
 
 	let
-		p = any(opt_params || {});
+		p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
 	}
+
+	this.filter(p && p.filter, any(opt_filter));
+	p = any(Object.assign(Object.create(this.p), p, {mult: true}));
 
 	const
 		isFunc = isFunction(field),
@@ -80,9 +83,6 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	if (isFunc) {
 		action[FN_LENGTH] = action.length > field.length ? action.length : field.length;
 	}
-
-	p.filter = [].concat(p.filter || [], opt_filter || []);
-	p.mult = true;
 
 	const
 		returnVal = any(this.forEach(any(action), p));

@@ -26,7 +26,7 @@ import { byLink } from '../other/link';
  * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
  */
 Collection.prototype.remove = function (opt_filter, opt_params) {
-	let p = any(opt_params || {});
+	let p = opt_params || {};
 
 	//#if link
 
@@ -50,6 +50,9 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
+	this.filter(p && p.filter, any(opt_filter));
+	p = any(Object.assign(Object.create(this.p), p));
+
 	const
 		type = getType(this.data, p.use);
 
@@ -58,7 +61,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	}
 
 	const
-		mult = p.mult !== false && this.p.mult !== false,
+		mult = p.mult !== false,
 		res = [],
 		splice = [].splice;
 
@@ -201,8 +204,6 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 				}
 			};
 	}
-
-	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const
 		returnVal = any(this.forEach(any(action), p));

@@ -32,7 +32,7 @@ import { byLink } from '../other/link';
  * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
  */
 Collection.prototype.set = function (value, filter, opt_params) {
-	let p = any(opt_params || {});
+	let p = opt_params || {};
 
 	const
 		{data} = this;
@@ -59,12 +59,15 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
+	this.filter(p && p.filter, any(filter));
+	p = any(Object.assign(Object.create(this.p), p));
+
 	const
 		type = getType(data, p.use),
 		isFunc = isFunction(value);
 
 	const
-		mult = p.mult !== false && this.p.mult !== false,
+		mult = p.mult !== false,
 		report = [];
 
 	if (mult) {
@@ -238,10 +241,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		}
 	}
 
-	const
-		{onIterationEnd} = p;
-
-	p.filter = [].concat(p.filter || [], filter || []);
+	const {onIterationEnd} = p;
 	p.onIterationEnd = (ctx) => {
 		if ((!p.result || !p.result.length) && 'key' in p) {
 			if (p.key == null && isArray(data)) {

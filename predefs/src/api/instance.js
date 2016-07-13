@@ -389,7 +389,7 @@ var key;
 $$Collection.prototype.set = function (value, filter, opt_params) {};
 
 /**
- * @param {$$CollectionFilter} filter
+ * @param {...(($$CollectionFilter|Array<$$CollectionFilter>|undefined))} filter
  * @return {!$$Collection}
  */
 $$Collection.prototype.filter = function (filter) {};

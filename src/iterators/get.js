@@ -27,7 +27,7 @@ import { byLink } from '../other/link';
  * @return {(?|!Array|!Promise<(?|!Array)>)}
  */
 Collection.prototype.get = function (opt_filter, opt_params) {
-	let p = any(opt_params || {});
+	let p = opt_params || {};
 
 	//#if link
 
@@ -39,7 +39,7 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 		)
 
 	) {
-		const tmp = byLink(this.data, opt_filter);
+		const tmp = byLink(this.data, any(opt_filter));
 		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
@@ -51,16 +51,17 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
+	this.filter(p && p.filter, any(opt_filter));
+	p = any(Object.assign(Object.create(this.p), p));
+
 	let action;
-	if (p.mult !== false && this.p.mult !== false) {
+	if (p.mult !== false) {
 		const res = p.result = [];
 		action = (el) => res.push(el);
 
 	} else {
 		action = (el) => p.result = el;
 	}
-
-	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const
 		returnVal = any(this.forEach(any(action), p));

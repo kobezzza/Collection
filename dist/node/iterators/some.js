@@ -23,22 +23,21 @@ var _gcc = require('../helpers/gcc');
  * @return {(boolean|!Promise<boolean>)}
  */
 _core.Collection.prototype.some = function (opt_filter, opt_params) {
-	let p = (0, _gcc.any)(opt_params || {});
+  let p = opt_params || {};
 
-	if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
-		p = opt_filter || p;
-		opt_filter = null;
-	}
+  if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
+    p = opt_filter || p;
+    opt_filter = null;
+  }
 
-	p.result = false;
-	p.filter = [].concat(p.filter || [], opt_filter || []);
-	p.mult = false;
+  this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+  p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
-	const returnVal = (0, _gcc.any)(this.forEach(() => p.result = true, p));
+  const returnVal = (0, _gcc.any)(this.forEach(() => p.result = true, p));
 
-	if (returnVal !== this) {
-		return returnVal;
-	}
+  if (returnVal !== this) {
+    return returnVal;
+  }
 
-	return p.result;
+  return p.result;
 };

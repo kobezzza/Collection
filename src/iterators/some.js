@@ -21,17 +21,15 @@ import { any } from '../helpers/gcc';
  * @return {(boolean|!Promise<boolean>)}
  */
 Collection.prototype.some = function (opt_filter, opt_params) {
-	let
-		p = any(opt_params || {});
+	let p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
 		opt_filter = null;
 	}
 
-	p.result = false;
-	p.filter = [].concat(p.filter || [], opt_filter || []);
-	p.mult = false;
+	this.filter(p && p.filter, any(opt_filter));
+	p = any(Object.assign(Object.create(this.p), p, {mult: true, result: false}));
 
 	const
 		returnVal = any(this.forEach(() => p.result = true, p));

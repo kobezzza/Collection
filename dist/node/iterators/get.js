@@ -30,12 +30,12 @@ var _link2 = require('../other/link');
  * @return {(?|!Array|!Promise<(?|!Array)>)}
  */
 _core.Collection.prototype.get = function (opt_filter, opt_params) {
-	let p = (0, _gcc.any)(opt_params || {});
+	let p = opt_params || {};
 
 	//#if link
 
 	if ((0, _link.isLink)(opt_filter) || !(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
-		const tmp = (0, _link2.byLink)(this.data, opt_filter);
+		const tmp = (0, _link2.byLink)(this.data, (0, _gcc.any)(opt_filter));
 		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
@@ -47,15 +47,16 @@ _core.Collection.prototype.get = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
+	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+
 	let action;
-	if (p.mult !== false && this.p.mult !== false) {
+	if (p.mult !== false) {
 		const res = p.result = [];
 		action = el => res.push(el);
 	} else {
 		action = el => p.result = el;
 	}
-
-	p.filter = [].concat(p.filter || [], opt_filter || []);
 
 	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
 
