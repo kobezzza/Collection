@@ -8,4 +8,11 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-module.exports = require('./dist/collection.min');
+/** @type {(function($$CollectionType): $$Collection)} */
+module.exports = exports = require('./dist/collection.min');
+
+/** @type {function(?): ?} */
+exports.clone;
+
+/** @type {function((boolean|?$$Collection_extend), Object, ...Object): !Object} */
+exports.extend;

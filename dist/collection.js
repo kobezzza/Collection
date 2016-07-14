@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.6
+ * Collection v6.0.0-beta.7
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 13 Jul 2016 10:36:59 GMT
+ * Date: 'Thu, 14 Jul 2016 18:59:12 GMT
  */
 
 (function (global, factory) {
@@ -427,7 +427,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.6'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.7'];
 
     /**
      * Creates an instance of Collection

@@ -8,7 +8,15 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-module.exports = require('./dist/node/core').default;
+/** @type {(function($$CollectionType): $$Collection)} */
+module.exports = exports = require('./dist/node/core').default;
+
+/** @type {function(?): ?} */
+exports.clone;
+
+/** @type {function((boolean|?$$Collection_extend), Object, ...Object): !Object} */
+exports.extend;
+
 require('./dist/node/iterators/cache');
 require('./dist/node/iterators/forEach');
 require('./dist/node/iterators/helpers');
