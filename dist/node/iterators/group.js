@@ -68,7 +68,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 			const param = isFunc ? field.apply(null, arguments) : (0, _link.byLink)(el, field),
 			      val = p.saveKeys ? key : el;
 
-			if (res[param]) {
+			if (res.hasOwnProperty(param)) {
 				res[param].push(val);
 			} else {
 				res[param] = [val];

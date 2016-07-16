@@ -60,7 +60,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 0, 0, 'beta.7'];
+Collection.prototype.VERSION = [6, 0, 0, 'beta.8'];
 
 /**
  * Creates an instance of Collection

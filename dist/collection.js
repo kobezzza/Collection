@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.7
+ * Collection v6.0.0-beta.8
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 14 Jul 2016 18:59:12 GMT
+ * Date: 'Sat, 16 Jul 2016 19:49:47 GMT
  */
 
 (function (global, factory) {
@@ -427,7 +427,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.7'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.8'];
 
     /**
      * Creates an instance of Collection
@@ -2017,7 +2017,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			var param = isFunc ? field.apply(null, arguments) : byLink(el, field),
     			    val = p.saveKeys ? key : el;
 
-    			if (res[param]) {
+    			if (res.hasOwnProperty(param)) {
     				res[param].push(val);
     			} else {
     				res[param] = [val];

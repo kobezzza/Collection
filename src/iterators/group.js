@@ -71,7 +71,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
-			if (res[param]) {
+			if (res.hasOwnProperty(param)) {
 				res[param].push(val);
 
 			} else {
