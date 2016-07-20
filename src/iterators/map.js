@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
-import { getType, isArray, isFunction } from '../helpers/types';
+import { getType, isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
@@ -35,7 +35,7 @@ Collection.prototype.map = function (cb, opt_params) {
 		p = {filter: p};
 	}
 
-	this.filter(any(p && p.filter));
+	this._filter(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	let type = 'object';
@@ -83,7 +83,15 @@ Collection.prototype.map = function (cb, opt_params) {
 	switch (type) {
 		case 'array':
 			action = function () {
-				res.push(cb.apply(null, arguments));
+				const
+					val = cb.apply(null, arguments);
+
+				if (isPromise(val)) {
+					val.then((val) => res.push(val));
+
+				} else {
+					res.push(val);
+				}
 			};
 
 			action[FN_LENGTH] = cb.length;
@@ -91,7 +99,15 @@ Collection.prototype.map = function (cb, opt_params) {
 
 		case 'object':
 			action = function (el, key) {
-				res[key] = cb.apply(null, arguments);
+				const
+					val = cb.apply(null, arguments);
+
+				if (isPromise(val)) {
+					val.then((val) => res[key] = val);
+
+				} else {
+					res[key] = val;
+				}
 			};
 
 			action[FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
@@ -100,7 +116,15 @@ Collection.prototype.map = function (cb, opt_params) {
 		case 'map':
 		case 'weakMap':
 			action = function (el, key) {
-				res.set(key, cb.apply(null, arguments));
+				const
+					val = cb.apply(null, arguments);
+
+				if (isPromise(val)) {
+					val.then((val) => res.set(key, val));
+
+				} else {
+					res.set(key, val);
+				}
 			};
 
 			action[FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
@@ -109,7 +133,15 @@ Collection.prototype.map = function (cb, opt_params) {
 		case 'set':
 		case 'weakSep':
 			action = function () {
-				res.add(cb.apply(null, arguments));
+				const
+					val = cb.apply(null, arguments);
+
+				if (isPromise(val)) {
+					val.then((val) => res.add(val));
+
+				} else {
+					res.add(val);
+				}
 			};
 
 			action[FN_LENGTH] = cb.length;

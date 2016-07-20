@@ -11,7 +11,7 @@
 import { Collection } from '../core';
 import { GLOBAL } from '../consts/links';
 import { FN_LENGTH } from '../consts/base';
-import { isArray, isFunction } from '../helpers/types';
+import { isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 //#if link
@@ -43,7 +43,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this.filter(p && p.filter, any(opt_filter));
+	this._filter(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p, {mult: true}));
 
 	const
@@ -57,11 +57,23 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
-			if (res.has(param)) {
-				res.get(param).push(val);
+			if (isPromise(param)) {
+				param.then((param) => {
+					if (res.has(param)) {
+						res.get(param).push(val);
+
+					} else {
+						res.set(param, [val]);
+					}
+				});
 
 			} else {
-				res.set(param, [val]);
+				if (res.has(param)) {
+					res.get(param).push(val);
+
+				} else {
+					res.set(param, [val]);
+				}
 			}
 		};
 
@@ -71,11 +83,23 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
-			if (res.hasOwnProperty(param)) {
-				res[param].push(val);
+			if (isPromise(param)) {
+				param.then((param) => {
+					if (res.hasOwnProperty(param)) {
+						res[param].push(val);
+
+					} else {
+						res[param] = [val];
+					}
+				});
 
 			} else {
-				res[param] = [val];
+				if (res.hasOwnProperty(param)) {
+					res[param].push(val);
+
+				} else {
+					res[param] = [val];
+				}
 			}
 		};
 	}

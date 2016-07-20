@@ -11,7 +11,7 @@
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
 import { isLink } from '../helpers/link';
-import { getType, isFunction, isArray } from '../helpers/types';
+import { getType, isFunction, isArray, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 //#if link
@@ -59,7 +59,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this.filter(p && p.filter, any(filter));
+	this._filter(p, filter);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
@@ -82,25 +82,51 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					let
-						status = res === undefined;
+					if (isPromise(res)) {
+						res.then((res) => {
+							let
+								status = res === undefined;
 
-					if (res !== undefined && data.get(key) !== res) {
-						data.set(key, res);
-						status = data.get(key) === res;
-					}
+							if (res !== undefined && data.get(key) !== res) {
+								data.set(key, res);
+								status = data.get(key) === res;
+							}
 
-					const o = {
-						key,
-						value: el,
-						result: status
-					};
+							const o = {
+								key,
+								value: el,
+								result: status
+							};
 
-					if (mult) {
-						report.push(o);
+							if (mult) {
+								report.push(o);
+
+							} else {
+								p.result = o;
+							}
+						});
 
 					} else {
-						p.result = o;
+						let
+							status = res === undefined;
+
+						if (res !== undefined && data.get(key) !== res) {
+							data.set(key, res);
+							status = data.get(key) === res;
+						}
+
+						const o = {
+							key,
+							value: el,
+							result: status
+						};
+
+						if (mult) {
+							report.push(o);
+
+						} else {
+							p.result = o;
+						}
 					}
 				};
 
@@ -111,26 +137,53 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					let
-						status = res === undefined;
+					if (isPromise(res)) {
+						res.then((res) => {
+							let
+								status = res === undefined;
 
-					if (res !== undefined && !data.has(res)) {
-						data.delete(el);
-						data.add(res);
-						status = data.has(res);
-					}
+							if (res !== undefined && !data.has(res)) {
+								data.delete(el);
+								data.add(res);
+								status = data.has(res);
+							}
 
-					const o = {
-						key: null,
-						value: el,
-						result: status
-					};
+							const o = {
+								key: null,
+								value: el,
+								result: status
+							};
 
-					if (mult) {
-						report.push(o);
+							if (mult) {
+								report.push(o);
+
+							} else {
+								p.result = o;
+							}
+						});
 
 					} else {
-						p.result = o;
+						let
+							status = res === undefined;
+
+						if (res !== undefined && !data.has(res)) {
+							data.delete(el);
+							data.add(res);
+							status = data.has(res);
+						}
+
+						const o = {
+							key: null,
+							value: el,
+							result: status
+						};
+
+						if (mult) {
+							report.push(o);
+
+						} else {
+							p.result = o;
+						}
 					}
 				};
 
@@ -141,25 +194,51 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					let
-						status = res === undefined;
+					if (isPromise(res)) {
+						res.then((res) => {
+							let
+								status = res === undefined;
 
-					if (res !== undefined && data[key] !== res) {
-						data[key] = res;
-						status = data[key] === res;
-					}
+							if (res !== undefined && data[key] !== res) {
+								data[key] = res;
+								status = data[key] === res;
+							}
 
-					const o = {
-						key,
-						value: el,
-						result: status
-					};
+							const o = {
+								key,
+								value: el,
+								result: status
+							};
 
-					if (mult) {
-						report.push(o);
+							if (mult) {
+								report.push(o);
+
+							} else {
+								p.result = o;
+							}
+						});
 
 					} else {
-						p.result = o;
+						let
+							status = res === undefined;
+
+						if (res !== undefined && data[key] !== res) {
+							data[key] = res;
+							status = data[key] === res;
+						}
+
+						const o = {
+							key,
+							value: el,
+							result: status
+						};
+
+						if (mult) {
+							report.push(o);
+
+						} else {
+							p.result = o;
+						}
 					}
 				};
 		}

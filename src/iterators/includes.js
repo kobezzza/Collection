@@ -32,7 +32,7 @@ Collection.prototype.includes = function (searchElement, opt_filter, opt_params)
 	const
 		f = Number.isNaN(searchElement) ? (el) => Number.isNaN(el) : (el) => el === searchElement;
 
-	this.filter(p && p.filter, any(opt_filter), f);
+	this._filter(p, opt_filter, f);
 	p = any(Object.assign(Object.create(this.p), p, {mult: true, result: false}));
 
 	const

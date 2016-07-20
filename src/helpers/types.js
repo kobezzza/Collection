@@ -101,6 +101,16 @@ export function isWeakSet(obj) {
 }
 
 /**
+ * Returns true if the specified value is a Promise instance
+ *
+ * @param {?} obj - source value
+ * @return {boolean}
+ */
+export function isPromise(obj) {
+	return typeof Promise === 'function' && obj instanceof Promise;
+}
+
+/**
  * Returns true if the specified value is a plain object
  *
  * @param {?} obj - source value

@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
-import { isArray, isFunction } from '../helpers/types';
+import { isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
@@ -31,7 +31,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 		opt_filter = null;
 	}
 
-	this.filter(p && p.filter, any(opt_filter));
+	this._filter(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p, {result: opt_initialValue}));
 
 	fn[FN_LENGTH] = cb.length - 1;
@@ -41,7 +41,15 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 			opt_initialValue = true;
 
 		} else {
-			p.result = cb.apply(null, [p.result].concat([].slice.call(arguments)));
+			const
+				val = cb.apply(null, [p.result].concat([].slice.call(arguments)));
+
+			if (isPromise(val)) {
+				val.then((val) => p.result = val);
+
+			} else {
+				p.result = val;
+			}
 		}
 	}
 

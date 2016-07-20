@@ -30,7 +30,7 @@ Collection.prototype.search = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this.filter(p && p.filter, any(opt_filter));
+	this._filter(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	let action;

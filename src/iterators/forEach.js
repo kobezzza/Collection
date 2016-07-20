@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
-import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
+import { getType, isObjectInstance, isArray, isFunction, isGenerator } from '../helpers/types';
 import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
 import { priority } from '../consts/thread';
 import { compileCycle } from './compile';
@@ -61,7 +61,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		p.filter = p.filter.concat(opt_params);
 
 	} else {
-		if (opt_params && opt_params.filter) {
+		if (opt_params && opt_params.hasOwnProperty('filter')) {
 			opt_params.filter = p.filter.concat(opt_params.filter);
 		}
 
@@ -107,6 +107,25 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			cb[LENGTH_REQUEST] = data.size;
 			return this;
 		}
+	}
+
+	const
+		cbIsGenerator = p.cbIsGenerator = isGenerator(cb),
+		filterIsGenerator = p.filterIsGenerator = [];
+
+	for (let i = 0; i < filters.length; i++) {
+		const
+			val = isGenerator(filters[i]);
+
+		if (val) {
+			p.thread = true;
+		}
+
+		filterIsGenerator.push(val);
+	}
+
+	if (cbIsGenerator) {
+		p.thread = true;
 	}
 
 	let
@@ -165,8 +184,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	const key = [
 		type,
 		cbArgs,
+		cbIsGenerator,
 		filters.length,
 		filterArgs,
+		filterIsGenerator,
 		p.length,
 		p.thread,
 		p.notOwn,

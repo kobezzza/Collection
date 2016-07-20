@@ -194,28 +194,10 @@ export function compileCycle(key, p) {
 			},
 
 			wait: function (promise) {
-				var thread = promise.thread;
-
-				if (!thread || !thread.thread) {
-					results.push(thread);
-
-					if (!wait) {
-						if (onGlobalComplete) {
-							onGlobalComplete(results);
-							onGlobalComplete = null;
-						}
-
-						results = [];
-					}
-
-					return false;
-				}
-
 				ctx.yield();
 				wait++;
 
-				var onComplete = thread.onComplete;
-				thread.onComplete = function (res) {
+				function then(res) {
 					if (wait) {
 						wait--;
 					}
@@ -244,7 +226,15 @@ export function compileCycle(key, p) {
 					} else {
 						that._stack.pop();
 					}
-				};
+				}
+
+				if (promise.thread) {
+					var onComplete = promise.thread.onComplete;
+					promise.thread.onComplete = then;
+
+				} else {
+					promise.then(then);
+				}
 
 				return promise.catch(function (err) {
 					if (onGlobalError) {
@@ -670,7 +660,17 @@ export function compileCycle(key, p) {
 		iFn += 'if (';
 
 		for (let i = 0; i < p.filter.length; i++) {
-			iFn += `(${p.inverseFilter ? '!' : ''}(f = filters[${i}](${filterArgs[i]})) || f === ${p.inverseFilter ? 'FALSE' : 'TRUE'})`;
+			iFn += '(';
+			if (p.inverseFilter) {
+				iFn += '!';
+			}
+
+			iFn += '(f = ';
+			if (p.filterIsGenerator[i]) {
+				iFn += 'yield* ';
+			}
+
+			iFn += `filters[${i}](${filterArgs[i]})) || f === ${p.inverseFilter ? 'FALSE' : 'TRUE'})`;
 			if (i !== p.filter.length - 1) {
 				iFn += '&&';
 			}
@@ -679,7 +679,9 @@ export function compileCycle(key, p) {
 		iFn += ') {';
 	}
 
-	let tmp;
+	let
+		tmp = p.cbIsGenerator ? 'yield* ' : '';
+
 	if (p.mult) {
 		tmp = `cb(${cbArgs});`;
 

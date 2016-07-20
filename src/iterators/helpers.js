@@ -34,6 +34,36 @@ Collection.prototype.filter = function (filter) {
 };
 
 /**
+ * Appends a filter to the operation
+ *
+ * @private
+ * @param {...?} filter - function filter
+ * @return {!Collection}
+ */
+Collection.prototype._filter = function (filter) {
+	let args = [];
+	for (let i = 0; i < arguments.length; i++) {
+		let
+			el = arguments[i];
+
+		if (i === 0) {
+			if (!el || !el.filter) {
+				continue;
+			}
+
+			el = [el.filter, delete el.filter][0];
+		}
+
+		if (el) {
+			args = args.concat(el);
+		}
+	}
+
+	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
+	return this;
+};
+
+/**
  * Marks the operation as thread
  *
  * @param {(?string|$$CollectionThreadCb)=} [opt_priority] - thread priority (low, normal, hight, critical)
