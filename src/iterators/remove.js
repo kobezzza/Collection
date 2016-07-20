@@ -9,12 +9,11 @@
  */
 
 import { Collection } from '../core';
-import { isLink } from '../helpers/link';
 import { getType, isFunction, isArray, isNumber } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 //#if link
-import { byLink } from '../other/link';
+import { byLink } from '../helpers/link';
 //#endif
 
 /**
@@ -31,7 +30,6 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	//#if link
 
 	if (
-		isLink(opt_filter) ||
 		!isFunction(opt_filter) && (
 			isArray(opt_filter) && !isFunction(opt_filter[1]) ||
 			opt_filter != null && typeof opt_filter !== 'object'

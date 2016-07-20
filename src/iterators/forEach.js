@@ -18,7 +18,7 @@ import { any } from '../helpers/gcc';
 import './length';
 
 const
-	stack = Collection.prototype['_stack'] = [];
+	stack = [];
 
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
@@ -212,6 +212,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filters,
 		fLength,
 		link,
+		stack,
+		priority,
 		onComplete: p.onComplete,
 		onIterationEnd: p.onIterationEnd
 	};

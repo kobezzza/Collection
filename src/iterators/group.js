@@ -15,7 +15,7 @@ import { isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 //#if link
-import { byLink } from '../other/link';
+import { byLink } from '../helpers/link';
 //#endif
 
 /**

@@ -35,9 +35,6 @@ const intervals = [
 	]
 ];
 
-/** @private */
-Collection.prototype['_priority'] = priority;
-
 const
 	lastPos = {},
 	execStack = {};
@@ -169,6 +166,7 @@ let exec = 0;
  * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
  */
 Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onChunk) {
+	obj.value = undefined;
 	obj.thread = true;
 	obj.priority = priority;
 	obj.destroy = () => $C.destroy(obj);
@@ -205,6 +203,8 @@ Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onCh
 				const
 					obj = prop[el],
 					res = obj.next();
+
+				obj.value = res.value;
 
 				if (res.done) {
 					prop.splice(el, 1);

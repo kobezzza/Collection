@@ -10,8 +10,8 @@
 
 import $C from '../core';
 import { DESCRIPTORS_SUPPORT } from '../consts/hacks';
-import { isArray, isBoolean, isObjectInstance, isExtensible } from '../helpers/types';
-import { any } from '../helpers/gcc';
+import { isArray, isBoolean, isObjectInstance, isExtensible } from './types';
+import { any } from './gcc';
 
 /**
  * Clones an object

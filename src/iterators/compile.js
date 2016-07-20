@@ -70,18 +70,18 @@ export function compileCycle(key, p) {
 
 	let iFn = ws`
 		var 
-			that = this,
 			data = o.data,
 			cb = o.cb,
 			filters = o.filters,
 			link = o.link,
 			onIterationEnd = o.onIterationEnd,
-			onComplete = o.onComplete;
+			onComplete = o.onComplete,
+			stack = o.stack,
+			priority = o.priority;
 
 		var
-			wait = 0,
-			onGlobalComplete,
-			onGlobalError;
+			TRUE = {},
+			FALSE = {};
 
 		var
 			i = -1,
@@ -108,11 +108,6 @@ export function compileCycle(key, p) {
 			f;
 
 		var
-			TRUE = this.TRUE,
-			FALSE = this.FALSE,
-			NULL = this.NULL;
-
-		var
 			el,
 			key;
 
@@ -136,6 +131,8 @@ export function compileCycle(key, p) {
 		var ctx = {
 			$: $,
 			info: info,
+			TRUE: TRUE,
+			FALSE: FALSE,
 			get result() {
 				return p.result;
 			},
@@ -190,70 +187,6 @@ export function compileCycle(key, p) {
 							link.self.next();
 						}
 					}, time);
-				});
-			},
-
-			wait: function (promise) {
-				ctx.yield();
-				wait++;
-
-				function then(res) {
-					if (wait) {
-						wait--;
-					}
-
-					results.push(res);
-					that._stack.push(ctx);
-
-					if (onComplete) {
-						onComplete(res);
-					}
-
-					if (!wait) {
-						yielder = false;
-						if (onGlobalComplete) {
-							onGlobalComplete(results);
-							onGlobalComplete = null;
-						}
-
-						results = [];
-						that._stack.pop();
-
-						if (!yielder) {
-							ctx.next;
-						}
-
-					} else {
-						that._stack.pop();
-					}
-				}
-
-				if (promise.thread) {
-					var onComplete = promise.thread.onComplete;
-					promise.thread.onComplete = then;
-
-				} else {
-					promise.then(then);
-				}
-
-				return promise.catch(function (err) {
-					if (onGlobalError) {
-						onGlobalError(err);
-						onGlobalError = null;
-					}
-				});
-			},
-
-			get complete() {
-				return new Promise(function (resolve, reject) {
-					if (!wait) {
-						resolve(that, results);
-						results = [];
-						return false;
-					}
-
-					onGlobalComplete = resolve;
-					onGlobalError = reject;
 				});
 			},
 
@@ -336,7 +269,7 @@ export function compileCycle(key, p) {
 	if (p.thread) {
 		threadStart = ws`
 			if (timeStart == null) {
-				that._stack.push(ctx);
+				stack.push(ctx);
 				timeStart = new Date().valueOf();
 			}
 		`;
@@ -346,16 +279,16 @@ export function compileCycle(key, p) {
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
 
-			if (time > this._priority[link.self.priority]) {
-				that._stack.pop();
-				yield n;
+			if (time > priority[link.self.priority]) {
+				stack.pop();
+				yield;
 				time = 0;
 				timeStart = null;
 			}
 		`;
 
 	} else {
-		iFn += 'that._stack.push(ctx);';
+		iFn += 'stack.push(ctx);';
 	}
 
 	iFn += 'while (limit !== looper) {';
@@ -713,7 +646,7 @@ export function compileCycle(key, p) {
 
 	const yielder = ws`
 		if (yielder) {
-			that._stack.pop();
+			stack.pop();
 			yielder = false;
 
 			if (link.self) {
@@ -724,12 +657,10 @@ export function compileCycle(key, p) {
 			}
 
 			yield yieldVal;
-
 			link.self.pause = false;
 			delete link.pause;
-
-			yieldVal = void 0;
-			that._stack.push(ctx);
+			yieldVal = undefined;
+			stack.push(ctx);
 		}
 	`;
 
@@ -770,7 +701,7 @@ export function compileCycle(key, p) {
 	iFn += ws`
 		}
 
-		that._stack.pop();
+		stack.pop();
 
 		if (onComplete) {
 			onComplete(p.result);

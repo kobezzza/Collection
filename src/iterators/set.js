@@ -10,12 +10,11 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
-import { isLink } from '../helpers/link';
 import { getType, isFunction, isArray, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 //#if link
-import { byLink } from '../other/link';
+import { byLink } from '../helpers/link';
 //#endif
 
 /**
@@ -40,7 +39,6 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	//#if link
 
 	if (
-		isLink(filter) ||
 		!isFunction(filter) && (
 			isArray(filter) && !isFunction(filter[1]) ||
 			filter != null && typeof filter !== 'object'

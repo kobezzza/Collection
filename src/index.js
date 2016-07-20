@@ -17,7 +17,7 @@ import './iterators/forEach';
 import './iterators/helpers';
 
 //#if static.object
-import './other/object';
+import './helpers/object';
 //#endif
 
 //#if iterators.map
