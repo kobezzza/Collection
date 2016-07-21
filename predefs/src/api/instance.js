@@ -19,6 +19,8 @@ function $$Collection(collection) {}
 $$Collection.prototype.VERSION;
 
 /** @typedef {{
+ *   TRUE,
+ *   FALSE,
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
@@ -26,7 +28,6 @@ $$Collection.prototype.VERSION;
  *   next: boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
  *   wait: function(!Promise): !Promise,
- *   complete: !Promise,
  *   jump: function(number): (number|boolean),
  *   i: function(number): (number|boolean),
  *   reset: boolean,
@@ -37,6 +38,8 @@ $$Collection.prototype.VERSION;
 var $$CollectionCtx;
 
 /** @typedef {{
+ *   TRUE,
+ *   FALSE,
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
@@ -44,7 +47,6 @@ var $$CollectionCtx;
  *   next: boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
  *   wait: function(!Promise): !Promise,
- *   complete: !Promise,
  *   jump: function(number): (number|boolean),
  *   i: function(number): (number|boolean),
  *   reset: boolean,
@@ -54,6 +56,12 @@ var $$CollectionCtx;
  * }}
  */
 var $$CollectionCbCtx;
+
+/** @type {?} */
+var TRUE;
+
+/** @type {?} */
+var FALSE;
 
 /** @type {?} */
 var $;
@@ -69,9 +77,6 @@ var sleep;
 
 /** @type {?} */
 var wait;
-
-/** @type {?} */
-var complete;
 
 /** @type {?} */
 var jump;
