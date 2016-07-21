@@ -8,10 +8,12 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-export const maxPriority = 40;
-export const priority = {
-	'low': maxPriority / 8,
-	'normal': maxPriority / 4,
-	'hight': maxPriority / 2,
-	'critical': maxPriority
+export const
+	MAX_PRIORITY = 40;
+
+export const PRIORITY = {
+	'low': MAX_PRIORITY / 8,
+	'normal': MAX_PRIORITY / 4,
+	'hight': MAX_PRIORITY / 2,
+	'critical': MAX_PRIORITY
 };

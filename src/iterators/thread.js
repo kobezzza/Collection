@@ -10,7 +10,7 @@
 
 import $C, { Collection } from '../core';
 import { getRandomInt } from '../helpers/math';
-import { maxPriority, priority } from '../consts/thread';
+import { MAX_PRIORITY, PRIORITY } from '../consts/thread';
 import './map';
 
 const intervals = [
@@ -39,8 +39,8 @@ const
 	lastPos = {},
 	execStack = {};
 
-for (const key in priority) {
-	if (!priority.hasOwnProperty(key)) {
+for (const key in PRIORITY) {
+	if (!PRIORITY.hasOwnProperty(key)) {
 		break;
 	}
 
@@ -75,14 +75,14 @@ function getTasks() {
 	const
 		sort = (a, b) => b.value - a.value;
 
-	while (total <= maxPriority) {
+	while (total <= MAX_PRIORITY) {
 		const
 			rands = [];
 
 		$C(exec).forEach((el, key) => {
 			rands.push({
 				key,
-				value: priority[key]
+				value: PRIORITY[key]
 			});
 
 		}, (el) => el.length);
@@ -127,7 +127,7 @@ function getTasks() {
 				if (point && !point.pause) {
 					mods[key]++;
 					tasks[key].push(arr[pos]);
-					total += priority[key];
+					total += PRIORITY[key];
 				}
 
 				arr.splice(pos, 1);
@@ -228,7 +228,7 @@ Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onCh
 		});
 
 		if (exec) {
-			setTimeout(loop, maxPriority);
+			setTimeout(loop, MAX_PRIORITY);
 		}
 	}
 
