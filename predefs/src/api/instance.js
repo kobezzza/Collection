@@ -25,7 +25,7 @@ $$Collection.prototype.VERSION;
  *   info: !Object,
  *   result: ?,
  *   yield: function(?): boolean,
- *   next: function(): boolean,
+ *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
  *   wait: function(!Promise): !Promise,
@@ -45,7 +45,7 @@ var $$CollectionCtx;
  *   info: !Object,
  *   result: ?,
  *   yield: function(?): boolean,
- *   next: function(): boolean,
+ *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
  *   wait: function(!Promise): !Promise,
@@ -121,7 +121,6 @@ var $$CollectionFilter;
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
  *   onIterationEnd: (?$$CollectionThreadCb|undefined),
- *   onComplete: (?function(?)|undefined),
  *   result
  * }}
  */
@@ -150,8 +149,7 @@ $$Collection.prototype.forEach = function (cb, opt_params) {};
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
- *   onIterationEnd: (?$$CollectionThreadCb|undefined),
- *   onComplete: (?function(?)|undefined)
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined)
  * }}
  */
 var $$CollectionBase;
@@ -171,8 +169,7 @@ var $$CollectionBase;
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
- *   onIterationEnd: (?$$CollectionThreadCb|undefined),
- *   onComplete: (?function(?)|undefined)
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined)
  * }}
  */
 var $$CollectionSingleBase;
@@ -207,8 +204,7 @@ $$Collection.prototype.get = function (opt_filter, opt_params) {};
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
- *   onIterationEnd: (?$$CollectionThreadCb|undefined),
- *   onComplete: (?function(?)|undefined),
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined)
  *   initial: (Object|undefined)
  * }}
  */
@@ -265,9 +261,6 @@ var onChunk;
 
 /** @type {?} */
 var onIterationEnd;
-
-/** @type {?} */
-var onComplete;
 
 /** @typedef {function(?, ?, ?, !Object, $$CollectionCbCtx): ?} */
 var $$CollectionReduceCb;
@@ -327,8 +320,7 @@ $$Collection.prototype.includes = function (searchElement, opt_filter, opt_param
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
- *   onIterationEnd: (?$$CollectionThreadCb|undefined),
- *   onComplete: (?function(?)|undefined)
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined)
  * }}
  */
 var $$Collection_group;
@@ -347,8 +339,11 @@ var saveKeys;
  */
 $$Collection.prototype.group = function (opt_field, opt_filter, opt_params) {};
 
-/** @typedef {({result: boolean, key, value}|!Array<{result: boolean, key, value}>)} */
+/** @typedef {({result: boolean, key, value, notFound: (boolean|undefined)}|!Array<{result: boolean, key, value, notFound: (boolean|undefined)}>)} */
 var $$CollectionReport;
+
+/** @type {?} */
+var notFound;
 
 /**
  * @param {($$CollectionFilter|$$CollectionBase|$$CollectionLink)=} [opt_filter]
@@ -375,8 +370,7 @@ $$Collection.prototype.remove = function (opt_filter, opt_params) {};
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
- *   onIterationEnd: (?$$CollectionThreadCb|undefined),
- *   onComplete: (?function(?)|undefined)
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined)
  * }}
  */
 var $$Collection_set;

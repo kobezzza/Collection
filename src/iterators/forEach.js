@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
-import { getType, isObjectInstance, isArray, isFunction, isGenerator } from '../helpers/types';
+import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
 import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
 import { PRIORITY } from '../consts/thread';
 import { compileCycle } from './compile';
@@ -45,7 +45,6 @@ import './length';
  *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
  *   *) [onChunk] - callback function for chunks
  *   *) [onIterationEnd] - callback function for the end of iterations
- *   *) [onComplete] - callback function for the operation end
  *   *) [result] - parameter that marked as the operation result
  *
  * @return {(!Collection|!Promise)}
@@ -106,25 +105,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		}
 	}
 
-	const
-		cbIsGenerator = p.cbIsGenerator = isGenerator(cb),
-		filterIsGenerator = p.filterIsGenerator = [];
-
-	for (let i = 0; i < filters.length; i++) {
-		const
-			val = isGenerator(filters[i]);
-
-		if (val) {
-			p.thread = true;
-		}
-
-		filterIsGenerator.push(val);
-	}
-
-	if (cbIsGenerator) {
-		p.thread = true;
-	}
-
 	let
 		cbArgs = false,
 		filterArgs = false;
@@ -181,10 +161,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	const key = [
 		type,
 		cbArgs,
-		cbIsGenerator,
 		filters.length,
 		filterArgs,
-		filterIsGenerator,
 		p.length,
 		p.thread,
 		p.notOwn,
@@ -244,17 +222,12 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				filters[i] = wrap(filters[i]);
 			}
 
-			const {onComplete} = p;
-			args.onComplete = p.onComplete = wrap((res) => {
-				onComplete && onComplete(res);
-				resolve(res);
-			});
-
 			args.cb = wrap(cb);
+			args.onComplete = resolve;
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
-			thread = link.self = fn.call(this, args, opt_params || p);
 
+			thread = link.self = fn.call(this, args, opt_params || p);
 			this._addToStack(thread, p.priority, p.onComplete, wrap(p.onChunk));
 		});
 

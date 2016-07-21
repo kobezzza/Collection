@@ -105,6 +105,10 @@ export function compileCycle(key, p) {
 			looper = 0;
 
 		var
+			results = [],
+			wait = 0;
+
+		var
 			length,
 			f,
 			r;
@@ -133,8 +137,10 @@ export function compileCycle(key, p) {
 		var ctx = {
 			$: $,
 			info: info,
+
 			TRUE: TRUE,
 			FALSE: FALSE,
+
 			get result() {
 				return p.result;
 			},
@@ -150,22 +156,39 @@ export function compileCycle(key, p) {
 				return true;
 			},
 
-			next: function () {
+			next: function (opt_val) {
 				if (${!p.thread}) {
 					return false;
 				}
 
-				link.self.next();
+				link.self.next(opt_val);
 				return true;
 			},
 
 			child: function (thread) {
+				if (${!p.thread} || !thread.thread) {
+					return false;
+				}
+
+				link.self.children.push(thread.thread);
+				return true;
+			},
+
+			wait: function (promise) {
 				if (${!p.thread}) {
 					return false;
 				}
 
-				link.self.children.push(thread);
-				return true;
+				if (promise.thread) {
+					ctx.child(promise);
+				}
+
+				wait++;
+				return promise.then(function (res) {
+					results.push(res);
+					wait--;
+					ctx.next();
+				}, onError);
 			},
 
 			sleep: function (time, opt_test, opt_interval) {
@@ -231,12 +254,12 @@ export function compileCycle(key, p) {
 			get reset() {
 				breaker = true;
 				limit++;
-				return true;
+				return FALSE;
 			},
 
 			get break() {
 				breaker = true;
-				return true;
+				return FALSE;
 			}
 		};
 
@@ -251,6 +274,16 @@ export function compileCycle(key, p) {
 		iFn += ws`
 			function isPromise(obj) {
 				return typeof Promise === 'function' && obj instanceof Promise;
+			}
+
+			function resolveEl(res) {
+				el = res;
+				ctx.next();
+			}
+
+			function resolveCb(res) {
+				r = res;
+				ctx.next();
 			}
 
 			function resolveFilter(res) {
@@ -356,7 +389,7 @@ export function compileCycle(key, p) {
 				`;
 			}
 
-			if (maxArgsLength) {
+			if (maxArgsLength || p.thread) {
 				if (maxArgsLength > 1) {
 					if (startIndex) {
 						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + ${startIndex + (p.reverse ? ')' : '')};`;
@@ -480,7 +513,7 @@ export function compileCycle(key, p) {
 				}
 			}
 
-			if (maxArgsLength) {
+			if (maxArgsLength || p.thread) {
 				iFn += 'el = data[key];';
 			}
 
@@ -570,7 +603,7 @@ export function compileCycle(key, p) {
 				}
 			}
 
-			if (maxArgsLength) {
+			if (maxArgsLength || p.thread) {
 				if (p.type === 'map') {
 					iFn += 'el = data.get(key);';
 
@@ -604,17 +637,27 @@ export function compileCycle(key, p) {
 		`;
 	}
 
+	if (p.thread) {
+		iFn += ws`
+			while (isPromise(el)) {
+				el = el.then(resolveEl, onError);
+				link.self.pause = true;
+				yield;
+			}
+		`;
+	}
+
 	if (p.filter.length) {
 		for (let i = 0; i < p.filter.length; i++) {
 			iFn += ws`
 				if (f === undefined || f === true) {
-					f = ${p.filterIsGenerator[i] ? 'yield* ' : ''} filters[${i}](${filterArgs[i]});
+					f = filters[${i}](${filterArgs[i]});
 			`;
 
 			if (p.thread) {
 				iFn += ws`
-					if (isPromise(f)) {
-						f.then(resolveFilter, o.reject);
+					while (isPromise(f)) {
+						f.then(resolveFilter, onError);
 						link.self.pause = true;
 						yield;
 					}
@@ -622,7 +665,7 @@ export function compileCycle(key, p) {
 			}
 
 			iFn += ws`
-					f = ${p.inverseFilter ? '!' : ''}f || f === ${p.inverseFilter ? 'FALSE' : 'TRUE'};
+					f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
 				}
 			`;
 		}
@@ -630,9 +673,7 @@ export function compileCycle(key, p) {
 		iFn += 'if (f) {';
 	}
 
-	let
-		tmp = `r = ${p.cbIsGenerator ? 'yield* ' : ''}`;
-
+	let tmp = 'r = ';
 	if (p.mult) {
 		tmp += `cb(${cbArgs});`;
 
@@ -642,8 +683,8 @@ export function compileCycle(key, p) {
 
 	if (p.thread) {
 		tmp += ws`
-			if (isPromise(r)) {
-				r.then(ctx.next, o.reject);
+			while (isPromise(r)) {
+				r.then(resolveCb, onError);
 				link.self.pause = true;
 				yield;
 			}
@@ -720,6 +761,11 @@ export function compileCycle(key, p) {
 	}
 
 	iFn += ws`
+		}
+
+		while (wait) {
+			link.self.pause = true;
+			yield;
 		}
 
 		if (onComplete) {

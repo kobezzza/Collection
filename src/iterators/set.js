@@ -70,6 +70,14 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 	if (mult) {
 		p.result = report;
+
+	} else {
+		p.result = {
+			notFound: true,
+			result: false,
+			key: undefined,
+			value: undefined
+		};
 	}
 
 	let action;
@@ -320,15 +328,22 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 	const {onIterationEnd} = p;
 	p.onIterationEnd = (ctx) => {
-		if ((!p.result || !p.result.length) && 'key' in p) {
+		if ((mult ? p.result.notFound : !p.result.length) && 'key' in p) {
 			if (p.key == null && isArray(data)) {
 				p.key = data.length;
 			}
 
-			byLink(data, p.key, {
+			const res = byLink(data, p.key, {
 				value: isFunc ? value(undefined, undefined, data, ctx) : value,
 				create: p.create !== false
 			});
+
+			if (mult) {
+				p.result.push(res);
+
+			} else {
+				p.result = res;
+			}
 		}
 
 		onIterationEnd && onIterationEnd(ctx);

@@ -37,7 +37,7 @@ import { any } from './gcc';
  *   [create = false] - if true, then the property will be created if it's not defined
  *   [test = false] - if is true, then will be returned false if the property is not defined
  *
- * @return {({key, result: boolean, value}|?)}
+ * @return {({result: boolean, key, value, notFound: (boolean|undefined)}|?)}
  */
 export function byLink(obj, link, opt_params) {
 	const
@@ -63,6 +63,15 @@ export function byLink(obj, link, opt_params) {
 
 			if (p.error) {
 				throw new ReferenceError(`${el} is not defined!`);
+			}
+
+			if (p.delete) {
+				return {
+					notFound: true,
+					result: false,
+					key: undefined,
+					value: undefined
+				};
 			}
 
 			return undefined;

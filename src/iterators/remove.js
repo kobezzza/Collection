@@ -65,6 +65,14 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 
 	if (mult) {
 		p.result = res;
+
+	} else {
+		p.result = {
+			notFound: true,
+			result: false,
+			key: undefined,
+			value: undefined
+		};
 	}
 
 	let action;
@@ -157,6 +165,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 
 							splice.call(data, key, 1);
 							ctx.i(-1);
+
 							const o = {
 								result: data[key] !== value,
 								key: key + rm,
