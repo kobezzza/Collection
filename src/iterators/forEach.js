@@ -223,6 +223,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	if (p.thread) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
+			function onError(err) {
+				thread && thread.destroy();
+				reject(err);
+			}
+
 			function wrap(fn) {
 				if (!fn) {
 					return undefined;
@@ -233,7 +238,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 						return fn(el, key, data, o);
 
 					} catch (err) {
-						reject(err);
+						onError(err);
 						throw err;
 					}
 				};
@@ -251,11 +256,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 			args.cb = wrap(cb);
 			args.onIterationEnd = wrap(p.onIterationEnd);
+			args.onError = onError;
 			thread = link.self = fn.call(this, args, opt_params || p);
-
-			if (link.pause) {
-				link.self.pause = true;
-			}
 
 			const
 				l = stack.length;
@@ -283,10 +285,5 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	//#endif
 
 	link.self = fn.call(this, args, opt_params || p);
-
-	if (link.pause) {
-		link.self.pause = true;
-	}
-
 	return this;
 };

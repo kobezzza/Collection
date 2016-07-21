@@ -74,10 +74,13 @@ export function compileCycle(key, p) {
 			cb = o.cb,
 			filters = o.filters,
 			link = o.link,
-			onIterationEnd = o.onIterationEnd,
-			onComplete = o.onComplete,
 			stack = o.stack,
 			priority = o.priority;
+
+		var
+			onIterationEnd = o.onIterationEnd,
+			onComplete = o.onComplete,
+			onError = o.onError;
 
 		var
 			TRUE = {},
@@ -89,7 +92,6 @@ export function compileCycle(key, p) {
 			n = -1;
 
 		var
-			results = [],
 			breaker = false,
 			yielder = false,
 			yieldVal;
@@ -105,7 +107,8 @@ export function compileCycle(key, p) {
 
 		var
 			length,
-			f;
+			f,
+			r;
 
 		var
 			el,
@@ -148,7 +151,7 @@ export function compileCycle(key, p) {
 				return true;
 			},
 
-			get next() {
+			next: function () {
 				if (${!p.thread}) {
 					return false;
 				}
@@ -171,7 +174,7 @@ export function compileCycle(key, p) {
 
 								if (test) {
 									resolve();
-									link.self.next();
+									ctx.next();
 
 								} else if (opt_interval !== false) {
 									ctx.sleep(time, opt_test, opt_interval).then(resolve, reject);
@@ -184,7 +187,7 @@ export function compileCycle(key, p) {
 
 						} else {
 							resolve();
-							link.self.next();
+							ctx.next();
 						}
 					}, time);
 				});
@@ -238,6 +241,15 @@ export function compileCycle(key, p) {
 
 	if (p.thread) {
 		iFn += ws`
+			function isPromise(obj) {
+				return typeof Promise === 'function' && obj instanceof Promise;
+			}
+
+			function resolveFilter(res) {
+				f = res;
+				ctx.next();
+			}
+
 			ctx.thread = link.self;
 			link.self.ctx = ctx;
 		`;
@@ -590,36 +602,51 @@ export function compileCycle(key, p) {
 	}
 
 	if (p.filter.length) {
-		iFn += 'if (';
-
 		for (let i = 0; i < p.filter.length; i++) {
-			iFn += '(';
-			if (p.inverseFilter) {
-				iFn += '!';
+			iFn += ws`
+				if (f === undefined || f === true) {
+					f = ${p.filterIsGenerator[i] ? 'yield* ' : ''} filters[${i}](${filterArgs[i]});
+			`;
+
+			if (p.thread) {
+				iFn += ws`
+					if (isPromise(f)) {
+						f.then(resolveFilter, o.reject);
+						link.self.pause = true;
+						yield;
+						link.self.pause = false;
+					}
+				`;
 			}
 
-			iFn += '(f = ';
-			if (p.filterIsGenerator[i]) {
-				iFn += 'yield* ';
-			}
-
-			iFn += `filters[${i}](${filterArgs[i]})) || f === ${p.inverseFilter ? 'FALSE' : 'TRUE'})`;
-			if (i !== p.filter.length - 1) {
-				iFn += '&&';
-			}
+			iFn += ws`
+					f = ${p.inverseFilter ? '!' : ''}f || f === ${p.inverseFilter ? 'FALSE' : 'TRUE'};
+				}
+			`;
 		}
 
-		iFn += ') {';
+		iFn += 'if (f) {';
 	}
 
 	let
-		tmp = p.cbIsGenerator ? 'yield* ' : '';
+		tmp = `r = ${p.cbIsGenerator ? 'yield* ' : ''}`;
 
 	if (p.mult) {
-		tmp = `cb(${cbArgs});`;
+		tmp += `cb(${cbArgs});`;
 
 	} else {
-		tmp = `cb(${cbArgs}); breaker = true;`;
+		tmp += `cb(${cbArgs}); breaker = true;`;
+	}
+
+	if (p.thread) {
+		tmp += ws`
+			if (isPromise(r)) {
+				r.then(ctx.next, o.reject);
+				link.self.pause = true;
+				yield;
+				link.self.pause = false;
+			}
+		`;
 	}
 
 	if (p.count) {
@@ -648,17 +675,9 @@ export function compileCycle(key, p) {
 		if (yielder) {
 			stack.pop();
 			yielder = false;
-
-			if (link.self) {
-				link.self.pause = true;
-
-			} else {
-				link.pause = true;
-			}
-
+			link.self.pause = true;
 			yield yieldVal;
 			link.self.pause = false;
-			delete link.pause;
 			yieldVal = undefined;
 			stack.push(ctx);
 		}
@@ -676,6 +695,10 @@ export function compileCycle(key, p) {
 				break;
 			}
 		`;
+	}
+
+	if (p.filter.length) {
+		iFn += 'f = undefined;';
 	}
 
 	iFn += ws`
@@ -711,7 +734,7 @@ export function compileCycle(key, p) {
 	`;
 
 	if (p.thread) {
-		tmpCycle[key] = eval(ws`(function *(o, p) { ${iFn} })`);
+		tmpCycle[key] = eval(`(function *(o, p) { ${iFn} })`);
 
 	} else {
 		tmpCycle[key] = Function('o', 'p', iFn);
