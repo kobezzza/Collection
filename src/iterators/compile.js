@@ -74,7 +74,6 @@ export function compileCycle(key, p) {
 			cb = o.cb,
 			filters = o.filters,
 			link = o.link,
-			stack = o.stack,
 			priority = o.priority;
 
 		var
@@ -157,6 +156,15 @@ export function compileCycle(key, p) {
 				}
 
 				link.self.next();
+				return true;
+			},
+
+			child: function (thread) {
+				if (${!p.thread}) {
+					return false;
+				}
+
+				link.self.children.push(thread);
 				return true;
 			},
 
@@ -281,7 +289,6 @@ export function compileCycle(key, p) {
 	if (p.thread) {
 		threadStart = ws`
 			if (timeStart == null) {
-				stack.push(ctx);
 				timeStart = new Date().valueOf();
 			}
 		`;
@@ -292,15 +299,11 @@ export function compileCycle(key, p) {
 			timeStart = timeEnd;
 
 			if (time > priority[link.self.priority]) {
-				stack.pop();
 				yield;
 				time = 0;
 				timeStart = null;
 			}
 		`;
-
-	} else {
-		iFn += 'stack.push(ctx);';
 	}
 
 	iFn += 'while (limit !== looper) {';
@@ -614,7 +617,6 @@ export function compileCycle(key, p) {
 						f.then(resolveFilter, o.reject);
 						link.self.pause = true;
 						yield;
-						link.self.pause = false;
 					}
 				`;
 			}
@@ -644,7 +646,6 @@ export function compileCycle(key, p) {
 				r.then(ctx.next, o.reject);
 				link.self.pause = true;
 				yield;
-				link.self.pause = false;
 			}
 		`;
 	}
@@ -673,13 +674,10 @@ export function compileCycle(key, p) {
 
 	const yielder = ws`
 		if (yielder) {
-			stack.pop();
 			yielder = false;
 			link.self.pause = true;
 			yield yieldVal;
-			link.self.pause = false;
 			yieldVal = undefined;
-			stack.push(ctx);
 		}
 	`;
 
@@ -723,8 +721,6 @@ export function compileCycle(key, p) {
 
 	iFn += ws`
 		}
-
-		stack.pop();
 
 		if (onComplete) {
 			onComplete(p.result);

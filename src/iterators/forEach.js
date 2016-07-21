@@ -17,9 +17,6 @@ import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
 import './length';
 
-const
-	stack = [];
-
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
@@ -212,7 +209,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filters,
 		fLength,
 		link,
-		stack,
 		priority: PRIORITY,
 		onComplete: p.onComplete,
 		onIterationEnd: p.onIterationEnd
@@ -258,22 +254,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 			thread = link.self = fn.call(this, args, opt_params || p);
-
-			const
-				l = stack.length;
-
-			let
-				cursor,
-				pos = 1;
-
-			while ((cursor = stack[l - pos])) {
-				if (cursor.thread) {
-					cursor.thread.children.push(thread);
-					break;
-				}
-
-				pos++;
-			}
 
 			this._addToStack(thread, p.priority, p.onComplete, wrap(p.onChunk));
 		});

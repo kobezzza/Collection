@@ -182,6 +182,7 @@ Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onCh
 	// With strictMode in Chrome (bug?) that method can't define as obj.next =
 	Object.defineProperty(obj, 'next', {
 		value() {
+			obj.pause = false;
 			if (obj.sleep !== null) {
 				clearTimeout(obj.sleep);
 				obj.sleep = null;
