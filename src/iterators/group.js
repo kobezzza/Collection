@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { GLOBAL } from '../consts/links';
-import { FN_LENGTH } from '../consts/base';
+import { FN_LENGTH, ON_ERROR } from '../consts/base';
 import { isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
@@ -58,22 +58,21 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				val = p.saveKeys ? key : el;
 
 			if (isPromise(param)) {
-				param.then((param) => {
+				return param.then((param) => {
 					if (res.has(param)) {
 						res.get(param).push(val);
 
 					} else {
 						res.set(param, [val]);
 					}
-				});
+				}, fn[ON_ERROR]);
+			}
+
+			if (res.has(param)) {
+				res.get(param).push(val);
 
 			} else {
-				if (res.has(param)) {
-					res.get(param).push(val);
-
-				} else {
-					res.set(param, [val]);
-				}
+				res.set(param, [val]);
 			}
 		};
 
@@ -84,22 +83,21 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				val = p.saveKeys ? key : el;
 
 			if (isPromise(param)) {
-				param.then((param) => {
+				return param.then((param) => {
 					if (res.hasOwnProperty(param)) {
 						res[param].push(val);
 
 					} else {
 						res[param] = [val];
 					}
-				});
+				}, fn[ON_ERROR]);
+			}
+
+			if (res.hasOwnProperty(param)) {
+				res[param].push(val);
 
 			} else {
-				if (res.hasOwnProperty(param)) {
-					res[param].push(val);
-
-				} else {
-					res[param] = [val];
-				}
+				res[param] = [val];
 			}
 		};
 	}
