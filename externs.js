@@ -119,6 +119,7 @@ var $$CollectionFilter;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   getDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -148,6 +149,7 @@ $$Collection.prototype.forEach = function (cb, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   getDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -160,6 +162,51 @@ $$Collection.prototype.forEach = function (cb, opt_params) {};
  */
 var $$CollectionBase;
 
+/** @type {?} */
+var filter;
+
+/** @type {?} */
+var mult;
+
+/** @type {?} */
+var count;
+
+/** @type {?} */
+var from;
+
+/** @type {?} */
+var startIndex;
+
+/** @type {?} */
+var endIndex;
+
+/** @type {?} */
+var reverse;
+
+/** @type {?} */
+var inverseFilter;
+
+/** @type {?} */
+var getDescriptor;
+
+/** @type {?} */
+var notOwn;
+
+/** @type {?} */
+var live;
+
+/** @type {?} */
+var use;
+
+/** @type {?} */
+var priority;
+
+/** @type {?} */
+var onChunk;
+
+/** @type {?} */
+var onIterationEnd;
+
 /** @typedef {{
  *   filter: $$CollectionFilter,
  *   count: (number|number|null|undefined),
@@ -168,6 +215,7 @@ var $$CollectionBase;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   getDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -203,6 +251,7 @@ $$Collection.prototype.get = function (opt_filter, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   getDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -225,48 +274,6 @@ var initial;
  * @return {(?|!Promise)}
  */
 $$Collection.prototype.map = function (cb, opt_params) {};
-
-/** @type {?} */
-var filter;
-
-/** @type {?} */
-var mult;
-
-/** @type {?} */
-var count;
-
-/** @type {?} */
-var from;
-
-/** @type {?} */
-var startIndex;
-
-/** @type {?} */
-var endIndex;
-
-/** @type {?} */
-var reverse;
-
-/** @type {?} */
-var inverseFilter;
-
-/** @type {?} */
-var notOwn;
-
-/** @type {?} */
-var live;
-
-/** @type {?} */
-var use;
-
-/** @type {?} */
-var priority;
-
-/** @type {?} */
-var onChunk;
-
-/** @type {?} */
-var onIterationEnd;
 
 /** @typedef {function(?, ?, ?, !Object, $$CollectionCbCtx): ?} */
 var $$CollectionReduceCb;
@@ -319,6 +326,7 @@ $$Collection.prototype.includes = function (searchElement, opt_filter, opt_param
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   getDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -358,6 +366,12 @@ var notFound;
  */
 $$Collection.prototype.remove = function (opt_filter, opt_params) {};
 
+/** @typedef {({result: boolean, key, value, newValue, notFound: (boolean|undefined)}|!Array<{result: boolean, key, value, newValue, notFound: (boolean|undefined)}>)} */
+var $$CollectionSetReport;
+
+/** @type {?} */
+var newValue;
+
 /** @typedef {{
  *   filter: $$CollectionFilter,
  *   create: (?boolean|undefined),
@@ -369,6 +383,7 @@ $$Collection.prototype.remove = function (opt_filter, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   getDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -391,7 +406,7 @@ var key;
  * @param {(?|$$CollectionCb)} value
  * @param {($$CollectionFilter|$$Collection_set|$$CollectionLink)=} filter
  * @param {?$$Collection_set=} [opt_params]
- * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
+ * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */
 $$Collection.prototype.set = function (value, filter, opt_params) {};
 

@@ -40,6 +40,9 @@ $C.config = {};
 var $$Collection_extend;
 
 /** @type {?} */
+var withAccessors;
+
+/** @type {?} */
 var withProto;
 
 /** @type {?} */

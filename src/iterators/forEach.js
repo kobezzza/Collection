@@ -30,7 +30,7 @@ import './length';
  *   *) [startIndex = 0] - number of skipping successful iterations
  *   *) [endIndex] - end iteration position
  *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
- *   *) [withAccessors = false] - if true, then the first element of callback function will be an object of element descriptors
+ *   *) [getDescriptor = false] - if true, then the first element of callback function will be an object of an element descriptor
  *   *) [notOwn = false] - iteration type:
  *
  *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
