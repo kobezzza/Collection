@@ -52,7 +52,8 @@ import './length';
  */
 Collection.prototype.forEach = function (cb, opt_params) {
 	const
-		p = any(Object.create(this._init()));
+		p = any(Object.create(this._init())),
+		sp = opt_params || p;
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
@@ -176,7 +177,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	].join();
 
 	const
-		link = {},
 		fn = any(tmpCycle[key] || compileCycle(key, p));
 
 	const args = {
@@ -185,7 +185,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		cbLength,
 		filters,
 		fLength,
-		link,
 		priority: PRIORITY,
 		onComplete: p.onComplete,
 		onIterationEnd: p.onIterationEnd
@@ -237,7 +236,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
-			thread = link.self = fn.call(this, args, opt_params || p);
+			thread = args.self = fn(args, sp);
 			this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
 		});
 
@@ -247,6 +246,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	//#endif
 
-	link.self = fn.call(this, args, opt_params || p);
+	fn(args, sp);
 	return this;
 };

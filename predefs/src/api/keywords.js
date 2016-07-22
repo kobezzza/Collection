@@ -67,7 +67,4 @@ var filters;
 var fLength;
 
 /** @type {?} */
-var link;
-
-/** @type {?} */
 var onComplete;

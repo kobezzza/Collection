@@ -73,7 +73,6 @@ export function compileCycle(key, p) {
 			data = o.data,
 			cb = o.cb,
 			filters = o.filters,
-			link = o.link,
 			priority = o.priority;
 
 		var
@@ -325,7 +324,7 @@ export function compileCycle(key, p) {
 				ctx.next();
 			}
 
-			ctx.thread = link.self;
+			ctx.thread = o.self;
 			ctx.thread.ctx = ctx;
 		`;
 	}
