@@ -118,7 +118,7 @@ var $$CollectionFilter;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
- *   getDescriptor: (?boolean|undefined),
+ *   withDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -148,7 +148,7 @@ $$Collection.prototype.forEach = function (cb, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
- *   getDescriptor: (?boolean|undefined),
+ *   withDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -186,7 +186,7 @@ var reverse;
 var inverseFilter;
 
 /** @type {?} */
-var getDescriptor;
+var withDescriptor;
 
 /** @type {?} */
 var notOwn;
@@ -214,7 +214,7 @@ var onIterationEnd;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
- *   getDescriptor: (?boolean|undefined),
+ *   withDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -250,7 +250,7 @@ $$Collection.prototype.get = function (opt_filter, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
- *   getDescriptor: (?boolean|undefined),
+ *   withDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -325,7 +325,7 @@ $$Collection.prototype.includes = function (searchElement, opt_filter, opt_param
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
- *   getDescriptor: (?boolean|undefined),
+ *   withDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -382,7 +382,7 @@ var newValue;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
- *   getDescriptor: (?boolean|undefined),
+ *   withDescriptor: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),

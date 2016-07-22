@@ -520,7 +520,7 @@ export function compileCycle(key, p) {
 			}
 
 			if (maxArgsLength || p.thread) {
-				if (p.getDescriptor) {
+				if (p.withDescriptor) {
 					iFn += 'el = getDescriptor(data, key);';
 
 				} else {
