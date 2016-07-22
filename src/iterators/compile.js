@@ -409,7 +409,12 @@ export function compileCycle(key, p) {
 					}
 				}
 
-				iFn += 'el = clone[n];';
+				if (p.withDescriptor) {
+					iFn += 'el = getDescriptor(clone, n);';
+
+				} else {
+					iFn += 'el = clone[n];';
+				}
 			}
 
 			break;

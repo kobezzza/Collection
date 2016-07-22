@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Fri, 22 Jul 2016 16:18:51 GMT
+ * Date: 'Fri, 22 Jul 2016 16:24:19 GMT
  */
 
 (function (global, factory) {
@@ -561,7 +561,11 @@
     					}
     				}
 
-    				iFn += 'el = clone[n];';
+    				if (p.withDescriptor) {
+    					iFn += 'el = getDescriptor(clone, n);';
+    				} else {
+    					iFn += 'el = clone[n];';
+    				}
     			}
 
     			break;
@@ -924,7 +928,7 @@
     		Object.assign(p, opt_params);
     	}
 
-    	if (p.notOwn || p.withDescriptor) {
+    	if (p.notOwn) {
     		p.use = 'for in';
     	}
 
