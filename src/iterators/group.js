@@ -9,7 +9,6 @@
  */
 
 import { Collection } from '../core';
-import { GLOBAL } from '../consts/links';
 import { FN_LENGTH, ON_ERROR } from '../consts/base';
 import { isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
