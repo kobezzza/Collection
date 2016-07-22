@@ -190,7 +190,7 @@ export function isIterator(obj) {
  * @return {?string}
  */
 export function getType(obj, opt_use) {
-	if (!object) {
+	if (!obj) {
 		return null;
 	}
 
