@@ -224,7 +224,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 					} catch (err) {
 						onError(err);
-						throw err;
 					}
 				};
 			}
