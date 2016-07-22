@@ -50,9 +50,9 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		isFunc = isFunction(field),
 		res = p.result = p.useMap ? new GLOBAL['Map']() : {};
 
-	let action;
+	let fn;
 	if (p.useMap) {
-		action = function (el, key) {
+		fn = function (el, key) {
 			const
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
@@ -78,7 +78,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		};
 
 	} else {
-		action = function (el, key) {
+		fn = function (el, key) {
 			const
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
@@ -105,11 +105,11 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	}
 
 	if (isFunc) {
-		action[FN_LENGTH] = action.length > field.length ? action.length : field.length;
+		fn[FN_LENGTH] = fn.length > field.length ? fn.length : field.length;
 	}
 
 	const
-		returnVal = any(this.forEach(any(action), p));
+		returnVal = any(this.forEach(any(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;
