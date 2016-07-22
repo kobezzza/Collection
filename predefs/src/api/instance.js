@@ -24,6 +24,7 @@ $$Collection.prototype.VERSION;
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
+ *   waitResult: !Array,
  *   yield: function(?): boolean,
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
@@ -44,6 +45,7 @@ var $$CollectionCtx;
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
+ *   waitResult: !Array,
  *   yield: function(?): boolean,
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
@@ -70,6 +72,9 @@ var $;
 
 /** @type {?} */
 var info;
+
+/** @type {?} */
+var waitResult;
 
 /** @type {?} */
 var next;
@@ -113,6 +118,7 @@ var $$CollectionFilter;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   withAccessors: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -142,6 +148,7 @@ $$Collection.prototype.forEach = function (cb, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   withAccessors: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -154,6 +161,51 @@ $$Collection.prototype.forEach = function (cb, opt_params) {};
  */
 var $$CollectionBase;
 
+/** @type {?} */
+var filter;
+
+/** @type {?} */
+var mult;
+
+/** @type {?} */
+var count;
+
+/** @type {?} */
+var from;
+
+/** @type {?} */
+var startIndex;
+
+/** @type {?} */
+var endIndex;
+
+/** @type {?} */
+var reverse;
+
+/** @type {?} */
+var inverseFilter;
+
+/** @type {?} */
+var withAccessors;
+
+/** @type {?} */
+var notOwn;
+
+/** @type {?} */
+var live;
+
+/** @type {?} */
+var use;
+
+/** @type {?} */
+var priority;
+
+/** @type {?} */
+var onChunk;
+
+/** @type {?} */
+var onIterationEnd;
+
 /** @typedef {{
  *   filter: $$CollectionFilter,
  *   count: (number|number|null|undefined),
@@ -162,6 +214,7 @@ var $$CollectionBase;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   withAccessors: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -197,6 +250,7 @@ $$Collection.prototype.get = function (opt_filter, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   withAccessors: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -204,7 +258,7 @@ $$Collection.prototype.get = function (opt_filter, opt_params) {};
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
- *   onIterationEnd: (?$$CollectionThreadCb|undefined)
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined),
  *   initial: (Object|undefined)
  * }}
  */
@@ -219,48 +273,6 @@ var initial;
  * @return {(?|!Promise)}
  */
 $$Collection.prototype.map = function (cb, opt_params) {};
-
-/** @type {?} */
-var filter;
-
-/** @type {?} */
-var mult;
-
-/** @type {?} */
-var count;
-
-/** @type {?} */
-var from;
-
-/** @type {?} */
-var startIndex;
-
-/** @type {?} */
-var endIndex;
-
-/** @type {?} */
-var reverse;
-
-/** @type {?} */
-var inverseFilter;
-
-/** @type {?} */
-var notOwn;
-
-/** @type {?} */
-var live;
-
-/** @type {?} */
-var use;
-
-/** @type {?} */
-var priority;
-
-/** @type {?} */
-var onChunk;
-
-/** @type {?} */
-var onIterationEnd;
 
 /** @typedef {function(?, ?, ?, !Object, $$CollectionCbCtx): ?} */
 var $$CollectionReduceCb;
@@ -313,6 +325,7 @@ $$Collection.prototype.includes = function (searchElement, opt_filter, opt_param
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   withAccessors: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -363,6 +376,7 @@ $$Collection.prototype.remove = function (opt_filter, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   withAccessors: (?boolean|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),

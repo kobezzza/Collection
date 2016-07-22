@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH } from '../consts/base';
+import { FN_LENGTH, ON_ERROR } from '../consts/base';
 import { isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
@@ -45,7 +45,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 				val = cb.apply(null, [p.result].concat([].slice.call(arguments)));
 
 			if (isPromise(val)) {
-				val.then((val) => p.result = val);
+				val.then((val) => p.result = val, fn[ON_ERROR]);
 
 			} else {
 				p.result = val;

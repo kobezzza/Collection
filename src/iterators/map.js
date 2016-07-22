@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH } from '../consts/base';
+import { FN_LENGTH, ON_ERROR } from '../consts/base';
 import { getType, isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
@@ -79,79 +79,79 @@ Collection.prototype.map = function (cb, opt_params) {
 			res = new source.constructor();
 	}
 
-	let action;
+	let fn;
 	switch (type) {
 		case 'array':
-			action = function () {
+			fn = function () {
 				const
 					val = cb.apply(null, arguments);
 
 				if (isPromise(val)) {
-					val.then((val) => res.push(val));
+					val.then((val) => res.push(val), fn[ON_ERROR]);
 
 				} else {
 					res.push(val);
 				}
 			};
 
-			action[FN_LENGTH] = cb.length;
+			fn[FN_LENGTH] = cb.length;
 			break;
 
 		case 'object':
-			action = function (el, key) {
+			fn = function (el, key) {
 				const
 					val = cb.apply(null, arguments);
 
 				if (isPromise(val)) {
-					val.then((val) => res[key] = val);
+					val.then((val) => res[key] = val, fn[ON_ERROR]);
 
 				} else {
 					res[key] = val;
 				}
 			};
 
-			action[FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
+			fn[FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
 			break;
 
 		case 'map':
 		case 'weakMap':
-			action = function (el, key) {
+			fn = function (el, key) {
 				const
 					val = cb.apply(null, arguments);
 
 				if (isPromise(val)) {
-					val.then((val) => res.set(key, val));
+					val.then((val) => res.set(key, val), fn[ON_ERROR]);
 
 				} else {
 					res.set(key, val);
 				}
 			};
 
-			action[FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
+			fn[FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
 			break;
 
 		case 'set':
 		case 'weakSep':
-			action = function () {
+			fn = function () {
 				const
 					val = cb.apply(null, arguments);
 
 				if (isPromise(val)) {
-					val.then((val) => res.add(val));
+					val.then((val) => res.add(val), fn[ON_ERROR]);
 
 				} else {
 					res.add(val);
 				}
 			};
 
-			action[FN_LENGTH] = cb.length;
+			fn[FN_LENGTH] = cb.length;
 			break;
 	}
 
 	p.result = res;
 
 	const
-		returnVal = any(this.forEach(any(action), p));
+		returnVal = any(this.forEach(any(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;

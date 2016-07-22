@@ -8,8 +8,6 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import { CALLEE_SUPPORT } from '../consts/hacks';
-
 /**
  * Returns true if the specified value is a function
  *
@@ -187,21 +185,16 @@ export function isIterator(obj) {
 /**
  * Returns the current type of an object
  *
- * @param {!Object} obj - source object
+ * @param {Object} obj - source object
  * @param {?string=} [opt_use] - cycle type for iteration: for, for of, for in
- * @return {string}
+ * @return {?string}
  */
 export function getType(obj, opt_use) {
+	if (!object) {
+		return null;
+	}
+
 	let type = 'object';
-
-	if (!obj) {
-		return type;
-	}
-
-	if (CALLEE_SUPPORT && 'callee' in obj && 'length' in obj) {
-		return 'array';
-	}
-
 	switch (opt_use) {
 		case 'for':
 			type = 'array';

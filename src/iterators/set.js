@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH } from '../consts/base';
+import { FN_LENGTH, ON_ERROR } from '../consts/base';
 import { getType, isFunction, isArray, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
@@ -80,11 +80,11 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		};
 	}
 
-	let action;
+	let fn;
 	if (isFunc) {
 		switch (type) {
 			case 'map':
-				action = function (el, key, data) {
+				fn = function (el, key, data) {
 					const
 						res = value.apply(null, arguments);
 
@@ -110,7 +110,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						});
+						}, fn[ON_ERROR]);
 
 					} else {
 						let
@@ -139,7 +139,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 				break;
 
 			case 'set':
-				action = function (el, key, data) {
+				fn = function (el, key, data) {
 					const
 						res = value.apply(null, arguments);
 
@@ -166,7 +166,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						});
+						}, fn[ON_ERROR]);
 
 					} else {
 						let
@@ -196,7 +196,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 				break;
 
 			default:
-				action = function (el, key, data) {
+				fn = function (el, key, data) {
 					const
 						res = value.apply(null, arguments);
 
@@ -222,7 +222,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						});
+						}, fn[ON_ERROR]);
 
 					} else {
 						let
@@ -249,12 +249,12 @@ Collection.prototype.set = function (value, filter, opt_params) {
 				};
 		}
 
-		action[FN_LENGTH] = action.length > value.length ? action.length : value.length;
+		fn[FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
 
 	} else {
 		switch (type) {
 			case 'map':
-				action = (el, key, data) => {
+				fn = (el, key, data) => {
 					let result = false;
 					if (data.get(key) !== value) {
 						data.set(key, value);
@@ -278,7 +278,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 				break;
 
 			case 'set':
-				action = (el, key, data) => {
+				fn = (el, key, data) => {
 					let result = false;
 					if (!data.has(value)) {
 						data.delete(el);
@@ -303,7 +303,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 				break;
 
 			default:
-				action = (el, key, data) => {
+				fn = (el, key, data) => {
 					let result = false;
 					if (data[key] !== value) {
 						data[key] = value;
@@ -350,7 +350,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	};
 
 	const
-		returnVal = any(this.forEach(any(action), p));
+		returnVal = any(this.forEach(any(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;

@@ -1,3 +1,5 @@
+'use strict';
+
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -6,9 +8,6 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-'use strict';
-
-import { ws } from '../helpers/string';
 import { any } from '../helpers/gcc';
 
 export const IS_NODE = (() => {
@@ -25,37 +24,3 @@ export const
 	BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function',
 	LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'object',
 	OBJECT_KEYS_NATIVE_SUPPORT = (Object.keys && any(Object.keys).toString()) === '[native code]';
-
-export const DESCRIPTORS_SUPPORT = (() => {
-	try {
-		return Object.getOwnPropertyDescriptor(Object.create(null, {foo: {enumerable: false}}), 'foo').enumerable === false;
-
-	} catch (ignore) {
-		return false;
-	}
-})();
-
-export const JSON_SUPPORT = (() => {
-	try {
-		return JSON.parse(JSON.stringify({foo: 'bar'})).foo === 'bar';
-
-	} catch (ignore) {
-		return false;
-	}
-})();
-
-export const CALLEE_SUPPORT = Boolean(eval(ws`
-	(function () {
-		'use strict';
-		var res = true;
-
-		try {
-			arguments.callee;
-
-		} catch (ignore) {
-			res = false;
-		}
-
-		return res;
-	})();
-`));

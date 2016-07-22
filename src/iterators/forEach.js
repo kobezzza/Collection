@@ -11,7 +11,7 @@
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
 import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
-import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
+import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
 import { PRIORITY } from '../consts/thread';
 import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
@@ -30,6 +30,7 @@ import './length';
  *   *) [startIndex = 0] - number of skipping successful iterations
  *   *) [endIndex] - end iteration position
  *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
+ *   *) [withAccessors = false] - if true, then the first element of callback function will be an object of element descriptors
  *   *) [notOwn = false] - iteration type:
  *
  *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
@@ -64,7 +65,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		Object.assign(p, opt_params);
 	}
 
-	if (p.notOwn) {
+	if (p.notOwn || p.withAccessors) {
 		p.use = 'for in';
 	}
 
@@ -209,6 +210,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 				return (el, key, data, o) => {
 					try {
+						fn[ON_ERROR] = onError;
 						return fn(el, key, data, o);
 
 					} catch (err) {

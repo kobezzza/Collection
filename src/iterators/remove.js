@@ -9,6 +9,7 @@
  */
 
 import { Collection } from '../core';
+import { ON_ERROR } from '../consts/base';
 import { getType, isFunction, isArray, isNumber } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
@@ -75,10 +76,10 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 		};
 	}
 
-	let action;
+	let fn;
 	switch (type) {
 		case 'map':
-			action = (value, key, data) => {
+			fn = (value, key, data) => {
 				data.delete(key);
 				const o = {
 					result: !data.has(key),
@@ -97,7 +98,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 			break;
 
 		case 'set':
-			action = (value, key, data) => {
+			fn = (value, key, data) => {
 				data.delete(value);
 				const o = {
 					result: !data.has(value),
@@ -117,7 +118,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 
 		case 'array':
 			if (p.reverse) {
-				action = (value, key, data) => {
+				fn = (value, key, data) => {
 					splice.call(data, key, 1);
 					const o = {
 						result: data[key] !== value,
@@ -136,7 +137,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 			} else {
 				let rm = 0;
 				if (p.live) {
-					action = (value, key, data, ctx) => {
+					fn = (value, key, data, ctx) => {
 						splice.call(data, key, 1);
 						ctx.i(-1);
 						const o = {
@@ -156,9 +157,9 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 					};
 
 				} else {
-					action = (value, key, data, ctx) => {
+					fn = (value, key, data, ctx) => {
 						const ln = ctx.length();
-						const fn = (length) => {
+						const f = (length) => {
 							if (rm === length) {
 								return false;
 							}
@@ -183,10 +184,10 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 						};
 
 						if (isNumber(ln)) {
-							fn(ln);
+							f(ln);
 
 						} else {
-							ctx.wait(ln).then(fn);
+							ctx.wait(ln).then(f, fn[ON_ERROR]);
 						}
 					};
 				}
@@ -195,7 +196,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 			break;
 
 		default:
-			action = (value, key, data) => {
+			fn = (value, key, data) => {
 				delete data[key];
 				const o = {
 					result: key in data === false,
@@ -213,7 +214,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	}
 
 	const
-		returnVal = any(this.forEach(any(action), p));
+		returnVal = any(this.forEach(any(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;

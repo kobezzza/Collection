@@ -79,7 +79,8 @@ export function compileCycle(key, p) {
 		var
 			onIterationEnd = o.onIterationEnd,
 			onComplete = o.onComplete,
-			onError = o.onError;
+			onError = o.onError,
+			getDescriptor = Object.getOwnPropertyDescriptor;
 
 		var
 			TRUE = {},
@@ -105,7 +106,7 @@ export function compileCycle(key, p) {
 			looper = 0;
 
 		var
-			results = [],
+			waitResult = [],
 			wait = 0;
 
 		var
@@ -137,12 +138,17 @@ export function compileCycle(key, p) {
 		var ctx = {
 			$: $,
 			info: info,
+			waitResult: waitResult,
 
 			TRUE: TRUE,
 			FALSE: FALSE,
 
 			get result() {
 				return p.result;
+			},
+
+			set result(value) {
+				p.result = value;
 			},
 
 			yield: function (opt_val) {
@@ -185,7 +191,7 @@ export function compileCycle(key, p) {
 
 				wait++;
 				return promise.then(function (res) {
-					results.push(res);
+					waitResult.push(res);
 					wait--;
 					ctx.next();
 				}, onError);
@@ -514,7 +520,12 @@ export function compileCycle(key, p) {
 			}
 
 			if (maxArgsLength || p.thread) {
-				iFn += 'el = data[key];';
+				if (p.withAccessors) {
+					iFn += 'el = getDescriptor(data, key);';
+
+				} else {
+					iFn += 'el = data[key];';
+				}
 			}
 
 			break;
