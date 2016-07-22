@@ -24,8 +24,8 @@ var _types = require('./helpers/types');
  * @param {$$CollectionType} obj
  */
 function Collection(obj) {
-  this.data = (0, _gcc.any)((0, _types.isString)(obj) ? obj.split('') : obj || []);
-  this._init();
+	this.data = (0, _gcc.any)((0, _types.isString)(obj) ? obj.split('') : obj || []);
+	this._init();
 }
 
 /**
@@ -33,25 +33,26 @@ function Collection(obj) {
  * @return {!Object}
  */
 Collection.prototype._init = function () {
-  const old = this.p;
+	const old = this.p;
 
-  this.p = Object.assign({
-    mult: true,
-    count: false,
-    from: false,
-    startIndex: false,
-    endIndex: false,
-    reverse: false,
-    inverseFilter: false,
-    notOwn: false,
-    live: false,
-    thread: false,
-    priority: 'normal',
-    length: true,
-    filter: []
-  }, $C.config);
+	this.p = Object.assign({
+		mult: true,
+		count: false,
+		from: false,
+		startIndex: false,
+		endIndex: false,
+		reverse: false,
+		inverseFilter: false,
+		withDescriptor: false,
+		notOwn: false,
+		live: false,
+		thread: false,
+		priority: 'normal',
+		length: true,
+		filter: []
+	}, $C.config);
 
-  return old;
+	return old;
 };
 
 Object.assign($C, { config: {} });
@@ -67,5 +68,5 @@ Collection.prototype.VERSION = [6, 0, 0, 'beta.9'];
  * @param {$$CollectionType} obj
  */
 function $C(obj) {
-  return new Collection(obj);
+	return new Collection(obj);
 }

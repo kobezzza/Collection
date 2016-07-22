@@ -70,7 +70,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		Object.assign(p, opt_params);
 	}
 
-	if (p.notOwn || p.withAccessors) {
+	if (p.notOwn || p.withDescriptor) {
 		p.use = 'for in';
 	}
 

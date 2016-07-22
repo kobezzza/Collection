@@ -39,6 +39,7 @@ Collection.prototype._init = function () {
 		endIndex: false,
 		reverse: false,
 		inverseFilter: false,
+		withDescriptor: false,
 		notOwn: false,
 		live: false,
 		thread: false,

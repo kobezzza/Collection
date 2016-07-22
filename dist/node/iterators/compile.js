@@ -125,10 +125,13 @@ function compileCycle(key, p) {
 			count: ${ p.count },
 			live: ${ p.live },
 			reverse: ${ p.reverse },
+			withDescriptor: ${ p.withDescriptor },
 			notOwn: ${ p.notOwn },
 			inverseFilter: ${ p.inverseFilter },
 			type: '${ p.type }',
-			thread: ${ p.thread }
+			thread: ${ p.thread },
+			priority: ${ p.thread } && '${ p.priority }',
+			length: ${ p.length }
 		};
 
 		var ctx = {
