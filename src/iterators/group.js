@@ -11,11 +11,8 @@
 import { Collection } from '../core';
 import { FN_LENGTH, ON_ERROR } from '../consts/base';
 import { isArray, isFunction, isPromise } from '../helpers/types';
-import { any } from '../helpers/gcc';
-
-//#if link
 import { byLink } from '../helpers/link';
-//#endif
+import { any } from '../helpers/gcc';
 
 /**
  * Groups elements in the collection by the specified condition and returns a new collection

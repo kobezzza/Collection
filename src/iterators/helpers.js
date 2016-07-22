@@ -64,24 +64,15 @@ Collection.prototype._filter = function (filter) {
 };
 
 /**
- * @param {?} p
- * @return {?}
- */
-export function isThread(p) {
-	if (p.hasOwnProperty('priority') || p.onChunk) {
-		p.thread = true;
-	}
-
-	return p;
-}
-
-/**
  * @private
  * @param {?} p
  * @return {!Collection}
  */
 Collection.prototype._isThread = function (p) {
-	isThread(p);
+	if (p.hasOwnProperty('priority') || p.onChunk) {
+		p.thread = true;
+	}
+
 	return this;
 };
 

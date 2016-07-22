@@ -12,7 +12,6 @@
 
 import $C from '../core';
 import { isArray, isBoolean, isObjectInstance, isExtensible } from './types';
-import { isThread } from '../iterators/helpers';
 import { any } from './gcc';
 
 /**

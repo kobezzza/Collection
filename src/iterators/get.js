@@ -10,11 +10,8 @@
 
 import { Collection } from '../core';
 import { isFunction, isArray } from '../helpers/types';
-import { any } from '../helpers/gcc';
-
-//#if link
 import { byLink } from '../helpers/link';
-//#endif
+import { any } from '../helpers/gcc';
 
 /**
  * Searches elements in a collection by the specified condition/link.
@@ -28,8 +25,6 @@ import { byLink } from '../helpers/link';
 Collection.prototype.get = function (opt_filter, opt_params) {
 	let p = opt_params || {};
 
-	//#if link
-
 	if (
 		!isFunction(opt_filter) && (
 			isArray(opt_filter) && !isFunction(opt_filter[1]) ||
@@ -37,12 +32,8 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 		)
 
 	) {
-		const tmp = byLink(this.data, any(opt_filter));
-		p.onComplete && p.onComplete(tmp);
-		return tmp;
+		return byLink(this.data, any(opt_filter));
 	}
-
-	//#endif
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;

@@ -11,11 +11,8 @@
 import { Collection } from '../core';
 import { FN_LENGTH, ON_ERROR } from '../consts/base';
 import { getType, isFunction, isArray, isPromise } from '../helpers/types';
-import { any } from '../helpers/gcc';
-
-//#if link
 import { byLink } from '../helpers/link';
-//#endif
+import { any } from '../helpers/gcc';
 
 /**
  * Sets a new value for collection elements by the specified condition/link
@@ -36,8 +33,6 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	const
 		{data} = this;
 
-	//#if link
-
 	if (
 		!isFunction(filter) && (
 			isArray(filter) && !isFunction(filter[1]) ||
@@ -45,12 +40,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		)
 
 	) {
-		const tmp = byLink(data, filter, {value, create: p.create !== false, error: true});
-		p.onComplete && p.onComplete(tmp);
-		return tmp;
+		return byLink(data, filter, {value, create: p.create !== false, error: true});
 	}
-
-	//#endif
 
 	if (!isArray(filter) && !isFunction(filter)) {
 		p = filter || p;
