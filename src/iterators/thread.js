@@ -162,13 +162,32 @@ let exec = 0;
  * @private
  * @param {?} obj - generator object
  * @param {string} priority - task priority
+ * @param {function(!Error)} onError - callback function for error handling
  * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
  */
-Collection.prototype._addToStack = function (obj, priority, opt_onChunk) {
+Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk) {
+	obj.destroyed = false;
+	obj.destroy = () => {
+		if (obj.destroyed) {
+			return false;
+		}
+
+		clearTimeout(obj.sleep);
+		$C(obj.children).forEach((child) => child.destroy());
+		$C(execStack[obj.priority]).remove((el) => el === obj, {mult: false});
+		obj.destroyed = true;
+		exec--;
+
+		const err = new Error('Thread was destroyed');
+		err.type = 'CollectionThread';
+
+		onError(err);
+		return err;
+	};
+
 	obj.value = undefined;
 	obj.thread = true;
 	obj.priority = priority;
-	obj.destroy = () => $C.destroy(obj);
 	obj.onChunk = opt_onChunk;
 	obj.pause = false;
 	obj.sleep = null;
@@ -242,25 +261,14 @@ Collection.prototype._addToStack = function (obj, priority, opt_onChunk) {
  * Destroys the specified Collection worker
  *
  * @param {(Promise|?)} obj - Collection worker or any value (returns false)
- * @return {boolean}
+ * @return {(!Error|boolean)}
  */
 $C.destroy = function (obj) {
 	if (!obj || !obj.thread) {
 		return false;
 	}
 
-	const
-		thread = obj.priority ? obj : obj.thread;
-
-	clearTimeout(thread.sleep);
-	$C(thread.children).forEach((child) => $C.destroy(child));
-
-	if ($C(execStack[thread.priority]).remove((el) => el === thread, {mult: false}).result) {
-		thread.destroyed = true;
-		exec--;
-	}
-
-	return true;
+	return (obj.priority ? obj : obj.thread).destroy();
 };
 
 Object.assign($C, {destroy: $C.destroy});

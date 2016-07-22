@@ -40,6 +40,9 @@ var ctx;
 var destroy;
 
 /** @type {?} */
+var destroyed;
+
+/** @type {?} */
 var localStorage;
 
 /** @type {?} */

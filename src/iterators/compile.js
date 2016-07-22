@@ -171,7 +171,7 @@ export function compileCycle(key, p) {
 					return false;
 				}
 
-				link.self.next(opt_val);
+				ctx.thread.next(opt_val);
 				return true;
 			},
 
@@ -180,7 +180,7 @@ export function compileCycle(key, p) {
 					return false;
 				}
 
-				link.self.children.push(thread.thread);
+				ctx.thread.children.push(thread.thread);
 				return true;
 			},
 
@@ -208,7 +208,7 @@ export function compileCycle(key, p) {
 
 				ctx.yield();
 				return new Promise(function (resolve, reject) {
-					link.self.sleep = setTimeout(function () {
+					ctx.thread.sleep = setTimeout(function () {
 						if (opt_test) {
 							try {
 								var test = opt_test(ctx);
@@ -302,7 +302,12 @@ export function compileCycle(key, p) {
 			}
 
 			ctx.thread = link.self;
-			link.self.ctx = ctx;
+			ctx.thread.ctx = ctx;
+
+			var destroy = ctx.thread.destroy;
+			ctx.thread.destroy = function () {
+				throw destroy();
+			};
 		`;
 	}
 
@@ -341,7 +346,7 @@ export function compileCycle(key, p) {
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
 
-			if (time > priority[link.self.priority]) {
+			if (time > priority[ctx.thread.priority]) {
 				yield;
 				time = 0;
 				timeStart = null;
@@ -661,7 +666,7 @@ export function compileCycle(key, p) {
 		iFn += ws`
 			while (isPromise(el)) {
 				el = el.then(resolveEl, onError);
-				link.self.pause = true;
+				ctx.thread.pause = true;
 				yield;
 			}
 		`;
@@ -678,7 +683,7 @@ export function compileCycle(key, p) {
 				iFn += ws`
 					while (isPromise(f)) {
 						f.then(resolveFilter, onError);
-						link.self.pause = true;
+						ctx.thread.pause = true;
 						yield;
 					}
 				`;
@@ -705,7 +710,7 @@ export function compileCycle(key, p) {
 		tmp += ws`
 			while (isPromise(r)) {
 				r.then(resolveCb, onError);
-				link.self.pause = true;
+				ctx.thread.pause = true;
 				yield;
 			}
 		`;
@@ -736,7 +741,7 @@ export function compileCycle(key, p) {
 	const yielder = ws`
 		if (yielder) {
 			yielder = false;
-			link.self.pause = true;
+			ctx.thread.pause = true;
 			yield yieldVal;
 			yieldVal = undefined;
 		}
@@ -784,7 +789,7 @@ export function compileCycle(key, p) {
 		}
 
 		while (wait) {
-			link.self.pause = true;
+			ctx.thread.pause = true;
 			yield;
 		}
 
