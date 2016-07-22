@@ -79,12 +79,12 @@ export function compileCycle(key, p) {
 		var
 			onIterationEnd = o.onIterationEnd,
 			onComplete = o.onComplete,
-			onError = o.onError,
 			getDescriptor = Object.getOwnPropertyDescriptor;
 
 		var
 			TRUE = {},
-			FALSE = {};
+			FALSE = {},
+			BREAK = {};
 
 		var
 			i = -1,
@@ -137,6 +137,13 @@ export function compileCycle(key, p) {
 			priority: ${p.thread} && '${p.priority}',
 			length: ${p.length}
 		};
+
+		if (o.onError) {
+			var onError = function (err) {
+				o.onError(err);
+				r = f = el = BREAK;
+			};
+		}
 
 		var ctx = {
 			$: $,
@@ -223,7 +230,7 @@ export function compileCycle(key, p) {
 
 							} catch (err) {
 								reject(err);
-								throw err;
+								onError(err);
 							}
 
 						} else {
@@ -303,11 +310,6 @@ export function compileCycle(key, p) {
 
 			ctx.thread = link.self;
 			ctx.thread.ctx = ctx;
-
-			var destroy = ctx.thread.destroy;
-			ctx.thread.destroy = function () {
-				throw destroy();
-			};
 		`;
 	}
 
@@ -669,6 +671,10 @@ export function compileCycle(key, p) {
 				ctx.thread.pause = true;
 				yield;
 			}
+
+			if (el === BREAK) { 
+				return; 
+			}
 		`;
 	}
 
@@ -685,6 +691,10 @@ export function compileCycle(key, p) {
 						f.then(resolveFilter, onError);
 						ctx.thread.pause = true;
 						yield;
+					}
+
+					if (f === BREAK) {
+						return; 
 					}
 				`;
 			}
@@ -712,6 +722,10 @@ export function compileCycle(key, p) {
 				r.then(resolveCb, onError);
 				ctx.thread.pause = true;
 				yield;
+			}
+
+			if (r === BREAK) {
+				return; 
 			}
 		`;
 	}

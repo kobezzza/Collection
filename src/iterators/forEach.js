@@ -196,9 +196,20 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	if (p.thread) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
+			let error = false;
 			function onError(err) {
-				thread && thread.destroy();
-				reject(err);
+				if (error) {
+					return;
+				}
+
+				if (thread) {
+					thread.destroy(err);
+
+				} else {
+					reject(err);
+				}
+
+				error = true;
 			}
 
 			function wrap(fn) {

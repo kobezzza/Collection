@@ -167,7 +167,7 @@ let exec = 0;
  */
 Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk) {
 	obj.destroyed = false;
-	obj.destroy = () => {
+	obj.destroy = (err) => {
 		if (obj.destroyed) {
 			return false;
 		}
@@ -175,13 +175,12 @@ Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk
 		clearTimeout(obj.sleep);
 		$C(obj.children).forEach((child) => child.destroy());
 		$C(execStack[obj.priority]).remove((el) => el === obj, {mult: false});
-		obj.destroyed = true;
+
 		exec--;
-
-		const err = new Error('Thread was destroyed');
-		err.type = 'CollectionThread';
-
+		obj.destroyed = true;
+		err = err || new Error('Thread was destroyed');
 		onError(err);
+
 		return err;
 	};
 
