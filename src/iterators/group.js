@@ -48,7 +48,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 	const
 		isFunc = isFunction(field),
-		res = p.result = p.useMap ? new GLOBAL['Map']() : {};
+		res = p.result = p.useMap ? new Map() : {};
 
 	let fn;
 	if (p.useMap) {
