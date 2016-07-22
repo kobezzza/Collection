@@ -139,6 +139,7 @@ export function compileCycle(key, p) {
 			$: $,
 			info: info,
 			waitResult: waitResult,
+			onError: onError,
 
 			TRUE: TRUE,
 			FALSE: FALSE,
