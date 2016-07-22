@@ -94,12 +94,16 @@ export function byLink(obj, link, opt_params) {
 			isASet = objIsSet || isWeakSet(obj);
 
 		// Set or delete
-		if (!isTest && i === last && (p.delete || p.value !== undefined)) {
+		if (!isTest && i === last && (p.delete || 'value' in p)) {
 			const cache = {
 				key: isASet ? null : el,
 				result: isAMap || isASet ? obj.has(el) : el in obj,
 				value: isAMap ? obj.get(el) : isASet ? el : obj[el]
 			};
+
+			if ('value' in p) {
+				cache.newValue = p.value;
+			}
 
 			if (p.delete) {
 				if (cache.result) {

@@ -261,6 +261,7 @@ $C.destroy = function (obj) {
 	$C(thread.children).forEach((child) => $C.destroy(child));
 
 	if ($C(execStack[thread.priority]).remove((el) => el === thread, {mult: false}).result) {
+		thread.destroyed = true;
 		exec--;
 	}
 

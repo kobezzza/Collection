@@ -69,10 +69,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		p.use = 'for in';
 	}
 
-	if (p.hasOwnProperty('priority') || p.onChunk) {
-		p.thread = true;
-	}
-
+	this._isThread(p);
 	if (!PRIORITY[p.priority]) {
 		PRIORITY[p.priority] = 'normal';
 	}

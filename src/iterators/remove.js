@@ -187,7 +187,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 							f(ln);
 
 						} else {
-							ctx.wait(ln).then(f, fn[ON_ERROR]);
+							return ctx.wait(ln).then(f, fn[ON_ERROR]);
 						}
 					};
 				}

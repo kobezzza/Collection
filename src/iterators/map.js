@@ -35,7 +35,7 @@ Collection.prototype.map = function (cb, opt_params) {
 		p = {filter: p};
 	}
 
-	this._filter(p);
+	this._filter(p)._isThread(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	let type = 'object';
@@ -86,12 +86,11 @@ Collection.prototype.map = function (cb, opt_params) {
 				const
 					val = cb.apply(null, arguments);
 
-				if (isPromise(val)) {
-					val.then((val) => res.push(val), fn[ON_ERROR]);
-
-				} else {
-					res.push(val);
+				if (p.thread && isPromise(val)) {
+					return val.then((val) => res.push(val), fn[ON_ERROR]);
 				}
+
+				res.push(val);
 			};
 
 			fn[FN_LENGTH] = cb.length;
@@ -102,12 +101,11 @@ Collection.prototype.map = function (cb, opt_params) {
 				const
 					val = cb.apply(null, arguments);
 
-				if (isPromise(val)) {
-					val.then((val) => res[key] = val, fn[ON_ERROR]);
-
-				} else {
-					res[key] = val;
+				if (p.thread && isPromise(val)) {
+					return val.then((val) => res[key] = val, fn[ON_ERROR]);
 				}
+
+				res[key] = val;
 			};
 
 			fn[FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
@@ -119,12 +117,11 @@ Collection.prototype.map = function (cb, opt_params) {
 				const
 					val = cb.apply(null, arguments);
 
-				if (isPromise(val)) {
-					val.then((val) => res.set(key, val), fn[ON_ERROR]);
-
-				} else {
-					res.set(key, val);
+				if (p.thread && isPromise(val)) {
+					return val.then((val) => res.set(key, val), fn[ON_ERROR]);
 				}
+
+				res.set(key, val);
 			};
 
 			fn[FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
@@ -136,12 +133,11 @@ Collection.prototype.map = function (cb, opt_params) {
 				const
 					val = cb.apply(null, arguments);
 
-				if (isPromise(val)) {
-					val.then((val) => res.add(val), fn[ON_ERROR]);
-
-				} else {
-					res.add(val);
+				if (p.thread && isPromise(val)) {
+					return val.then((val) => res.add(val), fn[ON_ERROR]);
 				}
+
+				res.add(val);
 			};
 
 			fn[FN_LENGTH] = cb.length;

@@ -64,6 +64,19 @@ Collection.prototype._filter = function (filter) {
 };
 
 /**
+ * @private
+ * @param {?} p
+ * @return {!Collection}
+ */
+Collection.prototype._isThread = function (p) {
+	if (p.hasOwnProperty('priority') || p.onChunk) {
+		p.thread = true;
+	}
+
+	return this;
+};
+
+/**
  * Marks the operation as thread
  *
  * @param {(?string|$$CollectionThreadCb)=} [opt_priority] - thread priority (low, normal, hight, critical)

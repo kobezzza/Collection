@@ -28,7 +28,7 @@ import { byLink } from '../helpers/link';
  *   *) [key] - key (null for array.push) of a new element (if search elements nof found)
  *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
  *
- * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
+ * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */
 Collection.prototype.set = function (value, filter, opt_params) {
 	let p = opt_params || {};
@@ -57,7 +57,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this._filter(p, filter);
+	this._filter(p, filter)._isThread(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
@@ -88,8 +88,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					if (isPromise(res)) {
-						res.then((res) => {
+					if (p.thread && isPromise(res)) {
+						return res.then((res) => {
 							let
 								status = res === undefined;
 
@@ -101,6 +101,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							const o = {
 								key,
 								value: el,
+								newValue: res,
 								result: status
 							};
 
@@ -111,28 +112,28 @@ Collection.prototype.set = function (value, filter, opt_params) {
 								p.result = o;
 							}
 						}, fn[ON_ERROR]);
+					}
+
+					let
+						status = res === undefined;
+
+					if (res !== undefined && data.get(key) !== res) {
+						data.set(key, res);
+						status = data.get(key) === res;
+					}
+
+					const o = {
+						key,
+						value: el,
+						newValue: res,
+						result: status
+					};
+
+					if (mult) {
+						report.push(o);
 
 					} else {
-						let
-							status = res === undefined;
-
-						if (res !== undefined && data.get(key) !== res) {
-							data.set(key, res);
-							status = data.get(key) === res;
-						}
-
-						const o = {
-							key,
-							value: el,
-							result: status
-						};
-
-						if (mult) {
-							report.push(o);
-
-						} else {
-							p.result = o;
-						}
+						p.result = o;
 					}
 				};
 
@@ -143,8 +144,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					if (isPromise(res)) {
-						res.then((res) => {
+					if (p.thread && isPromise(res)) {
+						return res.then((res) => {
 							let
 								status = res === undefined;
 
@@ -157,6 +158,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							const o = {
 								key: null,
 								value: el,
+								newValue: res,
 								result: status
 							};
 
@@ -167,29 +169,29 @@ Collection.prototype.set = function (value, filter, opt_params) {
 								p.result = o;
 							}
 						}, fn[ON_ERROR]);
+					}
+
+					let
+						status = res === undefined;
+
+					if (res !== undefined && !data.has(res)) {
+						data.delete(el);
+						data.add(res);
+						status = data.has(res);
+					}
+
+					const o = {
+						key: null,
+						value: el,
+						newValue: res,
+						result: status
+					};
+
+					if (mult) {
+						report.push(o);
 
 					} else {
-						let
-							status = res === undefined;
-
-						if (res !== undefined && !data.has(res)) {
-							data.delete(el);
-							data.add(res);
-							status = data.has(res);
-						}
-
-						const o = {
-							key: null,
-							value: el,
-							result: status
-						};
-
-						if (mult) {
-							report.push(o);
-
-						} else {
-							p.result = o;
-						}
+						p.result = o;
 					}
 				};
 
@@ -200,8 +202,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					if (isPromise(res)) {
-						res.then((res) => {
+					if (p.thread && isPromise(res)) {
+						return res.then((res) => {
 							let
 								status = res === undefined;
 
@@ -213,6 +215,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							const o = {
 								key,
 								value: el,
+								newValue: res,
 								result: status
 							};
 
@@ -223,28 +226,28 @@ Collection.prototype.set = function (value, filter, opt_params) {
 								p.result = o;
 							}
 						}, fn[ON_ERROR]);
+					}
+
+					let
+						status = res === undefined;
+
+					if (res !== undefined && data[key] !== res) {
+						data[key] = res;
+						status = data[key] === res;
+					}
+
+					const o = {
+						key,
+						value: el,
+						newValue: res,
+						result: status
+					};
+
+					if (mult) {
+						report.push(o);
 
 					} else {
-						let
-							status = res === undefined;
-
-						if (res !== undefined && data[key] !== res) {
-							data[key] = res;
-							status = data[key] === res;
-						}
-
-						const o = {
-							key,
-							value: el,
-							result: status
-						};
-
-						if (mult) {
-							report.push(o);
-
-						} else {
-							p.result = o;
-						}
+						p.result = o;
 					}
 				};
 		}
@@ -264,6 +267,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key,
 						value: el,
+						newValue: value,
 						result
 					};
 
@@ -289,6 +293,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key: null,
 						value: el,
+						newValue: value,
 						result
 					};
 
@@ -313,6 +318,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key,
 						value: el,
+						newValue: value,
 						result
 					};
 

@@ -365,6 +365,12 @@ var notFound;
  */
 $$Collection.prototype.remove = function (opt_filter, opt_params) {};
 
+/** @typedef {({result: boolean, key, value, newValue, notFound: (boolean|undefined)}|!Array<{result: boolean, key, value, newValue, notFound: (boolean|undefined)}>)} */
+var $$CollectionSetReport;
+
+/** @type {?} */
+var newValue;
+
 /** @typedef {{
  *   filter: $$CollectionFilter,
  *   create: (?boolean|undefined),
@@ -399,7 +405,7 @@ var key;
  * @param {(?|$$CollectionCb)} value
  * @param {($$CollectionFilter|$$Collection_set|$$CollectionLink)=} filter
  * @param {?$$Collection_set=} [opt_params]
- * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
+ * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */
 $$Collection.prototype.set = function (value, filter, opt_params) {};
 
