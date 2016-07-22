@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-loop-func */
+
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -13,6 +15,8 @@ var _core = require('../core');
 var _core2 = _interopRequireDefault(_core);
 
 var _types = require('./types');
+
+var _helpers = require('../iterators/helpers');
 
 var _gcc = require('./gcc');
 
@@ -44,10 +48,10 @@ _core2.default.clone = function (obj) {
  *
  * @param {Object} target - source object
  * @param {...Object} args - objects for extending
- * @return {!Object}
+ * @return {(!Object|!Promise)}
  */
 _core2.default.extend = function (deepOrParams, target, args) {
-	const p = (0, _types.isBoolean)(deepOrParams) ? { deep: (0, _gcc.any)(deepOrParams) } : deepOrParams || {},
+	const p = (0, _helpers.isThread)((0, _types.isBoolean)(deepOrParams) ? { deep: (0, _gcc.any)(deepOrParams) } : deepOrParams || {}),
 	      withDescriptor = p.withDescriptor && !p.withAccessors;
 
 	if (p.withAccessors) {
@@ -58,7 +62,17 @@ _core2.default.extend = function (deepOrParams, target, args) {
 		p.notOwn = true;
 	}
 
-	const current = (0, _gcc.any)((0, _types.isObjectInstance)(target) ? target : (0, _types.isArray)(arguments[2]) ? [] : {});
+	const current = (0, _gcc.any)((0, _types.isObjectInstance)(target) ? target : (0, _types.isArray)(arguments[2]) ? [] : {}),
+	      { create, defineProperty, getPrototypeOf } = Object;
+
+	let promise = { then(cb) {
+			cb();
+			return this;
+		} };
+
+	if (p.thread) {
+		promise = Promise.resolve();
+	}
 
 	let i = 1;
 	while (++i < arguments.length) {
@@ -68,15 +82,15 @@ _core2.default.extend = function (deepOrParams, target, args) {
 			continue;
 		}
 
-		(0, _core2.default)(arg).forEach((el, key) => {
+		promise = promise.then(() => (0, _core2.default)(arg).forEach((el, key) => {
 			if (p.withDescriptor && (el.get || el.set)) {
 				if (p.withAccessors) {
-					Object.defineProperty(current, key, {
+					defineProperty(current, key, {
 						get: el.get,
 						set: el.set
 					});
 				} else {
-					Object.defineProperty(current, key, el);
+					defineProperty(current, key, el);
 				}
 
 				return;
@@ -99,7 +113,7 @@ _core2.default.extend = function (deepOrParams, target, args) {
 					if ((0, _types.isArray)(current[key])) {
 						current[key] = src = current[key].slice();
 					} else {
-						current[key] = src = Object.create(current[key]);
+						current[key] = src = create(current[key]);
 					}
 				}
 
@@ -110,7 +124,7 @@ _core2.default.extend = function (deepOrParams, target, args) {
 					    construct;
 
 					if (!srcIsArray && p.withProto && p.concatArray) {
-						construct = isObj && Object.getPrototypeOf(src);
+						construct = isObj && getPrototypeOf(src);
 						srcIsArray = construct && (0, _types.isArray)(construct) && (isProto = true);
 					}
 
@@ -139,7 +153,7 @@ _core2.default.extend = function (deepOrParams, target, args) {
 					if (key in current === (p.traits === -1)) {
 						if (withDescriptor) {
 							el.value = copy;
-							Object.defineProperty(current, key, el);
+							defineProperty(current, key, el);
 						} else {
 							current[key] = copy;
 						}
@@ -147,16 +161,16 @@ _core2.default.extend = function (deepOrParams, target, args) {
 				} else {
 					if (withDescriptor) {
 						el.value = copy;
-						Object.defineProperty(current, key, el);
+						defineProperty(current, key, el);
 					} else {
 						current[key] = copy;
 					}
 				}
 			}
-		}, p);
+		}, p));
 	}
 
-	return current;
+	return p.thread ? promise.then(() => current) : current;
 };
 
 Object.assign(_core2.default, { extend: _core2.default.extend, clone: _core2.default.clone });

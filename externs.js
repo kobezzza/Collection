@@ -521,6 +521,9 @@ var fLength;
 /** @type {?} */
 var link;
 
+/** @type {?} */
+var onComplete;
+
 /**
  * @abstract
  * @param {$$CollectionType=} collection

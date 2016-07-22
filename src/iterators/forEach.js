@@ -228,7 +228,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			args.onError = onError;
 
 			thread = link.self = fn.call(this, args, opt_params || p);
-			this._addToStack(thread, p.priority, p.onComplete, wrap(p.onChunk));
+			this._addToStack(thread, p.priority, wrap(p.onChunk));
 		});
 
 		promise.thread = thread;

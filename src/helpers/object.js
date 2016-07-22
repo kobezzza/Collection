@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-loop-func */
+
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -10,6 +12,7 @@
 
 import $C from '../core';
 import { isArray, isBoolean, isObjectInstance, isExtensible } from './types';
+import { isThread } from '../iterators/helpers';
 import { any } from './gcc';
 
 /**
@@ -38,11 +41,11 @@ $C.clone = function (obj) {
  *
  * @param {Object} target - source object
  * @param {...Object} args - objects for extending
- * @return {!Object}
+ * @return {(!Object|!Promise)}
  */
 $C.extend = function (deepOrParams, target, args) {
 	const
-		p = isBoolean(deepOrParams) ? {deep: any(deepOrParams)} : deepOrParams || {},
+		p = isThread(isBoolean(deepOrParams) ? {deep: any(deepOrParams)} : deepOrParams || {}),
 		withDescriptor = p.withDescriptor && !p.withAccessors;
 
 	if (p.withAccessors) {
@@ -54,7 +57,17 @@ $C.extend = function (deepOrParams, target, args) {
 	}
 
 	const
-		current = any(isObjectInstance(target) ? target : isArray(arguments[2]) ? [] : {});
+		current = any(isObjectInstance(target) ? target : isArray(arguments[2]) ? [] : {}),
+		{create, defineProperty, getPrototypeOf} = Object;
+
+	let promise = {then(cb) {
+		cb();
+		return this;
+	}};
+
+	if (p.thread) {
+		promise = Promise.resolve();
+	}
 
 	let i = 1;
 	while (++i < arguments.length) {
@@ -65,108 +78,110 @@ $C.extend = function (deepOrParams, target, args) {
 			continue;
 		}
 
-		$C(arg).forEach((el, key) => {
-			if (p.withDescriptor && (el.get || el.set)) {
-				if (p.withAccessors) {
-					Object.defineProperty(current, key, {
-						get: el.get,
-						set: el.set
-					});
-
-				} else {
-					Object.defineProperty(current, key, el);
-				}
-
-				return;
-			}
-
-			let
-				src = current[key];
-
-			const
-				copy = arg[key];
-
-			if (current === copy || copy === arg) {
-				return;
-			}
-
-			let copyIsArray;
-			if (p.deep && copy && typeof copy === 'object' && ((copyIsArray = isArray(copy)) || isExtensible(copy))) {
-				const
-					isObj = src && typeof src === 'object',
-					isPlainObj = isObj && isExtensible(src);
-
-				if (p.withProto && isPlainObj && !current.hasOwnProperty(key)) {
-					if (isArray(current[key])) {
-						current[key] = src = current[key].slice();
+		promise = promise.then(() =>
+			$C(arg).forEach((el, key) => {
+				if (p.withDescriptor && (el.get || el.set)) {
+					if (p.withAccessors) {
+						defineProperty(current, key, {
+							get: el.get,
+							set: el.set
+						});
 
 					} else {
-						current[key] = src = Object.create(current[key]);
+						defineProperty(current, key, el);
 					}
+
+					return;
 				}
 
-				let clone;
-				if (copyIsArray) {
-					let
-						srcIsArray = isArray(src),
-						isProto = false,
-						construct;
+				let
+					src = current[key];
 
-					if (!srcIsArray && p.withProto && p.concatArray) {
-						construct = isObj && Object.getPrototypeOf(src);
-						srcIsArray = construct && isArray(construct) && (isProto = true);
+				const
+					copy = arg[key];
+
+				if (current === copy || copy === arg) {
+					return;
+				}
+
+				let copyIsArray;
+				if (p.deep && copy && typeof copy === 'object' && ((copyIsArray = isArray(copy)) || isExtensible(copy))) {
+					const
+						isObj = src && typeof src === 'object',
+						isPlainObj = isObj && isExtensible(src);
+
+					if (p.withProto && isPlainObj && !current.hasOwnProperty(key)) {
+						if (isArray(current[key])) {
+							current[key] = src = current[key].slice();
+
+						} else {
+							current[key] = src = create(current[key]);
+						}
 					}
 
-					if (srcIsArray) {
-						if (p.concatArray) {
-							const o = isProto ? construct : src;
-							current[key] = p.concatFn ? p.concatFn(o, copy) : o.concat(copy);
-							return;
+					let clone;
+					if (copyIsArray) {
+						let
+							srcIsArray = isArray(src),
+							isProto = false,
+							construct;
+
+						if (!srcIsArray && p.withProto && p.concatArray) {
+							construct = isObj && getPrototypeOf(src);
+							srcIsArray = construct && isArray(construct) && (isProto = true);
 						}
 
-						clone = src;
+						if (srcIsArray) {
+							if (p.concatArray) {
+								const o = isProto ? construct : src;
+								current[key] = p.concatFn ? p.concatFn(o, copy) : o.concat(copy);
+								return;
+							}
+
+							clone = src;
+
+						} else {
+							clone = [];
+						}
 
 					} else {
-						clone = [];
+						if (src && isPlainObj && !isArray(src)) {
+							clone = src;
+
+						} else {
+							clone = {};
+						}
 					}
 
-				} else {
-					if (src && isPlainObj && !isArray(src)) {
-						clone = src;
+					current[key] = $C.extend(p, clone, copy);
+
+				} else if (copy !== undefined) {
+					if (p.traits) {
+						if (key in current === (p.traits === -1)) {
+							if (withDescriptor) {
+								el.value = copy;
+								defineProperty(current, key, el);
+
+							} else {
+								current[key] = copy;
+							}
+						}
 
 					} else {
-						clone = {};
-					}
-				}
-
-				current[key] = $C.extend(p, clone, copy);
-
-			} else if (copy !== undefined) {
-				if (p.traits) {
-					if (key in current === (p.traits === -1)) {
 						if (withDescriptor) {
 							el.value = copy;
-							Object.defineProperty(current, key, el);
+							defineProperty(current, key, el);
 
 						} else {
 							current[key] = copy;
 						}
 					}
-
-				} else {
-					if (withDescriptor) {
-						el.value = copy;
-						Object.defineProperty(current, key, el);
-
-					} else {
-						current[key] = copy;
-					}
 				}
-			}
-		}, p);
+			}, p)
+		);
 	}
 
-	return current;
+	return p.thread ? promise.then(() => current) : current;
 };
 
 Object.assign($C, {extend: $C.extend, clone: $C.clone});

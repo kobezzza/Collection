@@ -162,15 +162,13 @@ let exec = 0;
  * @private
  * @param {?} obj - generator object
  * @param {string} priority - task priority
- * @param {?function(?)} onComplete - callback function for complete
  * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
  */
-Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onChunk) {
+Collection.prototype._addToStack = function (obj, priority, opt_onChunk) {
 	obj.value = undefined;
 	obj.thread = true;
 	obj.priority = priority;
 	obj.destroy = () => $C.destroy(obj);
-	obj.onComplete = onComplete;
 	obj.onChunk = opt_onChunk;
 	obj.pause = false;
 	obj.sleep = null;
@@ -218,9 +216,6 @@ Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onCh
 					}, {startIndex: i + 1});
 
 					exec--;
-					if (obj.onComplete && obj.onComplete !== onComplete) {
-						obj.onComplete(obj.ctx.result);
-					}
 
 				} else if (obj.onChunk) {
 					obj.onChunk(obj.ctx);

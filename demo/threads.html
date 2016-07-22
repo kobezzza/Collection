@@ -71,11 +71,10 @@
 					onChunk: function () {
 						chunks[i]++;
 						document.getElementById('result' + i).innerHTML = chunks[i] + info;
-					},
-
-					onComplete: function () {
-						document.getElementById('result' + i).innerHTML = '<b>finish</b> (' + chunks[i] + ')' + info;
 					}
+
+				}).then(function () {
+					document.getElementById('result' + i).innerHTML = '<b>finish</b> (' + chunks[i] + ')' + info;
 				});
 			});
 		</script>

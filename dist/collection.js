@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Fri, 22 Jul 2016 14:05:44 GMT
+ * Date: 'Fri, 22 Jul 2016 16:18:51 GMT
  */
 
 (function (global, factory) {
@@ -1065,7 +1065,7 @@
     				args.onError = onError;
 
     				thread = link.self = fn.call(_this, args, opt_params || p);
-    				_this._addToStack(thread, p.priority, p.onComplete, wrap(p.onChunk));
+    				_this._addToStack(thread, p.priority, wrap(p.onChunk));
     			});
 
     			promise.thread = thread;
@@ -1133,15 +1133,24 @@
     };
 
     /**
+     * @param {?} p
+     * @return {?}
+     */
+    function isThread(p) {
+    	if (p.hasOwnProperty('priority') || p.onChunk) {
+    		p.thread = true;
+    	}
+
+    	return p;
+    }
+
+    /**
      * @private
      * @param {?} p
      * @return {!Collection}
      */
     Collection.prototype._isThread = function (p) {
-    	if (p.hasOwnProperty('priority') || p.onChunk) {
-    		p.thread = true;
-    	}
-
+    	isThread(p);
     	return this;
     };
 
@@ -1276,12 +1285,12 @@
      *
      * @param {Object} target - source object
      * @param {...Object} args - objects for extending
-     * @return {!Object}
+     * @return {(!Object|!Promise)}
      */
     $C.extend = function (deepOrParams, target, args) {
     	var _arguments = arguments;
 
-    	var p = isBoolean(deepOrParams) ? { deep: any(deepOrParams) } : deepOrParams || {},
+    	var p = isThread(isBoolean(deepOrParams) ? { deep: any(deepOrParams) } : deepOrParams || {}),
     	    withDescriptor = p.withDescriptor && !p.withAccessors;
 
     	if (p.withAccessors) {
@@ -1293,6 +1302,21 @@
     	}
 
     	var current = any(isObjectInstance(target) ? target : isArray(arguments[2]) ? [] : {});
+    	var create = Object.create;
+    	var defineProperty = Object.defineProperty;
+    	var getPrototypeOf = Object.getPrototypeOf;
+
+
+    	var promise = {
+    		then: function (cb) {
+    			cb();
+    			return this;
+    		}
+    	};
+
+    	if (p.thread) {
+    		promise = Promise.resolve();
+    	}
 
     	var i = 1;
 
@@ -1303,92 +1327,94 @@
     			return 'continue';
     		}
 
-    		$C(arg).forEach(function (el, key) {
-    			if (p.withDescriptor && (el.get || el.set)) {
-    				if (p.withAccessors) {
-    					Object.defineProperty(current, key, {
-    						get: el.get,
-    						set: el.set
-    					});
-    				} else {
-    					Object.defineProperty(current, key, el);
-    				}
-
-    				return;
-    			}
-
-    			var src = current[key];
-
-    			var copy = arg[key];
-
-    			if (current === copy || copy === arg) {
-    				return;
-    			}
-
-    			var copyIsArray = void 0;
-    			if (p.deep && copy && typeof copy === 'object' && ((copyIsArray = isArray(copy)) || isExtensible(copy))) {
-    				var isObj = src && typeof src === 'object',
-    				    isPlainObj = isObj && isExtensible(src);
-
-    				if (p.withProto && isPlainObj && !current.hasOwnProperty(key)) {
-    					if (isArray(current[key])) {
-    						current[key] = src = current[key].slice();
+    		promise = promise.then(function () {
+    			return $C(arg).forEach(function (el, key) {
+    				if (p.withDescriptor && (el.get || el.set)) {
+    					if (p.withAccessors) {
+    						defineProperty(current, key, {
+    							get: el.get,
+    							set: el.set
+    						});
     					} else {
-    						current[key] = src = Object.create(current[key]);
+    						defineProperty(current, key, el);
     					}
+
+    					return;
     				}
 
-    				var clone = void 0;
-    				if (copyIsArray) {
-    					var srcIsArray = isArray(src),
-    					    isProto = false,
-    					    construct = void 0;
+    				var src = current[key];
 
-    					if (!srcIsArray && p.withProto && p.concatArray) {
-    						construct = isObj && Object.getPrototypeOf(src);
-    						srcIsArray = construct && isArray(construct) && (isProto = true);
+    				var copy = arg[key];
+
+    				if (current === copy || copy === arg) {
+    					return;
+    				}
+
+    				var copyIsArray = void 0;
+    				if (p.deep && copy && typeof copy === 'object' && ((copyIsArray = isArray(copy)) || isExtensible(copy))) {
+    					var isObj = src && typeof src === 'object',
+    					    isPlainObj = isObj && isExtensible(src);
+
+    					if (p.withProto && isPlainObj && !current.hasOwnProperty(key)) {
+    						if (isArray(current[key])) {
+    							current[key] = src = current[key].slice();
+    						} else {
+    							current[key] = src = create(current[key]);
+    						}
     					}
 
-    					if (srcIsArray) {
-    						if (p.concatArray) {
-    							var o = isProto ? construct : src;
-    							current[key] = p.concatFn ? p.concatFn(o, copy) : o.concat(copy);
-    							return;
+    					var clone = void 0;
+    					if (copyIsArray) {
+    						var srcIsArray = isArray(src),
+    						    isProto = false,
+    						    construct = void 0;
+
+    						if (!srcIsArray && p.withProto && p.concatArray) {
+    							construct = isObj && getPrototypeOf(src);
+    							srcIsArray = construct && isArray(construct) && (isProto = true);
     						}
 
-    						clone = src;
-    					} else {
-    						clone = [];
-    					}
-    				} else {
-    					if (src && isPlainObj && !isArray(src)) {
-    						clone = src;
-    					} else {
-    						clone = {};
-    					}
-    				}
+    						if (srcIsArray) {
+    							if (p.concatArray) {
+    								var o = isProto ? construct : src;
+    								current[key] = p.concatFn ? p.concatFn(o, copy) : o.concat(copy);
+    								return;
+    							}
 
-    				current[key] = $C.extend(p, clone, copy);
-    			} else if (copy !== undefined) {
-    				if (p.traits) {
-    					if (key in current === (p.traits === -1)) {
+    							clone = src;
+    						} else {
+    							clone = [];
+    						}
+    					} else {
+    						if (src && isPlainObj && !isArray(src)) {
+    							clone = src;
+    						} else {
+    							clone = {};
+    						}
+    					}
+
+    					current[key] = $C.extend(p, clone, copy);
+    				} else if (copy !== undefined) {
+    					if (p.traits) {
+    						if (key in current === (p.traits === -1)) {
+    							if (withDescriptor) {
+    								el.value = copy;
+    								defineProperty(current, key, el);
+    							} else {
+    								current[key] = copy;
+    							}
+    						}
+    					} else {
     						if (withDescriptor) {
     							el.value = copy;
-    							Object.defineProperty(current, key, el);
+    							defineProperty(current, key, el);
     						} else {
     							current[key] = copy;
     						}
     					}
-    				} else {
-    					if (withDescriptor) {
-    						el.value = copy;
-    						Object.defineProperty(current, key, el);
-    					} else {
-    						current[key] = copy;
-    					}
     				}
-    			}
-    		}, p);
+    			}, p);
+    		});
     	};
 
     	while (++i < arguments.length) {
@@ -1397,7 +1423,9 @@
     		if (_ret === 'continue') continue;
     	}
 
-    	return current;
+    	return p.thread ? promise.then(function () {
+    		return current;
+    	}) : current;
     };
 
     Object.assign($C, { extend: $C.extend, clone: $C.clone });
@@ -2744,17 +2772,15 @@
      * @private
      * @param {?} obj - generator object
      * @param {string} priority - task priority
-     * @param {?function(?)} onComplete - callback function for complete
      * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
      */
-    Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onChunk) {
+    Collection.prototype._addToStack = function (obj, priority, opt_onChunk) {
     	obj.value = undefined;
     	obj.thread = true;
     	obj.priority = priority;
     	obj.destroy = function () {
     		return $C.destroy(obj);
     	};
-    	obj.onComplete = onComplete;
     	obj.onChunk = opt_onChunk;
     	obj.pause = false;
     	obj.sleep = null;
@@ -2798,9 +2824,6 @@
     					}, { startIndex: i + 1 });
 
     					exec--;
-    					if (obj.onComplete && obj.onComplete !== onComplete) {
-    						obj.onComplete(obj.ctx.result);
-    					}
     				} else if (obj.onChunk) {
     					obj.onChunk(obj.ctx);
     				}

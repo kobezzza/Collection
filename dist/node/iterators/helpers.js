@@ -8,6 +8,9 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+exports.__esModule = true;
+exports.isThread = isThread;
+
 var _core = require('../core');
 
 var _types = require('../helpers/types');
@@ -64,15 +67,24 @@ _core.Collection.prototype._filter = function (filter) {
 };
 
 /**
+ * @param {?} p
+ * @return {?}
+ */
+function isThread(p) {
+	if (p.hasOwnProperty('priority') || p.onChunk) {
+		p.thread = true;
+	}
+
+	return p;
+}
+
+/**
  * @private
  * @param {?} p
  * @return {!Collection}
  */
 _core.Collection.prototype._isThread = function (p) {
-	if (p.hasOwnProperty('priority') || p.onChunk) {
-		p.thread = true;
-	}
-
+	isThread(p);
 	return this;
 };
 

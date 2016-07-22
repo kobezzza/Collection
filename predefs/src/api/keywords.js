@@ -65,3 +65,6 @@ var fLength;
 
 /** @type {?} */
 var link;
+
+/** @type {?} */
+var onComplete;
