@@ -32,4 +32,3 @@ require('./dist/node/iterators/group');
 require('./dist/node/iterators/remove');
 require('./dist/node/iterators/set');
 require('./dist/node/iterators/thread');
-
