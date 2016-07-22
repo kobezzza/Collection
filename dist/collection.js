@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Fri, 22 Jul 2016 13:27:40 GMT
+ * Date: 'Fri, 22 Jul 2016 13:51:58 GMT
  */
 
 (function (global, factory) {
@@ -1010,7 +1010,7 @@
     		})();
     	}
 
-    	var key = [type, cbArgs, filters.length, filterArgs, p.length, p.thread, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, p.count, p.from, p.startIndex, p.endIndex].join();
+    	var key = [type, cbArgs, filters.length, filterArgs, p.length, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, p.count, p.from, p.startIndex, p.endIndex].join();
 
     	var link = {},
     	    fn = any(tmpCycle[key] || compileCycle(key, p));

@@ -163,6 +163,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filterArgs,
 		p.length,
 		p.thread,
+		p.withDescriptor,
 		p.notOwn,
 		p.live,
 		p.inverseFilter,
