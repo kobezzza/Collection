@@ -148,6 +148,15 @@ export function compileCycle(key, p) {
 					r = f = el = BREAK;
 					wait = 0;
 				};
+
+				var onChildError = function (err) {
+					if (err && err.type === 'CollectionThreadDestroy') {
+						wait--;
+						return;
+					}
+
+					onError(err);
+				};
 			}
 		`;
 	}
@@ -213,7 +222,7 @@ export function compileCycle(key, p) {
 					waitResult.push(res);
 					wait--;
 					ctx.next();
-				}, onError);
+				}, onChildError);
 			},
 
 			sleep: function (time, opt_test, opt_interval) {

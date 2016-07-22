@@ -178,9 +178,14 @@ Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk
 
 		exec--;
 		obj.destroyed = true;
-		err = err || new Error('Thread was destroyed');
-		onError(err);
 
+		if (!err) {
+			err = new Error('Thread was destroyed');
+			err.type = 'CollectionThreadDestroy';
+			err.thread = obj;
+		}
+
+		onError(err);
 		return err;
 	};
 
@@ -218,9 +223,13 @@ Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk
 
 			$C(el).forEach((el, i, data) => {
 				const
-					obj = prop[el],
-					res = obj.next();
+					obj = prop[el];
 
+				if (!obj) {
+					return;
+				}
+
+				const res = obj.next();
 				obj.value = res.value;
 
 				if (res.done) {
