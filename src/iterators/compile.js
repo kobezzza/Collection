@@ -79,7 +79,8 @@ export function compileCycle(key, p) {
 		var
 			onIterationEnd = o.onIterationEnd,
 			onComplete = o.onComplete,
-			getDescriptor = Object.getOwnPropertyDescriptor;
+			getDescriptor = Object.getOwnPropertyDescriptor,
+			onError;
 
 		var
 			TRUE = {},
@@ -137,14 +138,21 @@ export function compileCycle(key, p) {
 			priority: ${p.thread} && '${p.priority}',
 			length: ${p.length}
 		};
+	`;
 
-		if (o.onError) {
-			var onError = function (err) {
-				o.onError(err);
-				r = f = el = BREAK;
-			};
-		}
+	if (p.thread) {
+		iFn += ws`
+			if (o.onError) {
+				onError = function (err) {
+					o.onError(err);
+					r = f = el = BREAK;
+					wait = 0;
+				};
+			}
+		`;
+	}
 
+	iFn += ws`
 		var ctx = {
 			$: $,
 			info: info,
@@ -805,6 +813,10 @@ export function compileCycle(key, p) {
 		while (wait) {
 			ctx.thread.pause = true;
 			yield;
+		}
+
+		if (r === BREAK) {
+			return;
 		}
 
 		if (onComplete) {
