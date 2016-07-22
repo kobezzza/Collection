@@ -30,7 +30,7 @@ _core.Collection.prototype.every = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	this._filter(p, opt_filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { result: true, mult: false }));
 	p.inverseFilter = !p.inverseFilter;
 

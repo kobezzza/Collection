@@ -18,7 +18,7 @@ var _types = require('../helpers/types');
 
 var _gcc = require('../helpers/gcc');
 
-var _link = require('../other/link');
+var _link = require('../helpers/link');
 
 //#endif
 
@@ -45,7 +45,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 		opt_filter = null;
 	}
 
-	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	this._filter(p, opt_filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	const isFunc = (0, _types.isFunction)(field),
@@ -57,10 +57,20 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 			const param = isFunc ? field.apply(null, arguments) : (0, _link.byLink)(el, field),
 			      val = p.saveKeys ? key : el;
 
-			if (res.has(param)) {
-				res.get(param).push(val);
+			if ((0, _types.isPromise)(param)) {
+				param.then(param => {
+					if (res.has(param)) {
+						res.get(param).push(val);
+					} else {
+						res.set(param, [val]);
+					}
+				});
 			} else {
-				res.set(param, [val]);
+				if (res.has(param)) {
+					res.get(param).push(val);
+				} else {
+					res.set(param, [val]);
+				}
 			}
 		};
 	} else {
@@ -68,10 +78,20 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 			const param = isFunc ? field.apply(null, arguments) : (0, _link.byLink)(el, field),
 			      val = p.saveKeys ? key : el;
 
-			if (res.hasOwnProperty(param)) {
-				res[param].push(val);
+			if ((0, _types.isPromise)(param)) {
+				param.then(param => {
+					if (res.hasOwnProperty(param)) {
+						res[param].push(val);
+					} else {
+						res[param] = [val];
+					}
+				});
 			} else {
-				res[param] = [val];
+				if (res.hasOwnProperty(param)) {
+					res[param].push(val);
+				} else {
+					res[param] = [val];
+				}
 			}
 		};
 	}

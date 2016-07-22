@@ -38,7 +38,7 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 		p = { filter: p };
 	}
 
-	this.filter((0, _gcc.any)(p && p.filter));
+	this._filter(p)._isThread(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
 	let type = 'object';
@@ -78,46 +78,70 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 			res = new source.constructor();
 	}
 
-	let action;
+	let fn;
 	switch (type) {
 		case 'array':
-			action = function () {
-				res.push(cb.apply(null, arguments));
+			fn = function () {
+				const val = cb.apply(null, arguments);
+
+				if (p.thread && (0, _types.isPromise)(val)) {
+					return val.then(val => res.push(val), fn[_base.ON_ERROR]);
+				}
+
+				res.push(val);
 			};
 
-			action[_base.FN_LENGTH] = cb.length;
+			fn[_base.FN_LENGTH] = cb.length;
 			break;
 
 		case 'object':
-			action = function (el, key) {
-				res[key] = cb.apply(null, arguments);
+			fn = function (el, key) {
+				const val = cb.apply(null, arguments);
+
+				if (p.thread && (0, _types.isPromise)(val)) {
+					return val.then(val => res[key] = val, fn[_base.ON_ERROR]);
+				}
+
+				res[key] = val;
 			};
 
-			action[_base.FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
+			fn[_base.FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
 			break;
 
 		case 'map':
 		case 'weakMap':
-			action = function (el, key) {
-				res.set(key, cb.apply(null, arguments));
+			fn = function (el, key) {
+				const val = cb.apply(null, arguments);
+
+				if (p.thread && (0, _types.isPromise)(val)) {
+					return val.then(val => res.set(key, val), fn[_base.ON_ERROR]);
+				}
+
+				res.set(key, val);
 			};
 
-			action[_base.FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
+			fn[_base.FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
 			break;
 
 		case 'set':
 		case 'weakSep':
-			action = function () {
-				res.add(cb.apply(null, arguments));
+			fn = function () {
+				const val = cb.apply(null, arguments);
+
+				if (p.thread && (0, _types.isPromise)(val)) {
+					return val.then(val => res.add(val), fn[_base.ON_ERROR]);
+				}
+
+				res.add(val);
 			};
 
-			action[_base.FN_LENGTH] = cb.length;
+			fn[_base.FN_LENGTH] = cb.length;
 			break;
 	}
 
 	p.result = res;
 
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
+	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;

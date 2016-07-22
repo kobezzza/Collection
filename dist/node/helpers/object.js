@@ -8,15 +8,9 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-exports.__esModule = true;
-exports.clone = clone;
-exports.extend = extend;
-
 var _core = require('../core');
 
 var _core2 = _interopRequireDefault(_core);
-
-var _hacks = require('../consts/hacks');
 
 var _types = require('./types');
 
@@ -24,19 +18,15 @@ var _gcc = require('./gcc');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-Object.assign(_core2.default, { extend, clone });
-
-console.log(1);
-
 /**
  * Clones an object
  *
  * @param {?} obj - source object
  * @return {?}
  */
-function clone(obj) {
+_core2.default.clone = function (obj) {
 	return JSON.parse(JSON.stringify(obj));
-}
+};
 
 /**
  * Extends the specified object by another objects
@@ -44,122 +34,129 @@ function clone(obj) {
  * @param {(boolean|?$$Collection_extend)} deepOrParams - if true, then properties will be copied recursively
  *   OR additional parameters for extending:
  *
- *   *) [withAccessors = false] - if true, then accessors will be copied too;
- *   *) [withProto = false] - if true, then properties will be copied with prototypes;
- *   *) [deepOrParams.concatArray = false] - if true, then array properties will be concatenated
- *        (only if extending by an another array);
- *
- *   *) [deepOrParams.traits = false] - if true, then will be copied only new properties, or if -1, only old;
- *   *) [deepOrParams.deep = false] - if true, then properties will be copied recursively.
+ *   *) [withDescriptor = false] - if true, then the descriptor of a property will be copied too
+ *   *) [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
+ *   *) [withProto = false] - if true, then properties will be copied with prototypes
+ *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
+ *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
+ *   *) [traits = false] - if true, then will be copied only new properties, or if -1, only old
+ *   *) [deep = false] - if true, then properties will be copied recursively
  *
  * @param {Object} target - source object
  * @param {...Object} args - objects for extending
  * @return {!Object}
  */
-function extend(deepOrParams, target, args) {
-	const params = (0, _gcc.any)(deepOrParams);
+_core2.default.extend = function (deepOrParams, target, args) {
+	const p = (0, _types.isBoolean)(deepOrParams) ? { deep: (0, _gcc.any)(deepOrParams) } : deepOrParams || {},
+	      withDescriptor = p.withDescriptor && !p.withAccessors;
 
-	let concatArray = false,
-	    withAccessors = false,
-	    withProto = false,
-	    traits = false,
-	    deep;
-
-	if (deepOrParams && !(0, _types.isBoolean)(deepOrParams)) {
-		const p = deepOrParams;
-		withProto = p.withProto;
-		withAccessors = p.withAccessors && _hacks.DESCRIPTORS_SUPPORT;
-		concatArray = Boolean(p.concatArray);
-		traits = p.traits || false;
-		deep = Boolean(p.deep);
-	} else {
-		deep = deepOrParams || false;
+	if (p.withAccessors) {
+		p.withDescriptor = true;
 	}
 
-	const current = (0, _gcc.any)((0, _types.isObjectInstance)(target) ? target : (0, _types.isArray)(arguments[2]) ? [] : {}),
-	      length = arguments.length;
+	if (p.withProto) {
+		p.notOwn = true;
+	}
+
+	const current = (0, _gcc.any)((0, _types.isObjectInstance)(target) ? target : (0, _types.isArray)(arguments[2]) ? [] : {});
 
 	let i = 1;
-	while (++i < length) {
+	while (++i < arguments.length) {
 		const arg = arguments[i];
 
-		if (arg) {
-			for (const key in arg) {
-				if (withAccessors) {
-					const descriptor = Object.getOwnPropertyDescriptor(arg, key);
-					if (descriptor && (descriptor.set || descriptor.get)) {
-						Object.defineProperty(current, key, {
-							get: descriptor.get,
-							set: descriptor.set
-						});
+		if (!arg) {
+			continue;
+		}
 
-						continue;
-					}
+		(0, _core2.default)(arg).forEach((el, key) => {
+			if (p.withDescriptor && (el.get || el.set)) {
+				if (p.withAccessors) {
+					Object.defineProperty(current, key, {
+						get: el.get,
+						set: el.set
+					});
+				} else {
+					Object.defineProperty(current, key, el);
 				}
 
-				let src = current[key];
+				return;
+			}
 
-				const copy = arg[key];
+			let src = current[key];
 
-				if (current === copy || copy === arg) {
-					continue;
-				}
+			const copy = arg[key];
 
-				let copyIsArray;
-				if (deep && copy && typeof copy === 'object' && ((copyIsArray = (0, _types.isArray)(copy)) || (0, _types.isExtensible)(copy))) {
-					const isObj = src && typeof src === 'object',
-					      isPlainObj = isObj && (0, _types.isExtensible)(src);
+			if (current === copy || copy === arg) {
+				return;
+			}
 
-					if (withProto && isPlainObj && !current.hasOwnProperty(key)) {
-						if ((0, _types.isArray)(current[key])) {
-							current[key] = src = current[key].slice();
-						} else {
-							current[key] = src = Object.create(current[key]);
-						}
-					}
+			let copyIsArray;
+			if (p.deep && copy && typeof copy === 'object' && ((copyIsArray = (0, _types.isArray)(copy)) || (0, _types.isExtensible)(copy))) {
+				const isObj = src && typeof src === 'object',
+				      isPlainObj = isObj && (0, _types.isExtensible)(src);
 
-					let clone;
-					if (copyIsArray) {
-						let srcIsArray = (0, _types.isArray)(src),
-						    isProto = false,
-						    construct;
-
-						if (!srcIsArray && withProto && concatArray) {
-							construct = isObj && Object.getPrototypeOf(src);
-							srcIsArray = construct && (0, _types.isArray)(construct) && (isProto = true);
-						}
-
-						if (srcIsArray) {
-							if (concatArray) {
-								current[key] = (isProto ? construct : src).concat(copy);
-								continue;
-							} else {
-								clone = src;
-							}
-						} else {
-							clone = [];
-						}
+				if (p.withProto && isPlainObj && !current.hasOwnProperty(key)) {
+					if ((0, _types.isArray)(current[key])) {
+						current[key] = src = current[key].slice();
 					} else {
-						if (src && isPlainObj && !(0, _types.isArray)(src)) {
-							clone = src;
-						} else {
-							clone = {};
-						}
+						current[key] = src = Object.create(current[key]);
+					}
+				}
+
+				let clone;
+				if (copyIsArray) {
+					let srcIsArray = (0, _types.isArray)(src),
+					    isProto = false,
+					    construct;
+
+					if (!srcIsArray && p.withProto && p.concatArray) {
+						construct = isObj && Object.getPrototypeOf(src);
+						srcIsArray = construct && (0, _types.isArray)(construct) && (isProto = true);
 					}
 
-					current[key] = extend(params, clone, copy);
-				} else if (copy !== undefined) {
-					if (traits) {
-						if (key in current === (traits === -1)) {
+					if (srcIsArray) {
+						if (p.concatArray) {
+							const o = isProto ? construct : src;
+							current[key] = p.concatFn ? p.concatFn(o, copy) : o.concat(copy);
+							return;
+						}
+
+						clone = src;
+					} else {
+						clone = [];
+					}
+				} else {
+					if (src && isPlainObj && !(0, _types.isArray)(src)) {
+						clone = src;
+					} else {
+						clone = {};
+					}
+				}
+
+				current[key] = _core2.default.extend(p, clone, copy);
+			} else if (copy !== undefined) {
+				if (p.traits) {
+					if (key in current === (p.traits === -1)) {
+						if (withDescriptor) {
+							el.value = copy;
+							Object.defineProperty(current, key, el);
+						} else {
 							current[key] = copy;
 						}
+					}
+				} else {
+					if (withDescriptor) {
+						el.value = copy;
+						Object.defineProperty(current, key, el);
 					} else {
 						current[key] = copy;
 					}
 				}
 			}
-		}
+		}, p);
 	}
 
 	return current;
-}
+};
+
+Object.assign(_core2.default, { extend: _core2.default.extend, clone: _core2.default.clone });

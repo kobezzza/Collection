@@ -22,14 +22,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const intervals = [[0, 40], [41, 160], [161, 500], [501, 2000]];
 
-/** @private */
-_core.Collection.prototype['_priority'] = _thread.priority;
-
 const lastPos = {},
       execStack = {};
 
-for (const key in _thread.priority) {
-	if (!_thread.priority.hasOwnProperty(key)) {
+for (const key in _thread.PRIORITY) {
+	if (!_thread.PRIORITY.hasOwnProperty(key)) {
 		break;
 	}
 
@@ -60,13 +57,13 @@ function getTasks() {
 
 	const sort = (a, b) => b.value - a.value;
 
-	while (total <= _thread.maxPriority) {
+	while (total <= _thread.MAX_PRIORITY) {
 		const rands = [];
 
 		(0, _core2.default)(exec).forEach((el, key) => {
 			rands.push({
 				key,
-				value: _thread.priority[key]
+				value: _thread.PRIORITY[key]
 			});
 		}, el => el.length);
 
@@ -105,7 +102,7 @@ function getTasks() {
 				if (point && !point.pause) {
 					mods[key]++;
 					tasks[key].push(arr[pos]);
-					total += _thread.priority[key];
+					total += _thread.PRIORITY[key];
 				}
 
 				arr.splice(pos, 1);
@@ -144,6 +141,7 @@ let exec = 0;
  * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
  */
 _core.Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onChunk) {
+	obj.value = undefined;
 	obj.thread = true;
 	obj.priority = priority;
 	obj.destroy = () => _core2.default.destroy(obj);
@@ -158,6 +156,7 @@ _core.Collection.prototype._addToStack = function (obj, priority, onComplete, op
 	// With strictMode in Chrome (bug?) that method can't define as obj.next =
 	Object.defineProperty(obj, 'next', {
 		value() {
+			obj.pause = false;
 			if (obj.sleep !== null) {
 				clearTimeout(obj.sleep);
 				obj.sleep = null;
@@ -177,6 +176,8 @@ _core.Collection.prototype._addToStack = function (obj, priority, onComplete, op
 			(0, _core2.default)(el).forEach((el, i, data) => {
 				const obj = prop[el],
 				      res = obj.next();
+
+				obj.value = res.value;
 
 				if (res.done) {
 					prop.splice(el, 1);
@@ -198,7 +199,7 @@ _core.Collection.prototype._addToStack = function (obj, priority, onComplete, op
 		});
 
 		if (exec) {
-			setTimeout(loop, _thread.maxPriority);
+			setTimeout(loop, _thread.MAX_PRIORITY);
 		}
 	}
 
@@ -222,10 +223,15 @@ _core2.default.destroy = function (obj) {
 		return false;
 	}
 
-	const { thread } = obj;
+	const thread = obj.priority ? obj : obj.thread;
+
 	clearTimeout(thread.sleep);
 	(0, _core2.default)(thread.children).forEach(child => _core2.default.destroy(child));
-	(0, _core2.default)(execStack[thread.priority]).remove(el => el === thread, { mult: false });
+
+	if ((0, _core2.default)(execStack[thread.priority]).remove(el => el === thread, { mult: false }).result) {
+		thread.destroyed = true;
+		exec--;
+	}
 
 	return true;
 };

@@ -29,6 +29,7 @@ $C.clone = function (obj) {
  *   OR additional parameters for extending:
  *
  *   *) [withDescriptor = false] - if true, then the descriptor of a property will be copied too
+ *   *) [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
  *   *) [withProto = false] - if true, then properties will be copied with prototypes
  *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
  *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
@@ -41,8 +42,16 @@ $C.clone = function (obj) {
  */
 $C.extend = function (deepOrParams, target, args) {
 	const
-		p = deepOrParams && !isBoolean(deepOrParams) ? any(deepOrParams) : {},
+		p = isBoolean(deepOrParams) ? {deep: any(deepOrParams)} : deepOrParams || {},
 		withDescriptor = p.withDescriptor && !p.withAccessors;
+
+	if (p.withAccessors) {
+		p.withDescriptor = true;
+	}
+
+	if (p.withProto) {
+		p.notOwn = true;
+	}
 
 	const
 		current = any(isObjectInstance(target) ? target : isArray(arguments[2]) ? [] : {});
@@ -57,7 +66,7 @@ $C.extend = function (deepOrParams, target, args) {
 		}
 
 		$C(arg).forEach((el, key) => {
-			if ((p.withDescriptor || p.withAccessors) && (el.get || el.set)) {
+			if (p.withDescriptor && (el.get || el.set)) {
 				if (p.withAccessors) {
 					Object.defineProperty(current, key, {
 						get: el.get,

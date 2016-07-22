@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.8
+ * Collection v6.0.0-beta.9
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sat, 16 Jul 2016 19:49:47 GMT
+ * Date: 'Fri, 22 Jul 2016 13:27:40 GMT
  */
 
 (function (global, factory) {
@@ -26,97 +26,13 @@
       return val;
     }
 
-        var wsRgxp = /^\s+|[\r\n]+/mg;
-
-    /**
-     * String tag (for ES6 string templates) for truncate starting whitespaces and eol-s
-     *
-     * @param {!Array<string>} strings
-     * @param {...?} expr
-     * @return {string}
-     */
-    function ws(strings, expr) {
-      expr = Array.from(arguments).slice(1);
-
-      var res = '';
-
-      for (var i = 0; i < strings.length; i++) {
-        res += strings[i].replace(wsRgxp, ' ') + (i in expr ? expr[i] : '');
-      }
-
-      return res;
-    }
-
-    var taggedTemplateLiteral = function (strings, raw) {
-      return Object.freeze(Object.defineProperties(strings, {
-        raw: {
-          value: Object.freeze(raw)
-        }
-      }));
-    };
-
-    var _templateObject = taggedTemplateLiteral(['\n(function () {\n\'use strict\';\nvar res = true;\ntry {\narguments.callee;\n} catch (ignore) {\nres = false;\n}\nreturn res;\n})();\n'], ['\n(function () {\n\'use strict\';\nvar res = true;\ntry {\narguments.callee;\n} catch (ignore) {\nres = false;\n}\nreturn res;\n})();\n']);
-
-    var IS_NODE = function () {
-    	try {
-    		return typeof process === 'object' && {}.toString.call(process) === '[object process]';
-    	} catch (ignore) {
-    		return false;
-    	}
-    }();
-
-    var IS_BROWSER = !IS_NODE && typeof window === 'object';
-    var BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function';
-    var LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'object';
-    var OBJECT_KEYS_NATIVE_SUPPORT = (Object.keys && any(Object.keys).toString()) === '[native code]';
-    var MAP_SUPPORT = function () {
-    	try {
-    		var tmp = new Map(),
-    		    key = {};
-
-    		tmp.set(key, true);
-    		return tmp.get(key);
-    	} catch (ignore) {
-    		return false;
-    	}
-    }();
-
-    var SET_SUPPORT = function () {
-    	try {
-    		var tmp = new Set(),
-    		    key = {};
-
-    		tmp.add(key);
-    		return tmp.has(key);
-    	} catch (ignore) {
-    		return false;
-    	}
-    }();
-
-    var DESCRIPTORS_SUPPORT = function () {
-    	try {
-    		return Object.getOwnPropertyDescriptor(Object.create(null, { foo: { enumerable: false } }), 'foo').enumerable === false;
-    	} catch (ignore) {
-    		return false;
-    	}
-    }();
-
-    var JSON_SUPPORT = function () {
-    	try {
-    		return JSON.parse(JSON.stringify({ foo: 'bar' })).foo === 'bar';
-    	} catch (ignore) {
-    		return false;
-    	}
-    }();
-
-    var CALLEE_SUPPORT = Boolean(eval(ws(_templateObject)));
-
-    /**
+        /**
      * Returns true if the specified value is a function
      *
      * @param {?} obj - source value
      * @return {boolean}
      */
+
     function isFunction(obj) {
     	return typeof obj === 'function';
     }
@@ -202,6 +118,16 @@
     }
 
     /**
+     * Returns true if the specified value is a Promise instance
+     *
+     * @param {?} obj - source value
+     * @return {boolean}
+     */
+    function isPromise(obj) {
+    	return typeof Promise === 'function' && obj instanceof Promise;
+    }
+
+    /**
      * Returns true if the specified value is a plain object
      *
      * @param {?} obj - source value
@@ -270,21 +196,16 @@
     /**
      * Returns the current type of an object
      *
-     * @param {!Object} obj - source object
+     * @param {Object} obj - source object
      * @param {?string=} [opt_use] - cycle type for iteration: for, for of, for in
-     * @return {string}
+     * @return {?string}
      */
     function getType(obj, opt_use) {
-    	var type = 'object';
-
     	if (!obj) {
-    		return type;
+    		return null;
     	}
 
-    	if (CALLEE_SUPPORT && 'callee' in obj && 'length' in obj) {
-    		return 'array';
-    	}
-
+    	var type = 'object';
     	switch (opt_use) {
     		case 'for':
     			type = 'array';
@@ -427,7 +348,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.8'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.9'];
 
     /**
      * Creates an instance of Collection
@@ -447,25 +368,64 @@
 
     var tmpCycle = $C.cache.cycle;
 
-    var GLOBAL = Function('return this')();
+        var wsRgxp = /^\s+|[\r\n]+/mg;
 
-    var TRUE = Collection.prototype.TRUE = {};
-    var FALSE = Collection.prototype.FALSE = {};
-    var NULL = Collection.prototype.NULL = {};
+    /**
+     * String tag (for ES6 string templates) for truncate starting whitespaces and eol-s
+     *
+     * @param {!Array<string>} strings
+     * @param {...?} expr
+     * @return {string}
+     */
+    function ws(strings, expr) {
+      expr = Array.from(arguments).slice(1);
+
+      var res = '';
+
+      for (var i = 0; i < strings.length; i++) {
+        res += strings[i].replace(wsRgxp, ' ') + (i in expr ? expr[i] : '');
+      }
+
+      return res;
+    }
+
+    var IS_NODE = function () {
+    	try {
+    		return typeof process === 'object' && {}.toString.call(process) === '[object process]';
+    	} catch (ignore) {
+    		return false;
+    	}
+    }();
+
+    var IS_BROWSER = !IS_NODE && typeof window === 'object';
+    var BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function';
+    var LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'object';
+    var OBJECT_KEYS_NATIVE_SUPPORT = (Object.keys && any(Object.keys).toString()) === '[native code]';
+
+        var GLOBAL = Function('return this')();
 
     var NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_kobezzza_Collection';
     GLOBAL[NAMESPACE] = $C;
 
     var LENGTH_REQUEST = '__COLLECTION_TMP__lengthQuery';
     var FN_LENGTH = '__COLLECTION_TMP__length';
-    var CACHE_VERSION = 17;
+    var ON_ERROR = '__COLLECTION_TMP__onError';
+    var CACHE_VERSION = 18;
     var CACHE_KEY = '__COLLECTION_CACHE_VERSION__';
     var CACHE_VERSION_KEY = '__COLLECTION_CACHE__';
 
-var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\nlink = o.link,\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete;\nvar\nwait = 0,\nonGlobalComplete,\nonGlobalError;\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nresults = [],\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nlength,\nf;\nvar\nTRUE = this.TRUE,\nFALSE = this.FALSE,\nNULL = this.NULL;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nthread: ', '\n};\nvar ctx = {\n$: $,\ninfo: info,\nget result() {\nreturn p.result;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nget next() {\nif (', ') {\nreturn false;\n}\nlink.self.next();\nreturn true;\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nlink.self.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nlink.self.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nthrow err;\n}\n} else {\nresolve();\nlink.self.next();\n}\n}, time);\n});\n},\nwait: function (promise) {\nvar thread = promise.thread;\nif (!thread || !thread.thread) {\nresults.push(thread);\nif (!wait) {\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\n}\nreturn false;\n}\nctx.yield();\nwait++;\nvar onComplete = thread.onComplete;\nthread.onComplete = function (res) {\nif (wait) {\nwait--;\n}\nresults.push(res);\nthat._stack.push(ctx);\nif (onComplete) {\nonComplete(res);\n}\nif (!wait) {\nyielder = false;\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\nthat._stack.pop();\nif (!yielder) {\nctx.next;\n}\n} else {\nthat._stack.pop();\n}\n};\nreturn promise.catch(function (err) {\nif (onGlobalError) {\nonGlobalError(err);\nonGlobalError = null;\n}\n});\n},\nget complete() {\nreturn new Promise(function (resolve, reject) {\nif (!wait) {\nresolve(that, results);\nresults = [];\nreturn false;\n}\nonGlobalComplete = resolve;\nonGlobalError = reject;\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn true;\n},\nget break() {\nbreaker = true;\nreturn true;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n'], ['\nvar \nthat = this,\ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\nlink = o.link,\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete;\nvar\nwait = 0,\nonGlobalComplete,\nonGlobalError;\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nresults = [],\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nlength,\nf;\nvar\nTRUE = this.TRUE,\nFALSE = this.FALSE,\nNULL = this.NULL;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nthread: ', '\n};\nvar ctx = {\n$: $,\ninfo: info,\nget result() {\nreturn p.result;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nget next() {\nif (', ') {\nreturn false;\n}\nlink.self.next();\nreturn true;\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nlink.self.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nlink.self.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nthrow err;\n}\n} else {\nresolve();\nlink.self.next();\n}\n}, time);\n});\n},\nwait: function (promise) {\nvar thread = promise.thread;\nif (!thread || !thread.thread) {\nresults.push(thread);\nif (!wait) {\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\n}\nreturn false;\n}\nctx.yield();\nwait++;\nvar onComplete = thread.onComplete;\nthread.onComplete = function (res) {\nif (wait) {\nwait--;\n}\nresults.push(res);\nthat._stack.push(ctx);\nif (onComplete) {\nonComplete(res);\n}\nif (!wait) {\nyielder = false;\nif (onGlobalComplete) {\nonGlobalComplete(results);\nonGlobalComplete = null;\n}\nresults = [];\nthat._stack.pop();\nif (!yielder) {\nctx.next;\n}\n} else {\nthat._stack.pop();\n}\n};\nreturn promise.catch(function (err) {\nif (onGlobalError) {\nonGlobalError(err);\nonGlobalError = null;\n}\n});\n},\nget complete() {\nreturn new Promise(function (resolve, reject) {\nif (!wait) {\nresolve(that, results);\nresults = [];\nreturn false;\n}\nonGlobalComplete = resolve;\nonGlobalError = reject;\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn true;\n},\nget break() {\nbreaker = true;\nreturn true;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n']);
-    var _templateObject2 = taggedTemplateLiteral(['\nctx.thread = link.self;\nlink.self.ctx = ctx;\n'], ['\nctx.thread = link.self;\nlink.self.ctx = ctx;\n']);
-    var _templateObject3 = taggedTemplateLiteral(['\nif (timeStart == null) {\nthat._stack.push(ctx);\ntimeStart = new Date().valueOf();\n}\n'], ['\nif (timeStart == null) {\nthat._stack.push(ctx);\ntimeStart = new Date().valueOf();\n}\n']);
-    var _templateObject4 = taggedTemplateLiteral(['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > this._priority[link.self.priority]) {\nthat._stack.pop();\nyield n;\ntime = 0;\ntimeStart = null;\n}\n'], ['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > this._priority[link.self.priority]) {\nthat._stack.pop();\nyield n;\ntime = 0;\ntimeStart = null;\n}\n']);
+    var taggedTemplateLiteral = function (strings, raw) {
+      return Object.freeze(Object.defineProperties(strings, {
+        raw: {
+          value: Object.freeze(raw)
+        }
+      }));
+    };
+
+    var _templateObject = taggedTemplateLiteral(['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\nlink = o.link,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError,\ngetDescriptor = Object.getOwnPropertyDescriptor;\nvar\nTRUE = {},\nFALSE = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nwaitResult = [],\nwait = 0;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nthread: ', '\n};\nvar ctx = {\n$: $,\ninfo: info,\nwaitResult: waitResult,\nTRUE: TRUE,\nFALSE: FALSE,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nnext: function (opt_val) {\nif (', ') {\nreturn false;\n}\nlink.self.next(opt_val);\nreturn true;\n},\nchild: function (thread) {\nif (', ' || !thread.thread) {\nreturn false;\n}\nlink.self.children.push(thread.thread);\nreturn true;\n},\nwait: function (promise) {\nif (', ') {\nreturn false;\n}\nif (promise.thread) {\nctx.child(promise);\n}\nwait++;\nreturn promise.then(function (res) {\nwaitResult.push(res);\nwait--;\nctx.next();\n}, onError);\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nlink.self.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nctx.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nthrow err;\n}\n} else {\nresolve();\nctx.next();\n}\n}, time);\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n'], ['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\nlink = o.link,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError,\ngetDescriptor = Object.getOwnPropertyDescriptor;\nvar\nTRUE = {},\nFALSE = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nwaitResult = [],\nwait = 0;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nthread: ', '\n};\nvar ctx = {\n$: $,\ninfo: info,\nwaitResult: waitResult,\nTRUE: TRUE,\nFALSE: FALSE,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nnext: function (opt_val) {\nif (', ') {\nreturn false;\n}\nlink.self.next(opt_val);\nreturn true;\n},\nchild: function (thread) {\nif (', ' || !thread.thread) {\nreturn false;\n}\nlink.self.children.push(thread.thread);\nreturn true;\n},\nwait: function (promise) {\nif (', ') {\nreturn false;\n}\nif (promise.thread) {\nctx.child(promise);\n}\nwait++;\nreturn promise.then(function (res) {\nwaitResult.push(res);\nwait--;\nctx.next();\n}, onError);\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nlink.self.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nctx.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nthrow err;\n}\n} else {\nresolve();\nctx.next();\n}\n}, time);\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n']);
+    var _templateObject2 = taggedTemplateLiteral(['\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nfunction resolveEl(res) {\nel = res;\nctx.next();\n}\nfunction resolveCb(res) {\nr = res;\nctx.next();\n}\nfunction resolveFilter(res) {\nf = res;\nctx.next();\n}\nctx.thread = link.self;\nlink.self.ctx = ctx;\n'], ['\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nfunction resolveEl(res) {\nel = res;\nctx.next();\n}\nfunction resolveCb(res) {\nr = res;\nctx.next();\n}\nfunction resolveFilter(res) {\nf = res;\nctx.next();\n}\nctx.thread = link.self;\nlink.self.ctx = ctx;\n']);
+    var _templateObject3 = taggedTemplateLiteral(['\nif (timeStart == null) {\ntimeStart = new Date().valueOf();\n}\n'], ['\nif (timeStart == null) {\ntimeStart = new Date().valueOf();\n}\n']);
+    var _templateObject4 = taggedTemplateLiteral(['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[link.self.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n'], ['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[link.self.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n']);
     var _templateObject5 = taggedTemplateLiteral(['\nvar\nclone = data,\ndLength = data.length - 1;\n'], ['\nvar\nclone = data,\ndLength = data.length - 1;\n']);
     var _templateObject6 = taggedTemplateLiteral(['\nclone = arr.slice.call(clone, ', ', ', ');\n'], ['\nclone = arr.slice.call(clone, ', ', ', ');\n']);
     var _templateObject7 = taggedTemplateLiteral(['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n'], ['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n']);
@@ -484,12 +444,16 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     var _templateObject20 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n']);
     var _templateObject21 = taggedTemplateLiteral(['\nfor (key = cursor.next(); !key.done; key = cursor.next()) {\n', '\nn++;\ni = n;\n'], ['\nfor (key = cursor.next(); !key.done; key = cursor.next()) {\n', '\nn++;\ni = n;\n']);
     var _templateObject22 = taggedTemplateLiteral(['\nif (j === ', ') {\nbreak;\n}\n'], ['\nif (j === ', ') {\nbreak;\n}\n']);
-    var _templateObject23 = taggedTemplateLiteral(['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n'], ['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n']);
-    var _templateObject24 = taggedTemplateLiteral(['\nif (yielder) {\nthat._stack.pop();\nyielder = false;\nif (link.self) {\nlink.self.pause = true;\n} else {\nlink.pause = true;\n}\nyield yieldVal;\nlink.self.pause = false;\ndelete link.pause;\nyieldVal = void 0;\nthat._stack.push(ctx);\n}\n'], ['\nif (yielder) {\nthat._stack.pop();\nyielder = false;\nif (link.self) {\nlink.self.pause = true;\n} else {\nlink.pause = true;\n}\nyield yieldVal;\nlink.self.pause = false;\ndelete link.pause;\nyieldVal = void 0;\nthat._stack.push(ctx);\n}\n']);
-    var _templateObject25 = taggedTemplateLiteral(['\nsize--;\nif (!size) {\nbreak;\n}\n'], ['\nsize--;\nif (!size) {\nbreak;\n}\n']);
-    var _templateObject26 = taggedTemplateLiteral(['\nif (breaker) {\nbreak;\n}\n', '\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(ctx);\n}\n'], ['\nif (breaker) {\nbreak;\n}\n', '\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(ctx);\n}\n']);
-    var _templateObject27 = taggedTemplateLiteral(['\n}\nthat._stack.pop();\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n'], ['\n}\nthat._stack.pop();\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n']);
-    var _templateObject28 = taggedTemplateLiteral(['(function *(o, p) { ', ' })'], ['(function *(o, p) { ', ' })']);
+    var _templateObject23 = taggedTemplateLiteral(['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nlink.self.pause = true;\nyield;\n}\n'], ['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nlink.self.pause = true;\nyield;\n}\n']);
+    var _templateObject24 = taggedTemplateLiteral(['\nif (f === undefined || f === true) {\nf = filters[', '](', ');\n'], ['\nif (f === undefined || f === true) {\nf = filters[', '](', ');\n']);
+    var _templateObject25 = taggedTemplateLiteral(['\nwhile (isPromise(f)) {\nf.then(resolveFilter, onError);\nlink.self.pause = true;\nyield;\n}\n'], ['\nwhile (isPromise(f)) {\nf.then(resolveFilter, onError);\nlink.self.pause = true;\nyield;\n}\n']);
+    var _templateObject26 = taggedTemplateLiteral(['\nf = ', 'f && f !== FALSE || f === TRUE;\n}\n'], ['\nf = ', 'f && f !== FALSE || f === TRUE;\n}\n']);
+    var _templateObject27 = taggedTemplateLiteral(['\nwhile (isPromise(r)) {\nr.then(resolveCb, onError);\nlink.self.pause = true;\nyield;\n}\n'], ['\nwhile (isPromise(r)) {\nr.then(resolveCb, onError);\nlink.self.pause = true;\nyield;\n}\n']);
+    var _templateObject28 = taggedTemplateLiteral(['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n'], ['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n']);
+    var _templateObject29 = taggedTemplateLiteral(['\nif (yielder) {\nyielder = false;\nlink.self.pause = true;\nyield yieldVal;\nyieldVal = undefined;\n}\n'], ['\nif (yielder) {\nyielder = false;\nlink.self.pause = true;\nyield yieldVal;\nyieldVal = undefined;\n}\n']);
+    var _templateObject30 = taggedTemplateLiteral(['\nsize--;\nif (!size) {\nbreak;\n}\n'], ['\nsize--;\nif (!size) {\nbreak;\n}\n']);
+    var _templateObject31 = taggedTemplateLiteral(['\nif (breaker) {\nbreak;\n}\n', '\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(ctx);\n}\n'], ['\nif (breaker) {\nbreak;\n}\n', '\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(ctx);\n}\n']);
+    var _templateObject32 = taggedTemplateLiteral(['\n}\nwhile (wait) {\nlink.self.pause = true;\nyield;\n}\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n'], ['\n}\nwhile (wait) {\nlink.self.pause = true;\nyield;\n}\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n']);
     var timeout = void 0;
     var cache$1 = $C.cache.str;
 
@@ -528,7 +492,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	var isMapSet = { 'map': true, 'set': true }[p.type];
     	var cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT);
 
-    	var iFn = ws(_templateObject$1, p.startIndex, p.endIndex, p.from, p.count, p.live, p.reverse, p.notOwn, p.inverseFilter, p.type, p.thread, !p.thread, !p.thread, !p.thread, cantModI, cantModI);
+    	var iFn = ws(_templateObject, p.startIndex, p.endIndex, p.from, p.count, p.live, p.reverse, p.notOwn, p.inverseFilter, p.type, p.thread, !p.thread, !p.thread, !p.thread, !p.thread, !p.thread, cantModI, cantModI);
 
     	if (p.thread) {
     		iFn += ws(_templateObject2);
@@ -557,8 +521,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		threadStart = ws(_templateObject3);
 
     		threadEnd = ws(_templateObject4);
-    	} else {
-    		iFn += 'that._stack.push(ctx);';
     	}
 
     	iFn += 'while (limit !== looper) {';
@@ -589,7 +551,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				iFn += ws(_templateObject10, startIndex);
     			}
 
-    			if (maxArgsLength) {
+    			if (maxArgsLength || p.thread) {
     				if (maxArgsLength > 1) {
     					if (startIndex) {
     						iFn += 'key = ' + (p.reverse ? 'dLength - (' : '') + ' n + ' + (startIndex + (p.reverse ? ')' : '')) + ';';
@@ -652,8 +614,12 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				}
     			}
 
-    			if (maxArgsLength) {
-    				iFn += 'el = data[key];';
+    			if (maxArgsLength || p.thread) {
+    				if (p.withDescriptor) {
+    					iFn += 'el = getDescriptor(data, key);';
+    				} else {
+    					iFn += 'el = data[key];';
+    				}
     			}
 
     			break;
@@ -699,7 +665,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				}
     			}
 
-    			if (maxArgsLength) {
+    			if (maxArgsLength || p.thread) {
     				if (p.type === 'map') {
     					iFn += 'el = data.get(key);';
     				} else {
@@ -726,24 +692,33 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		iFn += ws(_templateObject22, p.count);
     	}
 
-    	if (p.filter.length) {
-    		iFn += 'if (';
-
-    		for (var _i = 0; _i < p.filter.length; _i++) {
-    			iFn += '(' + (p.inverseFilter ? '!' : '') + '(f = filters[' + _i + '](' + filterArgs[_i] + ')) || f === ' + (p.inverseFilter ? 'FALSE' : 'TRUE') + ')';
-    			if (_i !== p.filter.length - 1) {
-    				iFn += '&&';
-    			}
-    		}
-
-    		iFn += ') {';
+    	if (p.thread) {
+    		iFn += ws(_templateObject23);
     	}
 
-    	var tmp = void 0;
+    	if (p.filter.length) {
+    		for (var _i = 0; _i < p.filter.length; _i++) {
+    			iFn += ws(_templateObject24, _i, filterArgs[_i]);
+
+    			if (p.thread) {
+    				iFn += ws(_templateObject25);
+    			}
+
+    			iFn += ws(_templateObject26, p.inverseFilter ? '!' : '');
+    		}
+
+    		iFn += 'if (f) {';
+    	}
+
+    	var tmp = 'r = ';
     	if (p.mult) {
-    		tmp = 'cb(' + cbArgs + ');';
+    		tmp += 'cb(' + cbArgs + ');';
     	} else {
-    		tmp = 'cb(' + cbArgs + '); breaker = true;';
+    		tmp += 'cb(' + cbArgs + '); breaker = true;';
+    	}
+
+    	if (p.thread) {
+    		tmp += ws(_templateObject27);
     	}
 
     	if (p.count) {
@@ -751,7 +726,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	}
 
     	if (p.from) {
-    		iFn += ws(_templateObject23, tmp);
+    		iFn += ws(_templateObject28, tmp);
     	} else {
     		iFn += tmp;
     	}
@@ -760,26 +735,30 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		iFn += '}';
     	}
 
-    	var yielder = ws(_templateObject24);
+    	var yielder = ws(_templateObject29);
 
     	if (p.thread) {
     		iFn += yielder;
     	}
 
     	if (!p.live && !p.reverse && isMapSet) {
-    		iFn += ws(_templateObject25);
+    		iFn += ws(_templateObject30);
     	}
 
-    	iFn += ws(_templateObject26, threadEnd);
+    	if (p.filter.length) {
+    		iFn += 'f = undefined;';
+    	}
+
+    	iFn += ws(_templateObject31, threadEnd);
 
     	if (p.thread) {
     		iFn += yielder;
     	}
 
-    	iFn += ws(_templateObject27);
+    	iFn += ws(_templateObject32);
 
     	if (p.thread) {
-    		tmpCycle[key] = eval(ws(_templateObject28, iFn));
+    		tmpCycle[key] = eval('(function *(o, p) { ' + iFn + ' })');
     	} else {
     		tmpCycle[key] = Function('o', 'p', iFn);
     	}
@@ -819,7 +798,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     }
 
     if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
-    	if (IS_BROWSER && JSON_SUPPORT && LOCAL_STORAGE_SUPPORT) {
+    	if (IS_BROWSER && LOCAL_STORAGE_SUPPORT) {
     		try {
     			if (document.readyState === 'loading') {
     				var version = localStorage.getItem(CACHE_VERSION_KEY),
@@ -849,12 +828,13 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	}
     }
 
-        var maxPriority = 40;
-    var priority = {
-      'low': maxPriority / 8,
-      'normal': maxPriority / 4,
-      'hight': maxPriority / 2,
-      'critical': maxPriority
+        var MAX_PRIORITY = 40;
+
+    var PRIORITY = {
+      'low': MAX_PRIORITY / 8,
+      'normal': MAX_PRIORITY / 4,
+      'hight': MAX_PRIORITY / 2,
+      'critical': MAX_PRIORITY
     };
 
     /**
@@ -873,7 +853,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	this.filter(p && p.filter, any(opt_filter));
+    	this._filter(p, opt_filter);
     	p = any(Object.assign(Object.create(this.p), p, { result: 0 }));
 
     	var calc = function () {
@@ -895,8 +875,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	return p.result;
     };
 
-    var stack = Collection.prototype['_stack'] = [];
-
     /**
      * Iterates the collection and calls a callback function for each element that matches for the specified condition
      *
@@ -910,6 +888,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      *   *) [startIndex = 0] - number of skipping successful iterations
      *   *) [endIndex] - end iteration position
      *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
+     *   *) [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
      *   *) [notOwn = false] - iteration type:
      *
      *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
@@ -925,7 +904,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
      *   *) [onChunk] - callback function for chunks
      *   *) [onIterationEnd] - callback function for the end of iterations
-     *   *) [onComplete] - callback function for the operation end
      *   *) [result] - parameter that marked as the operation result
      *
      * @return {(!Collection|!Promise)}
@@ -938,23 +916,20 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	if (isArray(opt_params) || isFunction(opt_params)) {
     		p.filter = p.filter.concat(opt_params);
     	} else {
-    		if (opt_params && opt_params.filter) {
+    		if (opt_params && opt_params.hasOwnProperty('filter')) {
     			opt_params.filter = p.filter.concat(opt_params.filter);
     		}
 
     		Object.assign(p, opt_params);
     	}
 
-    	if (p.notOwn) {
+    	if (p.notOwn || p.withAccessors) {
     		p.use = 'for in';
     	}
 
-    	if (p.hasOwnProperty('priority') || p.onChunk) {
-    		p.thread = true;
-    	}
-
-    	if (!priority[p.priority]) {
-    		priority[p.priority] = 'normal';
+    	this._isThread(p);
+    	if (!PRIORITY[p.priority]) {
+    		PRIORITY[p.priority] = 'normal';
     	}
 
     	var data = this.data;
@@ -1047,6 +1022,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		filters: filters,
     		fLength: fLength,
     		link: link,
+    		priority: PRIORITY,
     		onComplete: p.onComplete,
     		onIterationEnd: p.onIterationEnd
     	};
@@ -1057,6 +1033,11 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		var _ret3 = function () {
     			var thread = void 0;
     			var promise = new Promise(function (resolve, reject) {
+    				function onError(err) {
+    					thread && thread.destroy();
+    					reject(err);
+    				}
+
     				function wrap(fn) {
     					if (!fn) {
     						return undefined;
@@ -1064,9 +1045,10 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     					return function (el, key, data, o) {
     						try {
+    							fn[ON_ERROR] = onError;
     							return fn(el, key, data, o);
     						} catch (err) {
-    							reject(err);
+    							onError(err);
     							throw err;
     						}
     					};
@@ -1076,35 +1058,12 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     					filters[_i] = wrap(filters[_i]);
     				}
 
-    				var onComplete = p.onComplete;
-
-    				args.onComplete = p.onComplete = wrap(function (res) {
-    					onComplete && onComplete(res);
-    					resolve(res);
-    				});
-
     				args.cb = wrap(cb);
+    				args.onComplete = resolve;
     				args.onIterationEnd = wrap(p.onIterationEnd);
+    				args.onError = onError;
+
     				thread = link.self = fn.call(_this, args, opt_params || p);
-
-    				if (link.pause) {
-    					link.self.pause = true;
-    				}
-
-    				var l = stack.length;
-
-    				var cursor = void 0,
-    				    pos = 1;
-
-    				while (cursor = stack[l - pos]) {
-    					if (cursor.thread) {
-    						cursor.thread.children.push(thread);
-    						break;
-    					}
-
-    					pos++;
-    				}
-
     				_this._addToStack(thread, p.priority, p.onComplete, wrap(p.onChunk));
     			});
 
@@ -1120,11 +1079,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	//#endif
 
     	link.self = fn.call(this, args, opt_params || p);
-
-    	if (link.pause) {
-    		link.self.pause = true;
-    	}
-
     	return this;
     };
 
@@ -1145,6 +1099,48 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	}
 
     	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
+    	return this;
+    };
+
+    /**
+     * Appends a filter to the operation
+     *
+     * @private
+     * @param {...?} filter - function filter
+     * @return {!Collection}
+     */
+    Collection.prototype._filter = function (filter) {
+    	var args = [];
+    	for (var i = 0; i < arguments.length; i++) {
+    		var el = arguments[i];
+
+    		if (i === 0) {
+    			if (!el || !el.filter) {
+    				continue;
+    			}
+
+    			el = [el.filter, delete el.filter][0];
+    		}
+
+    		if (el) {
+    			args = args.concat(el);
+    		}
+    	}
+
+    	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
+    	return this;
+    };
+
+    /**
+     * @private
+     * @param {?} p
+     * @return {!Collection}
+     */
+    Collection.prototype._isThread = function (p) {
+    	if (p.hasOwnProperty('priority') || p.onChunk) {
+    		p.thread = true;
+    	}
+
     	return this;
     };
 
@@ -1224,7 +1220,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
        * Sets .mult to false for the operation
        * @return {!Collection}
        */
-
     		get: function () {
     			this.p.mult = false;
     			return this;
@@ -1236,7 +1231,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
        * Sets .inverseFilter to true for the operation
        * @return {!Collection}
        */
-
     		get: function () {
     			this.p.inverseFilter = true;
     			return this;
@@ -1248,7 +1242,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
        * Sets .reverse to true for the operation
        * @return {!Collection}
        */
-
     		get: function () {
     			this.p.reverse = true;
     			return this;
@@ -1272,121 +1265,135 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @param {(boolean|?$$Collection_extend)} deepOrParams - if true, then properties will be copied recursively
      *   OR additional parameters for extending:
      *
-     *   *) [withAccessors = false] - if true, then accessors will be copied too;
-     *   *) [withProto = false] - if true, then properties will be copied with prototypes;
-     *   *) [deepOrParams.concatArray = false] - if true, then array properties will be concatenated
-     *        (only if extending by an another array);
-     *
-     *   *) [deepOrParams.traits = false] - if true, then will be copied only new properties, or if -1, only old;
-     *   *) [deepOrParams.deep = false] - if true, then properties will be copied recursively.
+     *   *) [withDescriptor = false] - if true, then the descriptor of a property will be copied too
+     *   *) [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
+     *   *) [withProto = false] - if true, then properties will be copied with prototypes
+     *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
+     *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
+     *   *) [traits = false] - if true, then will be copied only new properties, or if -1, only old
+     *   *) [deep = false] - if true, then properties will be copied recursively
      *
      * @param {Object} target - source object
      * @param {...Object} args - objects for extending
      * @return {!Object}
      */
     $C.extend = function (deepOrParams, target, args) {
-    	var params = any(deepOrParams);
+    	var _arguments = arguments;
 
-    	var concatArray = false,
-    	    withAccessors = false,
-    	    withProto = false,
-    	    traits = false,
-    	    deep = void 0;
+    	var p = isBoolean(deepOrParams) ? { deep: any(deepOrParams) } : deepOrParams || {},
+    	    withDescriptor = p.withDescriptor && !p.withAccessors;
 
-    	if (deepOrParams && !isBoolean(deepOrParams)) {
-    		var p = deepOrParams;
-    		withProto = p.withProto;
-    		withAccessors = p.withAccessors && DESCRIPTORS_SUPPORT;
-    		concatArray = Boolean(p.concatArray);
-    		traits = p.traits || false;
-    		deep = Boolean(p.deep);
-    	} else {
-    		deep = deepOrParams || false;
+    	if (p.withAccessors) {
+    		p.withDescriptor = true;
     	}
 
-    	var current = any(isObjectInstance(target) ? target : isArray(arguments[2]) ? [] : {}),
-    	    length = arguments.length;
+    	if (p.withProto) {
+    		p.notOwn = true;
+    	}
+
+    	var current = any(isObjectInstance(target) ? target : isArray(arguments[2]) ? [] : {});
 
     	var i = 1;
-    	while (++i < length) {
-    		var arg = arguments[i];
 
-    		if (arg) {
-    			for (var key in arg) {
-    				if (withAccessors) {
-    					var descriptor = Object.getOwnPropertyDescriptor(arg, key);
-    					if (descriptor && (descriptor.set || descriptor.get)) {
-    						Object.defineProperty(current, key, {
-    							get: descriptor.get,
-    							set: descriptor.set
-    						});
+    	var _loop = function () {
+    		var arg = _arguments[i];
 
-    						continue;
-    					}
+    		if (!arg) {
+    			return 'continue';
+    		}
+
+    		$C(arg).forEach(function (el, key) {
+    			if (p.withDescriptor && (el.get || el.set)) {
+    				if (p.withAccessors) {
+    					Object.defineProperty(current, key, {
+    						get: el.get,
+    						set: el.set
+    					});
+    				} else {
+    					Object.defineProperty(current, key, el);
     				}
 
-    				var src = current[key];
+    				return;
+    			}
 
-    				var copy = arg[key];
+    			var src = current[key];
 
-    				if (current === copy || copy === arg) {
-    					continue;
-    				}
+    			var copy = arg[key];
 
-    				var copyIsArray = void 0;
-    				if (deep && copy && typeof copy === 'object' && ((copyIsArray = isArray(copy)) || isExtensible(copy))) {
-    					var isObj = src && typeof src === 'object',
-    					    isPlainObj = isObj && isExtensible(src);
+    			if (current === copy || copy === arg) {
+    				return;
+    			}
 
-    					if (withProto && isPlainObj && !current.hasOwnProperty(key)) {
-    						if (isArray(current[key])) {
-    							current[key] = src = current[key].slice();
-    						} else {
-    							current[key] = src = Object.create(current[key]);
-    						}
-    					}
+    			var copyIsArray = void 0;
+    			if (p.deep && copy && typeof copy === 'object' && ((copyIsArray = isArray(copy)) || isExtensible(copy))) {
+    				var isObj = src && typeof src === 'object',
+    				    isPlainObj = isObj && isExtensible(src);
 
-    					var clone = void 0;
-    					if (copyIsArray) {
-    						var srcIsArray = isArray(src),
-    						    isProto = false,
-    						    construct = void 0;
-
-    						if (!srcIsArray && withProto && concatArray) {
-    							construct = isObj && Object.getPrototypeOf(src);
-    							srcIsArray = construct && isArray(construct) && (isProto = true);
-    						}
-
-    						if (srcIsArray) {
-    							if (concatArray) {
-    								current[key] = (isProto ? construct : src).concat(copy);
-    								continue;
-    							} else {
-    								clone = src;
-    							}
-    						} else {
-    							clone = [];
-    						}
+    				if (p.withProto && isPlainObj && !current.hasOwnProperty(key)) {
+    					if (isArray(current[key])) {
+    						current[key] = src = current[key].slice();
     					} else {
-    						if (src && isPlainObj && !isArray(src)) {
-    							clone = src;
-    						} else {
-    							clone = {};
-    						}
+    						current[key] = src = Object.create(current[key]);
+    					}
+    				}
+
+    				var clone = void 0;
+    				if (copyIsArray) {
+    					var srcIsArray = isArray(src),
+    					    isProto = false,
+    					    construct = void 0;
+
+    					if (!srcIsArray && p.withProto && p.concatArray) {
+    						construct = isObj && Object.getPrototypeOf(src);
+    						srcIsArray = construct && isArray(construct) && (isProto = true);
     					}
 
-    					current[key] = $C.extend(params, clone, copy);
-    				} else if (copy !== undefined) {
-    					if (traits) {
-    						if (key in current === (traits === -1)) {
+    					if (srcIsArray) {
+    						if (p.concatArray) {
+    							var o = isProto ? construct : src;
+    							current[key] = p.concatFn ? p.concatFn(o, copy) : o.concat(copy);
+    							return;
+    						}
+
+    						clone = src;
+    					} else {
+    						clone = [];
+    					}
+    				} else {
+    					if (src && isPlainObj && !isArray(src)) {
+    						clone = src;
+    					} else {
+    						clone = {};
+    					}
+    				}
+
+    				current[key] = $C.extend(p, clone, copy);
+    			} else if (copy !== undefined) {
+    				if (p.traits) {
+    					if (key in current === (p.traits === -1)) {
+    						if (withDescriptor) {
+    							el.value = copy;
+    							Object.defineProperty(current, key, el);
+    						} else {
     							current[key] = copy;
     						}
+    					}
+    				} else {
+    					if (withDescriptor) {
+    						el.value = copy;
+    						Object.defineProperty(current, key, el);
     					} else {
     						current[key] = copy;
     					}
     				}
     			}
-    		}
+    		}, p);
+    	};
+
+    	while (++i < arguments.length) {
+    		var _ret = _loop();
+
+    		if (_ret === 'continue') continue;
     	}
 
     	return current;
@@ -1418,7 +1425,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		p = { filter: p };
     	}
 
-    	this.filter(any(p && p.filter));
+    	this._filter(p)._isThread(p);
     	p = any(Object.assign(Object.create(this.p), p));
 
     	var type = 'object';
@@ -1458,46 +1465,78 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			res = new source.constructor();
     	}
 
-    	var action = void 0;
+    	var fn = void 0;
     	switch (type) {
     		case 'array':
-    			action = function () {
-    				res.push(cb.apply(null, arguments));
+    			fn = function () {
+    				var val = cb.apply(null, arguments);
+
+    				if (p.thread && isPromise(val)) {
+    					return val.then(function (val) {
+    						return res.push(val);
+    					}, fn[ON_ERROR]);
+    				}
+
+    				res.push(val);
     			};
 
-    			action[FN_LENGTH] = cb.length;
+    			fn[FN_LENGTH] = cb.length;
     			break;
 
     		case 'object':
-    			action = function (el, key) {
-    				res[key] = cb.apply(null, arguments);
+    			fn = function (el, key) {
+    				var val = cb.apply(null, arguments);
+
+    				if (p.thread && isPromise(val)) {
+    					return val.then(function (val) {
+    						return res[key] = val;
+    					}, fn[ON_ERROR]);
+    				}
+
+    				res[key] = val;
     			};
 
-    			action[FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
+    			fn[FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
     			break;
 
     		case 'map':
     		case 'weakMap':
-    			action = function (el, key) {
-    				res.set(key, cb.apply(null, arguments));
+    			fn = function (el, key) {
+    				var val = cb.apply(null, arguments);
+
+    				if (p.thread && isPromise(val)) {
+    					return val.then(function (val) {
+    						return res.set(key, val);
+    					}, fn[ON_ERROR]);
+    				}
+
+    				res.set(key, val);
     			};
 
-    			action[FN_LENGTH] = action.length > cb.length ? action.length : cb.length;
+    			fn[FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
     			break;
 
     		case 'set':
     		case 'weakSep':
-    			action = function () {
-    				res.add(cb.apply(null, arguments));
+    			fn = function () {
+    				var val = cb.apply(null, arguments);
+
+    				if (p.thread && isPromise(val)) {
+    					return val.then(function (val) {
+    						return res.add(val);
+    					}, fn[ON_ERROR]);
+    				}
+
+    				res.add(val);
     			};
 
-    			action[FN_LENGTH] = cb.length;
+    			fn[FN_LENGTH] = cb.length;
     			break;
     	}
 
     	p.result = res;
 
-    	var returnVal = any(this.forEach(any(action), p));
+    	var returnVal = any(this.forEach(any(fn), p));
 
     	if (returnVal !== this) {
     		return returnVal;
@@ -1505,34 +1544,6 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     	return p.result;
     };
-
-    /**
-     * Collection context link
-     *
-     * @constructor
-     * @param {$$CollectionLink} link - source link
-     */
-    function Link(link) {
-      this.link = isArray(link) ? [link] : link;
-    }
-
-    /**
-     * Returns a context link value
-     * @return {?}
-     */
-    Link.prototype.valueOf = function () {
-      return this.link;
-    };
-
-    /**
-     * Returns true if the specified object is a Link instance
-     *
-     * @param {?} obj - source object
-     * @return {boolean}
-     */
-    function isLink(obj) {
-      return obj instanceof Link;
-    }
 
     /**
      * Sets a value to an object property by a link or returns/deletes the property.
@@ -1559,14 +1570,10 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      *   [create = false] - if true, then the property will be created if it's not defined
      *   [test = false] - if is true, then will be returned false if the property is not defined
      *
-     * @return {({key, result: boolean, value}|?)}
+     * @return {({result: boolean, key, value, notFound: (boolean|undefined)}|?)}
      */
     function byLink(obj, link, opt_params) {
     	var p = opt_params || {};
-
-    	if (isLink(link)) {
-    		link = link.valueOf();
-    	}
 
     	var linkList = isString(link) ? any(link).split('.') : [].concat(link),
     	    length = linkList.length,
@@ -1587,6 +1594,15 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				throw new ReferenceError(el + ' is not defined!');
     			}
 
+    			if (p.delete) {
+    				return {
+    					notFound: true,
+    					result: false,
+    					key: undefined,
+    					value: undefined
+    				};
+    			}
+
     			return undefined;
     		}
 
@@ -1604,12 +1620,16 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		    isASet = objIsSet || isWeakSet(obj);
 
     		// Set or delete
-    		if (!isTest && i === last && (p.delete || p.value !== undefined)) {
+    		if (!isTest && i === last && (p.delete || 'value' in p)) {
     			var cache = {
     				key: isASet ? null : el,
     				result: isAMap || isASet ? obj.has(el) : el in obj,
     				value: isAMap ? obj.get(el) : isASet ? el : obj[el]
     			};
+
+    			if ('value' in p) {
+    				cache.newValue = p.value;
+    			}
 
     			if (p.delete) {
     				if (cache.result) {
@@ -1736,7 +1756,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     	//#if link
 
-    	if (isLink(opt_filter) || !isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
+    	if (!isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
     		var tmp = byLink(this.data, any(opt_filter));
     		p.onComplete && p.onComplete(tmp);
     		return tmp;
@@ -1749,7 +1769,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	this.filter(p && p.filter, any(opt_filter));
+    	this._filter(p, opt_filter);
     	p = any(Object.assign(Object.create(this.p), p));
 
     	var action = void 0;
@@ -1793,7 +1813,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	this.filter(p && p.filter, any(opt_filter));
+    	this._filter(p, opt_filter)._isThread(p);
     	p = any(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
 
     	fn[FN_LENGTH] = cb.length - 1;
@@ -1802,7 +1822,15 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			p.result = el;
     			opt_initialValue = true;
     		} else {
-    			p.result = cb.apply(null, [p.result].concat([].slice.call(arguments)));
+    			var val = cb.apply(null, [p.result].concat([].slice.call(arguments)));
+
+    			if (p.thread && isPromise(val)) {
+    				return val.then(function (val) {
+    					return p.result = val;
+    				}, fn[ON_ERROR]);
+    			}
+
+    			p.result = val;
     		}
     	}
 
@@ -1831,7 +1859,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	this.filter(p && p.filter, any(opt_filter));
+    	this._filter(p, opt_filter);
     	p = any(Object.assign(Object.create(this.p), p, { result: true, mult: false }));
     	p.inverseFilter = !p.inverseFilter;
 
@@ -1862,7 +1890,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
         opt_filter = null;
       }
 
-      this.filter(p && p.filter, any(opt_filter));
+      this._filter(p, opt_filter);
       p = any(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
       var returnVal = any(this.forEach(function () {
@@ -1896,7 +1924,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	this.filter(p && p.filter, any(opt_filter));
+    	this._filter(p, opt_filter);
     	p = any(Object.assign(Object.create(this.p), p));
 
     	var action = void 0;
@@ -1953,7 +1981,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		return el === searchElement;
     	};
 
-    	this.filter(p && p.filter, any(opt_filter), f);
+    	this._filter(p, opt_filter, f);
     	p = any(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
     	var returnVal = any(this.forEach(function () {
@@ -1994,7 +2022,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	this.filter(p && p.filter, any(opt_filter));
+    	this._filter(p, opt_filter);
     	p = any(Object.assign(Object.create(this.p), p, { mult: true }));
 
     	var isFunc = isFunction(field),
@@ -2006,10 +2034,20 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			var param = isFunc ? field.apply(null, arguments) : byLink(el, field),
     			    val = p.saveKeys ? key : el;
 
-    			if (res.has(param)) {
-    				res.get(param).push(val);
+    			if (isPromise(param)) {
+    				param.then(function (param) {
+    					if (res.has(param)) {
+    						res.get(param).push(val);
+    					} else {
+    						res.set(param, [val]);
+    					}
+    				});
     			} else {
-    				res.set(param, [val]);
+    				if (res.has(param)) {
+    					res.get(param).push(val);
+    				} else {
+    					res.set(param, [val]);
+    				}
     			}
     		};
     	} else {
@@ -2017,10 +2055,20 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			var param = isFunc ? field.apply(null, arguments) : byLink(el, field),
     			    val = p.saveKeys ? key : el;
 
-    			if (res.hasOwnProperty(param)) {
-    				res[param].push(val);
+    			if (isPromise(param)) {
+    				param.then(function (param) {
+    					if (res.hasOwnProperty(param)) {
+    						res[param].push(val);
+    					} else {
+    						res[param] = [val];
+    					}
+    				});
     			} else {
-    				res[param] = [val];
+    				if (res.hasOwnProperty(param)) {
+    					res[param].push(val);
+    				} else {
+    					res[param] = [val];
+    				}
     			}
     		};
     	}
@@ -2053,7 +2101,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     	//#if link
 
-    	if (isLink(opt_filter) || !isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
+    	if (!isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
     		var tmp = byLink(this.data, opt_filter, { delete: true });
     		p.onComplete && p.onComplete(tmp);
     		return tmp;
@@ -2066,7 +2114,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		opt_filter = null;
     	}
 
-    	this.filter(p && p.filter, any(opt_filter));
+    	this._filter(p, opt_filter);
     	p = any(Object.assign(Object.create(this.p), p));
 
     	var type = getType(this.data, p.use);
@@ -2081,12 +2129,19 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     	if (mult) {
     		p.result = res;
+    	} else {
+    		p.result = {
+    			notFound: true,
+    			result: false,
+    			key: undefined,
+    			value: undefined
+    		};
     	}
 
-    	var action = void 0;
+    	var fn = void 0;
     	switch (type) {
     		case 'map':
-    			action = function (value, key, data) {
+    			fn = function (value, key, data) {
     				data.delete(key);
     				var o = {
     					result: !data.has(key),
@@ -2104,7 +2159,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			break;
 
     		case 'set':
-    			action = function (value, key, data) {
+    			fn = function (value, key, data) {
     				data.delete(value);
     				var o = {
     					result: !data.has(value),
@@ -2123,7 +2178,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     		case 'array':
     			if (p.reverse) {
-    				action = function (value, key, data) {
+    				fn = function (value, key, data) {
     					splice.call(data, key, 1);
     					var o = {
     						result: data[key] !== value,
@@ -2141,7 +2196,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				(function () {
     					var rm = 0;
     					if (p.live) {
-    						action = function (value, key, data, ctx) {
+    						fn = function (value, key, data, ctx) {
     							splice.call(data, key, 1);
     							ctx.i(-1);
     							var o = {
@@ -2159,15 +2214,16 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     							rm++;
     						};
     					} else {
-    						action = function (value, key, data, ctx) {
+    						fn = function (value, key, data, ctx) {
     							var ln = ctx.length();
-    							var fn = function (length) {
+    							var f = function (length) {
     								if (rm === length) {
     									return false;
     								}
 
     								splice.call(data, key, 1);
     								ctx.i(-1);
+
     								var o = {
     									result: data[key] !== value,
     									key: key + rm,
@@ -2184,9 +2240,9 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     							};
 
     							if (isNumber(ln)) {
-    								fn(ln);
+    								f(ln);
     							} else {
-    								ctx.wait(ln).then(fn);
+    								return ctx.wait(ln).then(f, fn[ON_ERROR]);
     							}
     						};
     					}
@@ -2196,7 +2252,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			break;
 
     		default:
-    			action = function (value, key, data) {
+    			fn = function (value, key, data) {
     				delete data[key];
     				var o = {
     					result: key in data === false,
@@ -2212,7 +2268,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			};
     	}
 
-    	var returnVal = any(this.forEach(any(action), p));
+    	var returnVal = any(this.forEach(any(fn), p));
 
     	if (returnVal !== this) {
     		return returnVal;
@@ -2234,7 +2290,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      *   *) [key] - key (null for array.push) of a new element (if search elements nof found)
      *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
      *
-     * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
+     * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
      */
     Collection.prototype.set = function (value, filter, opt_params) {
     	var p = opt_params || {};
@@ -2243,7 +2299,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     	//#if link
 
-    	if (isLink(filter) || !isFunction(filter) && (isArray(filter) && !isFunction(filter[1]) || filter != null && typeof filter !== 'object')) {
+    	if (!isFunction(filter) && (isArray(filter) && !isFunction(filter[1]) || filter != null && typeof filter !== 'object')) {
     		var tmp = byLink(data, filter, { value: value, create: p.create !== false, error: true });
     		p.onComplete && p.onComplete(tmp);
     		return tmp;
@@ -2256,7 +2312,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		filter = null;
     	}
 
-    	this.filter(p && p.filter, any(filter));
+    	this._filter(p, filter)._isThread(p);
     	p = any(Object.assign(Object.create(this.p), p));
 
     	var type = getType(data, p.use),
@@ -2267,14 +2323,45 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     	if (mult) {
     		p.result = report;
+    	} else {
+    		p.result = {
+    			notFound: true,
+    			result: false,
+    			key: undefined,
+    			value: undefined
+    		};
     	}
 
-    	var action = void 0;
+    	var fn = void 0;
     	if (isFunc) {
     		switch (type) {
     			case 'map':
-    				action = function (el, key, data) {
+    				fn = function (el, key, data) {
     					var res = value.apply(null, arguments);
+
+    					if (p.thread && isPromise(res)) {
+    						return res.then(function (res) {
+    							var status = res === undefined;
+
+    							if (res !== undefined && data.get(key) !== res) {
+    								data.set(key, res);
+    								status = data.get(key) === res;
+    							}
+
+    							var o = {
+    								key: key,
+    								value: el,
+    								newValue: res,
+    								result: status
+    							};
+
+    							if (mult) {
+    								report.push(o);
+    							} else {
+    								p.result = o;
+    							}
+    						}, fn[ON_ERROR]);
+    					}
 
     					var status = res === undefined;
 
@@ -2286,6 +2373,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     					var o = {
     						key: key,
     						value: el,
+    						newValue: res,
     						result: status
     					};
 
@@ -2299,8 +2387,33 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				break;
 
     			case 'set':
-    				action = function (el, key, data) {
+    				fn = function (el, key, data) {
     					var res = value.apply(null, arguments);
+
+    					if (p.thread && isPromise(res)) {
+    						return res.then(function (res) {
+    							var status = res === undefined;
+
+    							if (res !== undefined && !data.has(res)) {
+    								data.delete(el);
+    								data.add(res);
+    								status = data.has(res);
+    							}
+
+    							var o = {
+    								key: null,
+    								value: el,
+    								newValue: res,
+    								result: status
+    							};
+
+    							if (mult) {
+    								report.push(o);
+    							} else {
+    								p.result = o;
+    							}
+    						}, fn[ON_ERROR]);
+    					}
 
     					var status = res === undefined;
 
@@ -2313,6 +2426,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     					var o = {
     						key: null,
     						value: el,
+    						newValue: res,
     						result: status
     					};
 
@@ -2326,8 +2440,32 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				break;
 
     			default:
-    				action = function (el, key, data) {
+    				fn = function (el, key, data) {
     					var res = value.apply(null, arguments);
+
+    					if (p.thread && isPromise(res)) {
+    						return res.then(function (res) {
+    							var status = res === undefined;
+
+    							if (res !== undefined && data[key] !== res) {
+    								data[key] = res;
+    								status = data[key] === res;
+    							}
+
+    							var o = {
+    								key: key,
+    								value: el,
+    								newValue: res,
+    								result: status
+    							};
+
+    							if (mult) {
+    								report.push(o);
+    							} else {
+    								p.result = o;
+    							}
+    						}, fn[ON_ERROR]);
+    					}
 
     					var status = res === undefined;
 
@@ -2339,6 +2477,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     					var o = {
     						key: key,
     						value: el,
+    						newValue: res,
     						result: status
     					};
 
@@ -2350,11 +2489,11 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				};
     		}
 
-    		action[FN_LENGTH] = action.length > value.length ? action.length : value.length;
+    		fn[FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
     	} else {
     		switch (type) {
     			case 'map':
-    				action = function (el, key, data) {
+    				fn = function (el, key, data) {
     					var result = false;
     					if (data.get(key) !== value) {
     						data.set(key, value);
@@ -2364,6 +2503,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     					var o = {
     						key: key,
     						value: el,
+    						newValue: value,
     						result: result
     					};
 
@@ -2377,7 +2517,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				break;
 
     			case 'set':
-    				action = function (el, key, data) {
+    				fn = function (el, key, data) {
     					var result = false;
     					if (!data.has(value)) {
     						data.delete(el);
@@ -2388,6 +2528,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     					var o = {
     						key: null,
     						value: el,
+    						newValue: value,
     						result: result
     					};
 
@@ -2401,7 +2542,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				break;
 
     			default:
-    				action = function (el, key, data) {
+    				fn = function (el, key, data) {
     					var result = false;
     					if (data[key] !== value) {
     						data[key] = value;
@@ -2411,6 +2552,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     					var o = {
     						key: key,
     						value: el,
+    						newValue: value,
     						result: result
     					};
 
@@ -2427,21 +2569,27 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	var onIterationEnd = _p.onIterationEnd;
 
     	p.onIterationEnd = function (ctx) {
-    		if ((!p.result || !p.result.length) && 'key' in p) {
+    		if ((mult ? p.result.notFound : !p.result.length) && 'key' in p) {
     			if (p.key == null && isArray(data)) {
     				p.key = data.length;
     			}
 
-    			byLink(data, p.key, {
+    			var res = byLink(data, p.key, {
     				value: isFunc ? value(undefined, undefined, data, ctx) : value,
     				create: p.create !== false
     			});
+
+    			if (mult) {
+    				p.result.push(res);
+    			} else {
+    				p.result = res;
+    			}
     		}
 
     		onIterationEnd && onIterationEnd(ctx);
     	};
 
-    	var returnVal = any(this.forEach(any(action), p));
+    	var returnVal = any(this.forEach(any(fn), p));
 
     	if (returnVal !== this) {
     		return returnVal;
@@ -2464,13 +2612,10 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
 
     var intervals = [[0, 40], [41, 160], [161, 500], [501, 2000]];
 
-    /** @private */
-    Collection.prototype['_priority'] = priority;
-
     var lastPos = {};
     var execStack = {};
-    for (var key in priority) {
-    	if (!priority.hasOwnProperty(key)) {
+    for (var key in PRIORITY) {
+    	if (!PRIORITY.hasOwnProperty(key)) {
     		break;
     	}
 
@@ -2513,7 +2658,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		$C(exec).forEach(function (el, key) {
     			rands.push({
     				key: key,
-    				value: priority[key]
+    				value: PRIORITY[key]
     			});
     		}, function (el) {
     			return el.length;
@@ -2557,7 +2702,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     				if (point && !point.pause) {
     					mods[key]++;
     					tasks[key].push(arr[_pos]);
-    					total += priority[key];
+    					total += PRIORITY[key];
     				}
 
     				arr.splice(_pos, 1);
@@ -2575,7 +2720,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		}
     	};
 
-    	while (total <= maxPriority) {
+    	while (total <= MAX_PRIORITY) {
     		var _ret = _loop();
 
     		if (_ret === 'break') break;
@@ -2602,6 +2747,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
      * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
      */
     Collection.prototype._addToStack = function (obj, priority, onComplete, opt_onChunk) {
+    	obj.value = undefined;
     	obj.thread = true;
     	obj.priority = priority;
     	obj.destroy = function () {
@@ -2618,6 +2764,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     	// With strictMode in Chrome (bug?) that method can't define as obj.next =
     	Object.defineProperty(obj, 'next', {
     		value: function () {
+    			obj.pause = false;
     			if (obj.sleep !== null) {
     				clearTimeout(obj.sleep);
     				obj.sleep = null;
@@ -2637,6 +2784,8 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     			$C(el).forEach(function (el, i, data) {
     				var obj = prop[el],
     				    res = obj.next();
+
+    				obj.value = res.value;
 
     				if (res.done) {
     					prop.splice(el, 1);
@@ -2658,7 +2807,7 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		});
 
     		if (exec) {
-    			setTimeout(loop, maxPriority);
+    			setTimeout(loop, MAX_PRIORITY);
     		}
     	}
 
@@ -2682,15 +2831,19 @@ var     _templateObject$1 = taggedTemplateLiteral(['\nvar \nthat = this,\ndata =
     		return false;
     	}
 
-    	var thread = obj.thread;
+    	var thread = obj.priority ? obj : obj.thread;
 
     	clearTimeout(thread.sleep);
     	$C(thread.children).forEach(function (child) {
     		return $C.destroy(child);
     	});
-    	$C(execStack[thread.priority]).remove(function (el) {
+
+    	if ($C(execStack[thread.priority]).remove(function (el) {
     		return el === thread;
-    	}, { mult: false });
+    	}, { mult: false }).result) {
+    		thread.destroyed = true;
+    		exec--;
+    	}
 
     	return true;
     };

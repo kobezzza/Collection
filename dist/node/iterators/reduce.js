@@ -34,7 +34,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 		opt_filter = null;
 	}
 
-	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	this._filter(p, opt_filter)._isThread(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
 
 	fn[_base.FN_LENGTH] = cb.length - 1;
@@ -43,7 +43,13 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 			p.result = el;
 			opt_initialValue = true;
 		} else {
-			p.result = cb.apply(null, [p.result].concat([].slice.call(arguments)));
+			const val = cb.apply(null, [p.result].concat([].slice.call(arguments)));
+
+			if (p.thread && (0, _types.isPromise)(val)) {
+				return val.then(val => p.result = val, fn[_base.ON_ERROR]);
+			}
+
+			p.result = val;
 		}
 	}
 

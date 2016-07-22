@@ -8,6 +8,13 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+/**
+ * Returns true if the specified value is a function
+ *
+ * @param {?} obj - source value
+ * @return {boolean}
+ */
+
 exports.__esModule = true;
 exports.isFunction = isFunction;
 exports.isNumber = isNumber;
@@ -18,6 +25,7 @@ exports.isMap = isMap;
 exports.isWeakMap = isWeakMap;
 exports.isSet = isSet;
 exports.isWeakSet = isWeakSet;
+exports.isPromise = isPromise;
 exports.isPlainObject = isPlainObject;
 exports.isObjectInstance = isObjectInstance;
 exports.isLikeArray = isLikeArray;
@@ -25,15 +33,6 @@ exports.isGenerator = isGenerator;
 exports.isIterator = isIterator;
 exports.getType = getType;
 exports.isExtensible = isExtensible;
-
-var _hacks = require('../consts/hacks');
-
-/**
- * Returns true if the specified value is a function
- *
- * @param {?} obj - source value
- * @return {boolean}
- */
 function isFunction(obj) {
 	return typeof obj === 'function';
 }
@@ -119,6 +118,16 @@ function isWeakSet(obj) {
 }
 
 /**
+ * Returns true if the specified value is a Promise instance
+ *
+ * @param {?} obj - source value
+ * @return {boolean}
+ */
+function isPromise(obj) {
+	return typeof Promise === 'function' && obj instanceof Promise;
+}
+
+/**
  * Returns true if the specified value is a plain object
  *
  * @param {?} obj - source value
@@ -187,21 +196,16 @@ function isIterator(obj) {
 /**
  * Returns the current type of an object
  *
- * @param {!Object} obj - source object
+ * @param {Object} obj - source object
  * @param {?string=} [opt_use] - cycle type for iteration: for, for of, for in
- * @return {string}
+ * @return {?string}
  */
 function getType(obj, opt_use) {
-	let type = 'object';
-
 	if (!obj) {
-		return type;
+		return null;
 	}
 
-	if (_hacks.CALLEE_SUPPORT && 'callee' in obj && 'length' in obj) {
-		return 'array';
-	}
-
+	let type = 'object';
 	switch (opt_use) {
 		case 'for':
 			type = 'array';

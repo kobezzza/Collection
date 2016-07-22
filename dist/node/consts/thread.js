@@ -9,10 +9,11 @@
  */
 
 exports.__esModule = true;
-const maxPriority = exports.maxPriority = 40;
-const priority = exports.priority = {
-  'low': maxPriority / 8,
-  'normal': maxPriority / 4,
-  'hight': maxPriority / 2,
-  'critical': maxPriority
+const MAX_PRIORITY = exports.MAX_PRIORITY = 40;
+
+const PRIORITY = exports.PRIORITY = {
+  'low': MAX_PRIORITY / 8,
+  'normal': MAX_PRIORITY / 4,
+  'hight': MAX_PRIORITY / 2,
+  'critical': MAX_PRIORITY
 };

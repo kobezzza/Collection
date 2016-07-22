@@ -24,8 +24,6 @@ var _gcc = require('../helpers/gcc');
 
 require('./length');
 
-const stack = _core.Collection.prototype['_stack'] = [];
-
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
@@ -39,6 +37,7 @@ const stack = _core.Collection.prototype['_stack'] = [];
  *   *) [startIndex = 0] - number of skipping successful iterations
  *   *) [endIndex] - end iteration position
  *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
+ *   *) [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
  *   *) [notOwn = false] - iteration type:
  *
  *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
@@ -54,7 +53,6 @@ const stack = _core.Collection.prototype['_stack'] = [];
  *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
  *   *) [onChunk] - callback function for chunks
  *   *) [onIterationEnd] - callback function for the end of iterations
- *   *) [onComplete] - callback function for the operation end
  *   *) [result] - parameter that marked as the operation result
  *
  * @return {(!Collection|!Promise)}
@@ -65,23 +63,20 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	if ((0, _types.isArray)(opt_params) || (0, _types.isFunction)(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
 	} else {
-		if (opt_params && opt_params.filter) {
+		if (opt_params && opt_params.hasOwnProperty('filter')) {
 			opt_params.filter = p.filter.concat(opt_params.filter);
 		}
 
 		Object.assign(p, opt_params);
 	}
 
-	if (p.notOwn) {
+	if (p.notOwn || p.withAccessors) {
 		p.use = 'for in';
 	}
 
-	if (p.hasOwnProperty('priority') || p.onChunk) {
-		p.thread = true;
-	}
-
-	if (!_thread.priority[p.priority]) {
-		_thread.priority[p.priority] = 'normal';
+	this._isThread(p);
+	if (!_thread.PRIORITY[p.priority]) {
+		_thread.PRIORITY[p.priority] = 'normal';
 	}
 
 	const { data } = this;
@@ -169,6 +164,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		filters,
 		fLength,
 		link,
+		priority: _thread.PRIORITY,
 		onComplete: p.onComplete,
 		onIterationEnd: p.onIterationEnd
 	};
@@ -178,6 +174,11 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	if (p.thread) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
+			function onError(err) {
+				thread && thread.destroy();
+				reject(err);
+			}
+
 			function wrap(fn) {
 				if (!fn) {
 					return undefined;
@@ -185,9 +186,10 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 				return (el, key, data, o) => {
 					try {
+						fn[_base.ON_ERROR] = onError;
 						return fn(el, key, data, o);
 					} catch (err) {
-						reject(err);
+						onError(err);
 						throw err;
 					}
 				};
@@ -197,34 +199,12 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 				filters[i] = wrap(filters[i]);
 			}
 
-			const { onComplete } = p;
-			args.onComplete = p.onComplete = wrap(res => {
-				onComplete && onComplete(res);
-				resolve(res);
-			});
-
 			args.cb = wrap(cb);
+			args.onComplete = resolve;
 			args.onIterationEnd = wrap(p.onIterationEnd);
+			args.onError = onError;
+
 			thread = link.self = fn.call(this, args, opt_params || p);
-
-			if (link.pause) {
-				link.self.pause = true;
-			}
-
-			const l = stack.length;
-
-			let cursor,
-			    pos = 1;
-
-			while (cursor = stack[l - pos]) {
-				if (cursor.thread) {
-					cursor.thread.children.push(thread);
-					break;
-				}
-
-				pos++;
-			}
-
 			this._addToStack(thread, p.priority, p.onComplete, wrap(p.onChunk));
 		});
 
@@ -235,10 +215,5 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	//#endif
 
 	link.self = fn.call(this, args, opt_params || p);
-
-	if (link.pause) {
-		link.self.pause = true;
-	}
-
 	return this;
 };

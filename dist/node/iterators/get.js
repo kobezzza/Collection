@@ -10,13 +10,11 @@
 
 var _core = require('../core');
 
-var _link = require('../helpers/link');
-
 var _types = require('../helpers/types');
 
 var _gcc = require('../helpers/gcc');
 
-var _link2 = require('../other/link');
+var _link = require('../helpers/link');
 
 //#endif
 
@@ -34,8 +32,8 @@ _core.Collection.prototype.get = function (opt_filter, opt_params) {
 
 	//#if link
 
-	if ((0, _link.isLink)(opt_filter) || !(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
-		const tmp = (0, _link2.byLink)(this.data, (0, _gcc.any)(opt_filter));
+	if (!(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
+		const tmp = (0, _link.byLink)(this.data, (0, _gcc.any)(opt_filter));
 		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
@@ -47,7 +45,7 @@ _core.Collection.prototype.get = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	this._filter(p, opt_filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
 	let action;

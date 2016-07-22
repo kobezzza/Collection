@@ -25,6 +25,4 @@ Object.assign(_core2.default, {
     str: {},
     cycle: {}
   }
-});
-
-const tmpCycle = exports.tmpCycle = _core2.default.cache.cycle;
+});const tmpCycle = exports.tmpCycle = _core2.default.cache.cycle;

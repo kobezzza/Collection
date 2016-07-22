@@ -27,7 +27,7 @@ require('../consts/cache');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (_links.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
-	if (_hacks.IS_BROWSER && _hacks.JSON_SUPPORT && _hacks.LOCAL_STORAGE_SUPPORT) {
+	if (_hacks.IS_BROWSER && _hacks.LOCAL_STORAGE_SUPPORT) {
 		try {
 			if (document.readyState === 'loading') {
 				const version = localStorage.getItem(_base.CACHE_VERSION_KEY),

@@ -12,13 +12,11 @@ var _core = require('../core');
 
 var _base = require('../consts/base');
 
-var _link = require('../helpers/link');
-
 var _types = require('../helpers/types');
 
 var _gcc = require('../helpers/gcc');
 
-var _link2 = require('../other/link');
+var _link = require('../helpers/link');
 
 //#endif
 
@@ -33,7 +31,7 @@ var _link2 = require('../other/link');
  *   *) [key] - key (null for array.push) of a new element (if search elements nof found)
  *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
  *
- * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
+ * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */
 _core.Collection.prototype.set = function (value, filter, opt_params) {
 	let p = opt_params || {};
@@ -42,8 +40,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 	//#if link
 
-	if ((0, _link.isLink)(filter) || !(0, _types.isFunction)(filter) && ((0, _types.isArray)(filter) && !(0, _types.isFunction)(filter[1]) || filter != null && typeof filter !== 'object')) {
-		const tmp = (0, _link2.byLink)(data, filter, { value, create: p.create !== false, error: true });
+	if (!(0, _types.isFunction)(filter) && ((0, _types.isArray)(filter) && !(0, _types.isFunction)(filter[1]) || filter != null && typeof filter !== 'object')) {
+		const tmp = (0, _link.byLink)(data, filter, { value, create: p.create !== false, error: true });
 		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
@@ -55,7 +53,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this.filter(p && p.filter, (0, _gcc.any)(filter));
+	this._filter(p, filter)._isThread(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
 	const type = (0, _types.getType)(data, p.use),
@@ -66,14 +64,45 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 	if (mult) {
 		p.result = report;
+	} else {
+		p.result = {
+			notFound: true,
+			result: false,
+			key: undefined,
+			value: undefined
+		};
 	}
 
-	let action;
+	let fn;
 	if (isFunc) {
 		switch (type) {
 			case 'map':
-				action = function (el, key, data) {
+				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
+
+					if (p.thread && (0, _types.isPromise)(res)) {
+						return res.then(res => {
+							let status = res === undefined;
+
+							if (res !== undefined && data.get(key) !== res) {
+								data.set(key, res);
+								status = data.get(key) === res;
+							}
+
+							const o = {
+								key,
+								value: el,
+								newValue: res,
+								result: status
+							};
+
+							if (mult) {
+								report.push(o);
+							} else {
+								p.result = o;
+							}
+						}, fn[_base.ON_ERROR]);
+					}
 
 					let status = res === undefined;
 
@@ -85,6 +114,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key,
 						value: el,
+						newValue: res,
 						result: status
 					};
 
@@ -98,8 +128,33 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				break;
 
 			case 'set':
-				action = function (el, key, data) {
+				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
+
+					if (p.thread && (0, _types.isPromise)(res)) {
+						return res.then(res => {
+							let status = res === undefined;
+
+							if (res !== undefined && !data.has(res)) {
+								data.delete(el);
+								data.add(res);
+								status = data.has(res);
+							}
+
+							const o = {
+								key: null,
+								value: el,
+								newValue: res,
+								result: status
+							};
+
+							if (mult) {
+								report.push(o);
+							} else {
+								p.result = o;
+							}
+						}, fn[_base.ON_ERROR]);
+					}
 
 					let status = res === undefined;
 
@@ -112,6 +167,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key: null,
 						value: el,
+						newValue: res,
 						result: status
 					};
 
@@ -125,8 +181,32 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				break;
 
 			default:
-				action = function (el, key, data) {
+				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
+
+					if (p.thread && (0, _types.isPromise)(res)) {
+						return res.then(res => {
+							let status = res === undefined;
+
+							if (res !== undefined && data[key] !== res) {
+								data[key] = res;
+								status = data[key] === res;
+							}
+
+							const o = {
+								key,
+								value: el,
+								newValue: res,
+								result: status
+							};
+
+							if (mult) {
+								report.push(o);
+							} else {
+								p.result = o;
+							}
+						}, fn[_base.ON_ERROR]);
+					}
 
 					let status = res === undefined;
 
@@ -138,6 +218,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key,
 						value: el,
+						newValue: res,
 						result: status
 					};
 
@@ -149,11 +230,11 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				};
 		}
 
-		action[_base.FN_LENGTH] = action.length > value.length ? action.length : value.length;
+		fn[_base.FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
 	} else {
 		switch (type) {
 			case 'map':
-				action = (el, key, data) => {
+				fn = (el, key, data) => {
 					let result = false;
 					if (data.get(key) !== value) {
 						data.set(key, value);
@@ -163,6 +244,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key,
 						value: el,
+						newValue: value,
 						result
 					};
 
@@ -176,7 +258,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				break;
 
 			case 'set':
-				action = (el, key, data) => {
+				fn = (el, key, data) => {
 					let result = false;
 					if (!data.has(value)) {
 						data.delete(el);
@@ -187,6 +269,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key: null,
 						value: el,
+						newValue: value,
 						result
 					};
 
@@ -200,7 +283,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				break;
 
 			default:
-				action = (el, key, data) => {
+				fn = (el, key, data) => {
 					let result = false;
 					if (data[key] !== value) {
 						data[key] = value;
@@ -210,6 +293,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 					const o = {
 						key,
 						value: el,
+						newValue: value,
 						result
 					};
 
@@ -224,21 +308,27 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 	const { onIterationEnd } = p;
 	p.onIterationEnd = ctx => {
-		if ((!p.result || !p.result.length) && 'key' in p) {
+		if ((mult ? p.result.notFound : !p.result.length) && 'key' in p) {
 			if (p.key == null && (0, _types.isArray)(data)) {
 				p.key = data.length;
 			}
 
-			(0, _link2.byLink)(data, p.key, {
+			const res = (0, _link.byLink)(data, p.key, {
 				value: isFunc ? value(undefined, undefined, data, ctx) : value,
 				create: p.create !== false
 			});
+
+			if (mult) {
+				p.result.push(res);
+			} else {
+				p.result = res;
+			}
 		}
 
 		onIterationEnd && onIterationEnd(ctx);
 	};
 
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
+	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;

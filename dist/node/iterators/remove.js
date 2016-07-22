@@ -10,13 +10,13 @@
 
 var _core = require('../core');
 
-var _link = require('../helpers/link');
+var _base = require('../consts/base');
 
 var _types = require('../helpers/types');
 
 var _gcc = require('../helpers/gcc');
 
-var _link2 = require('../other/link');
+var _link = require('../helpers/link');
 
 //#endif
 
@@ -33,8 +33,8 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 
 	//#if link
 
-	if ((0, _link.isLink)(opt_filter) || !(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
-		const tmp = (0, _link2.byLink)(this.data, opt_filter, { delete: true });
+	if (!(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
+		const tmp = (0, _link.byLink)(this.data, opt_filter, { delete: true });
 		p.onComplete && p.onComplete(tmp);
 		return tmp;
 	}
@@ -46,7 +46,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this.filter(p && p.filter, (0, _gcc.any)(opt_filter));
+	this._filter(p, opt_filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
 	const type = (0, _types.getType)(this.data, p.use);
@@ -61,12 +61,19 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 
 	if (mult) {
 		p.result = res;
+	} else {
+		p.result = {
+			notFound: true,
+			result: false,
+			key: undefined,
+			value: undefined
+		};
 	}
 
-	let action;
+	let fn;
 	switch (type) {
 		case 'map':
-			action = (value, key, data) => {
+			fn = (value, key, data) => {
 				data.delete(key);
 				const o = {
 					result: !data.has(key),
@@ -84,7 +91,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 			break;
 
 		case 'set':
-			action = (value, key, data) => {
+			fn = (value, key, data) => {
 				data.delete(value);
 				const o = {
 					result: !data.has(value),
@@ -103,7 +110,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 
 		case 'array':
 			if (p.reverse) {
-				action = (value, key, data) => {
+				fn = (value, key, data) => {
 					splice.call(data, key, 1);
 					const o = {
 						result: data[key] !== value,
@@ -120,7 +127,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 			} else {
 				let rm = 0;
 				if (p.live) {
-					action = (value, key, data, ctx) => {
+					fn = (value, key, data, ctx) => {
 						splice.call(data, key, 1);
 						ctx.i(-1);
 						const o = {
@@ -138,15 +145,16 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 						rm++;
 					};
 				} else {
-					action = (value, key, data, ctx) => {
+					fn = (value, key, data, ctx) => {
 						const ln = ctx.length();
-						const fn = length => {
+						const f = length => {
 							if (rm === length) {
 								return false;
 							}
 
 							splice.call(data, key, 1);
 							ctx.i(-1);
+
 							const o = {
 								result: data[key] !== value,
 								key: key + rm,
@@ -163,9 +171,9 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 						};
 
 						if ((0, _types.isNumber)(ln)) {
-							fn(ln);
+							f(ln);
 						} else {
-							ctx.wait(ln).then(fn);
+							return ctx.wait(ln).then(f, fn[_base.ON_ERROR]);
 						}
 					};
 				}
@@ -174,7 +182,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 			break;
 
 		default:
-			action = (value, key, data) => {
+			fn = (value, key, data) => {
 				delete data[key];
 				const o = {
 					result: key in data === false,
@@ -190,7 +198,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 			};
 	}
 
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
+	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;
