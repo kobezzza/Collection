@@ -14,11 +14,9 @@ var _base = require('../consts/base');
 
 var _types = require('../helpers/types');
 
-var _gcc = require('../helpers/gcc');
-
 var _link = require('../helpers/link');
 
-//#endif
+var _gcc = require('../helpers/gcc');
 
 /**
  * Sets a new value for collection elements by the specified condition/link
@@ -38,15 +36,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 	const { data } = this;
 
-	//#if link
-
 	if (!(0, _types.isFunction)(filter) && ((0, _types.isArray)(filter) && !(0, _types.isFunction)(filter[1]) || filter != null && typeof filter !== 'object')) {
-		const tmp = (0, _link.byLink)(data, filter, { value, create: p.create !== false, error: true });
-		p.onComplete && p.onComplete(tmp);
-		return tmp;
+		return (0, _link.byLink)(data, filter, { value, create: p.create !== false, error: true });
 	}
-
-	//#endif
 
 	if (!(0, _types.isArray)(filter) && !(0, _types.isFunction)(filter)) {
 		p = filter || p;
@@ -336,5 +328,3 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 	return p.result;
 };
-
-//#if link

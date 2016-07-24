@@ -28,7 +28,7 @@ require('./iterators/forEach');
 
 require('./iterators/helpers');
 
-require('./helpers/object');
+require('./iterators/extend');
 
 require('./iterators/map');
 
@@ -55,7 +55,7 @@ require('./iterators/thread');
 //#endif
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//#if static.object
+//#if iterators.extend
 
 //#endif
 

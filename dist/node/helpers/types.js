@@ -32,9 +32,11 @@ exports.isLikeArray = isLikeArray;
 exports.isGenerator = isGenerator;
 exports.isIterator = isIterator;
 exports.getType = getType;
-exports.isExtensible = isExtensible;
+exports.getStructure = getStructure;
+exports.isStructure = isStructure;
+exports.canExtended = canExtended;
 function isFunction(obj) {
-	return typeof obj === 'function';
+  return typeof obj === 'function';
 }
 
 /**
@@ -44,7 +46,7 @@ function isFunction(obj) {
  * @return {boolean}
  */
 function isNumber(obj) {
-	return typeof obj === 'number';
+  return typeof obj === 'number';
 }
 
 /**
@@ -54,7 +56,7 @@ function isNumber(obj) {
  * @return {boolean}
  */
 function isString(obj) {
-	return typeof obj === 'string';
+  return typeof obj === 'string';
 }
 
 /**
@@ -64,7 +66,7 @@ function isString(obj) {
  * @return {boolean}
  */
 function isBoolean(obj) {
-	return typeof obj === 'boolean';
+  return typeof obj === 'boolean';
 }
 
 /**
@@ -74,7 +76,7 @@ function isBoolean(obj) {
  * @return {boolean}
  */
 function isArray(obj) {
-	return Array.isArray(obj);
+  return Array.isArray(obj) || obj instanceof Array;
 }
 
 /**
@@ -84,7 +86,7 @@ function isArray(obj) {
  * @return {boolean}
  */
 function isMap(obj) {
-	return typeof Map === 'function' && obj instanceof Map;
+  return typeof Map === 'function' && obj instanceof Map;
 }
 
 /**
@@ -94,7 +96,7 @@ function isMap(obj) {
  * @return {boolean}
  */
 function isWeakMap(obj) {
-	return typeof WeakMap === 'function' && obj instanceof WeakMap;
+  return typeof WeakMap === 'function' && obj instanceof WeakMap;
 }
 
 /**
@@ -104,7 +106,7 @@ function isWeakMap(obj) {
  * @return {boolean}
  */
 function isSet(obj) {
-	return typeof Set === 'function' && obj instanceof Set;
+  return typeof Set === 'function' && obj instanceof Set;
 }
 
 /**
@@ -114,7 +116,7 @@ function isSet(obj) {
  * @return {boolean}
  */
 function isWeakSet(obj) {
-	return typeof WeakSet === 'function' && obj instanceof WeakSet;
+  return typeof WeakSet === 'function' && obj instanceof WeakSet;
 }
 
 /**
@@ -124,7 +126,7 @@ function isWeakSet(obj) {
  * @return {boolean}
  */
 function isPromise(obj) {
-	return typeof Promise === 'function' && obj instanceof Promise;
+  return typeof Promise === 'function' && obj instanceof Promise;
 }
 
 /**
@@ -134,12 +136,12 @@ function isPromise(obj) {
  * @return {boolean}
  */
 function isPlainObject(obj) {
-	return Boolean(obj) && (obj.constructor === Object || obj.constructor.name === 'Object');
+  return Boolean(obj) && obj.constructor === Object;
 }
 
 const objectTypes = {
-	'object': true,
-	'function': true
+  'object': true,
+  'function': true
 };
 
 /**
@@ -149,7 +151,7 @@ const objectTypes = {
  * @return {boolean}
  */
 function isObjectInstance(obj) {
-	return Boolean(obj) && objectTypes[typeof obj];
+  return Boolean(obj) && objectTypes[typeof obj];
 }
 
 const isFuncRgxp = /\[object Function]/;
@@ -161,16 +163,16 @@ const isFuncRgxp = /\[object Function]/;
  * @return {boolean}
  */
 function isLikeArray(obj) {
-	const res = isArray(obj) || obj &&
+  const res = isArray(obj) || obj &&
 
-	// The hack for PhantomJS,
-	// because it has strange bug for HTMLCollection and NodeList:
-	// typeof 'function' && instanceof Function = false
-	isObjectInstance(obj) && !isFuncRgxp.test({}.toString.call(obj)) && (
-	// If the object is like an array
-	obj.length > 0 && 0 in obj || obj.length === 0);
+  // The hack for PhantomJS,
+  // because it has strange bug for HTMLCollection and NodeList:
+  // typeof 'function' && instanceof Function = false
+  isObjectInstance(obj) && !isFuncRgxp.test({}.toString.call(obj)) && (
+  // If the object is like an array
+  obj.length > 0 && 0 in obj || obj.length === 0);
 
-	return Boolean(res);
+  return Boolean(res);
 }
 
 /**
@@ -180,7 +182,7 @@ function isLikeArray(obj) {
  * @return {boolean}
  */
 function isGenerator(obj) {
-	return isFunction(obj) && obj.constructor.name === 'GeneratorFunction';
+  return isFunction(obj) && obj.constructor.name === 'GeneratorFunction';
 }
 
 /**
@@ -190,7 +192,7 @@ function isGenerator(obj) {
  * @return {boolean}
  */
 function isIterator(obj) {
-	return Boolean(obj && (typeof Symbol === 'function' ? obj[Symbol.iterator] : typeof obj['@@iterator'] === 'function'));
+  return Boolean(obj && (typeof Symbol === 'function' ? obj[Symbol.iterator] : typeof obj['@@iterator'] === 'function'));
 }
 
 /**
@@ -201,76 +203,94 @@ function isIterator(obj) {
  * @return {?string}
  */
 function getType(obj, opt_use) {
-	if (!obj) {
-		return null;
-	}
+  if (!obj) {
+    return null;
+  }
 
-	let type = 'object';
-	switch (opt_use) {
-		case 'for':
-			type = 'array';
-			break;
+  let type = 'object';
+  switch (opt_use) {
+    case 'for':
+      type = 'array';
+      break;
 
-		case 'for of':
-			type = 'iterator';
-			break;
+    case 'for of':
+      type = 'iterator';
+      break;
 
-		case 'for in':
-			type = 'object';
-			break;
+    case 'for in':
+      type = 'object';
+      break;
 
-		default:
-			if (isMap(obj)) {
-				type = 'map';
-			} else if (isWeakMap(obj)) {
-				type = 'weakMap';
-			} else if (isSet(obj)) {
-				type = 'set';
-			} else if (isWeakSet(obj)) {
-				type = 'weakSet';
-			} else if (isGenerator(obj)) {
-				type = 'generator';
-			} else if (isLikeArray(obj)) {
-				type = 'array';
-			} else if (isIterator(obj)) {
-				type = 'iterator';
-			}
-	}
+    default:
+      if (isMap(obj)) {
+        type = 'map';
+      } else if (isWeakMap(obj)) {
+        type = 'weakMap';
+      } else if (isSet(obj)) {
+        type = 'set';
+      } else if (isWeakSet(obj)) {
+        type = 'weakSet';
+      } else if (isGenerator(obj)) {
+        type = 'generator';
+      } else if (isLikeArray(obj)) {
+        type = 'array';
+      } else if (isIterator(obj)) {
+        type = 'iterator';
+      }
+  }
 
-	return type;
+  return type;
 }
 
-const nativeNames = {
-	'Crypto': true,
-	'Number': true,
-	'String': true,
-	'Boolean': true,
-	'Symbol': true,
-	'Function': true,
-	'Date': true,
-	'RegExp': true,
-	'Blob': true,
-	'Array': true,
-	'ArrayBuffer': true,
-	'Uint8ClampedArray': true,
-	'Uint8Array': true,
-	'Uint16Array': true,
-	'Uint32Array': true,
-	'Int8Array': true,
-	'Int16Array': true,
-	'Int32Array': true,
-	'Map': true,
-	'WeakMap': true,
-	'Set': true,
-	'WeakSet': true,
-	'Error': true,
-	'EvalError': true,
-	'TypeError': true,
-	'SyntaxError': true,
-	'URIError': true,
-	'RangeError': true,
-	'ReferenceError': true
-};
+const isNative = exports.isNative = /\[native code]/;
+
+/**
+ * Returns true if the specified object is one of JS data structures
+ *
+ * @param {?} obj - source object
+ * @return {?}
+ */
+function getStructure(obj) {
+  if (!obj) {
+    return false;
+  }
+
+  if (isArray(obj)) {
+    return [];
+  }
+
+  if (isPlainObject(obj)) {
+    return {};
+  }
+
+  if (isMap(obj)) {
+    return new Map();
+  }
+
+  if (isSet(obj)) {
+    return new Set();
+  }
+
+  return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString()) ? {} : false;
+}
+
+/**
+ * Returns true if the specified object is one of JS data structures
+ *
+ * @param {?} obj - source object
+ * @return {boolean}
+ */
+function isStructure(obj) {
+  if (!obj) {
+    return false;
+  }
+
+  if (isArray(obj) || isPlainObject(obj) || isMap(obj) || isSet(obj)) {
+    return true;
+  }
+
+  return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
+}
 
 /**
  * Returns true if the specified object can be extended
@@ -278,28 +298,14 @@ const nativeNames = {
  * @param {?} obj - source object
  * @return {boolean}
  */
-function isExtensible(obj) {
-	if (!obj) {
-		return false;
-	}
+function canExtended(obj) {
+  if (!obj) {
+    return false;
+  }
 
-	if (isArray(obj)) {
-		return true;
-	}
+  if (isArray(obj) || isPlainObject(obj)) {
+    return true;
+  }
 
-	const constr = obj.constructor;
-
-	if (!isFunction(constr)) {
-		return false;
-	}
-
-	if (isPlainObject(obj)) {
-		return true;
-	}
-
-	if (nativeNames[constr.name]) {
-		return false;
-	}
-
-	return constr.toString() === '[native code]';
+  return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
 }

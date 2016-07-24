@@ -10,17 +10,13 @@
 
 var _core = require('../core');
 
-var _links = require('../consts/links');
-
 var _base = require('../consts/base');
 
 var _types = require('../helpers/types');
 
-var _gcc = require('../helpers/gcc');
-
 var _link = require('../helpers/link');
 
-//#endif
+var _gcc = require('../helpers/gcc');
 
 /**
  * Groups elements in the collection by the specified condition and returns a new collection
@@ -49,58 +45,58 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	const isFunc = (0, _types.isFunction)(field),
-	      res = p.result = p.useMap ? new _links.GLOBAL['Map']() : {};
+	      res = p.result = p.useMap ? new Map() : {};
 
-	let action;
+	let fn;
 	if (p.useMap) {
-		action = function (el, key) {
+		fn = function (el, key) {
 			const param = isFunc ? field.apply(null, arguments) : (0, _link.byLink)(el, field),
 			      val = p.saveKeys ? key : el;
 
 			if ((0, _types.isPromise)(param)) {
-				param.then(param => {
+				return param.then(param => {
 					if (res.has(param)) {
 						res.get(param).push(val);
 					} else {
 						res.set(param, [val]);
 					}
-				});
+				}, fn[_base.ON_ERROR]);
+			}
+
+			if (res.has(param)) {
+				res.get(param).push(val);
 			} else {
-				if (res.has(param)) {
-					res.get(param).push(val);
-				} else {
-					res.set(param, [val]);
-				}
+				res.set(param, [val]);
 			}
 		};
 	} else {
-		action = function (el, key) {
+		fn = function (el, key) {
 			const param = isFunc ? field.apply(null, arguments) : (0, _link.byLink)(el, field),
 			      val = p.saveKeys ? key : el;
 
 			if ((0, _types.isPromise)(param)) {
-				param.then(param => {
+				return param.then(param => {
 					if (res.hasOwnProperty(param)) {
 						res[param].push(val);
 					} else {
 						res[param] = [val];
 					}
-				});
+				}, fn[_base.ON_ERROR]);
+			}
+
+			if (res.hasOwnProperty(param)) {
+				res[param].push(val);
 			} else {
-				if (res.hasOwnProperty(param)) {
-					res[param].push(val);
-				} else {
-					res[param] = [val];
-				}
+				res[param] = [val];
 			}
 		};
 	}
 
 	if (isFunc) {
-		action[_base.FN_LENGTH] = action.length > field.length ? action.length : field.length;
+		fn[_base.FN_LENGTH] = fn.length > field.length ? fn.length : field.length;
 	}
 
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
+	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;
@@ -108,5 +104,3 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 
 	return p.result;
 };
-
-//#if link

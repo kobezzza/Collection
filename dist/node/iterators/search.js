@@ -35,21 +35,21 @@ _core.Collection.prototype.search = function (opt_filter, opt_params) {
 	this._filter(p, opt_filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
-	let action;
+	let fn;
 	if (p.mult !== false) {
 		const res = p.result = [];
 
 		if ((0, _types.isSet)(this.data)) {
-			action = el => res.push(el);
+			fn = el => res.push(el);
 		} else {
-			action = (el, key) => res.push(key);
+			fn = (el, key) => res.push(key);
 		}
 	} else {
 		p.result = null;
-		action = (el, key) => p.result = (0, _types.isMap)(this.data) ? { value: key } : (0, _types.isSet)(this.data) ? { value: el } : key;
+		fn = (el, key) => p.result = (0, _types.isMap)(this.data) ? { value: key } : (0, _types.isSet)(this.data) ? { value: el } : key;
 	}
 
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
+	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;

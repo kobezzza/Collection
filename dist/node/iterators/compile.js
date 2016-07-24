@@ -69,18 +69,18 @@ function compileCycle(key, p) {
 			data = o.data,
 			cb = o.cb,
 			filters = o.filters,
-			link = o.link,
 			priority = o.priority;
 
 		var
 			onIterationEnd = o.onIterationEnd,
 			onComplete = o.onComplete,
-			onError = o.onError,
-			getDescriptor = Object.getOwnPropertyDescriptor;
+			getDescriptor = Object.getOwnPropertyDescriptor,
+			onError;
 
 		var
 			TRUE = {},
-			FALSE = {};
+			FALSE = {},
+			BREAK = {};
 
 		var
 			i = -1,
@@ -133,7 +133,30 @@ function compileCycle(key, p) {
 			priority: ${ p.thread } && '${ p.priority }',
 			length: ${ p.length }
 		};
+	`;
 
+	if (p.thread) {
+		iFn += _string.ws`
+			if (o.onError) {
+				onError = function (err) {
+					o.onError(err);
+					r = f = el = BREAK;
+					wait = 0;
+				};
+
+				var onChildError = function (err) {
+					if (err && err.type === 'CollectionThreadDestroy') {
+						wait--;
+						return;
+					}
+
+					onError(err);
+				};
+			}
+		`;
+	}
+
+	iFn += _string.ws`
 		var ctx = {
 			$: $,
 			info: info,
@@ -167,7 +190,7 @@ function compileCycle(key, p) {
 					return false;
 				}
 
-				link.self.next(opt_val);
+				ctx.thread.next(opt_val);
 				return true;
 			},
 
@@ -176,7 +199,7 @@ function compileCycle(key, p) {
 					return false;
 				}
 
-				link.self.children.push(thread.thread);
+				ctx.thread.children.push(thread.thread);
 				return true;
 			},
 
@@ -194,7 +217,7 @@ function compileCycle(key, p) {
 					waitResult.push(res);
 					wait--;
 					ctx.next();
-				}, onError);
+				}, onChildError);
 			},
 
 			sleep: function (time, opt_test, opt_interval) {
@@ -204,7 +227,7 @@ function compileCycle(key, p) {
 
 				ctx.yield();
 				return new Promise(function (resolve, reject) {
-					link.self.sleep = setTimeout(function () {
+					ctx.thread.sleep = setTimeout(function () {
 						if (opt_test) {
 							try {
 								var test = opt_test(ctx);
@@ -219,7 +242,7 @@ function compileCycle(key, p) {
 
 							} catch (err) {
 								reject(err);
-								throw err;
+								onError(err);
 							}
 
 						} else {
@@ -297,8 +320,8 @@ function compileCycle(key, p) {
 				ctx.next();
 			}
 
-			ctx.thread = link.self;
-			link.self.ctx = ctx;
+			ctx.thread = o.self;
+			ctx.thread.ctx = ctx;
 		`;
 	}
 
@@ -333,7 +356,7 @@ function compileCycle(key, p) {
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
 
-			if (time > priority[link.self.priority]) {
+			if (time > priority[ctx.thread.priority]) {
 				yield;
 				time = 0;
 				timeStart = null;
@@ -636,8 +659,12 @@ function compileCycle(key, p) {
 		iFn += _string.ws`
 			while (isPromise(el)) {
 				el = el.then(resolveEl, onError);
-				link.self.pause = true;
+				ctx.thread.pause = true;
 				yield;
+			}
+
+			if (el === BREAK) { 
+				return; 
 			}
 		`;
 	}
@@ -653,8 +680,12 @@ function compileCycle(key, p) {
 				iFn += _string.ws`
 					while (isPromise(f)) {
 						f.then(resolveFilter, onError);
-						link.self.pause = true;
+						ctx.thread.pause = true;
 						yield;
+					}
+
+					if (f === BREAK) {
+						return; 
 					}
 				`;
 			}
@@ -679,8 +710,12 @@ function compileCycle(key, p) {
 		tmp += _string.ws`
 			while (isPromise(r)) {
 				r.then(resolveCb, onError);
-				link.self.pause = true;
+				ctx.thread.pause = true;
 				yield;
+			}
+
+			if (r === BREAK) {
+				return; 
 			}
 		`;
 	}
@@ -709,7 +744,7 @@ function compileCycle(key, p) {
 	const yielder = _string.ws`
 		if (yielder) {
 			yielder = false;
-			link.self.pause = true;
+			ctx.thread.pause = true;
 			yield yieldVal;
 			yieldVal = undefined;
 		}
@@ -757,8 +792,12 @@ function compileCycle(key, p) {
 		}
 
 		while (wait) {
-			link.self.pause = true;
+			ctx.thread.pause = true;
 			yield;
+		}
+
+		if (r === BREAK) {
+			return;
 		}
 
 		if (onComplete) {

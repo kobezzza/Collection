@@ -12,11 +12,9 @@ var _core = require('../core');
 
 var _types = require('../helpers/types');
 
-var _gcc = require('../helpers/gcc');
-
 var _link = require('../helpers/link');
 
-//#endif
+var _gcc = require('../helpers/gcc');
 
 /**
  * Searches elements in a collection by the specified condition/link.
@@ -30,15 +28,9 @@ var _link = require('../helpers/link');
 _core.Collection.prototype.get = function (opt_filter, opt_params) {
 	let p = opt_params || {};
 
-	//#if link
-
 	if (!(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
-		const tmp = (0, _link.byLink)(this.data, (0, _gcc.any)(opt_filter));
-		p.onComplete && p.onComplete(tmp);
-		return tmp;
+		return (0, _link.byLink)(this.data, (0, _gcc.any)(opt_filter));
 	}
-
-	//#endif
 
 	if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
 		p = opt_filter || p;
@@ -48,15 +40,15 @@ _core.Collection.prototype.get = function (opt_filter, opt_params) {
 	this._filter(p, opt_filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
-	let action;
+	let fn;
 	if (p.mult !== false) {
 		const res = p.result = [];
-		action = el => res.push(el);
+		fn = el => res.push(el);
 	} else {
-		action = el => p.result = el;
+		fn = el => p.result = el;
 	}
 
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(action), p));
+	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
 
 	if (returnVal !== this) {
 		return returnVal;
@@ -64,5 +56,3 @@ _core.Collection.prototype.get = function (opt_filter, opt_params) {
 
 	return p.result;
 };
-
-//#if link

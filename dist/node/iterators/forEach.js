@@ -58,7 +58,8 @@ require('./length');
  * @return {(!Collection|!Promise)}
  */
 _core.Collection.prototype.forEach = function (cb, opt_params) {
-	const p = (0, _gcc.any)(Object.create(this._init()));
+	const p = (0, _gcc.any)(Object.create(this._init())),
+	      sp = opt_params || p;
 
 	if ((0, _types.isArray)(opt_params) || (0, _types.isFunction)(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
@@ -154,8 +155,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 	const key = [type, cbArgs, filters.length, filterArgs, p.length, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, p.count, p.from, p.startIndex, p.endIndex].join();
 
-	const link = {},
-	      fn = (0, _gcc.any)(_cache.tmpCycle[key] || (0, _compile.compileCycle)(key, p));
+	const fn = (0, _gcc.any)(_cache.tmpCycle[key] || (0, _compile.compileCycle)(key, p));
 
 	const args = {
 		data,
@@ -163,7 +163,6 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		cbLength,
 		filters,
 		fLength,
-		link,
 		priority: _thread.PRIORITY,
 		onComplete: p.onComplete,
 		onIterationEnd: p.onIterationEnd
@@ -174,9 +173,19 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	if (p.thread) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
+			let error = false;
 			function onError(err) {
-				thread && thread.destroy();
-				reject(err);
+				if (error) {
+					return;
+				}
+
+				if (thread) {
+					thread.destroy(err);
+				} else {
+					reject(err);
+				}
+
+				error = true;
 			}
 
 			function wrap(fn) {
@@ -190,7 +199,6 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 						return fn(el, key, data, o);
 					} catch (err) {
 						onError(err);
-						throw err;
 					}
 				};
 			}
@@ -204,8 +212,8 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
-			thread = link.self = fn.call(this, args, opt_params || p);
-			this._addToStack(thread, p.priority, wrap(p.onChunk));
+			thread = args.self = fn(args, sp);
+			this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
 		});
 
 		promise.thread = thread;
@@ -214,6 +222,6 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 	//#endif
 
-	link.self = fn.call(this, args, opt_params || p);
+	fn(args, sp);
 	return this;
 };

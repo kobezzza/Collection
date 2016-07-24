@@ -137,13 +137,36 @@ let exec = 0;
  * @private
  * @param {?} obj - generator object
  * @param {string} priority - task priority
+ * @param {function(!Error)} onError - callback function for error handling
  * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
  */
-_core.Collection.prototype._addToStack = function (obj, priority, opt_onChunk) {
+_core.Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk) {
+	obj.destroyed = false;
+	obj.destroy = err => {
+		if (obj.destroyed) {
+			return false;
+		}
+
+		clearTimeout(obj.sleep);
+		(0, _core2.default)(obj.children).forEach(child => child.destroy());
+		(0, _core2.default)(execStack[obj.priority]).remove(el => el === obj, { mult: false });
+
+		exec--;
+		obj.destroyed = true;
+
+		if (!err) {
+			err = new Error('Thread was destroyed');
+			err.type = 'CollectionThreadDestroy';
+			err.thread = obj;
+		}
+
+		onError(err);
+		return err;
+	};
+
 	obj.value = undefined;
 	obj.thread = true;
 	obj.priority = priority;
-	obj.destroy = () => _core2.default.destroy(obj);
 	obj.onChunk = opt_onChunk;
 	obj.pause = false;
 	obj.sleep = null;
@@ -172,9 +195,13 @@ _core.Collection.prototype._addToStack = function (obj, priority, opt_onChunk) {
 			const prop = execStack[key];
 
 			(0, _core2.default)(el).forEach((el, i, data) => {
-				const obj = prop[el],
-				      res = obj.next();
+				const obj = prop[el];
 
+				if (!obj) {
+					return;
+				}
+
+				const res = obj.next();
 				obj.value = res.value;
 
 				if (res.done) {
@@ -211,24 +238,14 @@ _core.Collection.prototype._addToStack = function (obj, priority, opt_onChunk) {
  * Destroys the specified Collection worker
  *
  * @param {(Promise|?)} obj - Collection worker or any value (returns false)
- * @return {boolean}
+ * @return {(!Error|boolean)}
  */
 _core2.default.destroy = function (obj) {
 	if (!obj || !obj.thread) {
 		return false;
 	}
 
-	const thread = obj.priority ? obj : obj.thread;
-
-	clearTimeout(thread.sleep);
-	(0, _core2.default)(thread.children).forEach(child => _core2.default.destroy(child));
-
-	if ((0, _core2.default)(execStack[thread.priority]).remove(el => el === thread, { mult: false }).result) {
-		thread.destroyed = true;
-		exec--;
-	}
-
-	return true;
+	return (obj.priority ? obj : obj.thread).destroy();
 };
 
 Object.assign(_core2.default, { destroy: _core2.default.destroy });
