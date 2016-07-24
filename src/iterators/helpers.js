@@ -69,7 +69,7 @@ Collection.prototype._filter = function (filter) {
  * @return {!Collection}
  */
 Collection.prototype._isThread = function (p) {
-	if (!p.thread && (p.priority || p.onChunk)) {
+	if (p.thread == null && (p.priority || p.onChunk)) {
 		p.thread = true;
 	}
 
