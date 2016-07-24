@@ -55,7 +55,7 @@ export function isBoolean(obj) {
  * @return {boolean}
  */
 export function isArray(obj) {
-	return Array.isArray(obj);
+	return Array.isArray(obj) || obj instanceof Array;
 }
 
 /**
@@ -115,7 +115,7 @@ export function isPromise(obj) {
  * @return {boolean}
  */
 export function isPlainObject(obj) {
-	return Boolean(obj) && (obj.constructor === Object || obj.constructor.name === 'Object');
+	return Boolean(obj) && obj.constructor === Object;
 }
 
 const objectTypes = {
@@ -235,37 +235,38 @@ export function getType(obj, opt_use) {
 	return type;
 }
 
-const natives = {
-	'Crypto': true,
-	'Number': true,
-	'String': true,
-	'Boolean': true,
-	'Symbol': true,
-	'Function': true,
-	'Date': true,
-	'RegExp': true,
-	'Blob': true,
-	'Array': true,
-	'ArrayBuffer': true,
-	'Uint8ClampedArray': true,
-	'Uint8Array': true,
-	'Uint16Array': true,
-	'Uint32Array': true,
-	'Int8Array': true,
-	'Int16Array': true,
-	'Int32Array': true,
-	'Map': true,
-	'WeakMap': true,
-	'Set': true,
-	'WeakSet': true,
-	'Error': true,
-	'EvalError': true,
-	'TypeError': true,
-	'SyntaxError': true,
-	'URIError': true,
-	'RangeError': true,
-	'ReferenceError': true
-};
+export const
+	isNative = /\[native code]/;
+
+/**
+ * Returns true if the specified object is one of JS data structures
+ *
+ * @param {?} obj - source object
+ * @return {?}
+ */
+export function getStructure(obj) {
+	if (!obj) {
+		return false;
+	}
+
+	if (isArray(obj)) {
+		return [];
+	}
+
+	if (isPlainObject(obj)) {
+		return {};
+	}
+
+	if (isMap(obj)) {
+		return new Map();
+	}
+
+	if (isSet(obj)) {
+		return new Set();
+	}
+
+	return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString()) ? {} : false;
+}
 
 /**
  * Returns true if the specified object is one of JS data structures
@@ -278,18 +279,11 @@ export function isStructure(obj) {
 		return false;
 	}
 
-	if (isArray(obj) || isMap(obj) || isSet(obj) || isPlainObject(obj)) {
+	if (isArray(obj) || isPlainObject(obj) || isMap(obj) || isSet(obj)) {
 		return true;
 	}
 
-	const
-		constr = obj.constructor;
-
-	if (!isFunction(constr) || natives[constr.name]) {
-		return false;
-	}
-
-	return constr.toString() !== '[native code]';
+	return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
 }
 
 /**
@@ -307,12 +301,5 @@ export function canExtended(obj) {
 		return true;
 	}
 
-	const
-		constr = obj.constructor;
-
-	if (!isFunction(constr) || natives[constr.name]) {
-		return false;
-	}
-
-	return constr.toString() !== '[native code]';
+	return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
 }

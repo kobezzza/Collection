@@ -8,6 +8,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+import { isNative } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 export const IS_NODE = (() => {
@@ -23,4 +24,4 @@ export const
 	IS_BROWSER = !IS_NODE && typeof window === 'object',
 	BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function',
 	LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'object',
-	OBJECT_KEYS_NATIVE_SUPPORT = (Object.keys && any(Object.keys).toString()) === '[native code]';
+	OBJECT_KEYS_NATIVE_SUPPORT = isNative.test(Object.keys && any(Object.keys).toString());

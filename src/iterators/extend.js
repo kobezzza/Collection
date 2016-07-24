@@ -10,8 +10,8 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import { Collection } from '../core';
-import { isArray, isBoolean, isStructure, canExtended, getType } from '../helpers/types';
+import $C, { Collection } from '../core';
+import { isArray, isBoolean, isStructure, getStructure, canExtended, getType } from '../helpers/types';
 import { byLink } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
@@ -36,13 +36,14 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	const
 		{create, defineProperty, getPrototypeOf} = Object;
 
-	const
-		p = isBoolean(deepOrParams) ? {deep: any(deepOrParams)} : deepOrParams || {},
-		withDescriptor = p.withDescriptor && !p.withAccessors;
+	let
+		p = isBoolean(deepOrParams) ? {deep: any(deepOrParams)} : deepOrParams || {};
 
-	this
-		._filter(p)
-		._isThread(p);
+	this._filter(p)._isThread(p);
+	p = any(Object.assign({}, this.p, any(p)));
+
+	const
+		withDescriptor = p.withDescriptor && !p.withAccessors;
 
 	if (p.withAccessors) {
 		p.withDescriptor = true;
@@ -110,12 +111,12 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 		case 'weakSet':
 		case 'set':
-			setVal = (data, key) => {
-				if (p.traits && data.has(key) !== (p.traits === -1)) {
+			setVal = (data, key, val) => {
+				if (p.traits && data.has(val) !== (p.traits === -1)) {
 					return;
 				}
 
-				data.add(key);
+				data.add(val);
 			};
 
 			break;
@@ -143,6 +144,10 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		'array': true,
 		'object': true
 	};
+
+	if (p.notOwn && !simpleType[type]) {
+		p.notOwn = false;
+	}
 
 	const
 		dataIsSimple = simpleType[type];
@@ -188,11 +193,12 @@ Collection.prototype.extend = function (deepOrParams, args) {
 			}
 
 			const
-				valIsArray = isArray(val);
+				valIsArray = isArray(val),
+				struct = valIsArray ? [] : getStructure(val);
 
-			if (p.deep && val && (valIsArray || isStructure(val))) {
+			if (p.deep && val && (valIsArray || struct)) {
 				const
-					isExt = p.withProto && canExtended(src);
+					isExt = p.withProto && dataIsSimple && canExtended(src);
 
 				let
 					srcIsArray = isArray(src);
@@ -208,7 +214,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 						isProto = false,
 						construct;
 
-					if (!srcIsArray && p.withProto && p.concatArray && isExt) {
+					if (!srcIsArray && isExt && p.concatArray) {
 						construct = getPrototypeOf(src);
 						srcIsArray = isProto = construct && isArray(construct);
 					}
@@ -216,7 +222,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 					if (srcIsArray) {
 						if (p.concatArray) {
 							const o = isProto ? construct : src;
-							data[key] = p.concatFn ? p.concatFn(o, copy) : o.concat(copy);
+							data[key] = p.concatFn ? p.concatFn(o, val) : o.concat(val);
 							return;
 						}
 
@@ -227,7 +233,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 					}
 
 				} else {
-					clone = isStructure(src) ? src : {};
+					clone = isStructure(src) ? src : struct || {};
 				}
 
 				const
@@ -248,3 +254,28 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 	return p.thread ? promise.then(() => data) : data;
 };
+
+/**
+ * Clones an object
+ *
+ * @param {?} obj - source object
+ * @return {?}
+ */
+$C.clone = function (obj) {
+	return JSON.parse(JSON.stringify(obj));
+};
+
+/**
+ * Extends the specified object by another objects
+ *
+ * @see Collection.prototype.extend
+ * @param {(boolean|?$$Collection_extend)} deepOrParams - additional parameters
+ * @param {Object} target - source object
+ * @param {...Object} args - objects for extending
+ * @return {(!Object|!Promise)}
+ */
+$C.extend = function (deepOrParams, target, args) {
+	return $C(target).extend(deepOrParams, ...[].slice.call(arguments, 1));
+};
+
+Object.assign($C, {extend: $C.extend, clone: $C.clone});

@@ -415,6 +415,62 @@ var key;
 $$Collection.prototype.set = function (value, filter, opt_params) {};
 
 /**
+ * @typedef {{
+ *   withAccessors: (?boolean|undefined),
+ *   withDescriptor: (?boolean|undefined),
+ *   withProto: (?boolean|undefined),
+ *   concatArray: (?boolean|undefined),
+ *   concatFn: (?function(!Array, !Array): ?|undefined),
+ *   traits: (boolean|number|null|undefined),
+ *   deep: (?boolean|undefined),
+ *   filter: $$CollectionFilter,
+ *   mult: (?boolean|undefined),
+ *   count: (number|number|null|undefined),
+ *   from: (number|number|null|undefined),
+ *   startIndex: (number|number|null|undefined),
+ *   endIndex: (number|number|null|undefined),
+ *   reverse: (?boolean|undefined),
+ *   inverseFilter: (?boolean|undefined),
+ *   notOwn: (boolean|number|null|undefined),
+ *   live: (?boolean|undefined),
+ *   use: (?string|undefined),
+ *   length: (?boolean|undefined),
+ *   thread: (?boolean|undefined),
+ *   priority: (?string|undefined),
+ *   onChunk: (?$$CollectionThreadCb|undefined),
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined),
+ *   result
+ * }}
+ */
+var $$Collection_extend;
+
+/** @type {?} */
+var withAccessors;
+
+/** @type {?} */
+var withProto;
+
+/** @type {?} */
+var concatArray;
+
+/** @type {?} */
+var concatFn;
+
+/** @type {?} */
+var traits;
+
+/** @type {?} */
+var deep;
+
+/**
+ * @abstract
+ * @param {(boolean|$$Collection_extend)} deepOrParams
+ * @param {...Object} args
+ * @return {!Object}
+ */
+$$Collection.prototype.extend = function (deepOrParams, args) {};
+
+/**
  * @param {...(($$CollectionFilter|Array<$$CollectionFilter>|undefined))} filter
  * @return {!$$Collection}
  */
