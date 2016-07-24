@@ -66,13 +66,13 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		Object.assign(p, opt_params);
 	}
 
-	if (p.notOwn) {
+	if (!p.use && p.notOwn) {
 		p.use = 'for in';
 	}
 
 	this._isThread(p);
-	if (!PRIORITY[p.priority]) {
-		PRIORITY[p.priority] = 'normal';
+	if (p.thread && !PRIORITY[p.priority]) {
+		p.priority = 'normal';
 	}
 
 	const

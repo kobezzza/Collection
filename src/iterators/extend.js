@@ -275,7 +275,7 @@ $C.clone = function (obj) {
  * @return {(!Object|!Promise)}
  */
 $C.extend = function (deepOrParams, target, args) {
-	return $C(target).extend(deepOrParams, ...[].slice.call(arguments, 1));
+	return $C(target).extend(deepOrParams, ...[].slice.call(arguments, 2));
 };
 
 Object.assign($C, {extend: $C.extend, clone: $C.clone});

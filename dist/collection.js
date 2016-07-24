@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 24 Jul 2016 19:17:55 GMT
+ * Date: 'Sun, 24 Jul 2016 20:01:44 GMT
  */
 
 (function (global, factory) {
@@ -316,8 +316,8 @@
      * @param {$$CollectionType} obj
      */
     function Collection(obj) {
-    	this.data = any(isString(obj) ? obj.split('') : obj || []);
-    	this._init();
+      this.data = any(isString(obj) ? obj.split('') : obj || []);
+      this._init();
     }
 
     /**
@@ -325,26 +325,25 @@
      * @return {!Object}
      */
     Collection.prototype._init = function () {
-    	var old = this.p;
+      var old = this.p;
 
-    	this.p = Object.assign({
-    		mult: true,
-    		count: false,
-    		from: false,
-    		startIndex: false,
-    		endIndex: false,
-    		reverse: false,
-    		inverseFilter: false,
-    		withDescriptor: false,
-    		notOwn: false,
-    		live: false,
-    		thread: false,
-    		priority: 'normal',
-    		length: true,
-    		filter: []
-    	}, $C.config);
+      this.p = Object.assign({
+        mult: true,
+        count: false,
+        from: false,
+        startIndex: false,
+        endIndex: false,
+        reverse: false,
+        inverseFilter: false,
+        withDescriptor: false,
+        notOwn: false,
+        live: false,
+        thread: false,
+        length: true,
+        filter: []
+      }, $C.config);
 
-    	return old;
+      return old;
     };
 
     Object.assign($C, { config: {} });
@@ -360,7 +359,7 @@
      * @param {$$CollectionType} obj
      */
     function $C(obj) {
-    	return new Collection(obj);
+      return new Collection(obj);
     }
 
     Object.assign($C, {
@@ -415,7 +414,7 @@
     var LENGTH_REQUEST = '__COLLECTION_TMP__lengthQuery';
     var FN_LENGTH = '__COLLECTION_TMP__length';
     var ON_ERROR = '__COLLECTION_TMP__onError';
-    var CACHE_VERSION = 19;
+    var CACHE_VERSION = 20;
     var CACHE_KEY = '__COLLECTION_CACHE_VERSION__';
     var CACHE_VERSION_KEY = '__COLLECTION_CACHE__';
 
@@ -951,13 +950,13 @@
     		Object.assign(p, opt_params);
     	}
 
-    	if (p.notOwn) {
+    	if (!p.use && p.notOwn) {
     		p.use = 'for in';
     	}
 
     	this._isThread(p);
-    	if (!PRIORITY[p.priority]) {
-    		PRIORITY[p.priority] = 'normal';
+    	if (p.thread && !PRIORITY[p.priority]) {
+    		p.priority = 'normal';
     	}
 
     	var data = this.data;
@@ -1172,7 +1171,7 @@
      * @return {!Collection}
      */
     Collection.prototype._isThread = function (p) {
-    	if (p.hasOwnProperty('priority') || p.onChunk) {
+    	if (!p.thread && (p.priority || p.onChunk)) {
     		p.thread = true;
     	}
 
@@ -1740,7 +1739,7 @@
     $C.extend = function (deepOrParams, target, args) {
     	var _$C;
 
-    	return (_$C = $C(target)).extend.apply(_$C, [deepOrParams].concat(toConsumableArray([].slice.call(arguments, 1))));
+    	return (_$C = $C(target)).extend.apply(_$C, [deepOrParams].concat(toConsumableArray([].slice.call(arguments, 2))));
     };
 
     Object.assign($C, { extend: $C.extend, clone: $C.clone });

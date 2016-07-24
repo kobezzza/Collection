@@ -43,7 +43,6 @@ Collection.prototype._init = function () {
 		notOwn: false,
 		live: false,
 		thread: false,
-		priority: 'normal',
 		length: true,
 		filter: []
 	}, $C.config);
