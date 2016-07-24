@@ -10,6 +10,7 @@
 
 exports.__esModule = true;
 exports.Collection = Collection;
+exports.P = P;
 exports.default = $C;
 
 var _gcc = require('./helpers/gcc');
@@ -34,8 +35,13 @@ function Collection(obj) {
  */
 Collection.prototype._init = function () {
   const old = this.p;
+  this.p = new P();
+  return old;
+};
 
-  this.p = Object.assign({
+/** @constructor */
+function P() {
+  Object.assign(this, {
     mult: true,
     count: false,
     from: false,
@@ -50,9 +56,7 @@ Collection.prototype._init = function () {
     length: true,
     filter: []
   }, $C.config);
-
-  return old;
-};
+}
 
 Object.assign($C, { config: {} });
 
@@ -60,7 +64,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 0, 0, 'beta.10'];
+Collection.prototype.VERSION = [6, 0, 0, 'beta.11'];
 
 /**
  * Creates an instance of Collection

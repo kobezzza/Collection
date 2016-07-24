@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.10
+ * Collection v6.0.0-beta.11
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 24 Jul 2016 20:01:44 GMT
+ * Date: 'Sun, 24 Jul 2016 22:09:43 GMT
  */
 
 (function (global, factory) {
@@ -326,8 +326,13 @@
      */
     Collection.prototype._init = function () {
       var old = this.p;
+      this.p = new P();
+      return old;
+    };
 
-      this.p = Object.assign({
+    /** @constructor */
+    function P() {
+      Object.assign(this, {
         mult: true,
         count: false,
         from: false,
@@ -342,9 +347,7 @@
         length: true,
         filter: []
       }, $C.config);
-
-      return old;
-    };
+    }
 
     Object.assign($C, { config: {} });
 
@@ -352,7 +355,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.10'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.11'];
 
     /**
      * Creates an instance of Collection
@@ -1171,7 +1174,7 @@
      * @return {!Collection}
      */
     Collection.prototype._isThread = function (p) {
-    	if (!p.thread && (p.priority || p.onChunk)) {
+    	if (p.thread == null && (p.priority || p.onChunk)) {
     		p.thread = true;
     	}
 
@@ -1502,10 +1505,17 @@
     	var getPrototypeOf = Object.getPrototypeOf;
 
 
-    	var p = isBoolean(deepOrParams) ? { deep: any(deepOrParams) } : deepOrParams || {};
+    	var p = any(deepOrParams);
+    	if (p instanceof P === false) {
+    		if (isBoolean(p)) {
+    			p = { deep: p };
+    		} else {
+    			p = p || {};
+    		}
 
-    	this._filter(p)._isThread(p);
-    	p = any(Object.assign({}, this.p, any(p)));
+    		this._filter(p)._isThread(p);
+    		p = any(Object.assign(Object.create(this.p), p));
+    	}
 
     	var withDescriptor = p.withDescriptor && !p.withAccessors;
 

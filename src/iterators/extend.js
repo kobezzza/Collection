@@ -10,7 +10,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import $C, { Collection } from '../core';
+import $C, { Collection, P } from '../core';
 import { isArray, isBoolean, isStructure, getStructure, canExtended, getType } from '../helpers/types';
 import { byLink } from '../helpers/link';
 import { any } from '../helpers/gcc';
@@ -36,11 +36,18 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	const
 		{create, defineProperty, getPrototypeOf} = Object;
 
-	let
-		p = isBoolean(deepOrParams) ? {deep: any(deepOrParams)} : deepOrParams || {};
+	let p = any(deepOrParams);
+	if (p instanceof P === false) {
+		if (isBoolean(p)) {
+			p = {deep: p};
 
-	this._filter(p)._isThread(p);
-	p = any(Object.assign({}, this.p, any(p)));
+		} else {
+			p = p || {};
+		}
+
+		this._filter(p)._isThread(p);
+		p = any(Object.assign(Object.create(this.p), p));
+	}
 
 	const
 		withDescriptor = p.withDescriptor && !p.withAccessors;

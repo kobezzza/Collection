@@ -42,10 +42,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _core.Collection.prototype.extend = function (deepOrParams, args) {
 	const { create, defineProperty, getPrototypeOf } = Object;
 
-	let p = (0, _types.isBoolean)(deepOrParams) ? { deep: (0, _gcc.any)(deepOrParams) } : deepOrParams || {};
+	let p = (0, _gcc.any)(deepOrParams);
+	if (p instanceof _core.P === false) {
+		if ((0, _types.isBoolean)(p)) {
+			p = { deep: p };
+		} else {
+			p = p || {};
+		}
 
-	this._filter(p)._isThread(p);
-	p = (0, _gcc.any)(Object.assign({}, this.p, (0, _gcc.any)(p)));
+		this._filter(p)._isThread(p);
+		p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+	}
 
 	const withDescriptor = p.withDescriptor && !p.withAccessors;
 
