@@ -235,7 +235,7 @@ export function getType(obj, opt_use) {
 	return type;
 }
 
-const nativeNames = {
+const natives = {
 	'Crypto': true,
 	'Number': true,
 	'String': true,
@@ -268,34 +268,51 @@ const nativeNames = {
 };
 
 /**
- * Returns true if the specified object can be extended
+ * Returns true if the specified object is one of JS data structures
  *
  * @param {?} obj - source object
  * @return {boolean}
  */
-export function isExtensible(obj) {
+export function isStructure(obj) {
 	if (!obj) {
 		return false;
 	}
 
-	if (isArray(obj)) {
+	if (isArray(obj) || isMap(obj) || isSet(obj) || isPlainObject(obj)) {
 		return true;
 	}
 
 	const
 		constr = obj.constructor;
 
-	if (!isFunction(constr)) {
+	if (!isFunction(constr) || natives[constr.name]) {
 		return false;
 	}
 
-	if (isPlainObject(obj)) {
+	return constr.toString() !== '[native code]';
+}
+
+/**
+ * Returns true if the specified object can be extended
+ *
+ * @param {?} obj - source object
+ * @return {boolean}
+ */
+export function canExtended(obj) {
+	if (!obj) {
+		return false;
+	}
+
+	if (isArray(obj) || isPlainObject(obj)) {
 		return true;
 	}
 
-	if (nativeNames[constr.name]) {
+	const
+		constr = obj.constructor;
+
+	if (!isFunction(constr) || natives[constr.name]) {
 		return false;
 	}
 
-	return constr.toString() === '[native code]';
+	return constr.toString() !== '[native code]';
 }
