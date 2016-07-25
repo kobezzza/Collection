@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 24 Jul 2016 22:09:43 GMT
+ * Date: 'Mon, 25 Jul 2016 08:01:09 GMT
  */
 
 (function (global, factory) {
@@ -1569,6 +1569,8 @@
     	}
 
     	var setVal = void 0;
+    	p.result = data;
+
     	switch (type) {
     		case 'weakMap':
     		case 'map':

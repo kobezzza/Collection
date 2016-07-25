@@ -103,6 +103,8 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	}
 
 	let setVal;
+	p.result = data;
+
 	switch (type) {
 		case 'weakMap':
 		case 'map':

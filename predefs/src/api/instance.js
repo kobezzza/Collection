@@ -438,8 +438,7 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
- *   onIterationEnd: (?$$CollectionThreadCb|undefined),
- *   result
+ *   onIterationEnd: (?$$CollectionThreadCb|undefined)
  * }}
  */
 var $$Collection_extend;
