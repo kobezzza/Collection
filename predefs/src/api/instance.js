@@ -128,6 +128,7 @@ var $$CollectionFilter;
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
  *   length: (?boolean|undefined),
+ *   async: (?boolean|undefined),
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
@@ -136,6 +137,12 @@ var $$CollectionFilter;
  * }}
  */
 var $$Collection_forEach;
+
+/** @type {?} */
+var async;
+
+/** @type {?} */
+var result;
 
 /**
  * @param {$$CollectionCb} cb
@@ -158,6 +165,7 @@ $$Collection.prototype.forEach = function (cb, opt_params) {};
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
  *   length: (?boolean|undefined),
+ *   async: (?boolean|undefined),
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
@@ -224,6 +232,7 @@ var onIterationEnd;
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
  *   length: (?boolean|undefined),
+ *   async: (?boolean|undefined),
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
@@ -260,6 +269,7 @@ $$Collection.prototype.get = function (opt_filter, opt_params) {};
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
  *   length: (?boolean|undefined),
+ *   async: (?boolean|undefined),
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
@@ -335,6 +345,7 @@ $$Collection.prototype.includes = function (searchElement, opt_filter, opt_param
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
  *   length: (?boolean|undefined),
+ *   async: (?boolean|undefined),
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
@@ -392,6 +403,7 @@ var newValue;
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
  *   length: (?boolean|undefined),
+ *   async: (?boolean|undefined),
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
@@ -435,6 +447,7 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
  *   length: (?boolean|undefined),
+ *   async: (?boolean|undefined),
  *   thread: (?boolean|undefined),
  *   priority: (?string|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
@@ -511,6 +524,9 @@ $$Collection.prototype.count = function (value) {};
  * @return {!$$Collection}
  */
 $$Collection.prototype.object = function (opt_notOwn) {};
+
+/** @type {{get: function (): $$Collection}} */
+$$Collection.prototype.async;
 
 /** @type {{get: function (): $$Collection}} */
 $$Collection.prototype.live;

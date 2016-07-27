@@ -42,6 +42,7 @@ import './length';
  *
  *   *) [use] - type of the using iterator (for, for of, for in)
  *   *) [length = true] - if false, then function parameters optimization won't be apply
+ *   *) [async = false] - if true, then operation will be executed as async (returns a promise)
  *   *) [thread = false] - if true, then operation will be executed in a thread (returns a promise)
  *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
  *   *) [onChunk] - callback function for chunks
@@ -163,6 +164,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filters.length,
 		filterArgs,
 		p.length,
+		p.async,
 		p.thread,
 		p.withDescriptor,
 		p.notOwn,
@@ -192,7 +194,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	//#if iterators.thread
 
-	if (p.thread) {
+	if (p.thread || p.async) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
 			let error = false;
@@ -202,7 +204,13 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				}
 
 				if (thread) {
-					thread.destroy(err);
+					if (thread.destroy) {
+						thread.destroy(err);
+
+					} else {
+						thread.destroyed = true;
+						reject(err);
+					}
 
 				} else {
 					reject(err);
@@ -235,9 +243,19 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			args.onComplete = resolve;
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
-
 			thread = args.self = fn(args, sp);
-			this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
+
+			if (p.thread) {
+				this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
+
+			} else {
+				thread.value = undefined;
+				thread.destroyed = false;
+				thread.sleep = null;
+				thread.pause = false;
+				thread.children = [];
+				thread.next();
+			}
 		});
 
 		promise.thread = thread;

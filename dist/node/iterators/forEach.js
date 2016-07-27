@@ -49,6 +49,7 @@ require('./length');
  *
  *   *) [use] - type of the using iterator (for, for of, for in)
  *   *) [length = true] - if false, then function parameters optimization won't be apply
+ *   *) [async = false] - if true, then operation will be executed as async (returns a promise)
  *   *) [thread = false] - if true, then operation will be executed in a thread (returns a promise)
  *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
  *   *) [onChunk] - callback function for chunks
@@ -153,7 +154,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		};
 	}
 
-	const key = [type, cbArgs, filters.length, filterArgs, p.length, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, p.count, p.from, p.startIndex, p.endIndex].join();
+	const key = [type, cbArgs, filters.length, filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, p.count, p.from, p.startIndex, p.endIndex].join();
 
 	const fn = (0, _gcc.any)(_cache.tmpCycle[key] || (0, _compile.compileCycle)(key, p));
 
@@ -170,7 +171,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 	//#if iterators.thread
 
-	if (p.thread) {
+	if (p.thread || p.async) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
 			let error = false;
@@ -180,7 +181,12 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 				}
 
 				if (thread) {
-					thread.destroy(err);
+					if (thread.destroy) {
+						thread.destroy(err);
+					} else {
+						thread.destroyed = true;
+						reject(err);
+					}
 				} else {
 					reject(err);
 				}
@@ -211,9 +217,18 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 			args.onComplete = resolve;
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
-
 			thread = args.self = fn(args, sp);
-			this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
+
+			if (p.thread) {
+				this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
+			} else {
+				thread.value = undefined;
+				thread.destroyed = false;
+				thread.sleep = null;
+				thread.pause = false;
+				thread.children = [];
+				thread.next();
+			}
 		});
 
 		promise.thread = thread;

@@ -50,7 +50,8 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 		type = (0, _types.getType)(this.data, p.use);
 	}
 
-	const source = p.initial || this.data;
+	const source = p.initial || this.data,
+	      isAsync = p.thread || p.async;
 
 	let res;
 	switch (type) {
@@ -84,7 +85,7 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 			fn = function () {
 				const val = cb.apply(null, arguments);
 
-				if (p.thread && (0, _types.isPromise)(val)) {
+				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.push(val), fn[_base.ON_ERROR]);
 				}
 
@@ -98,7 +99,7 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 			fn = function (el, key) {
 				const val = cb.apply(null, arguments);
 
-				if (p.thread && (0, _types.isPromise)(val)) {
+				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res[key] = val, fn[_base.ON_ERROR]);
 				}
 
@@ -113,7 +114,7 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 			fn = function (el, key) {
 				const val = cb.apply(null, arguments);
 
-				if (p.thread && (0, _types.isPromise)(val)) {
+				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.set(key, val), fn[_base.ON_ERROR]);
 				}
 
@@ -128,7 +129,7 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 			fn = function () {
 				const val = cb.apply(null, arguments);
 
-				if (p.thread && (0, _types.isPromise)(val)) {
+				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.add(val), fn[_base.ON_ERROR]);
 				}
 

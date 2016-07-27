@@ -50,7 +50,8 @@ Collection.prototype.map = function (cb, opt_params) {
 	}
 
 	const
-		source = p.initial || this.data;
+		source = p.initial || this.data,
+		isAsync = p.thread || p.async;
 
 	let res;
 	switch (type) {
@@ -86,7 +87,7 @@ Collection.prototype.map = function (cb, opt_params) {
 				const
 					val = cb.apply(null, arguments);
 
-				if (p.thread && isPromise(val)) {
+				if (isAsync && isPromise(val)) {
 					return val.then((val) => res.push(val), fn[ON_ERROR]);
 				}
 
@@ -101,7 +102,7 @@ Collection.prototype.map = function (cb, opt_params) {
 				const
 					val = cb.apply(null, arguments);
 
-				if (p.thread && isPromise(val)) {
+				if (isAsync && isPromise(val)) {
 					return val.then((val) => res[key] = val, fn[ON_ERROR]);
 				}
 
@@ -117,7 +118,7 @@ Collection.prototype.map = function (cb, opt_params) {
 				const
 					val = cb.apply(null, arguments);
 
-				if (p.thread && isPromise(val)) {
+				if (isAsync && isPromise(val)) {
 					return val.then((val) => res.set(key, val), fn[ON_ERROR]);
 				}
 
@@ -133,7 +134,7 @@ Collection.prototype.map = function (cb, opt_params) {
 				const
 					val = cb.apply(null, arguments);
 
-				if (p.thread && isPromise(val)) {
+				if (isAsync && isPromise(val)) {
 					return val.then((val) => res.add(val), fn[ON_ERROR]);
 				}
 

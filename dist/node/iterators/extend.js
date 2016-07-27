@@ -54,7 +54,8 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 		p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 	}
 
-	const withDescriptor = p.withDescriptor && !p.withAccessors;
+	const withDescriptor = p.withDescriptor && !p.withAccessors,
+	      isAsync = p.thread || p.async;
 
 	if (p.withAccessors) {
 		p.withDescriptor = true;
@@ -148,7 +149,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 			return this;
 		} };
 
-	if (p.thread) {
+	if (isAsync) {
 		promise = Promise.resolve();
 	}
 
@@ -238,7 +239,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 
 				const childExt = (0, _core2.default)(clone).extend(p, val);
 
-				if (p.thread) {
+				if (isAsync) {
 					return childExt.then(value => (0, _link.byLink)(data, [key], { value }));
 				}
 
@@ -249,7 +250,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 		}, p));
 	}
 
-	return p.thread ? promise.then(() => data) : data;
+	return isAsync ? promise.then(() => data) : data;
 };
 
 /**

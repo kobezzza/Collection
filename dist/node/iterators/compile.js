@@ -61,7 +61,9 @@ const filterArgsList = ['el', 'key', 'data', 'filterCtx'];
  * @return {!Function}
  */
 function compileCycle(key, p) {
-	const isMapSet = { 'map': true, 'set': true }[p.type];
+	const isMapSet = { 'map': true, 'set': true }[p.type],
+	      isAsync = p.thread || p.async;
+
 	const cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT);
 
 	let iFn = _string.ws`
@@ -129,30 +131,29 @@ function compileCycle(key, p) {
 			notOwn: ${ p.notOwn },
 			inverseFilter: ${ p.inverseFilter },
 			type: '${ p.type }',
+			async: ${ p.async },
 			thread: ${ p.thread },
 			priority: ${ p.thread } && '${ p.priority }',
 			length: ${ p.length }
 		};
 	`;
 
-	if (p.thread) {
+	if (isAsync) {
 		iFn += _string.ws`
-			if (o.onError) {
-				onError = function (err) {
-					o.onError(err);
-					r = f = el = BREAK;
-					wait = 0;
-				};
+			onError = function (err) {
+				o.onError(err);
+				r = f = el = BREAK;
+				wait = 0;
+			};
 
-				var onChildError = function (err) {
-					if (err && err.type === 'CollectionThreadDestroy') {
-						wait--;
-						return;
-					}
+			var onChildError = function (err) {
+				if (err && err.type === 'CollectionThreadDestroy') {
+					wait--;
+					return;
+				}
 
-					onError(err);
-				};
-			}
+				onError(err);
+			};
 		`;
 	}
 
@@ -175,7 +176,7 @@ function compileCycle(key, p) {
 			},
 
 			yield: function (opt_val) {
-				if (${ !p.thread }) {
+				if (${ !isAsync }) {
 					return false;
 				}
 
@@ -186,7 +187,7 @@ function compileCycle(key, p) {
 			},
 
 			next: function (opt_val) {
-				if (${ !p.thread }) {
+				if (${ !isAsync }) {
 					return false;
 				}
 
@@ -195,7 +196,7 @@ function compileCycle(key, p) {
 			},
 
 			child: function (thread) {
-				if (${ !p.thread } || !thread.thread) {
+				if (${ !isAsync } || !thread.thread) {
 					return false;
 				}
 
@@ -204,7 +205,7 @@ function compileCycle(key, p) {
 			},
 
 			wait: function (promise) {
-				if (${ !p.thread }) {
+				if (${ !isAsync }) {
 					return false;
 				}
 
@@ -221,7 +222,7 @@ function compileCycle(key, p) {
 			},
 
 			sleep: function (time, opt_test, opt_interval) {
-				if (${ !p.thread }) {
+				if (${ !isAsync }) {
 					return false;
 				}
 
@@ -299,7 +300,7 @@ function compileCycle(key, p) {
 		filterCtx.length = o.fLength;
 	`;
 
-	if (p.thread) {
+	if (isAsync) {
 		iFn += _string.ws`
 			function isPromise(obj) {
 				return typeof Promise === 'function' && obj instanceof Promise;
@@ -413,7 +414,7 @@ function compileCycle(key, p) {
 				`;
 			}
 
-			if (maxArgsLength || p.thread) {
+			if (maxArgsLength || isAsync) {
 				if (maxArgsLength > 1) {
 					if (startIndex) {
 						iFn += `key = ${ p.reverse ? 'dLength - (' : '' } n + ${ startIndex + (p.reverse ? ')' : '') };`;
@@ -435,7 +436,7 @@ function compileCycle(key, p) {
 			if (p.reverse || _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
 				iFn += 'var tmpArray;';
 
-				if (!p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.thread) {
+				if (!p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !isAsync) {
 					iFn += 'tmpArray = Object.keys(data);';
 				} else {
 					iFn += 'tmpArray = [];';
@@ -533,7 +534,7 @@ function compileCycle(key, p) {
 				}
 			}
 
-			if (maxArgsLength || p.thread) {
+			if (maxArgsLength || isAsync) {
 				if (p.withDescriptor) {
 					iFn += 'el = getDescriptor(data, key);';
 				} else {
@@ -624,7 +625,7 @@ function compileCycle(key, p) {
 				}
 			}
 
-			if (maxArgsLength || p.thread) {
+			if (maxArgsLength || isAsync) {
 				if (p.type === 'map') {
 					iFn += 'el = data.get(key);';
 				} else {
@@ -655,7 +656,7 @@ function compileCycle(key, p) {
 		`;
 	}
 
-	if (p.thread) {
+	if (isAsync) {
 		iFn += _string.ws`
 			while (isPromise(el)) {
 				el = el.then(resolveEl, onError);
@@ -663,7 +664,7 @@ function compileCycle(key, p) {
 				yield;
 			}
 
-			if (el === BREAK) { 
+			if (el === BREAK || ctx.thread.destroyed) { 
 				return; 
 			}
 		`;
@@ -676,7 +677,7 @@ function compileCycle(key, p) {
 					f = filters[${ i }](${ filterArgs[i] });
 			`;
 
-			if (p.thread) {
+			if (isAsync) {
 				iFn += _string.ws`
 					while (isPromise(f)) {
 						f.then(resolveFilter, onError);
@@ -684,7 +685,7 @@ function compileCycle(key, p) {
 						yield;
 					}
 
-					if (f === BREAK) {
+					if (f === BREAK || ctx.thread.destroyed) {
 						return; 
 					}
 				`;
@@ -706,7 +707,7 @@ function compileCycle(key, p) {
 		tmp += `cb(${ cbArgs }); breaker = true;`;
 	}
 
-	if (p.thread) {
+	if (isAsync) {
 		tmp += _string.ws`
 			while (isPromise(r)) {
 				r.then(resolveCb, onError);
@@ -714,7 +715,7 @@ function compileCycle(key, p) {
 				yield;
 			}
 
-			if (r === BREAK) {
+			if (r === BREAK || ctx.thread.destroyed) {
 				return; 
 			}
 		`;
@@ -750,7 +751,7 @@ function compileCycle(key, p) {
 		}
 	`;
 
-	if (p.thread) {
+	if (isAsync) {
 		iFn += yielder;
 	}
 
@@ -784,22 +785,25 @@ function compileCycle(key, p) {
 		}
 	`;
 
-	if (p.thread) {
+	if (isAsync) {
 		iFn += yielder;
 	}
 
+	iFn += '}';
+	if (isAsync) {
+		iFn += _string.ws`
+			while (wait) {
+				ctx.thread.pause = true;
+				yield;
+			}
+
+			if (r === BREAK || ctx.thread.destroyed) {
+				return;
+			}
+		`;
+	}
+
 	iFn += _string.ws`
-		}
-
-		while (wait) {
-			ctx.thread.pause = true;
-			yield;
-		}
-
-		if (r === BREAK) {
-			return;
-		}
-
 		if (onComplete) {
 			onComplete(p.result);
 		}
@@ -807,7 +811,7 @@ function compileCycle(key, p) {
 		return p.result;
 	`;
 
-	if (p.thread) {
+	if (isAsync) {
 		_cache.tmpCycle[key] = eval(`(function *(o, p) { ${ iFn } })`);
 	} else {
 		_cache.tmpCycle[key] = Function('o', 'p', iFn);

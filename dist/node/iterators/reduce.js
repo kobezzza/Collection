@@ -37,6 +37,8 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 	this._filter(p, opt_filter)._isThread(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
 
+	const isAsync = p.thread || p.async;
+
 	fn[_base.FN_LENGTH] = cb.length - 1;
 	function fn(el) {
 		if (opt_initialValue == null) {
@@ -45,7 +47,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 		} else {
 			const val = cb.apply(null, [p.result].concat([].slice.call(arguments)));
 
-			if (p.thread && (0, _types.isPromise)(val)) {
+			if (isAsync && (0, _types.isPromise)(val)) {
 				return val.then(val => p.result = val, fn[_base.ON_ERROR]);
 			}
 

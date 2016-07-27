@@ -50,7 +50,8 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	}
 
 	const
-		withDescriptor = p.withDescriptor && !p.withAccessors;
+		withDescriptor = p.withDescriptor && !p.withAccessors,
+		isAsync = p.thread || p.async;
 
 	if (p.withAccessors) {
 		p.withDescriptor = true;
@@ -145,7 +146,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		return this;
 	}};
 
-	if (p.thread) {
+	if (isAsync) {
 		promise = Promise.resolve();
 	}
 
@@ -248,7 +249,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 				const
 					childExt = $C(clone).extend(p, val);
 
-				if (p.thread) {
+				if (isAsync) {
 					return childExt.then((value) => byLink(data, [key], {value}));
 				}
 
@@ -261,7 +262,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		}, p));
 	}
 
-	return p.thread ? promise.then(() => data) : data;
+	return isAsync ? promise.then(() => data) : data;
 };
 
 /**

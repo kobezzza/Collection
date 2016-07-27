@@ -168,6 +168,17 @@ Collection.prototype.object = function (opt_notOwn) {
 };
 
 Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} */ {
+	async: {
+		/**
+		 * Sets .async to true for the operation
+		 * @return {!Collection}
+		 */
+		get() {
+			this.p.async = true;
+			return this;
+		}
+	},
+
 	live: {
 		/**
 		 * Sets .live to true for the operation

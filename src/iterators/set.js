@@ -53,7 +53,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 	const
 		type = getType(data, p.use),
-		isFunc = isFunction(value);
+		isFunc = isFunction(value),
+		isAsync = p.thread || p.async;
 
 	const
 		mult = p.mult !== false,
@@ -79,7 +80,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					if (p.thread && isPromise(res)) {
+					if (isAsync && isPromise(res)) {
 						return res.then((res) => {
 							let
 								status = res === undefined;
@@ -135,7 +136,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					if (p.thread && isPromise(res)) {
+					if (isAsync && isPromise(res)) {
 						return res.then((res) => {
 							let
 								status = res === undefined;
@@ -193,7 +194,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					if (p.thread && isPromise(res)) {
+					if (isAsync && isPromise(res)) {
 						return res.then((res) => {
 							let
 								status = res === undefined;

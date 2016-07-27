@@ -49,7 +49,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
 	const type = (0, _types.getType)(data, p.use),
-	      isFunc = (0, _types.isFunction)(value);
+	      isFunc = (0, _types.isFunction)(value),
+	      isAsync = p.thread || p.async;
 
 	const mult = p.mult !== false,
 	      report = [];
@@ -72,7 +73,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
 
-					if (p.thread && (0, _types.isPromise)(res)) {
+					if (isAsync && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
 
@@ -123,7 +124,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
 
-					if (p.thread && (0, _types.isPromise)(res)) {
+					if (isAsync && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
 
@@ -176,7 +177,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
 
-					if (p.thread && (0, _types.isPromise)(res)) {
+					if (isAsync && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
 
