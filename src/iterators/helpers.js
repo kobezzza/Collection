@@ -146,7 +146,72 @@ Collection.prototype.count = function (value) {
 	return this;
 };
 
+/**
+ * Sets .use to 'for in' for the operation
+ *
+ * @param {(boolean|number|null)=} [opt_notOwn] - iteration type:
+ *
+ *   1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped
+ *   2) if true, then hasOwnProperty test is disabled
+ *   3) if -1, then hasOwnProperty test is enabled and all own properties will be skipped
+ *
+ * @return {!Collection}
+ */
+Collection.prototype.object = function (opt_notOwn) {
+	this.p.use = 'for in';
+
+	if (opt_notOwn) {
+		this.p.notOwn = opt_notOwn;
+	}
+
+	return this;
+};
+
 Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} */ {
+	live: {
+		/**
+		 * Sets .live to true for the operation
+		 * @return {!Collection}
+		 */
+		get() {
+			this.p.live = true;
+			return this;
+		}
+	},
+
+	descriptor: {
+		/**
+		 * Sets .withDescriptor to true for the operation
+		 * @return {!Collection}
+		 */
+		get() {
+			this.p.withDescriptor = true;
+			return this;
+		}
+	},
+
+	iterator: {
+		/**
+		 * Sets .use to 'for of' for the operation
+		 * @return {!Collection}
+		 */
+		get() {
+			this.p.use = 'for of';
+			return this;
+		}
+	},
+
+	array: {
+		/**
+		 * Sets .use to 'for' for the operation
+		 * @return {!Collection}
+		 */
+		get() {
+			this.p.use = 'for';
+			return this;
+		}
+	},
+
 	one: {
 		/**
 		 * Sets .mult to false for the operation

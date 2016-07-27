@@ -598,9 +598,9 @@ export function compileCycle(key, p) {
 				iFn += ws`
 					var tmpArray = [];
 
-					for (var step = cursor.next(); !step.done; step = cursor.next()) {
+					for (var step = cursor.next(); step && 'done' in step ? !step.done : step; step = cursor.next()) {
 						${threadStart}
-						tmpArray.push(step.value);
+						tmpArray.push('value' in step ? step.value : step);
 						${threadEnd}
 					}
 
@@ -623,8 +623,8 @@ export function compileCycle(key, p) {
 				gen();
 
 				iFn += ws`
-					for (key = cursor.next(); !key.done; key = cursor.next()) {
-						${maxArgsLength ? 'key = key.value;' : ''}
+					for (key = cursor.next(); key && 'done' in key ? !key.done : key; key = cursor.next()) {
+						${maxArgsLength ? `key = 'value' in key ? key.value : key;` : ''}
 						n++;
 						i = n;
 				`;

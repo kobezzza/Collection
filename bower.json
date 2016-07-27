@@ -3,7 +3,7 @@
   "description": "Minimalistic JavaScript library for working with collections of data.",
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "dist/collection.min.js",
-  "version": "6.0.0-beta.11",
+  "version": "6.0.0-beta.12",
   "license": "MIT",
   "authors": [
     {

@@ -507,6 +507,24 @@ $$Collection.prototype.from = function (value) {};
  */
 $$Collection.prototype.count = function (value) {};
 
+/**
+ * @param {(boolean|number|null)=} [opt_notOwn]
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.object = function (opt_notOwn) {};
+
+/** @type {{get: function (): $$Collection}} */
+$$Collection.prototype.live;
+
+/** @type {{get: function (): $$Collection}} */
+$$Collection.prototype.descriptor;
+
+/** @type {{get: function (): $$Collection}} */
+$$Collection.prototype.iterator;
+
+/** @type {{get: function (): $$Collection}} */
+$$Collection.prototype.array;
+
 /** @type {{get: function (): $$Collection}} */
 $$Collection.prototype.one;
 

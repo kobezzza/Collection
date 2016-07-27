@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.11
+ * Collection v6.0.0-beta.12
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 25 Jul 2016 08:01:09 GMT
+ * Date: 'Wed, 27 Jul 2016 10:09:29 GMT
  */
 
 (function (global, factory) {
@@ -355,7 +355,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.11'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.12'];
 
     /**
      * Creates an instance of Collection
@@ -459,9 +459,9 @@
     var _templateObject18 = taggedTemplateLiteral(['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}'], ['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}']);
     var _templateObject19 = taggedTemplateLiteral(['\nn++;\ni = n;\n'], ['\nn++;\ni = n;\n']);
     var _templateObject20 = taggedTemplateLiteral(['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (\'next\' in data) {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n'], ['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (\'next\' in data) {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n']);
-    var _templateObject21 = taggedTemplateLiteral(['\nvar tmpArray = [];\nfor (var step = cursor.next(); !step.done; step = cursor.next()) {\n', '\ntmpArray.push(step.value);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n'], ['\nvar tmpArray = [];\nfor (var step = cursor.next(); !step.done; step = cursor.next()) {\n', '\ntmpArray.push(step.value);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n']);
+    var _templateObject21 = taggedTemplateLiteral(['\nvar tmpArray = [];\nfor (var step = cursor.next(); step && \'done\' in step ? !step.done : step; step = cursor.next()) {\n', '\ntmpArray.push(\'value\' in step ? step.value : step);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n'], ['\nvar tmpArray = [];\nfor (var step = cursor.next(); step && \'done\' in step ? !step.done : step; step = cursor.next()) {\n', '\ntmpArray.push(\'value\' in step ? step.value : step);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n']);
     var _templateObject22 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n']);
-    var _templateObject23 = taggedTemplateLiteral(['\nfor (key = cursor.next(); !key.done; key = cursor.next()) {\n', '\nn++;\ni = n;\n'], ['\nfor (key = cursor.next(); !key.done; key = cursor.next()) {\n', '\nn++;\ni = n;\n']);
+    var _templateObject23 = taggedTemplateLiteral(['\nfor (key = cursor.next(); key && \'done\' in key ? !key.done : key; key = cursor.next()) {\n', '\nn++;\ni = n;\n'], ['\nfor (key = cursor.next(); key && \'done\' in key ? !key.done : key; key = cursor.next()) {\n', '\nn++;\ni = n;\n']);
     var _templateObject24 = taggedTemplateLiteral(['\nif (j === ', ') {\nbreak;\n}\n'], ['\nif (j === ', ') {\nbreak;\n}\n']);
     var _templateObject25 = taggedTemplateLiteral(['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK) { \nreturn; \n}\n'], ['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK) { \nreturn; \n}\n']);
     var _templateObject26 = taggedTemplateLiteral(['\nif (f === undefined || f === true) {\nf = filters[', '](', ');\n'], ['\nif (f === undefined || f === true) {\nf = filters[', '](', ');\n']);
@@ -683,7 +683,7 @@
     			} else {
     				gen();
 
-    				iFn += ws(_templateObject23, maxArgsLength ? 'key = key.value;' : '');
+    				iFn += ws(_templateObject23, maxArgsLength ? 'key = \'value\' in key ? key.value : key;' : '');
 
     				if (startIndex) {
     					iFn += ws(_templateObject10, startIndex);
@@ -1251,7 +1251,72 @@
     	return this;
     };
 
+    /**
+     * Sets .use to 'for in' for the operation
+     *
+     * @param {(boolean|number|null)=} [opt_notOwn] - iteration type:
+     *
+     *   1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped
+     *   2) if true, then hasOwnProperty test is disabled
+     *   3) if -1, then hasOwnProperty test is enabled and all own properties will be skipped
+     *
+     * @return {!Collection}
+     */
+    Collection.prototype.object = function (opt_notOwn) {
+    	this.p.use = 'for in';
+
+    	if (opt_notOwn) {
+    		this.p.notOwn = opt_notOwn;
+    	}
+
+    	return this;
+    };
+
     Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} */{
+    	live: {
+    		/**
+       * Sets .live to true for the operation
+       * @return {!Collection}
+       */
+    		get: function () {
+    			this.p.live = true;
+    			return this;
+    		}
+    	},
+
+    	descriptor: {
+    		/**
+       * Sets .withDescriptor to true for the operation
+       * @return {!Collection}
+       */
+    		get: function () {
+    			this.p.withDescriptor = true;
+    			return this;
+    		}
+    	},
+
+    	iterator: {
+    		/**
+       * Sets .use to 'for of' for the operation
+       * @return {!Collection}
+       */
+    		get: function () {
+    			this.p.use = 'for of';
+    			return this;
+    		}
+    	},
+
+    	array: {
+    		/**
+       * Sets .use to 'for' for the operation
+       * @return {!Collection}
+       */
+    		get: function () {
+    			this.p.use = 'for';
+    			return this;
+    		}
+    	},
+
     	one: {
     		/**
        * Sets .mult to false for the operation
