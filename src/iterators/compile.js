@@ -110,7 +110,8 @@ export function compileCycle(key, p) {
 
 		var
 			waitResult = [],
-			wait = 0;
+			wait = 0,
+			brkIf = false;
 
 		var
 			length,
@@ -145,6 +146,8 @@ export function compileCycle(key, p) {
 
 	if (isAsync) {
 		iFn += ws`
+			var parallel = 0;
+
 			onError = function (err) {
 				o.onError(err);
 				r = f = el = BREAK;
@@ -209,9 +212,24 @@ export function compileCycle(key, p) {
 				return true;
 			},
 
+			parallel: function (max, promise) {
+				if (parallel < max) {
+					parallel++;
+					return ctx.wait(promise).then(function () {
+						parallel--;
+					});
+				}
+
+				return ctx.sleep(25, function () { return parallel < max; });
+			},
+
 			wait: function (promise) {
 				if (${!isAsync}) {
 					return false;
+				}
+
+				if (!isPromise(promise)) {
+					promise = typeof promise.next === 'function' ? promise.next() : promise();
 				}
 
 				if (promise.thread) {
@@ -352,7 +370,8 @@ export function compileCycle(key, p) {
 
 	let
 		threadStart = '',
-		threadEnd = '';
+		threadEnd = '',
+		getEl = '';
 
 	if (p.thread) {
 		threadStart = ws`
@@ -374,7 +393,24 @@ export function compileCycle(key, p) {
 		`;
 	}
 
+	if (isAsync) {
+		getEl = ws`
+			while (isPromise(el)) {
+				el = el.then(resolveEl, onError);
+				ctx.thread.pause = true;
+				yield;
+			}
+
+			if (el === BREAK || brkIf && el == null || ctx.thread.destroyed) { 
+				return; 
+			}
+		`;
+	}
+
 	iFn += 'while (limit !== looper) {';
+
+	const
+		defArgs = maxArgsLength || isAsync;
 
 	switch (p.type) {
 		case 'array':
@@ -424,7 +460,7 @@ export function compileCycle(key, p) {
 				`;
 			}
 
-			if (maxArgsLength || isAsync) {
+			if (defArgs) {
 				if (maxArgsLength > 1) {
 					if (startIndex) {
 						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + ${startIndex + (p.reverse ? ')' : '')};`;
@@ -553,7 +589,7 @@ export function compileCycle(key, p) {
 				}
 			}
 
-			if (maxArgsLength || isAsync) {
+			if (defArgs) {
 				if (p.withDescriptor) {
 					iFn += 'el = getDescriptor(data, key);';
 
@@ -585,7 +621,7 @@ export function compileCycle(key, p) {
 							iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
 							cursor;
 
-						if ('next' in data) {
+						if (typeof data.next === 'function') {
 							cursor = data;
 
 						} else {
@@ -599,10 +635,15 @@ export function compileCycle(key, p) {
 				gen();
 				iFn += ws`
 					var tmpArray = [];
-
-					for (var step = cursor.next(); step && 'done' in step ? !step.done : step; step = cursor.next()) {
+					for (
+						var step = cursor.next(), brkIf = !!step && 'done' in step; 
+						step && 'done' in step ? !step.done : step; 
+						step = cursor.next()
+					) {
 						${threadStart}
-						tmpArray.push('value' in step ? step.value : step);
+						el = 'value' in step ? step.value : step;
+						${getEl}
+						tmpArray.push(el);
 						${threadEnd}
 					}
 
@@ -617,7 +658,7 @@ export function compileCycle(key, p) {
 				iFn += ws`
 					length = tmpArray.length;
 					for (n = -1; ++n < length;) {
-						${maxArgsLength ? 'key = tmpArray[n];' : ''}
+						${defArgs ? 'key = tmpArray[n];' : ''}
 						i = n + ${startIndex};
 				`;
 
@@ -625,8 +666,12 @@ export function compileCycle(key, p) {
 				gen();
 
 				iFn += ws`
-					for (key = cursor.next(); key && 'done' in key ? !key.done : key; key = cursor.next()) {
-						${maxArgsLength ? `key = 'value' in key ? key.value : key;` : ''}
+					for (
+						key = cursor.next(), brkIf = !!key && 'done' in key; 
+						key && 'done' in key ? !key.done : key; 
+						key = cursor.next()
+					) {
+						${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
 						n++;
 						i = n;
 				`;
@@ -648,7 +693,7 @@ export function compileCycle(key, p) {
 				}
 			}
 
-			if (maxArgsLength || isAsync) {
+			if (defArgs) {
 				if (p.type === 'map') {
 					iFn += 'el = data.get(key);';
 
@@ -673,7 +718,6 @@ export function compileCycle(key, p) {
 	}
 
 	iFn += threadStart;
-
 	if (p.count) {
 		iFn += ws`
 			if (j === ${p.count}) {
@@ -682,20 +726,7 @@ export function compileCycle(key, p) {
 		`;
 	}
 
-	if (isAsync) {
-		iFn += ws`
-			while (isPromise(el)) {
-				el = el.then(resolveEl, onError);
-				ctx.thread.pause = true;
-				yield;
-			}
-
-			if (el === BREAK || ctx.thread.destroyed) { 
-				return; 
-			}
-		`;
-	}
-
+	iFn += getEl;
 	if (p.filter.length) {
 		for (let i = 0; i < p.filter.length; i++) {
 			iFn += ws`
