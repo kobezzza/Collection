@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 04 Aug 2016 11:23:54 GMT
+ * Date: 'Thu, 04 Aug 2016 13:27:00 GMT
  */
 
 (function (global, factory) {
@@ -458,7 +458,7 @@
     var _templateObject4 = taggedTemplateLiteral(['\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nfunction resolveEl(res) {\nel = res;\nctx.next();\n}\nfunction resolveCb(res) {\nr = res;\nctx.next();\n}\nfunction resolveFilter(res) {\nf = res;\nctx.next();\n}\nctx.thread = o.self;\nctx.thread.ctx = ctx;\n'], ['\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nfunction resolveEl(res) {\nel = res;\nctx.next();\n}\nfunction resolveCb(res) {\nr = res;\nctx.next();\n}\nfunction resolveFilter(res) {\nf = res;\nctx.next();\n}\nctx.thread = o.self;\nctx.thread.ctx = ctx;\n']);
     var _templateObject5 = taggedTemplateLiteral(['\nif (timeStart == null) {\ntimeStart = new Date().valueOf();\n}\n'], ['\nif (timeStart == null) {\ntimeStart = new Date().valueOf();\n}\n']);
     var _templateObject6 = taggedTemplateLiteral(['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[ctx.thread.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n'], ['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[ctx.thread.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n']);
-    var _templateObject7 = taggedTemplateLiteral(['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK || brkIf && el == null || ctx.thread.destroyed) { \nreturn; \n}\n'], ['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK || brkIf && el == null || ctx.thread.destroyed) { \nreturn; \n}\n']);
+    var _templateObject7 = taggedTemplateLiteral(['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK || ctx.thread.destroyed) {\nreturn; \n}\nif (el === o.IGNORE) {\ncontinue;\n}\nif (brkIf && el === null) {\nbreak;\n}\n'], ['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK || ctx.thread.destroyed) {\nreturn; \n}\nif (el === o.IGNORE) {\ncontinue;\n}\nif (brkIf && el === null) {\nbreak;\n}\n']);
     var _templateObject8 = taggedTemplateLiteral(['\nvar\nclone = data,\ndLength = data.length - 1;\n'], ['\nvar\nclone = data,\ndLength = data.length - 1;\n']);
     var _templateObject9 = taggedTemplateLiteral(['\nclone = arr.slice.call(clone, ', ', ', ');\n'], ['\nclone = arr.slice.call(clone, ', ', ', ');\n']);
     var _templateObject10 = taggedTemplateLiteral(['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n'], ['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n']);
@@ -473,9 +473,9 @@
     var _templateObject19 = taggedTemplateLiteral(['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}'], ['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}']);
     var _templateObject20 = taggedTemplateLiteral(['\nn++;\ni = n;\n'], ['\nn++;\ni = n;\n']);
     var _templateObject21 = taggedTemplateLiteral(['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (typeof data.next === \'function\') {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n'], ['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (typeof data.next === \'function\') {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n']);
-    var _templateObject22 = taggedTemplateLiteral(['\nvar tmpArray = [];\nfor (\nvar step = cursor.next(), brkIf = !!step && \'done\' in step; \nstep && \'done\' in step ? !step.done : step; \nstep = cursor.next()\n) {\n', '\nel = \'value\' in step ? step.value : step;\n', '\ntmpArray.push(el);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n'], ['\nvar tmpArray = [];\nfor (\nvar step = cursor.next(), brkIf = !!step && \'done\' in step; \nstep && \'done\' in step ? !step.done : step; \nstep = cursor.next()\n) {\n', '\nel = \'value\' in step ? step.value : step;\n', '\ntmpArray.push(el);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n']);
+    var _templateObject22 = taggedTemplateLiteral(['\nvar tmpArray = [];\nfor (var step = cursor.next(); \'done\' in step ? !step.done : step; step = cursor.next()) {\n', '\nbrkIf = \'done\' in step === false;\nel = \'value\' in step ? step.value : step;\n', '\ntmpArray.push(el);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n'], ['\nvar tmpArray = [];\nfor (var step = cursor.next(); \'done\' in step ? !step.done : step; step = cursor.next()) {\n', '\nbrkIf = \'done\' in step === false;\nel = \'value\' in step ? step.value : step;\n', '\ntmpArray.push(el);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n']);
     var _templateObject23 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n']);
-    var _templateObject24 = taggedTemplateLiteral(['\nfor (\nkey = cursor.next(), brkIf = !!key && \'done\' in key; \nkey && \'done\' in key ? !key.done : key; \nkey = cursor.next()\n) {\n', '\nn++;\ni = n;\n'], ['\nfor (\nkey = cursor.next(), brkIf = !!key && \'done\' in key; \nkey && \'done\' in key ? !key.done : key; \nkey = cursor.next()\n) {\n', '\nn++;\ni = n;\n']);
+    var _templateObject24 = taggedTemplateLiteral(['\nfor (key = cursor.next(); \'done\' in key ? !key.done : key; key = cursor.next()) {\nbrkIf = \'done\' in key === false;\n', '\nn++;\ni = n;\n'], ['\nfor (key = cursor.next(); \'done\' in key ? !key.done : key; key = cursor.next()) {\nbrkIf = \'done\' in key === false;\n', '\nn++;\ni = n;\n']);
     var _templateObject25 = taggedTemplateLiteral(['\nif (j === ', ') {\nbreak;\n}\n'], ['\nif (j === ', ') {\nbreak;\n}\n']);
     var _templateObject26 = taggedTemplateLiteral(['\nif (f === undefined || f === true) {\nf = filters[', '](', ');\n'], ['\nif (f === undefined || f === true) {\nf = filters[', '](', ');\n']);
     var _templateObject27 = taggedTemplateLiteral(['\nwhile (isPromise(f)) {\nf.then(resolveFilter, onError);\nctx.thread.pause = true;\nyield;\n}\nif (f === BREAK || ctx.thread.destroyed) {\nreturn; \n}\n'], ['\nwhile (isPromise(f)) {\nf.then(resolveFilter, onError);\nctx.thread.pause = true;\nyield;\n}\nif (f === BREAK || ctx.thread.destroyed) {\nreturn; \n}\n']);
@@ -990,27 +990,33 @@
     	var data = this.data;
     	var type = p.type = getType(data, p.use);
 
-    	var filters = p.filter;
+    	var filters = p.filter,
+    	    isStream = type === 'stream';
 
     	if (!isObjectInstance(data) || { 'weakMap': true, 'weakSet': true }[type]) {
     		throw new TypeError('Incorrect data type');
     	}
 
-    	if (type === 'stream') {
+    	var IGNORE = {};
+
+    	if (isStream) {
     		(function () {
+    			if (!p.thread) {
+    				p.async = true;
+    			}
+
     			var stream = data;
-
-    			var isReadable = true,
-    			    hasEnded = false;
-
-    			stream.on('readable', function () {
-    				return isReadable = true;
+    			stream.on('error', function (err) {
+    				if (data.onError) {
+    					data.onError(err);
+    				} else {
+    					throw err;
+    				}
     			});
+
+    			var hasEnded = false;
     			stream.on('end', function () {
     				return hasEnded = true;
-    			});
-    			stream.on('error', function (err) {
-    				throw err;
     			});
 
     			data = {
@@ -1019,31 +1025,39 @@
     						return { done: true, value: undefined };
     					}
 
-    					if (isReadable) {
-    						var value = stream.read();
+    					return {
+    						done: false,
+    						value: new Promise(function (resolve, reject) {
+    							stream.once('end', end);
+    							stream.once('data', data);
+    							stream.once('error', end);
 
-    						if (value === null) {
-    							isReadable = false;
-    							return data.next();
-    						}
+    							function data(data) {
+    								clear();
+    								resolve(data);
+    							}
 
-    						return { done: false, value: value };
-    					}
+    							function end() {
+    								clear();
+    								resolve(IGNORE);
+    							}
 
-    					var onEnd = function () {
-    						return data.next();
+    							function error(err) {
+    								clear();
+    								reject(err);
+    							}
+
+    							function clear() {
+    								stream.removeListener('end', end);
+    								stream.removeListener('error', error);
+    								stream.removeListener('data', data);
+    							}
+    						})
     					};
-
-    					stream.once('readable', function () {
-    						stream.removeListener('end', onEnd);
-    						data.next();
-    					});
-
-    					stream.once('end', onEnd);
     				}
     			};
 
-    			type = 'iterator';
+    			type = p.type = 'iterator';
     		})();
     	}
 
@@ -1120,6 +1134,7 @@
     	var fn = any(tmpCycle[key] || compileCycle(key, p));
 
     	var args = {
+    		IGNORE: IGNORE,
     		data: data,
     		cb: cb,
     		cbLength: cbLength,
@@ -1173,6 +1188,10 @@
 
     				for (var _i = 0; _i < filters.length; _i++) {
     					filters[_i] = wrap(filters[_i]);
+    				}
+
+    				if (isStream) {
+    					data.onError = onError;
     				}
 
     				args.cb = wrap(cb);
