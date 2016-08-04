@@ -68,3 +68,18 @@ var fLength;
 
 /** @type {?} */
 var onComplete;
+
+/** @type {?} */
+var on;
+
+/** @type {?} */
+var once;
+
+/** @type {?} */
+var removeListener;
+
+/** @type {?} */
+var read;
+
+/** @type {?} */
+var pipe;
