@@ -31,6 +31,7 @@ exports.isObjectInstance = isObjectInstance;
 exports.isLikeArray = isLikeArray;
 exports.isGenerator = isGenerator;
 exports.isIterator = isIterator;
+exports.isStream = isStream;
 exports.getType = getType;
 exports.getStructure = getStructure;
 exports.isStructure = isStructure;
@@ -196,6 +197,16 @@ function isIterator(obj) {
 }
 
 /**
+ * Returns true if the specified value is a stream
+ *
+ * @param {?} obj - source value
+ * @return {boolean}
+ */
+function isStream(obj) {
+  return Boolean(obj && typeof obj.pipe === 'function' && typeof obj.read === 'function' && typeof obj.on === 'function' && typeof obj.once === 'function' && typeof obj.removeListener === 'function');
+}
+
+/**
  * Returns the current type of an object
  *
  * @param {Object} obj - source object
@@ -236,6 +247,8 @@ function getType(obj, opt_use) {
         type = 'array';
       } else if (isIterator(obj)) {
         type = 'iterator';
+      } else if (isStream(obj)) {
+        type = 'stream';
       }
   }
 

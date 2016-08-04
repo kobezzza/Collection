@@ -81,13 +81,56 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		p.priority = 'normal';
 	}
 
-	const { data } = this;
+	let { data } = this,
+	    type = p.type = (0, _types.getType)(data, p.use);
 
-	const type = p.type = (0, _types.getType)(data, p.use),
-	      filters = p.filter;
+	const filters = p.filter;
 
 	if (!(0, _types.isObjectInstance)(data) || { 'weakMap': true, 'weakSet': true }[type]) {
 		throw new TypeError('Incorrect data type');
+	}
+
+	if (type === 'stream') {
+		const stream = data;
+
+		let isReadable = true,
+		    hasEnded = false;
+
+		stream.on('readable', () => isReadable = true);
+		stream.on('end', () => hasEnded = true);
+		stream.on('error', err => {
+			throw err;
+		});
+
+		data = {
+			next() {
+				if (hasEnded) {
+					return { done: true, value: undefined };
+				}
+
+				if (isReadable) {
+					const value = stream.read();
+
+					if (value === null) {
+						isReadable = false;
+						return data.next();
+					}
+
+					return { done: false, value };
+				}
+
+				const onEnd = () => data.next();
+
+				stream.once('readable', () => {
+					stream.removeListener('end', onEnd);
+					data.next();
+				});
+
+				stream.once('end', onEnd);
+			}
+		};
+
+		type = 'iterator';
 	}
 
 	// Optimization for the length request

@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.13
+ * Collection v6.0.0-beta.14
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 27 Jul 2016 12:57:47 GMT
+ * Date: 'Thu, 04 Aug 2016 11:23:54 GMT
  */
 
 (function (global, factory) {
@@ -194,6 +194,16 @@
     }
 
     /**
+     * Returns true if the specified value is a stream
+     *
+     * @param {?} obj - source value
+     * @return {boolean}
+     */
+    function isStream(obj) {
+      return Boolean(obj && typeof obj.pipe === 'function' && typeof obj.read === 'function' && typeof obj.on === 'function' && typeof obj.once === 'function' && typeof obj.removeListener === 'function');
+    }
+
+    /**
      * Returns the current type of an object
      *
      * @param {Object} obj - source object
@@ -234,6 +244,8 @@
             type = 'array';
           } else if (isIterator(obj)) {
             type = 'iterator';
+          } else if (isStream(obj)) {
+            type = 'stream';
           }
       }
 
@@ -356,7 +368,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.13'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.14'];
 
     /**
      * Creates an instance of Collection
@@ -440,31 +452,31 @@
       }
     };
 
-    var _templateObject = taggedTemplateLiteral(['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\ngetDescriptor = Object.getOwnPropertyDescriptor,\nonError;\nvar\nTRUE = {},\nFALSE = {},\nBREAK = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nwaitResult = [],\nwait = 0;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nwithDescriptor: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nasync: ', ',\nthread: ', ',\npriority: ', ' && \'', '\',\nlength: ', '\n};\n'], ['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\ngetDescriptor = Object.getOwnPropertyDescriptor,\nonError;\nvar\nTRUE = {},\nFALSE = {},\nBREAK = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nwaitResult = [],\nwait = 0;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nwithDescriptor: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nasync: ', ',\nthread: ', ',\npriority: ', ' && \'', '\',\nlength: ', '\n};\n']);
-    var _templateObject2 = taggedTemplateLiteral(['\nonError = function (err) {\no.onError(err);\nr = f = el = BREAK;\nwait = 0;\n};\nvar onChildError = function (err) {\nif (err && err.type === \'CollectionThreadDestroy\') {\nwait--;\nreturn;\n}\nonError(err);\n};\n'], ['\nonError = function (err) {\no.onError(err);\nr = f = el = BREAK;\nwait = 0;\n};\nvar onChildError = function (err) {\nif (err && err.type === \'CollectionThreadDestroy\') {\nwait--;\nreturn;\n}\nonError(err);\n};\n']);
-    var _templateObject3 = taggedTemplateLiteral(['\nvar ctx = {\n$: $,\ninfo: info,\nwaitResult: waitResult,\nonError: onError,\nTRUE: TRUE,\nFALSE: FALSE,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nnext: function (opt_val) {\nif (', ') {\nreturn false;\n}\nctx.thread.next(opt_val);\nreturn true;\n},\nchild: function (thread) {\nif (', ' || !thread.thread) {\nreturn false;\n}\nctx.thread.children.push(thread.thread);\nreturn true;\n},\nwait: function (promise) {\nif (', ') {\nreturn false;\n}\nif (promise.thread) {\nctx.child(promise);\n}\nwait++;\nreturn promise.then(function (res) {\nwaitResult.push(res);\nwait--;\nctx.next();\n}, onChildError);\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nctx.thread.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nctx.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nonError(err);\n}\n} else {\nresolve();\nctx.next();\n}\n}, time);\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n'], ['\nvar ctx = {\n$: $,\ninfo: info,\nwaitResult: waitResult,\nonError: onError,\nTRUE: TRUE,\nFALSE: FALSE,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nnext: function (opt_val) {\nif (', ') {\nreturn false;\n}\nctx.thread.next(opt_val);\nreturn true;\n},\nchild: function (thread) {\nif (', ' || !thread.thread) {\nreturn false;\n}\nctx.thread.children.push(thread.thread);\nreturn true;\n},\nwait: function (promise) {\nif (', ') {\nreturn false;\n}\nif (promise.thread) {\nctx.child(promise);\n}\nwait++;\nreturn promise.then(function (res) {\nwaitResult.push(res);\nwait--;\nctx.next();\n}, onChildError);\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nctx.thread.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nctx.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nonError(err);\n}\n} else {\nresolve();\nctx.next();\n}\n}, time);\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n']);
+    var _templateObject = taggedTemplateLiteral(['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\ngetDescriptor = Object.getOwnPropertyDescriptor,\nonError;\nvar\nTRUE = {},\nFALSE = {},\nBREAK = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nwaitResult = [],\nwait = 0,\nbrkIf = false;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nwithDescriptor: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nasync: ', ',\nthread: ', ',\npriority: ', ' && \'', '\',\nlength: ', '\n};\n'], ['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\ngetDescriptor = Object.getOwnPropertyDescriptor,\nonError;\nvar\nTRUE = {},\nFALSE = {},\nBREAK = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nyielder = false,\nyieldVal;\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nlimit = 1,\nlooper = 0;\nvar\nwaitResult = [],\nwait = 0,\nbrkIf = false;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nwithDescriptor: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nasync: ', ',\nthread: ', ',\npriority: ', ' && \'', '\',\nlength: ', '\n};\n']);
+    var _templateObject2 = taggedTemplateLiteral(['\nvar parallel = 0;\nonError = function (err) {\no.onError(err);\nr = f = el = BREAK;\nwait = 0;\n};\nvar onChildError = function (err) {\nif (err && err.type === \'CollectionThreadDestroy\') {\nwait--;\nreturn;\n}\nonError(err);\n};\n'], ['\nvar parallel = 0;\nonError = function (err) {\no.onError(err);\nr = f = el = BREAK;\nwait = 0;\n};\nvar onChildError = function (err) {\nif (err && err.type === \'CollectionThreadDestroy\') {\nwait--;\nreturn;\n}\nonError(err);\n};\n']);
+    var _templateObject3 = taggedTemplateLiteral(['\nvar ctx = {\n$: $,\ninfo: info,\nwaitResult: waitResult,\nonError: onError,\nTRUE: TRUE,\nFALSE: FALSE,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nnext: function (opt_val) {\nif (', ') {\nreturn false;\n}\nctx.thread.next(opt_val);\nreturn true;\n},\nchild: function (thread) {\nif (', ' || !thread.thread) {\nreturn false;\n}\nctx.thread.children.push(thread.thread);\nreturn true;\n},\nparallel: function (max, promise) {\nif (parallel < max) {\nparallel++;\nreturn ctx.wait(promise).then(function () {\nparallel--;\n});\n}\nreturn ctx.sleep(25, function () { return parallel < max; });\n},\nwait: function (promise) {\nif (', ') {\nreturn false;\n}\nif (!isPromise(promise)) {\npromise = typeof promise.next === \'function\' ? promise.next() : promise();\n}\nif (promise.thread) {\nctx.child(promise);\n}\nwait++;\nreturn promise.then(function (res) {\nwaitResult.push(res);\nwait--;\nctx.next();\n}, onChildError);\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nctx.thread.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nctx.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nonError(err);\n}\n} else {\nresolve();\nctx.next();\n}\n}, time);\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n'], ['\nvar ctx = {\n$: $,\ninfo: info,\nwaitResult: waitResult,\nonError: onError,\nTRUE: TRUE,\nFALSE: FALSE,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nnext: function (opt_val) {\nif (', ') {\nreturn false;\n}\nctx.thread.next(opt_val);\nreturn true;\n},\nchild: function (thread) {\nif (', ' || !thread.thread) {\nreturn false;\n}\nctx.thread.children.push(thread.thread);\nreturn true;\n},\nparallel: function (max, promise) {\nif (parallel < max) {\nparallel++;\nreturn ctx.wait(promise).then(function () {\nparallel--;\n});\n}\nreturn ctx.sleep(25, function () { return parallel < max; });\n},\nwait: function (promise) {\nif (', ') {\nreturn false;\n}\nif (!isPromise(promise)) {\npromise = typeof promise.next === \'function\' ? promise.next() : promise();\n}\nif (promise.thread) {\nctx.child(promise);\n}\nwait++;\nreturn promise.then(function (res) {\nwaitResult.push(res);\nwait--;\nctx.next();\n}, onChildError);\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nctx.thread.sleep = setTimeout(function () {\nif (opt_test) {\ntry {\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nctx.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nonError(err);\n}\n} else {\nresolve();\nctx.next();\n}\n}, time);\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n']);
     var _templateObject4 = taggedTemplateLiteral(['\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nfunction resolveEl(res) {\nel = res;\nctx.next();\n}\nfunction resolveCb(res) {\nr = res;\nctx.next();\n}\nfunction resolveFilter(res) {\nf = res;\nctx.next();\n}\nctx.thread = o.self;\nctx.thread.ctx = ctx;\n'], ['\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nfunction resolveEl(res) {\nel = res;\nctx.next();\n}\nfunction resolveCb(res) {\nr = res;\nctx.next();\n}\nfunction resolveFilter(res) {\nf = res;\nctx.next();\n}\nctx.thread = o.self;\nctx.thread.ctx = ctx;\n']);
     var _templateObject5 = taggedTemplateLiteral(['\nif (timeStart == null) {\ntimeStart = new Date().valueOf();\n}\n'], ['\nif (timeStart == null) {\ntimeStart = new Date().valueOf();\n}\n']);
     var _templateObject6 = taggedTemplateLiteral(['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[ctx.thread.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n'], ['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[ctx.thread.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n']);
-    var _templateObject7 = taggedTemplateLiteral(['\nvar\nclone = data,\ndLength = data.length - 1;\n'], ['\nvar\nclone = data,\ndLength = data.length - 1;\n']);
-    var _templateObject8 = taggedTemplateLiteral(['\nclone = arr.slice.call(clone, ', ', ', ');\n'], ['\nclone = arr.slice.call(clone, ', ', ', ');\n']);
-    var _templateObject9 = taggedTemplateLiteral(['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n'], ['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n']);
-    var _templateObject10 = taggedTemplateLiteral(['\nif (n < ', ') {\ncontinue;\n}\n'], ['\nif (n < ', ') {\ncontinue;\n}\n']);
-    var _templateObject11 = taggedTemplateLiteral(['\nif (n > ', ') {\nbreak;\n};\n'], ['\nif (n > ', ') {\nbreak;\n};\n']);
-    var _templateObject12 = taggedTemplateLiteral(['\nlength = clone.length;\nfor (n = -1; ++n < length;) {\ni = n + ', ';\n'], ['\nlength = clone.length;\nfor (n = -1; ++n < length;) {\ni = n + ', ';\n']);
-    var _templateObject13 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\nif (data.hasOwnProperty(key)) {\ncontinue;\n}\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\nif (data.hasOwnProperty(key)) {\ncontinue;\n}\ntmpArray.push(key);\n', '\n}\n']);
-    var _templateObject14 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\ntmpArray.push(key);\n', '\n}\n']);
-    var _templateObject15 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\nif (!data.hasOwnProperty(key)) {\nbreak;\n}\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\nif (!data.hasOwnProperty(key)) {\nbreak;\n}\ntmpArray.push(key);\n', '\n}\n']);
-    var _templateObject16 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\nkey = tmpArray[n];\nif (key in data === false) {\ncontinue;\n}\ni = n + ', ';\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\nkey = tmpArray[n];\nif (key in data === false) {\ncontinue;\n}\ni = n + ', ';\n']);
-    var _templateObject17 = taggedTemplateLiteral(['\nif (!data.hasOwnProperty(key)) {\nbreak;\n}'], ['\nif (!data.hasOwnProperty(key)) {\nbreak;\n}']);
-    var _templateObject18 = taggedTemplateLiteral(['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}'], ['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}']);
-    var _templateObject19 = taggedTemplateLiteral(['\nn++;\ni = n;\n'], ['\nn++;\ni = n;\n']);
-    var _templateObject20 = taggedTemplateLiteral(['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (\'next\' in data) {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n'], ['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (\'next\' in data) {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n']);
-    var _templateObject21 = taggedTemplateLiteral(['\nvar tmpArray = [];\nfor (var step = cursor.next(); step && \'done\' in step ? !step.done : step; step = cursor.next()) {\n', '\ntmpArray.push(\'value\' in step ? step.value : step);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n'], ['\nvar tmpArray = [];\nfor (var step = cursor.next(); step && \'done\' in step ? !step.done : step; step = cursor.next()) {\n', '\ntmpArray.push(\'value\' in step ? step.value : step);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n']);
-    var _templateObject22 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n']);
-    var _templateObject23 = taggedTemplateLiteral(['\nfor (key = cursor.next(); key && \'done\' in key ? !key.done : key; key = cursor.next()) {\n', '\nn++;\ni = n;\n'], ['\nfor (key = cursor.next(); key && \'done\' in key ? !key.done : key; key = cursor.next()) {\n', '\nn++;\ni = n;\n']);
-    var _templateObject24 = taggedTemplateLiteral(['\nif (j === ', ') {\nbreak;\n}\n'], ['\nif (j === ', ') {\nbreak;\n}\n']);
-    var _templateObject25 = taggedTemplateLiteral(['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK || ctx.thread.destroyed) { \nreturn; \n}\n'], ['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK || ctx.thread.destroyed) { \nreturn; \n}\n']);
+    var _templateObject7 = taggedTemplateLiteral(['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK || brkIf && el == null || ctx.thread.destroyed) { \nreturn; \n}\n'], ['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === BREAK || brkIf && el == null || ctx.thread.destroyed) { \nreturn; \n}\n']);
+    var _templateObject8 = taggedTemplateLiteral(['\nvar\nclone = data,\ndLength = data.length - 1;\n'], ['\nvar\nclone = data,\ndLength = data.length - 1;\n']);
+    var _templateObject9 = taggedTemplateLiteral(['\nclone = arr.slice.call(clone, ', ', ', ');\n'], ['\nclone = arr.slice.call(clone, ', ', ', ');\n']);
+    var _templateObject10 = taggedTemplateLiteral(['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n'], ['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n']);
+    var _templateObject11 = taggedTemplateLiteral(['\nif (n < ', ') {\ncontinue;\n}\n'], ['\nif (n < ', ') {\ncontinue;\n}\n']);
+    var _templateObject12 = taggedTemplateLiteral(['\nif (n > ', ') {\nbreak;\n};\n'], ['\nif (n > ', ') {\nbreak;\n};\n']);
+    var _templateObject13 = taggedTemplateLiteral(['\nlength = clone.length;\nfor (n = -1; ++n < length;) {\ni = n + ', ';\n'], ['\nlength = clone.length;\nfor (n = -1; ++n < length;) {\ni = n + ', ';\n']);
+    var _templateObject14 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\nif (data.hasOwnProperty(key)) {\ncontinue;\n}\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\nif (data.hasOwnProperty(key)) {\ncontinue;\n}\ntmpArray.push(key);\n', '\n}\n']);
+    var _templateObject15 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\ntmpArray.push(key);\n', '\n}\n']);
+    var _templateObject16 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\nif (!data.hasOwnProperty(key)) {\nbreak;\n}\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\nif (!data.hasOwnProperty(key)) {\nbreak;\n}\ntmpArray.push(key);\n', '\n}\n']);
+    var _templateObject17 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\nkey = tmpArray[n];\nif (key in data === false) {\ncontinue;\n}\ni = n + ', ';\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\nkey = tmpArray[n];\nif (key in data === false) {\ncontinue;\n}\ni = n + ', ';\n']);
+    var _templateObject18 = taggedTemplateLiteral(['\nif (!data.hasOwnProperty(key)) {\nbreak;\n}'], ['\nif (!data.hasOwnProperty(key)) {\nbreak;\n}']);
+    var _templateObject19 = taggedTemplateLiteral(['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}'], ['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}']);
+    var _templateObject20 = taggedTemplateLiteral(['\nn++;\ni = n;\n'], ['\nn++;\ni = n;\n']);
+    var _templateObject21 = taggedTemplateLiteral(['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (typeof data.next === \'function\') {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n'], ['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (typeof data.next === \'function\') {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n']);
+    var _templateObject22 = taggedTemplateLiteral(['\nvar tmpArray = [];\nfor (\nvar step = cursor.next(), brkIf = !!step && \'done\' in step; \nstep && \'done\' in step ? !step.done : step; \nstep = cursor.next()\n) {\n', '\nel = \'value\' in step ? step.value : step;\n', '\ntmpArray.push(el);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n'], ['\nvar tmpArray = [];\nfor (\nvar step = cursor.next(), brkIf = !!step && \'done\' in step; \nstep && \'done\' in step ? !step.done : step; \nstep = cursor.next()\n) {\n', '\nel = \'value\' in step ? step.value : step;\n', '\ntmpArray.push(el);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n']);
+    var _templateObject23 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + ', ';\n']);
+    var _templateObject24 = taggedTemplateLiteral(['\nfor (\nkey = cursor.next(), brkIf = !!key && \'done\' in key; \nkey && \'done\' in key ? !key.done : key; \nkey = cursor.next()\n) {\n', '\nn++;\ni = n;\n'], ['\nfor (\nkey = cursor.next(), brkIf = !!key && \'done\' in key; \nkey && \'done\' in key ? !key.done : key; \nkey = cursor.next()\n) {\n', '\nn++;\ni = n;\n']);
+    var _templateObject25 = taggedTemplateLiteral(['\nif (j === ', ') {\nbreak;\n}\n'], ['\nif (j === ', ') {\nbreak;\n}\n']);
     var _templateObject26 = taggedTemplateLiteral(['\nif (f === undefined || f === true) {\nf = filters[', '](', ');\n'], ['\nif (f === undefined || f === true) {\nf = filters[', '](', ');\n']);
     var _templateObject27 = taggedTemplateLiteral(['\nwhile (isPromise(f)) {\nf.then(resolveFilter, onError);\nctx.thread.pause = true;\nyield;\n}\nif (f === BREAK || ctx.thread.destroyed) {\nreturn; \n}\n'], ['\nwhile (isPromise(f)) {\nf.then(resolveFilter, onError);\nctx.thread.pause = true;\nyield;\n}\nif (f === BREAK || ctx.thread.destroyed) {\nreturn; \n}\n']);
     var _templateObject28 = taggedTemplateLiteral(['\nf = ', 'f && f !== FALSE || f === TRUE;\n}\n'], ['\nf = ', 'f && f !== FALSE || f === TRUE;\n}\n']);
@@ -544,7 +556,8 @@
     	}
 
     	var threadStart = '',
-    	    threadEnd = '';
+    	    threadEnd = '',
+    	    getEl = '';
 
     	if (p.thread) {
     		threadStart = ws(_templateObject5);
@@ -552,35 +565,41 @@
     		threadEnd = ws(_templateObject6);
     	}
 
+    	if (isAsync) {
+    		getEl = ws(_templateObject7);
+    	}
+
     	iFn += 'while (limit !== looper) {';
+
+    	var defArgs = maxArgsLength || isAsync;
 
     	switch (p.type) {
     		case 'array':
-    			iFn += ws(_templateObject7);
+    			iFn += ws(_templateObject8);
 
     			if (p.reverse) {
     				iFn += 'clone = arr.slice.call(clone).reverse();';
     			}
 
     			if ((p.reverse || !p.live) && (startIndex || endIndex)) {
-    				iFn += ws(_templateObject8, startIndex, endIndex || 'data.length');
+    				iFn += ws(_templateObject9, startIndex, endIndex || 'data.length');
     			}
 
     			if (!p.reverse && p.live) {
-    				iFn += ws(_templateObject9, startIndex - 1);
+    				iFn += ws(_templateObject10, startIndex - 1);
 
     				if (startIndex) {
-    					iFn += ws(_templateObject10, startIndex);
+    					iFn += ws(_templateObject11, startIndex);
     				}
 
     				if (endIndex) {
-    					iFn += ws(_templateObject11, endIndex);
+    					iFn += ws(_templateObject12, endIndex);
     				}
     			} else {
-    				iFn += ws(_templateObject12, startIndex);
+    				iFn += ws(_templateObject13, startIndex);
     			}
 
-    			if (maxArgsLength || isAsync) {
+    			if (defArgs) {
     				if (maxArgsLength > 1) {
     					if (startIndex) {
     						iFn += 'key = ' + (p.reverse ? 'dLength - (' : '') + ' n + ' + (startIndex + (p.reverse ? ')' : '')) + ';';
@@ -609,12 +628,12 @@
 
     					if (p.notOwn) {
     						if (p.notOwn === -1) {
-    							iFn += ws(_templateObject13, threadStart, threadEnd);
-    						} else {
     							iFn += ws(_templateObject14, threadStart, threadEnd);
+    						} else {
+    							iFn += ws(_templateObject15, threadStart, threadEnd);
     						}
     					} else {
-    						iFn += ws(_templateObject15, threadStart, threadEnd);
+    						iFn += ws(_templateObject16, threadStart, threadEnd);
     					}
     				}
 
@@ -626,28 +645,28 @@
     					iFn += 'tmpArray = tmpArray.slice(' + startIndex + ', ' + (endIndex || 'tmpArray.length') + ');';
     				}
 
-    				iFn += ws(_templateObject16, startIndex);
+    				iFn += ws(_templateObject17, startIndex);
     			} else {
     				iFn += 'for (key in data) {';
 
     				if (p.notOwn === false) {
-    					iFn += ws(_templateObject17);
-    				} else if (p.notOwn === -1) {
     					iFn += ws(_templateObject18);
+    				} else if (p.notOwn === -1) {
+    					iFn += ws(_templateObject19);
     				}
 
-    				iFn += ws(_templateObject19);
+    				iFn += ws(_templateObject20);
 
     				if (startIndex) {
-    					iFn += ws(_templateObject10, startIndex);
+    					iFn += ws(_templateObject11, startIndex);
     				}
 
     				if (endIndex) {
-    					iFn += ws(_templateObject11, endIndex);
+    					iFn += ws(_templateObject12, endIndex);
     				}
     			}
 
-    			if (maxArgsLength || isAsync) {
+    			if (defArgs) {
     				if (p.withDescriptor) {
     					iFn += 'el = getDescriptor(data, key);';
     				} else {
@@ -671,34 +690,34 @@
     				} else if (p.type === 'generator') {
     					iFn += 'var cursor = data();';
     				} else {
-    					iFn += ws(_templateObject20);
+    					iFn += ws(_templateObject21);
     				}
     			};
 
     			if (p.reverse) {
     				gen();
-    				iFn += ws(_templateObject21, threadStart, threadEnd);
+    				iFn += ws(_templateObject22, threadStart, getEl, threadEnd);
 
     				if (startIndex || endIndex) {
     					iFn += 'tmpArray = tmpArray.slice(' + startIndex + ', ' + (endIndex || 'tmpArray.length') + ');';
     				}
 
-    				iFn += ws(_templateObject22, maxArgsLength ? 'key = tmpArray[n];' : '', startIndex);
+    				iFn += ws(_templateObject23, defArgs ? 'key = tmpArray[n];' : '', startIndex);
     			} else {
     				gen();
 
-    				iFn += ws(_templateObject23, maxArgsLength ? 'key = \'value\' in key ? key.value : key;' : '');
+    				iFn += ws(_templateObject24, defArgs ? 'key = \'value\' in key ? key.value : key;' : '');
 
     				if (startIndex) {
-    					iFn += ws(_templateObject10, startIndex);
+    					iFn += ws(_templateObject11, startIndex);
     				}
 
     				if (endIndex) {
-    					iFn += ws(_templateObject11, endIndex);
+    					iFn += ws(_templateObject12, endIndex);
     				}
     			}
 
-    			if (maxArgsLength || isAsync) {
+    			if (defArgs) {
     				if (p.type === 'map') {
     					iFn += 'el = data.get(key);';
     				} else {
@@ -720,15 +739,11 @@
     	}
 
     	iFn += threadStart;
-
     	if (p.count) {
-    		iFn += ws(_templateObject24, p.count);
+    		iFn += ws(_templateObject25, p.count);
     	}
 
-    	if (isAsync) {
-    		iFn += ws(_templateObject25);
-    	}
-
+    	iFn += getEl;
     	if (p.filter.length) {
     		for (var _i = 0; _i < p.filter.length; _i++) {
     			iFn += ws(_templateObject26, _i, filterArgs[_i]);
@@ -973,13 +988,63 @@
     	}
 
     	var data = this.data;
+    	var type = p.type = getType(data, p.use);
 
-
-    	var type = p.type = getType(data, p.use),
-    	    filters = p.filter;
+    	var filters = p.filter;
 
     	if (!isObjectInstance(data) || { 'weakMap': true, 'weakSet': true }[type]) {
     		throw new TypeError('Incorrect data type');
+    	}
+
+    	if (type === 'stream') {
+    		(function () {
+    			var stream = data;
+
+    			var isReadable = true,
+    			    hasEnded = false;
+
+    			stream.on('readable', function () {
+    				return isReadable = true;
+    			});
+    			stream.on('end', function () {
+    				return hasEnded = true;
+    			});
+    			stream.on('error', function (err) {
+    				throw err;
+    			});
+
+    			data = {
+    				next: function () {
+    					if (hasEnded) {
+    						return { done: true, value: undefined };
+    					}
+
+    					if (isReadable) {
+    						var value = stream.read();
+
+    						if (value === null) {
+    							isReadable = false;
+    							return data.next();
+    						}
+
+    						return { done: false, value: value };
+    					}
+
+    					var onEnd = function () {
+    						return data.next();
+    					};
+
+    					stream.once('readable', function () {
+    						stream.removeListener('end', onEnd);
+    						data.next();
+    					});
+
+    					stream.once('end', onEnd);
+    				}
+    			};
+
+    			type = 'iterator';
+    		})();
     	}
 
     	// Optimization for the length request
@@ -1068,7 +1133,7 @@
     	//#if iterators.thread
 
     	if (p.thread || p.async) {
-    		var _ret3 = function () {
+    		var _ret4 = function () {
     			var thread = void 0;
     			var promise = new Promise(function (resolve, reject) {
     				var error = false;
@@ -1134,7 +1199,7 @@
     			};
     		}();
 
-    		if (typeof _ret3 === "object") return _ret3.v;
+    		if (typeof _ret4 === "object") return _ret4.v;
     	}
 
     	//#endif
