@@ -81,25 +81,33 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		type = p.type = getType(data, p.use);
 
 	const
-		filters = p.filter;
+		filters = p.filter,
+		isStream = type === 'stream';
 
 	if (!isObjectInstance(data) || {'weakMap': true, 'weakSet': true}[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
-	if (type === 'stream') {
-		const
-			stream = data;
+	const
+		IGNORE = {};
 
-		let
-			isReadable = true,
-			hasEnded = false;
+	if (isStream) {
+		if (!p.thread) {
+			p.async = true;
+		}
 
-		stream.on('readable', () => isReadable = true);
-		stream.on('end', () => hasEnded = true);
+		const stream = data;
 		stream.on('error', (err) => {
-			throw err;
+			if (data.onError) {
+				data.onError(err);
+
+			} else {
+				throw err;
+			}
 		});
+
+		let hasEnded = false;
+		stream.on('end', () => hasEnded = true);
 
 		data = {
 			next() {
@@ -107,31 +115,39 @@ Collection.prototype.forEach = function (cb, opt_params) {
 					return {done: true, value: undefined};
 				}
 
-				if (isReadable) {
-					const
-						value = stream.read();
+				return {
+					done: false,
+					value: new Promise((resolve, reject) => {
+						stream.once('end', end);
+						stream.once('data', data);
+						stream.once('error', end);
 
-					if (value === null) {
-						isReadable = false;
-						return data.next();
-					}
+						function data(data) {
+							clear();
+							resolve(data);
+						}
 
-					return {done: false, value};
-				}
+						function end() {
+							clear();
+							resolve(IGNORE);
+						}
 
-				const
-					onEnd = () => data.next();
+						function error(err) {
+							clear();
+							reject(err);
+						}
 
-				stream.once('readable', () => {
-					stream.removeListener('end', onEnd);
-					data.next();
-				});
-
-				stream.once('end', onEnd);
+						function clear() {
+							stream.removeListener('end', end);
+							stream.removeListener('error', error);
+							stream.removeListener('data', data);
+						}
+					})
+				};
 			}
 		};
 
-		type = 'iterator';
+		type = p.type = 'iterator';
 	}
 
 	// Optimization for the length request
@@ -229,6 +245,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		fn = any(tmpCycle[key] || compileCycle(key, p));
 
 	const args = {
+		IGNORE,
 		data,
 		cb,
 		cbLength,
@@ -284,6 +301,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 			for (let i = 0; i < filters.length; i++) {
 				filters[i] = wrap(filters[i]);
+			}
+
+			if (isStream) {
+				data.onError = onError;
 			}
 
 			args.cb = wrap(cb);
