@@ -53,6 +53,7 @@
     "jasmine": "^2.3.1",
     "monic": "^2.3.12",
     "rollup-plugin-babel": "^2.4.0",
+    "sugar": "^2.0.0",
     "through2": "^2.0.0",
     "yaspeller": "^2.4.0"
   }
