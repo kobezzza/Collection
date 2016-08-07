@@ -106,6 +106,7 @@ function compileCycle(key, p) {
 		var
 			waitResult = [],
 			wait = 0,
+			waiting = false,
 			brkIf = false;
 
 		var
@@ -208,14 +209,27 @@ function compileCycle(key, p) {
 			},
 
 			parallel: function (max, promise) {
-				if (parallel < max) {
-					parallel++;
-					return ctx.wait(promise).then(function () {
-						parallel--;
-					});
+				function test() {
+					return parallel < max;
 				}
 
-				return ctx.sleep(25, function () { return parallel < max; });
+				function end() {
+					parallel--;
+				}
+
+				if (parallel < max) {
+					parallel++;
+
+					if (parallel === max) {
+						ctx.sleep(25, test);
+					}
+
+					return ctx.wait(promise).then(end, end);
+				}
+
+				return ctx.sleep(25, test).then(function () {
+					ctx.parallel(max, promise);
+				});
 			},
 
 			wait: function (promise) {
@@ -235,7 +249,9 @@ function compileCycle(key, p) {
 				return promise.then(function (res) {
 					waitResult.push(res);
 					wait--;
-					ctx.next();
+					if (waiting) {
+						ctx.next();
+					}
 				}, onChildError);
 			},
 
@@ -824,6 +840,7 @@ function compileCycle(key, p) {
 	iFn += '}';
 	if (isAsync) {
 		iFn += _string.ws`
+			waiting = true;
 			while (wait) {
 				ctx.thread.pause = true;
 				yield;

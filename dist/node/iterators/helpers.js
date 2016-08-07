@@ -171,7 +171,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
 	async: {
 		/**
    * Sets .async to true for the operation
-   * @return {!Collection}
    */
 		get() {
 			this.p.async = true;
@@ -182,7 +181,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
 	live: {
 		/**
    * Sets .live to true for the operation
-   * @return {!Collection}
    */
 		get() {
 			this.p.live = true;
@@ -193,7 +191,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
 	descriptor: {
 		/**
    * Sets .withDescriptor to true for the operation
-   * @return {!Collection}
    */
 		get() {
 			this.p.withDescriptor = true;
@@ -204,7 +201,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
 	iterator: {
 		/**
    * Sets .use to 'for of' for the operation
-   * @return {!Collection}
    */
 		get() {
 			this.p.use = 'for of';
@@ -215,7 +211,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
 	array: {
 		/**
    * Sets .use to 'for' for the operation
-   * @return {!Collection}
    */
 		get() {
 			this.p.use = 'for';
@@ -226,7 +221,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
 	one: {
 		/**
    * Sets .mult to false for the operation
-   * @return {!Collection}
    */
 		get() {
 			this.p.mult = false;
@@ -237,7 +231,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
 	inverse: {
 		/**
    * Sets .inverseFilter to true for the operation
-   * @return {!Collection}
    */
 		get() {
 			this.p.inverseFilter = true;
@@ -248,7 +241,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
 	reverse: {
 		/**
    * Sets .reverse to true for the operation
-   * @return {!Collection}
    */
 		get() {
 			this.p.reverse = true;
