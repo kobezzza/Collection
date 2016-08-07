@@ -200,8 +200,7 @@ Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk
 		value() {
 			obj.pause = false;
 			if (obj.sleep !== null) {
-				clearTimeout(obj.sleep);
-				obj.sleep = null;
+				obj.sleep.resume();
 			}
 
 			return next.apply(this, arguments);

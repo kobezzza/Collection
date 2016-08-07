@@ -83,3 +83,6 @@ var read;
 
 /** @type {?} */
 var pipe;
+
+/** @type {?} */
+var resume;

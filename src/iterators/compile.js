@@ -216,6 +216,7 @@ export function compileCycle(key, p) {
 				}
 
 				function test() {
+					console.log(parallel < max);
 					return parallel < max;
 				}
 
@@ -279,29 +280,44 @@ export function compileCycle(key, p) {
 
 				ctx.yield();
 				return new Promise(function (resolve, reject) {
-					ctx.thread.sleep = setTimeout(function () {
-						if (opt_test) {
-							try {
-								var test = opt_test(ctx);
+					var
+						sleep = ctx.thread.sleep;
 
-								if (test) {
-									resolve();
-									ctx.next();
+					if (sleep != null) {
+						sleep.resume();
+					}
 
-								} else if (opt_interval !== false) {
-									ctx.sleep(time, opt_test, opt_interval).then(resolve, reject);
+					sleep = ctx.thread.sleep = {
+						resume: function () {
+							clearTimeout(sleep.id);
+							ctx.thread.sleep = null;
+							resolve();
+						},
+
+						id: setTimeout(function () {
+							if (opt_test) {
+								try {
+									var test = opt_test(ctx);
+
+									if (test) {
+										sleep.resume();
+										ctx.next();
+
+									} else if (opt_interval !== false) {
+										ctx.sleep(time, opt_test, opt_interval).then(resolve, reject);
+									}
+
+								} catch (err) {
+									reject(err);
+									onError(err);
 								}
 
-							} catch (err) {
-								reject(err);
-								onError(err);
+							} else {
+								sleep.resume();
+								ctx.next();
 							}
-
-						} else {
-							resolve();
-							ctx.next();
-						}
-					}, time);
+						}, time)
+					};
 				});
 			},
 
