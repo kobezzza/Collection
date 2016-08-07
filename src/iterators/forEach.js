@@ -268,13 +268,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				}
 
 				if (thread) {
-					if (thread.destroy) {
-						thread.destroy(err);
-
-					} else {
-						thread.destroyed = true;
-						reject(err);
-					}
+					thread.destroy(err);
 
 				} else {
 					reject(err);
@@ -311,17 +305,35 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			args.onComplete = resolve;
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
+
 			thread = args.self = fn(args, sp);
+			thread.value = undefined;
+			thread.destroyed = false;
+			thread.sleep = null;
+			thread.pause = false;
+			thread.children = [];
 
 			if (p.thread) {
 				this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
 
 			} else {
-				thread.value = undefined;
-				thread.destroyed = false;
-				thread.sleep = null;
-				thread.pause = false;
-				thread.children = [];
+				thread.destroy = (err) => {
+					if (thread.destroyed) {
+						return false;
+					}
+
+					thread.destroyed = true;
+
+					if (!err) {
+						err = new Error('Thread was destroyed');
+						err.type = 'CollectionThreadDestroy';
+						err.thread = thread;
+					}
+
+					reject(err);
+					return err;
+				};
+
 				thread.next();
 			}
 		});

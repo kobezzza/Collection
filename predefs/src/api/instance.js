@@ -30,8 +30,7 @@ $$Collection.prototype.VERSION;
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
- *   wait: function(!Promise): !Promise,
- *   parallel: function(number, !Promise): !Promise,
+ *   wait: function((number|!Promise), !Promise=): !Promise,
  *   jump: function(number): (number|boolean),
  *   i: function(number): (number|boolean),
  *   reset: boolean,
@@ -53,8 +52,7 @@ var $$CollectionCtx;
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
- *   wait: function(!Promise): !Promise,
- *   parallel: function(number, !Promise): !Promise,
+ *   wait: function((number|!Promise), !Promise=): !Promise,
  *   jump: function(number): (number|boolean),
  *   i: function(number): (number|boolean),
  *   reset: boolean,
@@ -94,9 +92,6 @@ var sleep;
 
 /** @type {?} */
 var wait;
-
-/** @type {?} */
-var parallel;
 
 /** @type {?} */
 var jump;

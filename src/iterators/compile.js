@@ -110,8 +110,6 @@ export function compileCycle(key, p) {
 
 		var
 			waitResult = [],
-			wait = 0,
-			waiting = false,
 			brkIf = false;
 
 		var
@@ -147,21 +145,17 @@ export function compileCycle(key, p) {
 
 	if (isAsync) {
 		iFn += ws`
-			var parallel = 0;
+			var
+				parallel = 0;
+
+			var
+				wait = new Set(),
+				waiting = false;
 
 			onError = function (err) {
 				o.onError(err);
 				r = f = el = BREAK;
-				wait = 0;
-			};
-
-			var onChildError = function (err) {
-				if (err && err.type === 'CollectionThreadDestroy') {
-					wait--;
-					return;
-				}
-
-				onError(err);
+				wait.clear();
 			};
 		`;
 	}
@@ -213,7 +207,11 @@ export function compileCycle(key, p) {
 				return true;
 			},
 
-			parallel: function (max, promise) {
+			wait: function (max, promise) {
+				if (${!isAsync}) {
+					return false;
+				}
+
 				function test() {
 					return parallel < max;
 				}
@@ -222,42 +220,53 @@ export function compileCycle(key, p) {
 					parallel--;
 				}
 
-				if (parallel < max) {
-					parallel++;
+				if (arguments.length > 1) {
+					if (parallel < max) {
+						parallel++;
 
-					if (parallel === max) {
-						ctx.sleep(25, test);
+						if (parallel === max) {
+							ctx.sleep(25, test);
+						}
+
+						return ctx.wait(promise).then(end, end);
 					}
 
-					return ctx.wait(promise).then(end, end);
-				}
+					return ctx.sleep(25, test).then(function () {
+						ctx.wait(max, promise);
+					});
 
-				return ctx.sleep(25, test).then(function () {
-					ctx.parallel(max, promise);
-				});
-			},
-
-			wait: function (promise) {
-				if (${!isAsync}) {
-					return false;
+				} else {
+					promise = max;
 				}
 
 				if (!isPromise(promise)) {
 					promise = typeof promise.next === 'function' ? promise.next() : promise();
 				}
 
-				if (promise.thread) {
-					ctx.child(promise);
-				}
+				ctx.child(promise);
+				wait.add(promise);
 
-				wait++;
-				return promise.then(function (res) {
-					waitResult.push(res);
-					wait--;
-					if (waiting) {
-						ctx.next();
+				return promise.then(
+					function (res) {
+						if (wait.has(promise)) {
+							waitResult.push(res);
+							wait.delete(promise);
+						}
+
+						if (waiting) {
+							ctx.next();
+						}
+					}, 
+
+					function (err) {
+						if (err && err.type === 'CollectionThreadDestroy') {
+							wait.delete(promise);
+							return;
+						}
+
+						onError(err);
 					}
-				}, onChildError);
+				);
 			},
 
 			sleep: function (time, opt_test, opt_interval) {
@@ -870,7 +879,7 @@ export function compileCycle(key, p) {
 	if (isAsync) {
 		iFn += ws`
 			waiting = true;
-			while (wait) {
+			while (wait.size) {
 				ctx.thread.pause = true;
 				yield;
 			}
