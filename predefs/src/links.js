@@ -16,3 +16,16 @@ var GLOBAL;
  */
 function define(moduleName, dependencies, fn) {}
 define.amd = null;
+
+/**
+ * @param {!Object} obj
+ * @param {...?} args
+ * @return {!Object}
+ */
+Object.assign = function (obj, args) {};
+
+/**
+ * @param {?} obj
+ * @return {boolean}
+ */
+Number.isNaN = function (obj) {};

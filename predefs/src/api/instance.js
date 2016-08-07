@@ -530,26 +530,26 @@ $$Collection.prototype.count = function (value) {};
  */
 $$Collection.prototype.object = function (opt_notOwn) {};
 
-/** @type {{get: function (): $$Collection}} */
+/** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.async;
 
-/** @type {{get: function (): $$Collection}} */
+/** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.live;
 
-/** @type {{get: function (): $$Collection}} */
+/** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.descriptor;
 
-/** @type {{get: function (): $$Collection}} */
+/** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.iterator;
 
-/** @type {{get: function (): $$Collection}} */
+/** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.array;
 
-/** @type {{get: function (): $$Collection}} */
+/** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.one;
 
-/** @type {{get: function (): $$Collection}} */
+/** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.inverse;
 
-/** @type {{get: function (): $$Collection}} */
+/** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.reverse;
