@@ -216,7 +216,6 @@ export function compileCycle(key, p) {
 				}
 
 				function test() {
-					console.log(parallel < max);
 					return parallel < max;
 				}
 
@@ -297,10 +296,11 @@ export function compileCycle(key, p) {
 						id: setTimeout(function () {
 							if (opt_test) {
 								try {
+									ctx.thread.sleep = null;
 									var test = opt_test(ctx);
 
 									if (test) {
-										sleep.resume();
+										resolve();
 										ctx.next();
 
 									} else if (opt_interval !== false) {
@@ -313,7 +313,7 @@ export function compileCycle(key, p) {
 								}
 
 							} else {
-								sleep.resume();
+								resolve();
 								ctx.next();
 							}
 						}, time)
