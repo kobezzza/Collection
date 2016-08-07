@@ -81,7 +81,10 @@ export function compileCycle(key, p) {
 		var
 			onIterationEnd = o.onIterationEnd,
 			onComplete = o.onComplete,
-			getDescriptor = Object.getOwnPropertyDescriptor,
+			getDescriptor = Object.getOwnPropertyDescriptor;
+
+		var
+			waitResult,
 			onError;
 
 		var
@@ -96,21 +99,11 @@ export function compileCycle(key, p) {
 
 		var
 			breaker = false,
-			yielder = false,
-			yieldVal;
-
-		var
-			timeStart,
-			timeEnd,
-			time = 0;
+			brkIf = false;
 
 		var
 			limit = 1,
 			looper = 0;
-
-		var
-			waitResult = [],
-			brkIf = false;
 
 		var
 			length,
@@ -146,12 +139,22 @@ export function compileCycle(key, p) {
 	if (isAsync) {
 		iFn += ws`
 			var
+				timeStart,
+				timeEnd,
+				time = 0;
+
+			var
+				yielder = false,
+				yieldVal;
+
+			var
 				parallel = 0;
 
 			var
 				wait = new Set(),
 				waiting = false;
 
+			waitResult = [];
 			onError = function (err) {
 				o.onError(err);
 				r = f = el = BREAK;
