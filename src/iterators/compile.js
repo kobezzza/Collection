@@ -215,27 +215,27 @@ export function compileCycle(key, p) {
 					return false;
 				}
 
-				function test() {
-					return parallel < max;
-				}
-
 				function end() {
-					parallel--;
+					parallel && parallel--;
+					ctx.thread.pause && ctx.next();
 				}
 
 				if (arguments.length > 1) {
-					if (parallel < max) {
-						parallel++;
+					parallel++;
 
-						if (parallel === max) {
-							ctx.sleep(25, test);
-						}
-
-						return ctx.wait(promise).then(end, end);
+					if (parallel >= max) {
+						ctx.yield();
 					}
 
-					return ctx.sleep(25, test).then(function () {
-						ctx.wait(max, promise);
+					return ctx.wait(promise).then(end, function (err) {
+						if (err && err.type === 'CollectionThreadDestroy') {
+							end();
+							return;
+						}
+
+						parallel = 0;
+						end();
+						throw err;
 					});
 
 				} else {
@@ -268,6 +268,7 @@ export function compileCycle(key, p) {
 						}
 
 						onError(err);
+						throw err;
 					}
 				);
 			},
@@ -850,8 +851,18 @@ export function compileCycle(key, p) {
 	const yielder = ws`
 		if (yielder) {
 			yielder = false;
-			ctx.thread.pause = true;
-			yield yieldVal;
+
+			if (parallel) {
+				while (parallel) {
+					ctx.thread.pause = true;
+					yield;
+				}
+
+			} else {
+				ctx.thread.pause = true;
+				yield yieldVal;
+			}
+
 			yieldVal = undefined;
 		}
 	`;
