@@ -77,12 +77,11 @@ function compileCycle(key, p) {
 			onIterationEnd = o.onIterationEnd,
 			onComplete = o.onComplete,
 			getDescriptor = Object.getOwnPropertyDescriptor,
-			onError;
+			onError = o.onError;
 
 		var
 			TRUE = {},
-			FALSE = {},
-			BREAK = {};
+			FALSE = {};
 
 		var
 			i = -1,
@@ -91,23 +90,12 @@ function compileCycle(key, p) {
 
 		var
 			breaker = false,
-			yielder = false,
-			yieldVal;
-
-		var
-			timeStart,
-			timeEnd,
-			time = 0;
+			brkIf = false;
 
 		var
 			limit = 1,
-			looper = 0;
-
-		var
-			waitResult = [],
-			wait = 0,
-			waiting = false,
-			brkIf = false;
+			looper = 0,
+			waitResult;
 
 		var
 			length,
@@ -142,22 +130,24 @@ function compileCycle(key, p) {
 
 	if (isAsync) {
 		iFn += _string.ws`
-			var parallel = 0;
+			var
+				timeStart,
+				timeEnd,
+				time = 0;
 
-			onError = function (err) {
-				o.onError(err);
-				r = f = el = BREAK;
-				wait = 0;
-			};
+			var
+				yielder = false,
+				yieldVal;
 
-			var onChildError = function (err) {
-				if (err && err.type === 'CollectionThreadDestroy') {
-					wait--;
-					return;
-				}
+			var
+				parallel = 0,
+				race = 0;
 
-				onError(err);
-			};
+			var
+				wait = new Set(),
+				waiting = false;
+
+			waitResult = [];
 		`;
 	}
 
@@ -208,51 +198,88 @@ function compileCycle(key, p) {
 				return true;
 			},
 
-			parallel: function (max, promise) {
-				function test() {
-					return parallel < max;
-				}
-
-				function end() {
-					parallel--;
-				}
-
-				if (parallel < max) {
-					parallel++;
-
-					if (parallel === max) {
-						ctx.sleep(25, test);
-					}
-
-					return ctx.wait(promise).then(end, end);
-				}
-
-				return ctx.sleep(25, test).then(function () {
-					ctx.parallel(max, promise);
-				});
-			},
-
-			wait: function (promise) {
+			race: function (max, promise) {
 				if (${ !isAsync }) {
 					return false;
+				}
+
+				if (arguments.length === 1) {
+					promise = max;
+					max = 1;
+				}
+
+				ctx.wait(promise).then(function () {
+					if (race < max) {
+						race++;
+						if (race === max) {
+							wait.clear();
+						}
+					}
+				});
+
+				return promise;
+			},
+
+			wait: function (max, promise) {
+				if (${ !isAsync }) {
+					return false;
+				}
+
+				function end(err) {
+					parallel && parallel--;
+					ctx.thread.pause && ctx.next();
+				}
+
+				if (arguments.length > 1) {
+					parallel++;
+
+					if (parallel >= max) {
+						ctx.yield();
+					}
+
+					ctx.wait(promise).then(end, function (err) {
+						if (err && err.type === 'CollectionThreadDestroy') {
+							end();
+							return;
+						}
+					});
+
+					return promise;
+
+				} else {
+					promise = max;
 				}
 
 				if (!isPromise(promise)) {
 					promise = typeof promise.next === 'function' ? promise.next() : promise();
 				}
 
-				if (promise.thread) {
-					ctx.child(promise);
-				}
+				ctx.child(promise);
+				wait.add(promise);
 
-				wait++;
-				return promise.then(function (res) {
-					waitResult.push(res);
-					wait--;
-					if (waiting) {
-						ctx.next();
+				promise.then(
+					function (res) {
+						if (wait.has(promise)) {
+							waitResult.push(res);
+							wait.delete(promise);
+						}
+
+						if (waiting) {
+							ctx.next();
+						}
+					}, 
+
+					function (err) {
+						if (err && err.type === 'CollectionThreadDestroy') {
+							wait.delete(promise);
+							return;
+						}
+
+						onError(err);
 					}
-				}, onChildError);
+				);
+
+				return promise;
 			},
 
 			sleep: function (time, opt_test, opt_interval) {
@@ -262,29 +289,45 @@ function compileCycle(key, p) {
 
 				ctx.yield();
 				return new Promise(function (resolve, reject) {
-					ctx.thread.sleep = setTimeout(function () {
-						if (opt_test) {
-							try {
-								var test = opt_test(ctx);
+					var
+						sleep = ctx.thread.sleep;
 
-								if (test) {
-									resolve();
-									ctx.next();
+					if (sleep != null) {
+						sleep.resume();
+					}
 
-								} else if (opt_interval !== false) {
-									ctx.sleep(time, opt_test, opt_interval).then(resolve, reject);
+					sleep = ctx.thread.sleep = {
+						resume: function () {
+							clearTimeout(sleep.id);
+							ctx.thread.sleep = null;
+							resolve();
+						},
+
+						id: setTimeout(function () {
+							if (opt_test) {
+								try {
+									ctx.thread.sleep = null;
+									var test = opt_test(ctx);
+
+									if (test) {
+										resolve();
+										ctx.next();
+
+									} else if (opt_interval !== false) {
+										ctx.sleep(time, opt_test, opt_interval).then(resolve, reject);
+									}
+
+								} catch (err) {
+									reject(err);
+									onError(err);
 								}
 
-							} catch (err) {
-								reject(err);
-								onError(err);
+							} else {
+								resolve();
+								ctx.next();
 							}
-
-						} else {
-							resolve();
-							ctx.next();
-						}
-					}, time);
+						}, time)
+					};
 				});
 			},
 
@@ -406,10 +449,6 @@ function compileCycle(key, p) {
 				el = el.then(resolveEl, onError);
 				ctx.thread.pause = true;
 				yield;
-			}
-
-			if (el === BREAK || ctx.thread.destroyed) {
-				return; 
 			}
 
 			if (el === o.IGNORE) {
@@ -732,10 +771,6 @@ function compileCycle(key, p) {
 						ctx.thread.pause = true;
 						yield;
 					}
-
-					if (f === BREAK || ctx.thread.destroyed) {
-						return; 
-					}
 				`;
 			}
 
@@ -761,10 +796,6 @@ function compileCycle(key, p) {
 				r.then(resolveCb, onError);
 				ctx.thread.pause = true;
 				yield;
-			}
-
-			if (r === BREAK || ctx.thread.destroyed) {
-				return; 
 			}
 		`;
 	}
@@ -841,13 +872,9 @@ function compileCycle(key, p) {
 	if (isAsync) {
 		iFn += _string.ws`
 			waiting = true;
-			while (wait) {
+			while (wait.size) {
 				ctx.thread.pause = true;
 				yield;
-			}
-
-			if (r === BREAK || ctx.thread.destroyed) {
-				return;
 			}
 		`;
 	}

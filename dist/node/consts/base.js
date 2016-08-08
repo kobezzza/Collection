@@ -26,6 +26,6 @@ const LENGTH_REQUEST = exports.LENGTH_REQUEST = '__COLLECTION_TMP__lengthQuery',
       FN_LENGTH = exports.FN_LENGTH = '__COLLECTION_TMP__length',
       ON_ERROR = exports.ON_ERROR = '__COLLECTION_TMP__onError';
 
-const CACHE_VERSION = exports.CACHE_VERSION = 22,
+const CACHE_VERSION = exports.CACHE_VERSION = 23,
       CACHE_KEY = exports.CACHE_KEY = '__COLLECTION_CACHE_VERSION__',
       CACHE_VERSION_KEY = exports.CACHE_VERSION_KEY = '__COLLECTION_CACHE__';

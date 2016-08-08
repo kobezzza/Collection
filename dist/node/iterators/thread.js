@@ -141,7 +141,6 @@ let exec = 0;
  * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
  */
 _core.Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk) {
-	obj.destroyed = false;
 	obj.destroy = err => {
 		if (obj.destroyed) {
 			return false;
@@ -160,17 +159,17 @@ _core.Collection.prototype._addToStack = function (obj, priority, onError, opt_o
 			err.thread = obj;
 		}
 
+		try {
+			obj.throw(err);
+		} catch (ignore) {}
+
 		onError(err);
 		return err;
 	};
 
-	obj.value = undefined;
 	obj.thread = true;
 	obj.priority = priority;
 	obj.onChunk = opt_onChunk;
-	obj.pause = false;
-	obj.sleep = null;
-	obj.children = [];
 
 	const next = obj.next;
 
@@ -179,8 +178,7 @@ _core.Collection.prototype._addToStack = function (obj, priority, onError, opt_o
 		value() {
 			obj.pause = false;
 			if (obj.sleep !== null) {
-				clearTimeout(obj.sleep);
-				obj.sleep = null;
+				obj.sleep.resume();
 			}
 
 			return next.apply(this, arguments);
