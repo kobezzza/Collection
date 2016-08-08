@@ -261,20 +261,13 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	if (p.thread || p.async) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
-			let error = false;
 			function onError(err) {
-				if (error) {
-					return;
-				}
-
 				if (thread) {
 					thread.destroy(err);
 
 				} else {
 					reject(err);
 				}
-
-				error = true;
 			}
 
 			function wrap(fn) {
@@ -329,6 +322,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 						err.type = 'CollectionThreadDestroy';
 						err.thread = thread;
 					}
+
+					try {
+						thread.throw(err);
+
+					} catch (ignore) {}
 
 					reject(err);
 					return err;

@@ -184,6 +184,11 @@ Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk
 			err.thread = obj;
 		}
 
+		try {
+			obj.throw(err);
+
+		} catch (ignore) {}
+
 		onError(err);
 		return err;
 	};

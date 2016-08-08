@@ -30,6 +30,7 @@ $$Collection.prototype.VERSION;
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
+ *   race: function((number|!Promise), !Promise=): !Promise,
  *   wait: function((number|!Promise), !Promise=): !Promise,
  *   jump: function(number): (number|boolean),
  *   i: function(number): (number|boolean),
@@ -52,6 +53,7 @@ var $$CollectionCtx;
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
+ *   race: function((number|!Promise), !Promise=): !Promise,
  *   wait: function((number|!Promise), !Promise=): !Promise,
  *   jump: function(number): (number|boolean),
  *   i: function(number): (number|boolean),
@@ -89,6 +91,9 @@ var next;
 
 /** @type {?} */
 var sleep;
+
+/** @type {?} */
+var race;
 
 /** @type {?} */
 var wait;

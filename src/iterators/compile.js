@@ -81,16 +81,12 @@ export function compileCycle(key, p) {
 		var
 			onIterationEnd = o.onIterationEnd,
 			onComplete = o.onComplete,
-			getDescriptor = Object.getOwnPropertyDescriptor;
-
-		var
-			waitResult,
-			onError;
+			getDescriptor = Object.getOwnPropertyDescriptor,
+			onError = o.onError;
 
 		var
 			TRUE = {},
-			FALSE = {},
-			BREAK = {};
+			FALSE = {};
 
 		var
 			i = -1,
@@ -103,7 +99,8 @@ export function compileCycle(key, p) {
 
 		var
 			limit = 1,
-			looper = 0;
+			looper = 0,
+			waitResult;
 
 		var
 			length,
@@ -148,18 +145,14 @@ export function compileCycle(key, p) {
 				yieldVal;
 
 			var
-				parallel = 0;
+				parallel = 0,
+				race = 0;
 
 			var
 				wait = new Set(),
 				waiting = false;
 
 			waitResult = [];
-			onError = function (err) {
-				o.onError(err);
-				r = f = el = BREAK;
-				wait.clear();
-			};
 		`;
 	}
 
@@ -210,12 +203,34 @@ export function compileCycle(key, p) {
 				return true;
 			},
 
+			race: function (max, promise) {
+				if (${!isAsync}) {
+					return false;
+				}
+
+				if (arguments.length === 1) {
+					promise = max;
+					max = 1;
+				}
+
+				ctx.wait(promise).then(function () {
+					if (race < max) {
+						race++;
+						if (race === max) {
+							wait.clear();
+						}
+					}
+				});
+
+				return promise;
+			},
+
 			wait: function (max, promise) {
 				if (${!isAsync}) {
 					return false;
 				}
 
-				function end() {
+				function end(err) {
 					parallel && parallel--;
 					ctx.thread.pause && ctx.next();
 				}
@@ -227,16 +242,14 @@ export function compileCycle(key, p) {
 						ctx.yield();
 					}
 
-					return ctx.wait(promise).then(end, function (err) {
+					ctx.wait(promise).then(end, function (err) {
 						if (err && err.type === 'CollectionThreadDestroy') {
 							end();
 							return;
 						}
-
-						parallel = 0;
-						end();
-						throw err;
 					});
+
+					return promise;
 
 				} else {
 					promise = max;
@@ -249,7 +262,7 @@ export function compileCycle(key, p) {
 				ctx.child(promise);
 				wait.add(promise);
 
-				return promise.then(
+				promise.then(
 					function (res) {
 						if (wait.has(promise)) {
 							waitResult.push(res);
@@ -268,9 +281,10 @@ export function compileCycle(key, p) {
 						}
 
 						onError(err);
-						throw err;
 					}
 				);
+
+				return promise;
 			},
 
 			sleep: function (time, opt_test, opt_interval) {
@@ -444,10 +458,6 @@ export function compileCycle(key, p) {
 				el = el.then(resolveEl, onError);
 				ctx.thread.pause = true;
 				yield;
-			}
-
-			if (el === BREAK || ctx.thread.destroyed) {
-				return; 
 			}
 
 			if (el === o.IGNORE) {
@@ -788,10 +798,6 @@ export function compileCycle(key, p) {
 						ctx.thread.pause = true;
 						yield;
 					}
-
-					if (f === BREAK || ctx.thread.destroyed) {
-						return; 
-					}
 				`;
 			}
 
@@ -818,10 +824,6 @@ export function compileCycle(key, p) {
 				r.then(resolveCb, onError);
 				ctx.thread.pause = true;
 				yield;
-			}
-
-			if (r === BREAK || ctx.thread.destroyed) {
-				return; 
 			}
 		`;
 	}
@@ -902,10 +904,6 @@ export function compileCycle(key, p) {
 			while (wait.size) {
 				ctx.thread.pause = true;
 				yield;
-			}
-
-			if (r === BREAK || ctx.thread.destroyed) {
-				return;
 			}
 		`;
 	}
