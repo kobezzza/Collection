@@ -851,18 +851,8 @@ export function compileCycle(key, p) {
 	const yielder = ws`
 		if (yielder) {
 			yielder = false;
-
-			if (parallel) {
-				while (parallel) {
-					ctx.thread.pause = true;
-					yield;
-				}
-
-			} else {
-				ctx.thread.pause = true;
-				yield yieldVal;
-			}
-
+			ctx.thread.pause = true;
+			yield yieldVal;
 			yieldVal = undefined;
 		}
 	`;
