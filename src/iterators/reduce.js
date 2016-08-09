@@ -45,7 +45,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 
 		} else {
 			const
-				val = cb.apply(null, [p.result].concat([].slice.call(arguments)));
+				val = cb.apply(null, [p.result].concat(Array.from(arguments)));
 
 			if (isAsync && isPromise(val)) {
 				return val.then((val) => p.result = val, fn[ON_ERROR]);
