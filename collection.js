@@ -10,6 +10,7 @@
 
 /** @type {(function($$CollectionType): $$Collection)} */
 module.exports = exports = require('./dist/node/core').default;
+exports.default = exports;
 
 /** @type {function(?): ?} */
 exports.clone;
