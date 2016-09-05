@@ -23,5 +23,18 @@ export const IS_NODE = (() => {
 export const
 	IS_BROWSER = !IS_NODE && typeof window === 'object',
 	BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function',
-	LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'object',
 	OBJECT_KEYS_NATIVE_SUPPORT = isNative.test(Object.keys && any(Object.keys).toString());
+
+export const LOCAL_STORAGE_SUPPORT = !IS_NODE && (() => {
+	const
+		mod = Math.random();
+
+	try {
+		localStorage.setItem(mod, mod);
+		localStorage.removeItem(mod);
+		return true;
+
+	} catch (ignore) {
+		return false;
+	}
+})();

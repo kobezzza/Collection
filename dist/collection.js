@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.15
+ * Collection v6.0.0-beta.16
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 08 Aug 2016 08:17:05 GMT
+ * Date: 'Mon, 05 Sep 2016 15:44:40 GMT
  */
 
 (function (global, factory) {
@@ -368,7 +368,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.15'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.16'];
 
     /**
      * Creates an instance of Collection
@@ -419,8 +419,18 @@
 
     var IS_BROWSER = !IS_NODE && typeof window === 'object';
     var BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function';
-    var LOCAL_STORAGE_SUPPORT = !IS_NODE && typeof localStorage === 'object';
     var OBJECT_KEYS_NATIVE_SUPPORT = isNative.test(Object.keys && any(Object.keys).toString());
+    var LOCAL_STORAGE_SUPPORT = !IS_NODE && function () {
+    	var mod = Math.random();
+
+    	try {
+    		localStorage.setItem(mod, mod);
+    		localStorage.removeItem(mod);
+    		return true;
+    	} catch (ignore) {
+    		return false;
+    	}
+    }();
 
         var GLOBAL = Function('return this')();
 
@@ -2164,7 +2174,7 @@
     			p.result = el;
     			opt_initialValue = true;
     		} else {
-    			var val = cb.apply(null, [p.result].concat([].slice.call(arguments)));
+    			var val = cb.apply(null, [p.result].concat(Array.from(arguments)));
 
     			if (isAsync && isPromise(val)) {
     				return val.then(function (val) {
