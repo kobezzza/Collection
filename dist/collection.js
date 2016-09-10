@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.16
+ * Collection v6.0.0-beta.17
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 05 Sep 2016 15:44:40 GMT
+ * Date: 'Sat, 10 Sep 2016 07:59:26 GMT
  */
 
 (function (global, factory) {
@@ -368,7 +368,7 @@
      * Library version
      * @const
      */
-    Collection.prototype.VERSION = [6, 0, 0, 'beta.16'];
+    Collection.prototype.VERSION = [6, 0, 0, 'beta.17'];
 
     /**
      * Creates an instance of Collection
@@ -1683,6 +1683,7 @@
      * @param {(boolean|?$$Collection_extend)} deepOrParams - if true, then properties will be copied recursively
      *   OR additional parameters for extending:
      *
+     *   *) [withUndef = false] - if true, then the original value can be rewritten to undefined
      *   *) [withDescriptor = false] - if true, then the descriptor of a property will be copied too
      *   *) [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
      *   *) [withProto = false] - if true, then properties will be copied with prototypes
@@ -1795,11 +1796,13 @@
 
     		default:
     			setVal = function (data, key, val) {
-    				if (val === undefined || p.traits && key in data !== (p.traits === -1)) {
+    				if (p.traits && key in data !== (p.traits === -1)) {
     					return;
     				}
 
-    				data[key] = val;
+    				if (p.withUndef || val !== undefined) {
+    					data[key] = val;
+    				}
     			};
     	}
 
@@ -1846,7 +1849,7 @@
     							get: el.get,
     							set: el.set
     						});
-    					} else if ('value' in el === false || el.value !== undefined) {
+    					} else if ('value' in el === false || el.value !== undefined || p.withUndef) {
     						defineProperty(data, key, el);
     					}
 

@@ -436,6 +436,7 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
 
 /**
  * @typedef {{
+ *   withUndef: (?boolean|undefined),
  *   withAccessors: (?boolean|undefined),
  *   withDescriptor: (?boolean|undefined),
  *   withProto: (?boolean|undefined),
@@ -463,6 +464,9 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
  * }}
  */
 var $$Collection_extend;
+
+/** @type {?} */
+var withUndef;
 
 /** @type {?} */
 var withAccessors;
