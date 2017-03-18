@@ -917,10 +917,10 @@ export function compileCycle(key, p) {
 	`;
 
 	if (isAsync) {
-		tmpCycle[key] = eval(`(function *(o, p) { ${iFn} })`);
+		tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
 
 	} else {
-		tmpCycle[key] = Function('o', 'p', iFn);
+		tmpCycle[key] = new Function('o', 'p', iFn);
 	}
 
 	if ($C.ready) {

@@ -9,4 +9,4 @@
  */
 
 export const
-	GLOBAL = Function('return this')();
+	GLOBAL = new Function('return this')();
