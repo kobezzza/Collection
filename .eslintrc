@@ -1,9 +1,4 @@
 {
-  "parser": "babel-eslint",
-  "parserOptions": {
-    "sourceType": "module"
-  },
-
   "rules": {
     /* [Possible Errors] */
     "comma-dangle": ["error", "only-multiline"],

@@ -17,9 +17,9 @@
   ],
 
   "dictionary": [
-    "/maintainers?/",
+    "maintainers?",
     "sexualized",
     "minimalistic",
-    "/js|cli/i"
+    "js|cli"
   ]
 }
