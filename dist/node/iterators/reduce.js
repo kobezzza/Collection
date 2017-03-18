@@ -45,7 +45,13 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 			p.result = el;
 			opt_initialValue = true;
 		} else {
-			const val = cb.apply(null, [p.result].concat(Array.from(arguments)));
+			const args = [p.result];
+
+			for (let i = 0; i < arguments.length; i++) {
+				args.push(arguments[i]);
+			}
+
+			const val = cb.apply(null, args);
 
 			if (isAsync && (0, _types.isPromise)(val)) {
 				return val.then(val => p.result = val, fn[_base.ON_ERROR]);

@@ -66,7 +66,7 @@ function byLink(obj, link, opt_params) {
 			}
 
 			if (p.error) {
-				throw new ReferenceError(`${ el } is not defined!`);
+				throw new ReferenceError(`${el} is not defined!`);
 			}
 
 			if (p.delete) {

@@ -276,7 +276,14 @@ _core2.default.clone = function (obj) {
  * @return {(!Object|!Promise)}
  */
 _core2.default.extend = function (deepOrParams, target, args) {
-	return (0, _core2.default)(target).extend(deepOrParams, ...[].slice.call(arguments, 2));
+	args = [deepOrParams];
+
+	for (let i = 2; i < arguments.length; i++) {
+		args.push(arguments[i]);
+	}
+
+	const obj = (0, _core2.default)(target);
+	return obj.extend.apply(obj, args);
 };
 
 Object.assign(_core2.default, { extend: _core2.default.extend, clone: _core2.default.clone });

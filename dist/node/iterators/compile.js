@@ -111,20 +111,20 @@ function compileCycle(key, p) {
 			$ = {};
 
 		var info = {
-			startIndex: ${ p.startIndex },
-			endIndex: ${ p.endIndex },
-			from: ${ p.from },
-			count: ${ p.count },
-			live: ${ p.live },
-			reverse: ${ p.reverse },
-			withDescriptor: ${ p.withDescriptor },
-			notOwn: ${ p.notOwn },
-			inverseFilter: ${ p.inverseFilter },
-			type: '${ p.type }',
-			async: ${ p.async },
-			thread: ${ p.thread },
-			priority: ${ p.thread } && '${ p.priority }',
-			length: ${ p.length }
+			startIndex: ${p.startIndex},
+			endIndex: ${p.endIndex},
+			from: ${p.from},
+			count: ${p.count},
+			live: ${p.live},
+			reverse: ${p.reverse},
+			withDescriptor: ${p.withDescriptor},
+			notOwn: ${p.notOwn},
+			inverseFilter: ${p.inverseFilter},
+			type: '${p.type}',
+			async: ${p.async},
+			thread: ${p.thread},
+			priority: ${p.thread} && '${p.priority}',
+			length: ${p.length}
 		};
 	`;
 
@@ -170,7 +170,7 @@ function compileCycle(key, p) {
 			},
 
 			yield: function (opt_val) {
-				if (${ !isAsync }) {
+				if (${!isAsync}) {
 					return false;
 				}
 
@@ -181,7 +181,7 @@ function compileCycle(key, p) {
 			},
 
 			next: function (opt_val) {
-				if (${ !isAsync }) {
+				if (${!isAsync}) {
 					return false;
 				}
 
@@ -190,7 +190,7 @@ function compileCycle(key, p) {
 			},
 
 			child: function (thread) {
-				if (${ !isAsync } || !thread.thread) {
+				if (${!isAsync} || !thread.thread) {
 					return false;
 				}
 
@@ -199,7 +199,7 @@ function compileCycle(key, p) {
 			},
 
 			race: function (max, promise) {
-				if (${ !isAsync }) {
+				if (${!isAsync}) {
 					return false;
 				}
 
@@ -221,7 +221,7 @@ function compileCycle(key, p) {
 			},
 
 			wait: function (max, promise) {
-				if (${ !isAsync }) {
+				if (${!isAsync}) {
 					return false;
 				}
 
@@ -283,7 +283,7 @@ function compileCycle(key, p) {
 			},
 
 			sleep: function (time, opt_test, opt_interval) {
-				if (${ !isAsync }) {
+				if (${!isAsync}) {
 					return false;
 				}
 
@@ -332,7 +332,7 @@ function compileCycle(key, p) {
 			},
 
 			jump: function (val) {
-				if (${ cantModI }) {
+				if (${cantModI}) {
 					return false;
 				}
 
@@ -348,7 +348,7 @@ function compileCycle(key, p) {
 					return i;
 				}
 
-				if (${ cantModI }) {
+				if (${cantModI}) {
 					return false;
 				}
 
@@ -416,7 +416,7 @@ function compileCycle(key, p) {
 	const maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length;
 
 	if (p.from) {
-		iFn += `var from = ${ p.from };`;
+		iFn += `var from = ${p.from};`;
 	}
 
 	let threadStart = '',
@@ -479,19 +479,19 @@ function compileCycle(key, p) {
 
 			if ((p.reverse || !p.live) && (startIndex || endIndex)) {
 				iFn += _string.ws`
-					clone = arr.slice.call(clone, ${ startIndex }, ${ endIndex || 'data.length' });
+					clone = arr.slice.call(clone, ${startIndex}, ${endIndex || 'data.length'});
 				`;
 			}
 
 			if (!p.reverse && p.live) {
 				iFn += _string.ws`
-					for (n = ${ startIndex - 1 }; ++n < clone.length;) {
+					for (n = ${startIndex - 1}; ++n < clone.length;) {
 						i = n;
 				`;
 
 				if (startIndex) {
 					iFn += _string.ws`
-						if (n < ${ startIndex }) {
+						if (n < ${startIndex}) {
 							continue;
 						}
 					`;
@@ -499,7 +499,7 @@ function compileCycle(key, p) {
 
 				if (endIndex) {
 					iFn += _string.ws`
-						if (n > ${ endIndex }) {
+						if (n > ${endIndex}) {
 							break;
 						};
 					`;
@@ -508,16 +508,16 @@ function compileCycle(key, p) {
 				iFn += _string.ws`
 					length = clone.length;
 					for (n = -1; ++n < length;) {
-						i = n + ${ startIndex };
+						i = n + ${startIndex};
 				`;
 			}
 
 			if (defArgs) {
 				if (maxArgsLength > 1) {
 					if (startIndex) {
-						iFn += `key = ${ p.reverse ? 'dLength - (' : '' } n + ${ startIndex + (p.reverse ? ')' : '') };`;
+						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + ${startIndex + (p.reverse ? ')' : '')};`;
 					} else {
-						iFn += `key = ${ p.reverse ? 'dLength - ' : '' } n;`;
+						iFn += `key = ${p.reverse ? 'dLength - ' : ''} n;`;
 					}
 				}
 
@@ -543,34 +543,34 @@ function compileCycle(key, p) {
 						if (p.notOwn === -1) {
 							iFn += _string.ws`
 								for (var key in data) {
-									${ threadStart }
+									${threadStart}
 									if (data.hasOwnProperty(key)) {
 										continue;
 									}
 
 									tmpArray.push(key);
-									${ threadEnd }
+									${threadEnd}
 								}
 							`;
 						} else {
 							iFn += _string.ws`
 								for (var key in data) {
-									${ threadStart }
+									${threadStart}
 									tmpArray.push(key);
-									${ threadEnd }
+									${threadEnd}
 								}
 							`;
 						}
 					} else {
 						iFn += _string.ws`
 							for (var key in data) {
-								${ threadStart }
+								${threadStart}
 								if (!data.hasOwnProperty(key)) {
 									break;
 								}
 
 								tmpArray.push(key);
-								${ threadEnd }
+								${threadEnd}
 							}
 						`;
 					}
@@ -581,7 +581,7 @@ function compileCycle(key, p) {
 				}
 
 				if (startIndex || endIndex) {
-					iFn += `tmpArray = tmpArray.slice(${ startIndex }, ${ endIndex || 'tmpArray.length' });`;
+					iFn += `tmpArray = tmpArray.slice(${startIndex}, ${endIndex || 'tmpArray.length'});`;
 				}
 
 				iFn += _string.ws`
@@ -593,7 +593,7 @@ function compileCycle(key, p) {
 							continue;
 						}
 
-						i = n + ${ startIndex };
+						i = n + ${startIndex};
 				`;
 			} else {
 				iFn += 'for (key in data) {';
@@ -617,7 +617,7 @@ function compileCycle(key, p) {
 
 				if (startIndex) {
 					iFn += _string.ws`
-						if (n < ${ startIndex }) {
+						if (n < ${startIndex}) {
 							continue;
 						}
 					`;
@@ -625,7 +625,7 @@ function compileCycle(key, p) {
 
 				if (endIndex) {
 					iFn += _string.ws`
-						if (n > ${ endIndex }) {
+						if (n > ${endIndex}) {
 							break;
 						};
 					`;
@@ -676,12 +676,12 @@ function compileCycle(key, p) {
 				iFn += _string.ws`
 					var tmpArray = [];
 					for (var step = cursor.next(); 'done' in step ? !step.done : step; step = cursor.next()) {
-						${ threadStart }
+						${threadStart}
 						brkIf = 'done' in step === false;
 						el = 'value' in step ? step.value : step;
-						${ getEl }
+						${getEl}
 						tmpArray.push(el);
-						${ threadEnd }
+						${threadEnd}
 					}
 
 					tmpArray.reverse();
@@ -689,14 +689,14 @@ function compileCycle(key, p) {
 				`;
 
 				if (startIndex || endIndex) {
-					iFn += `tmpArray = tmpArray.slice(${ startIndex }, ${ endIndex || 'tmpArray.length' });`;
+					iFn += `tmpArray = tmpArray.slice(${startIndex}, ${endIndex || 'tmpArray.length'});`;
 				}
 
 				iFn += _string.ws`
 					length = tmpArray.length;
 					for (n = -1; ++n < length;) {
-						${ defArgs ? 'key = tmpArray[n];' : '' }
-						i = n + ${ startIndex };
+						${defArgs ? 'key = tmpArray[n];' : ''}
+						i = n + ${startIndex};
 				`;
 			} else {
 				gen();
@@ -704,14 +704,14 @@ function compileCycle(key, p) {
 				iFn += _string.ws`
 					for (key = cursor.next(); 'done' in key ? !key.done : key; key = cursor.next()) {
 						brkIf = 'done' in key === false;
-						${ defArgs ? `key = 'value' in key ? key.value : key;` : '' }
+						${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
 						n++;
 						i = n;
 				`;
 
 				if (startIndex) {
 					iFn += _string.ws`
-						if (n < ${ startIndex }) {
+						if (n < ${startIndex}) {
 							continue;
 						}
 					`;
@@ -719,7 +719,7 @@ function compileCycle(key, p) {
 
 				if (endIndex) {
 					iFn += _string.ws`
-						if (n > ${ endIndex }) {
+						if (n > ${endIndex}) {
 							break;
 						};
 					`;
@@ -750,7 +750,7 @@ function compileCycle(key, p) {
 	iFn += threadStart;
 	if (p.count) {
 		iFn += _string.ws`
-			if (j === ${ p.count }) {
+			if (j === ${p.count}) {
 				break;
 			}
 		`;
@@ -761,7 +761,7 @@ function compileCycle(key, p) {
 		for (let i = 0; i < p.filter.length; i++) {
 			iFn += _string.ws`
 				if (f === undefined || f === true) {
-					f = filters[${ i }](${ filterArgs[i] });
+					f = filters[${i}](${filterArgs[i]});
 			`;
 
 			if (isAsync) {
@@ -775,7 +775,7 @@ function compileCycle(key, p) {
 			}
 
 			iFn += _string.ws`
-					f = ${ p.inverseFilter ? '!' : '' }f && f !== FALSE || f === TRUE;
+					f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
 				}
 			`;
 		}
@@ -785,9 +785,9 @@ function compileCycle(key, p) {
 
 	let tmp = 'r = ';
 	if (p.mult) {
-		tmp += `cb(${ cbArgs });`;
+		tmp += `cb(${cbArgs});`;
 	} else {
-		tmp += `cb(${ cbArgs }); breaker = true;`;
+		tmp += `cb(${cbArgs}); breaker = true;`;
 	}
 
 	if (isAsync) {
@@ -810,7 +810,7 @@ function compileCycle(key, p) {
 				from--;
 
 			} else {
-				${ tmp }
+				${tmp}
 			}
 		`;
 	} else {
@@ -853,7 +853,7 @@ function compileCycle(key, p) {
 				break;
 			}
 
-			${ threadEnd }
+			${threadEnd}
 		}
 
 		breaker = false;
@@ -888,15 +888,15 @@ function compileCycle(key, p) {
 	`;
 
 	if (isAsync) {
-		_cache.tmpCycle[key] = eval(`(function *(o, p) { ${ iFn } })`);
+		_cache.tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
 	} else {
-		_cache.tmpCycle[key] = Function('o', 'p', iFn);
+		_cache.tmpCycle[key] = new Function('o', 'p', iFn);
 	}
 
 	if (_core2.default.ready) {
 		const delay = 5e3;
 
-		const text = `${ _base.NAMESPACE }.cache.cycle["${ key }"] = ${ _cache.tmpCycle[key].toString() };`;
+		const text = `${_base.NAMESPACE}.cache.cycle["${key}"] = ${_cache.tmpCycle[key].toString()};`;
 		cache[key] = text;
 
 		if (_hacks.IS_BROWSER && _hacks.LOCAL_STORAGE_SUPPORT) {
@@ -917,9 +917,9 @@ function compileCycle(key, p) {
 			clearTimeout(timeout);
 			timeout = setTimeout(() => {
 				require('fs').writeFile(require('path').join(__dirname, 'collection.tmp.js'), `
-						exports.version = ${ _base.CACHE_VERSION };
-						exports.cache = ${ JSON.stringify(cache) };
-						exports.exec = function () { ${ returnCache(cache) } };
+						exports.version = ${_base.CACHE_VERSION};
+						exports.cache = ${JSON.stringify(cache)};
+						exports.exec = function () { ${returnCache(cache)} };
 					`, () => {});
 			}, delay);
 			timeout['unref']();

@@ -35,7 +35,7 @@ if (_links.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 
 				if (cache && version == _base.CACHE_VERSION) {
 					_core2.default.cache.str = JSON.parse(cache);
-					document.write('<script type="text/javascript">' + (0, _compile.returnCache)(_core2.default.cache.str) + `${ _base.NAMESPACE }.ready = true;` + '</script>');
+					document.write('<script type="text/javascript">' + (0, _compile.returnCache)(_core2.default.cache.str) + `${_base.NAMESPACE}.ready = true;` + '</script>');
 				} else {
 					localStorage.removeItem(_base.CACHE_KEY);
 					localStorage.removeItem(_base.CACHE_VERSION_KEY);

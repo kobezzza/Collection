@@ -20,7 +20,10 @@ const wsRgxp = /^\s+|[\r\n]+/mg;
  * @return {string}
  */
 function ws(strings, expr) {
-  expr = Array.from(arguments).slice(1);
+  expr = [];
+  for (let i = 1; i < arguments.length; i++) {
+    expr.push(arguments[i]);
+  }
 
   let res = '';
 
