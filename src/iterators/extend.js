@@ -288,8 +288,7 @@ $C.clone = function (obj) {
  * @return {(!Object|!Promise)}
  */
 $C.extend = function (deepOrParams, target, args) {
-	const
-		args = [deepOrParams];
+	args = [deepOrParams];
 
 	for (let i = 2; i < arguments.length; i++) {
 		args.push(arguments[i]);
