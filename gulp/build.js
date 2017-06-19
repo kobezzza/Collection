@@ -56,8 +56,9 @@ gulp.task('build', (cb) => {
 						allowRealFiles: true,
 						entry: `./src/${name}`,
 						format: 'umd',
-						moduleId: 'Collection',
+						amd: {id: 'Collection'},
 						moduleName: '$C',
+						exports: 'named',
 						plugins: [babelRollup()]
 					}))
 

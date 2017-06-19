@@ -11,12 +11,10 @@
  */
 
 const
-	gulp = require('gulp');
+	gulp = require('gulp'),
+	replace = require('gulp-replace');
 
 gulp.task('copyright', (cb) => {
-	const
-		replace = require('gulp-replace');
-
 	gulp.src('./LICENSE')
 		.pipe(replace(/(Copyright \(c\) )(\d+)-?(\d*)/, (sstr, intro, from, to) => {
 			const year = new Date().getFullYear();

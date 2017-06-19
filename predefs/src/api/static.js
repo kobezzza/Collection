@@ -7,7 +7,6 @@
  */
 
 /**
- * @abstract
  * @param {$$CollectionType=} collection
  * @return {!$$Collection}
  */
@@ -29,7 +28,6 @@ $C.ready;
 $C.config = {};
 
 /**
- * @abstract
  * @param {(boolean|$$Collection_extend)} deepOrParams
  * @param {Object} target
  * @param {...Object} args
@@ -58,7 +56,6 @@ var $$CollectionLink;
 var $$Collection_byLink;
 
 /**
- * @abstract
  * @param {$$CollectionLink} link
  * @param {!Object} obj
  * @return {boolean}
@@ -66,7 +63,6 @@ var $$Collection_byLink;
 $C.in = function (link, obj) {};
 
 /**
- * @abstract
  * @param {(Generator|?)} obj
  * @return {boolean}
  */

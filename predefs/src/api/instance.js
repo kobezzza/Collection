@@ -487,7 +487,6 @@ var traits;
 var deep;
 
 /**
- * @abstract
  * @param {(boolean|$$Collection_extend)} deepOrParams
  * @param {...Object} args
  * @return {!Object}

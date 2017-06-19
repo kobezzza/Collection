@@ -5,14 +5,14 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sat, 18 Mar 2017 10:26:35 GMT
+ * Date: 'Mon, 19 Jun 2017 16:03:20 GMT
  */
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define('Collection', factory) :
-	(global.$C = factory());
-}(this, (function () { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define('Collection', ['exports'], factory) :
+	(factory((global.$C = global.$C || {})));
+}(this, (function (exports) { 'use strict';
 
 /**
  * Gets an object with an undefined type
@@ -447,9 +447,9 @@ var LENGTH_REQUEST = '__COLLECTION_TMP__lengthQuery';
 var FN_LENGTH = '__COLLECTION_TMP__length';
 var ON_ERROR = '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 23;
-var CACHE_KEY = '__COLLECTION_CACHE_VERSION__';
-var CACHE_VERSION_KEY = '__COLLECTION_CACHE__';
+var CACHE_VERSION = 24;
+var CACHE_KEY = '__COLLECTION_CACHE__';
+var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
 var taggedTemplateLiteral = function (strings, raw) {
   return Object.freeze(Object.defineProperties(strings, {
@@ -3193,6 +3193,8 @@ $C.destroy = function (obj) {
 
 Object.assign($C, { destroy: $C.destroy });
 
-return $C;
+exports['default'] = $C;
+
+Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
