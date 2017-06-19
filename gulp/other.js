@@ -11,15 +11,12 @@
  */
 
 const
-	gulp = require('gulp'),
-	helpers = require('./helpers'),
-	fs = require('fs');
-
-const
-	replace = require('gulp-replace'),
-	bump = require('gulp-bump');
+	gulp = require('gulp');
 
 gulp.task('copyright', (cb) => {
+	const
+		replace = require('gulp-replace');
+
 	gulp.src('./LICENSE')
 		.pipe(replace(/(Copyright \(c\) )(\d+)-?(\d*)/, (sstr, intro, from, to) => {
 			const year = new Date().getFullYear();
@@ -31,6 +28,10 @@ gulp.task('copyright', (cb) => {
 });
 
 gulp.task('bump', (cb) => {
+	const
+		bump = require('gulp-bump'),
+		helpers = require('./helpers');
+
 	gulp.src('./@(package|bower).json')
 		.pipe(bump({version: helpers.getVersion()}))
 		.pipe(gulp.dest('./'))
@@ -38,6 +39,9 @@ gulp.task('bump', (cb) => {
 });
 
 gulp.task('npmignore', (cb) => {
+	const
+		fs = require('fs');
+
 	gulp.src('./.npmignore')
 		.pipe(replace(/([\s\S]*?)(?=# NPM ignore list)/, `${fs.readFileSync('./.gitignore')}\n`))
 		.pipe(gulp.dest('./'))

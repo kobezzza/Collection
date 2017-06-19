@@ -10,20 +10,20 @@
 
 const
 	gulp = require('gulp'),
-	helpers = require('./helpers'),
+	plumber = require('gulp-plumber'),
 	run = require('gulp-run');
 
-gulp.task('full-build', ['compile', 'build-node']);
+gulp.task('fullBuild', ['compile', 'buildNode']);
 gulp.task('test', test);
 
 function test(cb) {
 	run('node test').exec()
-		.on('error', helpers.error(cb))
+		.pipe(plumber())
 		.on('finish', cb);
 }
 
 gulp.task('yaspeller', (cb) => {
 	run('yaspeller ./').exec()
-		.on('error', helpers.error(cb))
+		.pipe(plumber())
 		.on('finish', cb);
 });

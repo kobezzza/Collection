@@ -12,21 +12,23 @@
 
 const
 	gulp = require('gulp'),
-	async = require('async'),
-	del = require('del'),
-	helpers = require('./helpers');
-
-const
-	rollup = require('gulp-rollup'),
-	monic = require('gulp-monic'),
-	babelRollup = require('rollup-plugin-babel'),
-	babel = require('gulp-babel'),
-	replace = require('gulp-replace'),
-	rename = require('gulp-rename'),
-	header = require('gulp-header'),
-	eol = require('gulp-eol');
+	plumber = require('gulp-plumber');
 
 gulp.task('build', (cb) => {
+	const
+		rollup = require('gulp-rollup'),
+		monic = require('gulp-monic'),
+		babelRollup = require('rollup-plugin-babel'),
+		replace = require('gulp-replace'),
+		rename = require('gulp-rename'),
+		header = require('gulp-header'),
+		eol = require('gulp-eol');
+
+	const
+		async = require('async'),
+		del = require('del'),
+		helpers = require('./helpers');
+
 	const
 		builds = helpers.getBuilds(),
 		tasks = [];
@@ -41,14 +43,15 @@ gulp.task('build', (cb) => {
 
 		tasks.push((cb) => {
 			gulp.src('./src/index.js')
+				.pipe(plumber())
 				.pipe(monic({flags: builds[key]}))
-				.on('error', helpers.error(cb))
 				.pipe(rename(name))
 				.pipe(gulp.dest('./src'))
 				.on('end', buildSrc);
 
 			function buildSrc() {
 				gulp.src(`./src/${name}`)
+					.pipe(plumber())
 					.pipe(rollup({
 						allowRealFiles: true,
 						entry: `./src/${name}`,
@@ -58,7 +61,6 @@ gulp.task('build', (cb) => {
 						plugins: [babelRollup()]
 					}))
 
-					.on('error', helpers.error(cb))
 					.pipe(replace(/(\\t)+/g, ''))
 					.pipe(replace(/(\\n){2,}/g, '\\n'))
 					.pipe(replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
@@ -79,14 +81,17 @@ gulp.task('build', (cb) => {
 	async.parallel(tasks, cb);
 });
 
-gulp.task('build-node', (cb) => {
+gulp.task('buildNode', (cb) => {
+	const
+		babel = require('gulp-babel');
+
 	gulp.src('./src/**/*.js')
+		.pipe(plumber())
 		.pipe(babel({
 			babelrc: false,
 			plugins: [['transform-es2015-modules-commonjs', {loose: true}]]
 		}))
 
-		.on('error', helpers.error(cb))
 		.pipe(gulp.dest('./dist/node'))
 		.on('end', cb);
 });
