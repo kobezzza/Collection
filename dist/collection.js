@@ -5,14 +5,14 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 19 Jun 2017 16:03:20 GMT
+ * Date: 'Mon, 19 Jun 2017 16:06:07 GMT
  */
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define('Collection', ['exports'], factory) :
-	(factory((global.$C = global.$C || {})));
-}(this, (function (exports) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define('Collection', factory) :
+	(global.$C = factory());
+}(this, (function () { 'use strict';
 
 /**
  * Gets an object with an undefined type
@@ -3193,8 +3193,6 @@ $C.destroy = function (obj) {
 
 Object.assign($C, { destroy: $C.destroy });
 
-exports['default'] = $C;
-
-Object.defineProperty(exports, '__esModule', { value: true });
+return $C;
 
 })));

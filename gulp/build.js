@@ -58,7 +58,6 @@ gulp.task('build', (cb) => {
 						format: 'umd',
 						amd: {id: 'Collection'},
 						moduleName: '$C',
-						exports: 'named',
 						plugins: [babelRollup()]
 					}))
 
