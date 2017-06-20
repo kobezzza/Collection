@@ -16,6 +16,10 @@ gulp.task('fastCompile', compile);
 
 function compile(cb) {
 	const
+		glob = require('glob'),
+		async = require('async');
+
+	const
 		plumber = require('gulp-plumber'),
 		wrap = require('gulp-wrap'),
 		replace = require('gulp-replace'),
@@ -25,8 +29,7 @@ function compile(cb) {
 		eol = require('gulp-eol');
 
 	const
-		glob = require('glob'),
-		async = require('async'),
+		config = require('../gcc.json'),
 		helpers = require('./helpers');
 
 	const
@@ -39,7 +42,7 @@ function compile(cb) {
 
 		tasks.push((cb) => {
 			const
-				config = Object.assign({fileName: `${key}.min.js`}, require('../gcc.json'));
+				gccFlags = Object.assign({fileName: `${key}.min.js`}, config);
 
 			const head =
 				`/*! Collection v${helpers.getVersion()}${name}` +
@@ -48,7 +51,7 @@ function compile(cb) {
 			gulp.src(`./dist/${key}.js`)
 				.pipe(plumber())
 				.pipe(cached('compile'))
-				.pipe(gcc(Object.assign(config, {compilerPath: glob.sync(config.compilerPath)})))
+				.pipe(gcc(Object.assign(gccFlags, {compilerPath: glob.sync(gccFlags.compilerPath)})))
 				.pipe(replace(/^\/\*[\s\S]*?\*\//, ''))
 				.pipe(wrap('(function(){\'use strict\';<%= contents %>}).call(this);'))
 				.pipe(header(head))
