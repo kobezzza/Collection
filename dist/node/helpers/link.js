@@ -53,7 +53,8 @@ function byLink(obj, link, opt_params) {
 
 	const linkList = (0, _types.isString)(link) ? (0, _gcc.any)(link).split('.') : [].concat(link),
 	      length = linkList.length,
-	      last = length - 1;
+	      last = length - 1,
+	      splice = [].splice;
 
 	let pre, preKey;
 
@@ -113,7 +114,11 @@ function byLink(obj, link, opt_params) {
 						cache.result = !obj.has(el);
 					} else {
 						if ((0, _types.isLikeArray)(obj) && !isNaN(Number(el))) {
-							[].splice.call(obj, el, 1);
+							if ((0, _types.isArray)(obj)) {
+								obj.splice(el, 1);
+							} else {
+								splice.call(obj, el, 1);
+							}
 						} else {
 							delete obj[el];
 						}

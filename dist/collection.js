@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.18
+ * Collection v6.0.0-beta.19
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 19 Jun 2017 16:06:07 GMT
+ * Date: 'Thu, 22 Jun 2017 11:55:29 GMT
  */
 
 (function (global, factory) {
@@ -368,7 +368,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 0, 0, 'beta.18'];
+Collection.prototype.VERSION = [6, 0, 0, 'beta.19'];
 
 /**
  * Creates an instance of Collection
@@ -1501,7 +1501,8 @@ function byLink(obj, link, opt_params) {
 
 	var linkList = isString(link) ? any(link).split('.') : [].concat(link),
 	    length = linkList.length,
-	    last = length - 1;
+	    last = length - 1,
+	    splice = [].splice;
 
 	var pre = void 0,
 	    preKey = void 0;
@@ -1562,7 +1563,11 @@ function byLink(obj, link, opt_params) {
 						cache.result = !obj.has(el);
 					} else {
 						if (isLikeArray(obj) && !isNaN(Number(el))) {
-							[].splice.call(obj, el, 1);
+							if (isArray(obj)) {
+								obj.splice(el, 1);
+							} else {
+								splice.call(obj, el, 1);
+							}
 						} else {
 							delete obj[el];
 						}
@@ -2459,7 +2464,8 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	this._filter(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p));
 
-	var type = getType(this.data, p.use);
+	var type = getType(this.data, p.use),
+	    isRealArray = type === 'array' && isArray(this.data);
 
 	if ({ 'iterator': true, 'generator': true }[type]) {
 		throw new TypeError('Incorrect data type');
@@ -2521,7 +2527,12 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 		case 'array':
 			if (p.reverse) {
 				fn = function (value, key, data) {
-					splice.call(data, key, 1);
+					if (isRealArray) {
+						data.splice(key, 1);
+					} else {
+						splice.call(data, key, 1);
+					}
+
 					var o = {
 						result: data[key] !== value,
 						key: key,
@@ -2538,7 +2549,12 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 				var rm = 0;
 				if (p.live) {
 					fn = function (value, key, data, ctx) {
-						splice.call(data, key, 1);
+						if (isRealArray) {
+							data.splice(key, 1);
+						} else {
+							splice.call(data, key, 1);
+						}
+
 						ctx.i(-1);
 						var o = {
 							result: data[key] !== value,
@@ -2562,7 +2578,12 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 								return false;
 							}
 
-							splice.call(data, key, 1);
+							if (isRealArray) {
+								data.splice(key, 1);
+							} else {
+								splice.call(data, key, 1);
+							}
+
 							ctx.i(-1);
 
 							var o = {
