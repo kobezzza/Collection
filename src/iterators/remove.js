@@ -44,7 +44,8 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
-		type = getType(this.data, p.use);
+		type = getType(this.data, p.use),
+		isRealArray = type === 'array' && isArray(this.data);
 
 	if ({'iterator': true, 'generator': true}[type]) {
 		throw new TypeError('Incorrect data type');
@@ -110,7 +111,13 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 		case 'array':
 			if (p.reverse) {
 				fn = (value, key, data) => {
-					splice.call(data, key, 1);
+					if (isRealArray) {
+						data.splice(key, 1);
+
+					} else {
+						splice.call(data, key, 1);
+					}
+
 					const o = {
 						result: data[key] !== value,
 						key,
@@ -129,7 +136,13 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 				let rm = 0;
 				if (p.live) {
 					fn = (value, key, data, ctx) => {
-						splice.call(data, key, 1);
+						if (isRealArray) {
+							data.splice(key, 1);
+
+						} else {
+							splice.call(data, key, 1);
+						}
+
 						ctx.i(-1);
 						const o = {
 							result: data[key] !== value,
@@ -155,7 +168,13 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 								return false;
 							}
 
-							splice.call(data, key, 1);
+							if (isRealArray) {
+								data.splice(key, 1);
+
+							} else {
+								splice.call(data, key, 1);
+							}
+
 							ctx.i(-1);
 
 							const o = {

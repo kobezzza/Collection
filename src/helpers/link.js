@@ -9,7 +9,7 @@
  */
 
 import $C, { Collection } from '../core';
-import { isString, isLikeArray, isMap, isWeakMap, isSet, isWeakSet } from './types';
+import { isString, isLikeArray, isArray, isMap, isWeakMap, isSet, isWeakSet } from './types';
 import { any } from './gcc';
 
 /**
@@ -46,7 +46,8 @@ export function byLink(obj, link, opt_params) {
 	const
 		linkList = isString(link) ? any(link).split('.') : [].concat(link),
 		length = linkList.length,
-		last = length - 1;
+		last = length - 1,
+		splice = [].splice;
 
 	let
 		pre,
@@ -113,7 +114,12 @@ export function byLink(obj, link, opt_params) {
 
 					} else {
 						if (isLikeArray(obj) && !isNaN(Number(el))) {
-							[].splice.call(obj, el, 1);
+							if (isArray(obj)) {
+								obj.splice(el, 1);
+
+							} else {
+								splice.call(obj, el, 1);
+							}
 
 						} else {
 							delete obj[el];
