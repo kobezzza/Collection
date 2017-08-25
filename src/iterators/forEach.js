@@ -134,7 +134,22 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 						function data(data) {
 							clear();
-							resolve(data);
+
+							if (isStream) {
+								resolve(data);
+
+							} else {
+								const
+									iterator = data.target.result;
+
+								if (iterator) {
+									resolve(iterator.value);
+									iterator.continue();
+
+								} else {
+									resolve();
+								}
+							}
 						}
 
 						function end() {
