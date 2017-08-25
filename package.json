@@ -26,8 +26,8 @@
     "generators"
   ],
   "devDependencies": {
-    "async": "^2.0.0",
-    "babel-core": "^6.9.0",
+    "async": "^2.5.0",
+    "babel-core": "^6.26.0",
     "babel-preset-es2015-rollup": "^3.0.0",
     "bower": "^1.7.9",
     "closurecompiler-externs": "^1.0.4",
@@ -36,26 +36,26 @@
     "eslint": "^4.0.0",
     "glob": "^7.1.2",
     "gulp": "^3.8.9",
-    "gulp-babel": "^6.1.2",
+    "gulp-babel": "^7.0.0",
     "gulp-bump": "^2.0.0",
     "gulp-cached": "^1.0.4",
     "gulp-closure-compiler": "^0.4.0",
     "gulp-eol": "^0.1.1",
-    "gulp-header": "^1.2.2",
+    "gulp-header": "^1.8.9",
     "gulp-jasmine": "^2.0.0",
     "gulp-monic": "^2.0.1",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.0",
-    "gulp-rollup": "^2.0.0",
+    "gulp-rollup": "^2.14.0",
     "gulp-run": "^1.6.7",
     "gulp-wrap": "^0.13.0",
     "istanbul": "^0.4.2",
-    "jasmine": "^2.3.1",
+    "jasmine": "^2.8.0",
     "monic": "^2.3.12",
     "rollup-plugin-babel": "^2.4.0",
     "sugar": "^2.0.0",
     "through2": "^2.0.0",
-    "yaspeller": "^3.0.0"
+    "yaspeller": "^3.3.0"
   }
 }
