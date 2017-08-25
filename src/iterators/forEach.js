@@ -82,7 +82,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	const
 		filters = p.filter,
-		isStream = type === 'stream';
+		isStream = type === 'stream',
+		isIDBRequest = type === 'idbRequest';
 
 	if (!isObjectInstance(data) || {'weakMap': true, 'weakSet': true}[type]) {
 		throw new TypeError('Incorrect data type');
@@ -91,13 +92,15 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	const
 		IGNORE = {};
 
-	if (isStream) {
+	if (isStream || isIDBRequest) {
 		if (!p.thread) {
 			p.async = true;
 		}
 
-		const stream = data;
-		stream.on('error', (err) => {
+		const
+			cursor = data;
+
+		cursor.on('error', (err) => {
 			if (data.onError) {
 				data.onError(err);
 
@@ -106,21 +109,28 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			}
 		});
 
-		let hasEnded = false;
-		stream.on('end', () => hasEnded = true);
+		let
+			hasEnded = false;
+
+		if (isStream) {
+			cursor.on('end', () => hasEnded = true);
+		}
 
 		data = {
 			next() {
-				if (hasEnded) {
+				if (hasEnded || cursor.readyState === 'done') {
 					return {done: true, value: undefined};
 				}
 
 				return {
 					done: false,
 					value: new Promise((resolve, reject) => {
-						stream.once('end', end);
-						stream.once('data', data);
-						stream.once('error', end);
+						const
+							dataEvent = isStream ? 'data' : 'success';
+
+						isStream && cursor.addEventListener('end', end);
+						cursor.addEventListener(dataEvent, data);
+						cursor.addEventListener('error', end);
 
 						function data(data) {
 							clear();
@@ -138,9 +148,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 						}
 
 						function clear() {
-							stream.removeListener('end', end);
-							stream.removeListener('error', error);
-							stream.removeListener('data', data);
+							isStream && cursor.removeListener('end', end);
+							cursor.removeListener('error', error);
+							cursor.removeListener(dataEvent, data);
 						}
 					})
 				};
@@ -290,7 +300,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				filters[i] = wrap(filters[i]);
 			}
 
-			if (isStream) {
+			if (isStream || isIDBRequest) {
 				data.onError = onError;
 			}
 

@@ -200,6 +200,16 @@ export function isStream(obj) {
 }
 
 /**
+ * Returns true if the specified value is a IDBRequest instance
+ *
+ * @param {?} obj - source value
+ * @return {boolean}
+ */
+export function isIDBRequest(obj) {
+	return typeof IDBRequest === 'function' && obj instanceof IDBRequest;
+}
+
+/**
  * Returns the current type of an object
  *
  * @param {Object} obj - source object
@@ -249,6 +259,9 @@ export function getType(obj, opt_use) {
 
 			} else if (isStream(obj)) {
 				type = 'stream';
+
+			} else if (isIDBRequest(obj)) {
+				type = 'idbRequest';
 			}
 	}
 
