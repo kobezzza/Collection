@@ -23,7 +23,8 @@ export const IS_NODE = (() => {
 export const
 	IS_BROWSER = !IS_NODE && typeof window === 'object',
 	BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function',
-	OBJECT_KEYS_NATIVE_SUPPORT = isNative.test(Object.keys && any(Object.keys).toString());
+	OBJECT_KEYS_NATIVE_SUPPORT = isNative.test(Object.keys && any(Object.keys).toString()),
+	SYMBOL_SUPPORT = typeof Symbol === 'function';
 
 export const LOCAL_STORAGE_SUPPORT = !IS_NODE && (() => {
 	const
