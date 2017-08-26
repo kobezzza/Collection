@@ -41,8 +41,7 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 				}
 			}
 
-		} catch (ignore) {
-		}
+		} catch (_) {}
 
 	} else if (IS_NODE) {
 		try {
@@ -54,7 +53,7 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 				$C.cache.str = cache['cache'];
 			}
 
-		} catch (ignore) {
+		} catch (_) {
 
 		} finally {
 			$C.ready = true;

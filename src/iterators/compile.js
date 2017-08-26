@@ -951,7 +951,7 @@ export function compileCycle(key, p) {
 						document.head.appendChild(script);
 					}
 
-				} catch (ignore) {}
+				} catch (_) {}
 
 			}, delay);
 
