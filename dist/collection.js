@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.20
+ * Collection v6.0.0
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sat, 26 Aug 2017 10:33:36 GMT
+ * Date: 'Sat, 26 Aug 2017 15:02:50 GMT
  */
 
 (function (global, factory) {
@@ -153,6 +153,7 @@ function isObjectInstance(obj) {
 }
 
 var isFuncRgxp = /\[object Function]/;
+var toString = {}.toString;
 
 /**
  * Returns true if the specified value is an array or like an array
@@ -166,7 +167,7 @@ function isLikeArray(obj) {
   // The hack for PhantomJS,
   // because it has strange bug for HTMLCollection and NodeList:
   // typeof 'function' && instanceof Function = false
-  isObjectInstance(obj) && !isFuncRgxp.test({}.toString.call(obj)) && (
+  isObjectInstance(obj) && !isFuncRgxp.test(toString.call(obj)) && (
   // If the object is like an array
   obj.length > 0 && 0 in obj || obj.length === 0);
 
@@ -380,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 0, 0, 'beta.20'];
+Collection.prototype.VERSION = [6, 0, 0];
 
 /**
  * Creates an instance of Collection
@@ -437,6 +438,7 @@ var IS_NODE = function () {
 var IS_BROWSER = !IS_NODE && typeof window === 'object';
 var BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function';
 var OBJECT_KEYS_NATIVE_SUPPORT = isNative.test(Object.keys && any(Object.keys).toString());
+var SYMBOL_SUPPORT = typeof Symbol === 'function';
 
 var LOCAL_STORAGE_SUPPORT = !IS_NODE && function () {
 	var mod = Math.random();
@@ -455,11 +457,11 @@ var GLOBAL = new Function('return this')();
 var NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_kobezzza_Collection';
 GLOBAL[NAMESPACE] = $C;
 
-var LENGTH_REQUEST = '__COLLECTION_TMP__lengthQuery';
-var FN_LENGTH = '__COLLECTION_TMP__length';
-var ON_ERROR = '__COLLECTION_TMP__onError';
+var LENGTH_REQUEST = SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTION_TMP__lengthQuery';
+var FN_LENGTH = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
+var ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 24;
+var CACHE_VERSION = 26;
 var CACHE_KEY = '__COLLECTION_CACHE__';
 var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
@@ -471,7 +473,7 @@ var taggedTemplateLiteral = function (strings, raw) {
   }));
 };
 
-var _templateObject = taggedTemplateLiteral(['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\ngetDescriptor = Object.getOwnPropertyDescriptor,\nonError = o.onError;\nvar\nTRUE = {},\nFALSE = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nwaitResult;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nwithDescriptor: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nasync: ', ',\nthread: ', ',\npriority: ', ' && \'', '\',\nlength: ', '\n};\n'], ['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\ngetDescriptor = Object.getOwnPropertyDescriptor,\nonError = o.onError;\nvar\nTRUE = {},\nFALSE = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nwaitResult;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\narr = [],\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nwithDescriptor: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nasync: ', ',\nthread: ', ',\npriority: ', ' && \'', '\',\nlength: ', '\n};\n']);
+var _templateObject = taggedTemplateLiteral(['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\ngetDescriptor = Object.getOwnPropertyDescriptor,\nonError = o.onError;\nvar\nTRUE = {},\nFALSE = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nwaitResult;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\nslice = [].slice,\nhasOwnProperty = {}.hasOwnProperty,\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nwithDescriptor: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nasync: ', ',\nthread: ', ',\npriority: ', ' && \'', '\',\nlength: ', '\n};\n'], ['\nvar \ndata = o.data,\ncb = o.cb,\nfilters = o.filters,\npriority = o.priority;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\ngetDescriptor = Object.getOwnPropertyDescriptor,\nonError = o.onError;\nvar\nTRUE = {},\nFALSE = {};\nvar\ni = -1,\nj = 0,\nn = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nwaitResult;\nvar\nlength,\nf,\nr;\nvar\nel,\nkey;\nvar\nslice = [].slice,\nhasOwnProperty = {}.hasOwnProperty,\n$ = {};\nvar info = {\nstartIndex: ', ',\nendIndex: ', ',\nfrom: ', ',\ncount: ', ',\nlive: ', ',\nreverse: ', ',\nwithDescriptor: ', ',\nnotOwn: ', ',\ninverseFilter: ', ',\ntype: \'', '\',\nasync: ', ',\nthread: ', ',\npriority: ', ' && \'', '\',\nlength: ', '\n};\n']);
 var _templateObject2 = taggedTemplateLiteral(['\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nyielder = false,\nyieldVal;\nvar\nparallel = 0,\nrace = 0;\nvar\nwait = new Set(),\nwaiting = false;\nwaitResult = [];\n'], ['\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nyielder = false,\nyieldVal;\nvar\nparallel = 0,\nrace = 0;\nvar\nwait = new Set(),\nwaiting = false;\nwaitResult = [];\n']);
 var _templateObject3 = taggedTemplateLiteral(['\nvar ctx = {\n$: $,\ninfo: info,\nwaitResult: waitResult,\nonError: onError,\nTRUE: TRUE,\nFALSE: FALSE,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nnext: function (opt_val) {\nif (', ') {\nreturn false;\n}\nctx.thread.next(opt_val);\nreturn true;\n},\nchild: function (thread) {\nif (', ' || !thread.thread) {\nreturn false;\n}\nctx.thread.children.push(thread.thread);\nreturn true;\n},\nrace: function (max, promise) {\nif (', ') {\nreturn false;\n}\nif (arguments.length === 1) {\npromise = max;\nmax = 1;\n}\nctx.wait(promise).then(function () {\nif (race < max) {\nrace++;\nif (race === max) {\nwait.clear();\n}\n}\n});\nreturn promise;\n},\nwait: function (max, promise) {\nif (', ') {\nreturn false;\n}\nfunction end(err) {\nparallel && parallel--;\nctx.thread.pause && ctx.next();\n}\nif (arguments.length > 1) {\nparallel++;\nif (parallel >= max) {\nctx.yield();\n}\nctx.wait(promise).then(end, function (err) {\nif (err && err.type === \'CollectionThreadDestroy\') {\nend();\nreturn;\n}\n});\nreturn promise;\n} else {\npromise = max;\n}\nif (!isPromise(promise)) {\npromise = typeof promise.next === \'function\' ? promise.next() : promise();\n}\nctx.child(promise);\nwait.add(promise);\npromise.then(\nfunction (res) {\nif (wait.has(promise)) {\nwaitResult.push(res);\nwait.delete(promise);\n}\nif (waiting) {\nctx.next();\n}\n}, \nfunction (err) {\nif (err && err.type === \'CollectionThreadDestroy\') {\nwait.delete(promise);\nreturn;\n}\nonError(err);\n}\n);\nreturn promise;\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nvar\nsleep = ctx.thread.sleep;\nif (sleep != null) {\nsleep.resume();\n}\nsleep = ctx.thread.sleep = {\nresume: function () {\nclearTimeout(sleep.id);\nctx.thread.sleep = null;\nresolve();\n},\nid: setTimeout(function () {\nif (opt_test) {\ntry {\nctx.thread.sleep = null;\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nctx.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nonError(err);\n}\n} else {\nresolve();\nctx.next();\n}\n}, time)\n};\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n'], ['\nvar ctx = {\n$: $,\ninfo: info,\nwaitResult: waitResult,\nonError: onError,\nTRUE: TRUE,\nFALSE: FALSE,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nyield: function (opt_val) {\nif (', ') {\nreturn false;\n}\nyielder = true;\nyieldVal = opt_val;\nreturn true;\n},\nnext: function (opt_val) {\nif (', ') {\nreturn false;\n}\nctx.thread.next(opt_val);\nreturn true;\n},\nchild: function (thread) {\nif (', ' || !thread.thread) {\nreturn false;\n}\nctx.thread.children.push(thread.thread);\nreturn true;\n},\nrace: function (max, promise) {\nif (', ') {\nreturn false;\n}\nif (arguments.length === 1) {\npromise = max;\nmax = 1;\n}\nctx.wait(promise).then(function () {\nif (race < max) {\nrace++;\nif (race === max) {\nwait.clear();\n}\n}\n});\nreturn promise;\n},\nwait: function (max, promise) {\nif (', ') {\nreturn false;\n}\nfunction end(err) {\nparallel && parallel--;\nctx.thread.pause && ctx.next();\n}\nif (arguments.length > 1) {\nparallel++;\nif (parallel >= max) {\nctx.yield();\n}\nctx.wait(promise).then(end, function (err) {\nif (err && err.type === \'CollectionThreadDestroy\') {\nend();\nreturn;\n}\n});\nreturn promise;\n} else {\npromise = max;\n}\nif (!isPromise(promise)) {\npromise = typeof promise.next === \'function\' ? promise.next() : promise();\n}\nctx.child(promise);\nwait.add(promise);\npromise.then(\nfunction (res) {\nif (wait.has(promise)) {\nwaitResult.push(res);\nwait.delete(promise);\n}\nif (waiting) {\nctx.next();\n}\n}, \nfunction (err) {\nif (err && err.type === \'CollectionThreadDestroy\') {\nwait.delete(promise);\nreturn;\n}\nonError(err);\n}\n);\nreturn promise;\n},\nsleep: function (time, opt_test, opt_interval) {\nif (', ') {\nreturn false;\n}\nctx.yield();\nreturn new Promise(function (resolve, reject) {\nvar\nsleep = ctx.thread.sleep;\nif (sleep != null) {\nsleep.resume();\n}\nsleep = ctx.thread.sleep = {\nresume: function () {\nclearTimeout(sleep.id);\nctx.thread.sleep = null;\nresolve();\n},\nid: setTimeout(function () {\nif (opt_test) {\ntry {\nctx.thread.sleep = null;\nvar test = opt_test(ctx);\nif (test) {\nresolve();\nctx.next();\n} else if (opt_interval !== false) {\nctx.sleep(time, opt_test, opt_interval).then(resolve, reject);\n}\n} catch (err) {\nreject(err);\nonError(err);\n}\n} else {\nresolve();\nctx.next();\n}\n}, time)\n};\n});\n},\njump: function (val) {\nif (', ') {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (', ') {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar cbCtx = Object.create(ctx);\ncbCtx.length = o.cbLength;\nvar filterCtx = Object.create(ctx);\nfilterCtx.length = o.fLength;\n']);
 var _templateObject4 = taggedTemplateLiteral(['\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nfunction resolveEl(res) {\nel = res;\nctx.next();\n}\nfunction resolveCb(res) {\nr = res;\nctx.next();\n}\nfunction resolveFilter(res) {\nf = res;\nctx.next();\n}\nctx.thread = o.self;\nctx.thread.ctx = ctx;\n'], ['\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nfunction resolveEl(res) {\nel = res;\nctx.next();\n}\nfunction resolveCb(res) {\nr = res;\nctx.next();\n}\nfunction resolveFilter(res) {\nf = res;\nctx.next();\n}\nctx.thread = o.self;\nctx.thread.ctx = ctx;\n']);
@@ -479,17 +481,17 @@ var _templateObject5 = taggedTemplateLiteral(['\nif (timeStart == null) {\ntimeS
 var _templateObject6 = taggedTemplateLiteral(['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[ctx.thread.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n'], ['\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[ctx.thread.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n']);
 var _templateObject7 = taggedTemplateLiteral(['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === o.IGNORE) {\ncontinue;\n}\nif (brkIf && el === null) {\nbreak;\n}\n'], ['\nwhile (isPromise(el)) {\nel = el.then(resolveEl, onError);\nctx.thread.pause = true;\nyield;\n}\nif (el === o.IGNORE) {\ncontinue;\n}\nif (brkIf && el === null) {\nbreak;\n}\n']);
 var _templateObject8 = taggedTemplateLiteral(['\nvar\nclone = data,\ndLength = data.length - 1;\n'], ['\nvar\nclone = data,\ndLength = data.length - 1;\n']);
-var _templateObject9 = taggedTemplateLiteral(['\nclone = arr.slice.call(clone, ', ', ', ');\n'], ['\nclone = arr.slice.call(clone, ', ', ', ');\n']);
+var _templateObject9 = taggedTemplateLiteral(['\nclone = slice.call(clone, ', ', ', ');\n'], ['\nclone = slice.call(clone, ', ', ', ');\n']);
 var _templateObject10 = taggedTemplateLiteral(['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n'], ['\nfor (n = ', '; ++n < clone.length;) {\ni = n;\n']);
 var _templateObject11 = taggedTemplateLiteral(['\nif (n < ', ') {\ncontinue;\n}\n'], ['\nif (n < ', ') {\ncontinue;\n}\n']);
 var _templateObject12 = taggedTemplateLiteral(['\nif (n > ', ') {\nbreak;\n};\n'], ['\nif (n > ', ') {\nbreak;\n};\n']);
 var _templateObject13 = taggedTemplateLiteral(['\nlength = clone.length;\nfor (n = -1; ++n < length;) {\ni = n + ', ';\n'], ['\nlength = clone.length;\nfor (n = -1; ++n < length;) {\ni = n + ', ';\n']);
-var _templateObject14 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\nif (data.hasOwnProperty(key)) {\ncontinue;\n}\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\nif (data.hasOwnProperty(key)) {\ncontinue;\n}\ntmpArray.push(key);\n', '\n}\n']);
+var _templateObject14 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\nif (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {\ncontinue;\n}\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\nif (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {\ncontinue;\n}\ntmpArray.push(key);\n', '\n}\n']);
 var _templateObject15 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\ntmpArray.push(key);\n', '\n}\n']);
-var _templateObject16 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\nif (!data.hasOwnProperty(key)) {\nbreak;\n}\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\nif (!data.hasOwnProperty(key)) {\nbreak;\n}\ntmpArray.push(key);\n', '\n}\n']);
+var _templateObject16 = taggedTemplateLiteral(['\nfor (var key in data) {\n', '\nif (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {\nbreak;\n}\ntmpArray.push(key);\n', '\n}\n'], ['\nfor (var key in data) {\n', '\nif (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {\nbreak;\n}\ntmpArray.push(key);\n', '\n}\n']);
 var _templateObject17 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\nkey = tmpArray[n];\nif (key in data === false) {\ncontinue;\n}\ni = n + ', ';\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\nkey = tmpArray[n];\nif (key in data === false) {\ncontinue;\n}\ni = n + ', ';\n']);
-var _templateObject18 = taggedTemplateLiteral(['\nif (!data.hasOwnProperty(key)) {\nbreak;\n}'], ['\nif (!data.hasOwnProperty(key)) {\nbreak;\n}']);
-var _templateObject19 = taggedTemplateLiteral(['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}'], ['\nif (!data.hasOwnProperty(key)) {\ncontinue;\n}']);
+var _templateObject18 = taggedTemplateLiteral(['\nif (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {\nbreak;\n}'], ['\nif (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {\nbreak;\n}']);
+var _templateObject19 = taggedTemplateLiteral(['\nif (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {\ncontinue;\n}'], ['\nif (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {\ncontinue;\n}']);
 var _templateObject20 = taggedTemplateLiteral(['\nn++;\ni = n;\n'], ['\nn++;\ni = n;\n']);
 var _templateObject21 = taggedTemplateLiteral(['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (typeof data.next === \'function\') {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n'], ['\nvar\niteratorKey = typeof Symbol !== \'undefined\' && Symbol.iterator,\ncursor;\nif (typeof data.next === \'function\') {\ncursor = data;\n} else {\ncursor = (iteratorKey ? data[iteratorKey]() : data[\'@@iterator\'] && data[\'@@iterator\']()) || data;\n}\n']);
 var _templateObject22 = taggedTemplateLiteral(['\nvar tmpArray = [];\nfor (var step = cursor.next(); \'done\' in step ? !step.done : step; step = cursor.next()) {\n', '\nbrkIf = \'done\' in step === false;\nel = \'value\' in step ? step.value : step;\n', '\ntmpArray.push(el);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n'], ['\nvar tmpArray = [];\nfor (var step = cursor.next(); \'done\' in step ? !step.done : step; step = cursor.next()) {\n', '\nbrkIf = \'done\' in step === false;\nel = \'value\' in step ? step.value : step;\n', '\ntmpArray.push(el);\n', '\n}\ntmpArray.reverse();\nvar size = tmpArray.length;\n']);
@@ -598,7 +600,7 @@ function compileCycle(key, p) {
 			iFn += ws(_templateObject8);
 
 			if (p.reverse) {
-				iFn += 'clone = arr.slice.call(clone).reverse();';
+				iFn += 'clone = slice.call(clone).reverse();';
 			}
 
 			if ((p.reverse || !p.live) && (startIndex || endIndex)) {
@@ -638,6 +640,8 @@ function compileCycle(key, p) {
 			break;
 
 		case 'object':
+			iFn += 'var selfHasOwn = data.hasOwnProperty;';
+
 			if (p.reverse || OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
 				iFn += 'var tmpArray;';
 
@@ -901,6 +905,209 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 	}
 }
 
+var slice = [].slice;
+var splice = [].splice;
+var hasOwnProperty = {}.hasOwnProperty;
+
+/**
+ * Sets a value to an object property by a link or returns/deletes the property.
+ * At changing or deleting the property returns an object:
+ *
+ *   {
+ *     result: boolean,
+ *     key,
+ *     value
+ *   }
+ *
+ * @param {?} obj
+ * @param {$$CollectionLink} link - source link:
+ *   STRING-LINK:
+ *   a.foo.bar ~ obj['foo']['bar']
+ *
+ *   ARRAY-LINK:
+ *   [{}, 1, null] ~ obj[{}][1][null]
+ *
+ * @param {$$Collection_byLink=} [opt_params] - additional parameters:
+ *
+ *   [value] - value to set
+ *   [delete = delete] - if true, then the property will be deleted
+ *   [create = false] - if true, then the property will be created if it's not defined
+ *   [test = false] - if is true, then will be returned false if the property is not defined
+ *
+ * @return {({result: boolean, key, value, notFound: (boolean|undefined)}|?)}
+ */
+function byLink(obj, link, opt_params) {
+	var p = opt_params || {};
+
+	var linkList = isString(link) ? any(link).split('.') : [].concat(link),
+	    length = linkList.length,
+	    last = length - 1;
+
+	var pre = void 0,
+	    preKey = void 0;
+
+	for (var i = -1; ++i < length;) {
+		var el = linkList[i];
+
+		if (obj == null) {
+			if (p.test) {
+				return false;
+			}
+
+			if (p.error) {
+				throw new ReferenceError(el + ' is not defined!');
+			}
+
+			if (p.delete) {
+				return {
+					notFound: true,
+					result: false,
+					key: undefined,
+					value: undefined
+				};
+			}
+
+			return undefined;
+		}
+
+		var isTest = i === last && p.test;
+
+		if (isTest) {
+			pre = obj;
+			preKey = el;
+		}
+
+		var objIsMap = isMap(obj),
+		    objIsSet = isSet(obj);
+
+		var isAMap = objIsMap || isWeakMap(obj),
+		    isASet = objIsSet || isWeakSet(obj);
+
+		// Set or delete
+		if (!isTest && i === last && (p.delete || 'value' in p)) {
+			var cache = {
+				key: isASet ? null : el,
+				result: isAMap || isASet ? obj.has(el) : el in obj,
+				value: isAMap ? obj.get(el) : isASet ? el : obj[el]
+			};
+
+			if ('value' in p) {
+				cache.newValue = p.value;
+			}
+
+			if (p.delete) {
+				if (cache.result) {
+					if (isAMap || isASet) {
+						obj.delete(el);
+						cache.result = !obj.has(el);
+					} else {
+						if (isLikeArray(obj) && !isNaN(Number(el))) {
+							if (isArray(obj)) {
+								obj.splice(el, 1);
+							} else {
+								splice.call(obj, el, 1);
+							}
+						} else {
+							delete obj[el];
+						}
+
+						cache.result = el in obj === false || obj[el] !== cache.value;
+					}
+				}
+			} else {
+				if (isAMap) {
+					if (obj.get(el) !== p.value) {
+						obj.set(el, p.value);
+						cache.result = obj.get(el) === p.value;
+					} else {
+						cache.result = false;
+					}
+				} else if (isASet) {
+					var has = obj.has(el);
+
+					cache.result = false;
+					cache.value = has ? el : undefined;
+
+					if (!obj.has(p.value)) {
+						if (has) {
+							obj.delete(el);
+						}
+
+						obj.add(p.value);
+						cache.result = obj.has(p.value);
+					}
+				} else {
+					if (isLikeArray(obj) && !isNaN(Number(cache.key))) {
+						cache.key = Number(cache.key);
+					} else {
+						cache.key = String(cache.key);
+					}
+
+					if (obj[el] !== p.value) {
+						obj[el] = p.value;
+						cache.result = obj[el] === p.value;
+					} else {
+						cache.result = false;
+					}
+				}
+			}
+
+			return cache;
+		}
+
+		if (isAMap) {
+			obj = obj.get(el);
+		} else if (isASet) {
+			if (obj.has(el)) {
+				obj = el;
+			} else {
+				obj = undefined;
+			}
+		} else {
+			if (p.create && obj[el] === undefined) {
+				obj[el] = {};
+			}
+
+			obj = obj[el];
+		}
+	}
+
+	if (p.test) {
+		if (isMap(pre) || isWeakMap(pre) || isSet(pre) || isWeakSet(pre)) {
+			return pre.has(preKey);
+		}
+
+		return preKey in pre;
+	}
+
+	return obj;
+}
+
+/**
+ * Returns true if an object contains a property by a link
+ *
+ * @see byLink
+ * @param {$$CollectionLink} link - source link
+ * @param {!Object} obj - source object
+ * @return {boolean}
+ */
+$C.in = function (link, obj) {
+	return byLink(obj, link, { test: true });
+};
+
+Object.assign($C, { in: $C.in });
+
+/**
+ * Returns true if the collection contains a property by a link
+ *
+ * @see byLink
+ * @param {$$CollectionLink} link - source link
+ * @return {boolean}
+ */
+Collection.prototype.in = function (link) {
+	return byLink(this.data, link, { test: true });
+};
+
 var MAX_PRIORITY = 40;
 
 var PRIORITY = {
@@ -946,6 +1153,11 @@ Collection.prototype.length = function (opt_filter, opt_params) {
 	}
 
 	return p.result;
+};
+
+var invalidTypes = {
+	'weakMap': true,
+	'weakSet': true
 };
 
 /**
@@ -1011,13 +1223,13 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	    type = p.type = getType(data, p.use);
 
 
+	if (!isObjectInstance(data) || invalidTypes[type]) {
+		throw new TypeError('Incorrect data type');
+	}
+
 	var filters = p.filter,
 	    isStream$$1 = type === 'stream',
 	    isIDBRequest$$1 = type === 'idbRequest';
-
-	if (!isObjectInstance(data) || { 'weakMap': true, 'weakSet': true }[type]) {
-		throw new TypeError('Incorrect data type');
-	}
 
 	var IGNORE = {};
 
@@ -1103,7 +1315,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	// Optimization for the length request
 	if (!filters.length && cb[LENGTH_REQUEST]) {
 		if (type === 'array') {
-			cb[LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? [].slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
+			cb[LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
 
 			return this;
 		} else if ({ 'map': true, 'set': true }[type] && !p.startIndex && p.endIndex === false) {
@@ -1501,206 +1713,6 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 	}
 });
 
-/**
- * Sets a value to an object property by a link or returns/deletes the property.
- * At changing or deleting the property returns an object:
- *
- *   {
- *     result: boolean,
- *     key,
- *     value
- *   }
- *
- * @param {?} obj
- * @param {$$CollectionLink} link - source link:
- *   STRING-LINK:
- *   a.foo.bar ~ obj['foo']['bar']
- *
- *   ARRAY-LINK:
- *   [{}, 1, null] ~ obj[{}][1][null]
- *
- * @param {$$Collection_byLink=} [opt_params] - additional parameters:
- *
- *   [value] - value to set
- *   [delete = delete] - if true, then the property will be deleted
- *   [create = false] - if true, then the property will be created if it's not defined
- *   [test = false] - if is true, then will be returned false if the property is not defined
- *
- * @return {({result: boolean, key, value, notFound: (boolean|undefined)}|?)}
- */
-function byLink(obj, link, opt_params) {
-	var p = opt_params || {};
-
-	var linkList = isString(link) ? any(link).split('.') : [].concat(link),
-	    length = linkList.length,
-	    last = length - 1,
-	    splice = [].splice;
-
-	var pre = void 0,
-	    preKey = void 0;
-
-	for (var i = -1; ++i < length;) {
-		var el = linkList[i];
-
-		if (obj == null) {
-			if (p.test) {
-				return false;
-			}
-
-			if (p.error) {
-				throw new ReferenceError(el + ' is not defined!');
-			}
-
-			if (p.delete) {
-				return {
-					notFound: true,
-					result: false,
-					key: undefined,
-					value: undefined
-				};
-			}
-
-			return undefined;
-		}
-
-		var isTest = i === last && p.test;
-
-		if (isTest) {
-			pre = obj;
-			preKey = el;
-		}
-
-		var objIsMap = isMap(obj),
-		    objIsSet = isSet(obj);
-
-		var isAMap = objIsMap || isWeakMap(obj),
-		    isASet = objIsSet || isWeakSet(obj);
-
-		// Set or delete
-		if (!isTest && i === last && (p.delete || 'value' in p)) {
-			var cache = {
-				key: isASet ? null : el,
-				result: isAMap || isASet ? obj.has(el) : el in obj,
-				value: isAMap ? obj.get(el) : isASet ? el : obj[el]
-			};
-
-			if ('value' in p) {
-				cache.newValue = p.value;
-			}
-
-			if (p.delete) {
-				if (cache.result) {
-					if (isAMap || isASet) {
-						obj.delete(el);
-						cache.result = !obj.has(el);
-					} else {
-						if (isLikeArray(obj) && !isNaN(Number(el))) {
-							if (isArray(obj)) {
-								obj.splice(el, 1);
-							} else {
-								splice.call(obj, el, 1);
-							}
-						} else {
-							delete obj[el];
-						}
-
-						cache.result = el in obj === false || obj[el] !== cache.value;
-					}
-				}
-			} else {
-				if (isAMap) {
-					if (obj.get(el) !== p.value) {
-						obj.set(el, p.value);
-						cache.result = obj.get(el) === p.value;
-					} else {
-						cache.result = false;
-					}
-				} else if (isASet) {
-					var has = obj.has(el);
-
-					cache.result = false;
-					cache.value = has ? el : undefined;
-
-					if (!obj.has(p.value)) {
-						if (has) {
-							obj.delete(el);
-						}
-
-						obj.add(p.value);
-						cache.result = obj.has(p.value);
-					}
-				} else {
-					if (isLikeArray(obj) && !isNaN(Number(cache.key))) {
-						cache.key = Number(cache.key);
-					} else {
-						cache.key = String(cache.key);
-					}
-
-					if (obj[el] !== p.value) {
-						obj[el] = p.value;
-						cache.result = obj[el] === p.value;
-					} else {
-						cache.result = false;
-					}
-				}
-			}
-
-			return cache;
-		}
-
-		if (isAMap) {
-			obj = obj.get(el);
-		} else if (isASet) {
-			if (obj.has(el)) {
-				obj = el;
-			} else {
-				obj = undefined;
-			}
-		} else {
-			if (p.create && obj[el] === undefined) {
-				obj[el] = {};
-			}
-
-			obj = obj[el];
-		}
-	}
-
-	if (p.test) {
-		if (isMap(pre) || isWeakMap(pre) || isSet(pre) || isWeakSet(pre)) {
-			return pre.has(preKey);
-		}
-
-		return preKey in pre;
-	}
-
-	return obj;
-}
-
-/**
- * Returns true if an object contains a property by a link
- *
- * @see byLink
- * @param {$$CollectionLink} link - source link
- * @param {!Object} obj - source object
- * @return {boolean}
- */
-$C.in = function (link, obj) {
-	return byLink(obj, link, { test: true });
-};
-
-Object.assign($C, { in: $C.in });
-
-/**
- * Returns true if the collection contains a property by a link
- *
- * @see byLink
- * @param {$$CollectionLink} link - source link
- * @return {boolean}
- */
-Collection.prototype.in = function (link) {
-	return byLink(this.data, link, { test: true });
-};
-
 /* eslint-disable no-loop-func */
 
 /**
@@ -1899,7 +1911,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 					var srcIsArray = isArray(src);
 
-					if (isExt && !data.hasOwnProperty(key)) {
+					if (isExt && !(data.hasOwnProperty ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 						src = srcIsArray ? src.slice() : create(src);
 						byLink(data, [key], { value: src });
 					}
@@ -2413,7 +2425,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	var isFunc = isFunction(field),
-	    res = p.result = p.useMap ? new Map() : Object();
+	    res = p.result = p.useMap ? new Map() : Object.create(null);
 
 	var fn = void 0;
 	if (p.useMap) {
@@ -2444,7 +2456,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 			if (isPromise(param)) {
 				return param.then(function (param) {
-					if (res.hasOwnProperty(param)) {
+					if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
 						res[param].push(val);
 					} else {
 						res[param] = [val];
@@ -2452,7 +2464,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				}, fn[ON_ERROR]);
 			}
 
-			if (res.hasOwnProperty(param)) {
+			if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
 				res[param].push(val);
 			} else {
 				res[param] = [val];
@@ -2504,8 +2516,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	}
 
 	var mult = p.mult !== false,
-	    res = [],
-	    splice = [].splice;
+	    res = [];
 
 	if (mult) {
 		p.result = res;

@@ -49,8 +49,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 	}
 
 	const mult = p.mult !== false,
-	      res = [],
-	      splice = [].splice;
+	      res = [];
 
 	if (mult) {
 		p.result = res;
@@ -107,7 +106,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 					if (isRealArray) {
 						data.splice(key, 1);
 					} else {
-						splice.call(data, key, 1);
+						_link.splice.call(data, key, 1);
 					}
 
 					const o = {
@@ -129,7 +128,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 						if (isRealArray) {
 							data.splice(key, 1);
 						} else {
-							splice.call(data, key, 1);
+							_link.splice.call(data, key, 1);
 						}
 
 						ctx.i(-1);
@@ -158,7 +157,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 							if (isRealArray) {
 								data.splice(key, 1);
 							} else {
-								splice.call(data, key, 1);
+								_link.splice.call(data, key, 1);
 							}
 
 							ctx.i(-1);

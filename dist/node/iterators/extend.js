@@ -210,7 +210,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 
 				let srcIsArray = (0, _types.isArray)(src);
 
-				if (isExt && !data.hasOwnProperty(key)) {
+				if (isExt && !(data.hasOwnProperty ? data.hasOwnProperty(key) : _link.hasOwnProperty.call(data, key))) {
 					src = srcIsArray ? src.slice() : create(src);
 					(0, _link.byLink)(data, [key], { value: src });
 				}

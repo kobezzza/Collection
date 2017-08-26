@@ -45,7 +45,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	const isFunc = (0, _types.isFunction)(field),
-	      res = p.result = p.useMap ? new Map() : Object();
+	      res = p.result = p.useMap ? new Map() : Object.create(null);
 
 	let fn;
 	if (p.useMap) {
@@ -76,7 +76,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 
 			if ((0, _types.isPromise)(param)) {
 				return param.then(param => {
-					if (res.hasOwnProperty(param)) {
+					if (res.hasOwnProperty ? res.hasOwnProperty(param) : _link.hasOwnProperty.call(res, param)) {
 						res[param].push(val);
 					} else {
 						res[param] = [val];
@@ -84,7 +84,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 				}, fn[_base.ON_ERROR]);
 			}
 
-			if (res.hasOwnProperty(param)) {
+			if (res.hasOwnProperty ? res.hasOwnProperty(param) : _link.hasOwnProperty.call(res, param)) {
 				res[param].push(val);
 			} else {
 				res[param] = [val];

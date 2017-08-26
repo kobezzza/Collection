@@ -9,6 +9,7 @@
  */
 
 exports.__esModule = true;
+exports.hasOwnProperty = exports.splice = exports.slice = undefined;
 exports.byLink = byLink;
 
 var _core = require('../core');
@@ -20,6 +21,10 @@ var _types = require('./types');
 var _gcc = require('./gcc');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const slice = exports.slice = [].slice,
+      splice = exports.splice = [].splice,
+      hasOwnProperty = exports.hasOwnProperty = {}.hasOwnProperty;
 
 /**
  * Sets a value to an object property by a link or returns/deletes the property.
@@ -53,8 +58,7 @@ function byLink(obj, link, opt_params) {
 
 	const linkList = (0, _types.isString)(link) ? (0, _gcc.any)(link).split('.') : [].concat(link),
 	      length = linkList.length,
-	      last = length - 1,
-	      splice = [].splice;
+	      last = length - 1;
 
 	let pre, preKey;
 

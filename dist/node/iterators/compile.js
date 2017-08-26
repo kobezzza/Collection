@@ -107,7 +107,8 @@ function compileCycle(key, p) {
 			key;
 
 		var
-			arr = [],
+			slice = [].slice,
+			hasOwnProperty = {}.hasOwnProperty,
 			$ = {};
 
 		var info = {
@@ -474,12 +475,12 @@ function compileCycle(key, p) {
 			`;
 
 			if (p.reverse) {
-				iFn += 'clone = arr.slice.call(clone).reverse();';
+				iFn += 'clone = slice.call(clone).reverse();';
 			}
 
 			if ((p.reverse || !p.live) && (startIndex || endIndex)) {
 				iFn += _string.ws`
-					clone = arr.slice.call(clone, ${startIndex}, ${endIndex || 'data.length'});
+					clone = slice.call(clone, ${startIndex}, ${endIndex || 'data.length'});
 				`;
 			}
 
@@ -531,6 +532,8 @@ function compileCycle(key, p) {
 			break;
 
 		case 'object':
+			iFn += 'var selfHasOwn = data.hasOwnProperty;';
+
 			if (p.reverse || _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
 				iFn += 'var tmpArray;';
 
@@ -544,7 +547,7 @@ function compileCycle(key, p) {
 							iFn += _string.ws`
 								for (var key in data) {
 									${threadStart}
-									if (data.hasOwnProperty(key)) {
+									if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
 										continue;
 									}
 
@@ -565,7 +568,7 @@ function compileCycle(key, p) {
 						iFn += _string.ws`
 							for (var key in data) {
 								${threadStart}
-								if (!data.hasOwnProperty(key)) {
+								if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 									break;
 								}
 
@@ -600,12 +603,12 @@ function compileCycle(key, p) {
 
 				if (p.notOwn === false) {
 					iFn += _string.ws`
-						if (!data.hasOwnProperty(key)) {
+						if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 							break;
 						}`;
 				} else if (p.notOwn === -1) {
 					iFn += _string.ws`
-						if (!data.hasOwnProperty(key)) {
+						if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
 							continue;
 						}`;
 				}

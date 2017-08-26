@@ -9,7 +9,7 @@
  */
 
 exports.__esModule = true;
-exports.LOCAL_STORAGE_SUPPORT = exports.OBJECT_KEYS_NATIVE_SUPPORT = exports.BLOB_SUPPORT = exports.IS_BROWSER = exports.IS_NODE = undefined;
+exports.LOCAL_STORAGE_SUPPORT = exports.SYMBOL_SUPPORT = exports.OBJECT_KEYS_NATIVE_SUPPORT = exports.BLOB_SUPPORT = exports.IS_BROWSER = exports.IS_NODE = undefined;
 
 var _types = require('../helpers/types');
 
@@ -25,7 +25,8 @@ const IS_NODE = exports.IS_NODE = (() => {
 
 const IS_BROWSER = exports.IS_BROWSER = !IS_NODE && typeof window === 'object',
       BLOB_SUPPORT = exports.BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function',
-      OBJECT_KEYS_NATIVE_SUPPORT = exports.OBJECT_KEYS_NATIVE_SUPPORT = _types.isNative.test(Object.keys && (0, _gcc.any)(Object.keys).toString());
+      OBJECT_KEYS_NATIVE_SUPPORT = exports.OBJECT_KEYS_NATIVE_SUPPORT = _types.isNative.test(Object.keys && (0, _gcc.any)(Object.keys).toString()),
+      SYMBOL_SUPPORT = exports.SYMBOL_SUPPORT = typeof Symbol === 'function';
 
 const LOCAL_STORAGE_SUPPORT = exports.LOCAL_STORAGE_SUPPORT = !IS_NODE && (() => {
 	const mod = Math.random();

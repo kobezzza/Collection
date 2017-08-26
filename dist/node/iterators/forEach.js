@@ -14,6 +14,8 @@ var _cache = require('../consts/cache');
 
 var _types = require('../helpers/types');
 
+var _link = require('../helpers/link');
+
 var _base = require('../consts/base');
 
 var _thread = require('../consts/thread');
@@ -23,6 +25,11 @@ var _compile = require('./compile');
 var _gcc = require('../helpers/gcc');
 
 require('./length');
+
+const invalidTypes = {
+	'weakMap': true,
+	'weakSet': true
+};
 
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
@@ -84,13 +91,13 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	let { data } = this,
 	    type = p.type = (0, _types.getType)(data, p.use);
 
+	if (!(0, _types.isObjectInstance)(data) || invalidTypes[type]) {
+		throw new TypeError('Incorrect data type');
+	}
+
 	const filters = p.filter,
 	      isStream = type === 'stream',
 	      isIDBRequest = type === 'idbRequest';
-
-	if (!(0, _types.isObjectInstance)(data) || { 'weakMap': true, 'weakSet': true }[type]) {
-		throw new TypeError('Incorrect data type');
-	}
 
 	const IGNORE = {};
 
@@ -174,7 +181,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	// Optimization for the length request
 	if (!filters.length && cb[_base.LENGTH_REQUEST]) {
 		if (type === 'array') {
-			cb[_base.LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? [].slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
+			cb[_base.LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? _link.slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
 
 			return this;
 		} else if ({ 'map': true, 'set': true }[type] && !p.startIndex && p.endIndex === false) {
