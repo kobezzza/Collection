@@ -11,7 +11,7 @@
 import { Collection } from '../core';
 import { FN_LENGTH, ON_ERROR } from '../consts/base';
 import { isArray, isFunction, isPromise } from '../helpers/types';
-import { byLink } from '../helpers/link';
+import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
 /**
@@ -44,7 +44,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 	const
 		isFunc = isFunction(field),
-		res = p.result = p.useMap ? new Map() : Object();
+		res = p.result = p.useMap ? new Map() : Object.create(null);
 
 	let fn;
 	if (p.useMap) {
@@ -80,7 +80,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 			if (isPromise(param)) {
 				return param.then((param) => {
-					if (res.hasOwnProperty(param)) {
+					if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
 						res[param].push(val);
 
 					} else {
@@ -89,7 +89,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				}, fn[ON_ERROR]);
 			}
 
-			if (res.hasOwnProperty(param)) {
+			if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
 				res[param].push(val);
 
 			} else {

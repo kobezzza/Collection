@@ -11,11 +11,17 @@
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
 import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
+import { slice } from '../helpers/link';
 import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
 import { PRIORITY } from '../consts/thread';
 import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
 import './length';
+
+const invalidTypes = {
+	'weakMap': true,
+	'weakSet': true
+};
 
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
@@ -80,14 +86,14 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		{data} = this,
 		type = p.type = getType(data, p.use);
 
+	if (!isObjectInstance(data) || invalidTypes[type]) {
+		throw new TypeError('Incorrect data type');
+	}
+
 	const
 		filters = p.filter,
 		isStream = type === 'stream',
 		isIDBRequest = type === 'idbRequest';
-
-	if (!isObjectInstance(data) || {'weakMap': true, 'weakSet': true}[type]) {
-		throw new TypeError('Incorrect data type');
-	}
 
 	const
 		IGNORE = {};
@@ -180,7 +186,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		if (type === 'array') {
 			cb[LENGTH_REQUEST] = (
 				p.startIndex || p.endIndex !== false ?
-					[].slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) :
+					slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) :
 					data
 
 			).length;

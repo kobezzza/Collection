@@ -134,7 +134,8 @@ export function isObjectInstance(obj) {
 }
 
 const
-	isFuncRgxp = /\[object Function]/;
+	isFuncRgxp = /\[object Function]/,
+	toString = {}.toString;
 
 /**
  * Returns true if the specified value is an array or like an array
@@ -149,7 +150,7 @@ export function isLikeArray(obj) {
 			// The hack for PhantomJS,
 			// because it has strange bug for HTMLCollection and NodeList:
 			// typeof 'function' && instanceof Function = false
-			isObjectInstance(obj) && !isFuncRgxp.test({}.toString.call(obj)) &&
+			isObjectInstance(obj) && !isFuncRgxp.test(toString.call(obj)) &&
 
 			(
 				// If the object is like an array

@@ -12,6 +12,11 @@ import $C, { Collection } from '../core';
 import { isString, isLikeArray, isArray, isMap, isWeakMap, isSet, isWeakSet } from './types';
 import { any } from './gcc';
 
+export const
+	slice = [].slice,
+	splice = [].splice,
+	hasOwnProperty = {}.hasOwnProperty;
+
 /**
  * Sets a value to an object property by a link or returns/deletes the property.
  * At changing or deleting the property returns an object:
@@ -46,8 +51,7 @@ export function byLink(obj, link, opt_params) {
 	const
 		linkList = isString(link) ? any(link).split('.') : [].concat(link),
 		length = linkList.length,
-		last = length - 1,
-		splice = [].splice;
+		last = length - 1;
 
 	let
 		pre,

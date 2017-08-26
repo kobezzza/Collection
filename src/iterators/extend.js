@@ -12,7 +12,7 @@
 
 import $C, { Collection, P } from '../core';
 import { isArray, isBoolean, isStructure, getStructure, canExtended, getType } from '../helpers/types';
-import { byLink } from '../helpers/link';
+import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
 /**
@@ -216,7 +216,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 				let
 					srcIsArray = isArray(src);
 
-				if (isExt && !data.hasOwnProperty(key)) {
+				if (isExt && !(data.hasOwnProperty ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 					src = srcIsArray ? src.slice() : create(src);
 					byLink(data, [key], {value: src});
 				}
