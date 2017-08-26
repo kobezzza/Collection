@@ -45,7 +45,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	const isFunc = (0, _types.isFunction)(field),
-	      res = p.result = p.useMap ? new Map() : {};
+	      res = p.result = p.useMap ? new Map() : Object();
 
 	let fn;
 	if (p.useMap) {
