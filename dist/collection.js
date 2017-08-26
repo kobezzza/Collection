@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0-beta.19
+ * Collection v6.0.0-beta.20
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 22 Jun 2017 11:55:29 GMT
+ * Date: 'Sat, 26 Aug 2017 10:33:36 GMT
  */
 
 (function (global, factory) {
@@ -200,7 +200,17 @@ function isIterator(obj) {
  * @return {boolean}
  */
 function isStream(obj) {
-  return Boolean(obj && typeof obj.pipe === 'function' && typeof obj.read === 'function' && typeof obj.on === 'function' && typeof obj.once === 'function' && typeof obj.removeListener === 'function');
+  return Boolean(obj && typeof obj.pipe === 'function' && typeof obj.read === 'function' && typeof obj.addListener === 'function' && typeof obj.removeListener === 'function');
+}
+
+/**
+ * Returns true if the specified value is a IDBRequest instance
+ *
+ * @param {?} obj - source value
+ * @return {boolean}
+ */
+function isIDBRequest(obj) {
+  return typeof IDBRequest === 'function' && obj instanceof IDBRequest;
 }
 
 /**
@@ -246,6 +256,8 @@ function getType(obj, opt_use) {
         type = 'iterator';
       } else if (isStream(obj)) {
         type = 'stream';
+      } else if (isIDBRequest(obj)) {
+        type = 'idbRequest';
       }
   }
 
@@ -368,7 +380,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 0, 0, 'beta.19'];
+Collection.prototype.VERSION = [6, 0, 0, 'beta.20'];
 
 /**
  * Creates an instance of Collection
@@ -1000,7 +1012,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 
 	var filters = p.filter,
-	    isStream$$1 = type === 'stream';
+	    isStream$$1 = type === 'stream',
+	    isIDBRequest$$1 = type === 'idbRequest';
 
 	if (!isObjectInstance(data) || { 'weakMap': true, 'weakSet': true }[type]) {
 		throw new TypeError('Incorrect data type');
@@ -1008,13 +1021,17 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	var IGNORE = {};
 
-	if (isStream$$1) {
+	if (isStream$$1 || isIDBRequest$$1) {
 		if (!p.thread) {
 			p.async = true;
 		}
 
-		var stream = data;
-		stream.on('error', function (err) {
+		var cursor = data,
+		    on = 'add' + (isIDBRequest$$1 ? 'Event' : '') + 'Listener',
+		    off = 'remove' + (isIDBRequest$$1 ? 'Event' : '') + 'Listener',
+		    dataEvent = isStream$$1 ? 'data' : 'success';
+
+		cursor[on]('error', function (err) {
 			if (data.onError) {
 				data.onError(err);
 			} else {
@@ -1023,26 +1040,41 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		});
 
 		var hasEnded = false;
-		stream.on('end', function () {
-			return hasEnded = true;
-		});
+
+		if (isStream$$1) {
+			cursor[on]('end', function () {
+				return hasEnded = true;
+			});
+		}
 
 		data = {
 			next: function () {
-				if (hasEnded) {
+				if (hasEnded || cursor.readyState === 'done') {
 					return { done: true, value: undefined };
 				}
 
 				return {
 					done: false,
 					value: new Promise(function (resolve, reject) {
-						stream.once('end', end);
-						stream.once('data', data);
-						stream.once('error', end);
+						isStream$$1 && cursor[on]('end', end);
+						cursor[on](dataEvent, data);
+						cursor[on]('error', end);
 
 						function data(data) {
 							clear();
-							resolve(data);
+
+							if (isStream$$1) {
+								resolve(data);
+							} else {
+								var iterator = data.target.result;
+
+								if (iterator) {
+									resolve(iterator.value);
+									iterator.continue();
+								} else {
+									resolve();
+								}
+							}
 						}
 
 						function end() {
@@ -1056,9 +1088,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 						}
 
 						function clear() {
-							stream.removeListener('end', end);
-							stream.removeListener('error', error);
-							stream.removeListener('data', data);
+							isStream$$1 && cursor[off]('end', end);
+							cursor[off]('error', error);
+							cursor[off](dataEvent, data);
 						}
 					})
 				};
@@ -1180,7 +1212,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				filters[_i] = wrap(filters[_i]);
 			}
 
-			if (isStream$$1) {
+			if (isStream$$1 || isIDBRequest$$1) {
 				data.onError = onError;
 			}
 
@@ -2381,7 +2413,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	var isFunc = isFunction(field),
-	    res = p.result = p.useMap ? new Map() : {};
+	    res = p.result = p.useMap ? new Map() : Object();
 
 	var fn = void 0;
 	if (p.useMap) {

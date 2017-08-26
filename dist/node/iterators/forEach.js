@@ -85,7 +85,8 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	    type = p.type = (0, _types.getType)(data, p.use);
 
 	const filters = p.filter,
-	      isStream = type === 'stream';
+	      isStream = type === 'stream',
+	      isIDBRequest = type === 'idbRequest';
 
 	if (!(0, _types.isObjectInstance)(data) || { 'weakMap': true, 'weakSet': true }[type]) {
 		throw new TypeError('Incorrect data type');
@@ -93,13 +94,17 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 	const IGNORE = {};
 
-	if (isStream) {
+	if (isStream || isIDBRequest) {
 		if (!p.thread) {
 			p.async = true;
 		}
 
-		const stream = data;
-		stream.on('error', err => {
+		const cursor = data,
+		      on = `add${isIDBRequest ? 'Event' : ''}Listener`,
+		      off = `remove${isIDBRequest ? 'Event' : ''}Listener`,
+		      dataEvent = isStream ? 'data' : 'success';
+
+		cursor[on]('error', err => {
 			if (data.onError) {
 				data.onError(err);
 			} else {
@@ -108,24 +113,39 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		});
 
 		let hasEnded = false;
-		stream.on('end', () => hasEnded = true);
+
+		if (isStream) {
+			cursor[on]('end', () => hasEnded = true);
+		}
 
 		data = {
 			next() {
-				if (hasEnded) {
+				if (hasEnded || cursor.readyState === 'done') {
 					return { done: true, value: undefined };
 				}
 
 				return {
 					done: false,
 					value: new Promise((resolve, reject) => {
-						stream.once('end', end);
-						stream.once('data', data);
-						stream.once('error', end);
+						isStream && cursor[on]('end', end);
+						cursor[on](dataEvent, data);
+						cursor[on]('error', end);
 
 						function data(data) {
 							clear();
-							resolve(data);
+
+							if (isStream) {
+								resolve(data);
+							} else {
+								const iterator = data.target.result;
+
+								if (iterator) {
+									resolve(iterator.value);
+									iterator.continue();
+								} else {
+									resolve();
+								}
+							}
 						}
 
 						function end() {
@@ -139,9 +159,9 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 						}
 
 						function clear() {
-							stream.removeListener('end', end);
-							stream.removeListener('error', error);
-							stream.removeListener('data', data);
+							isStream && cursor[off]('end', end);
+							cursor[off]('error', error);
+							cursor[off](dataEvent, data);
 						}
 					})
 				};
@@ -263,7 +283,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 				filters[i] = wrap(filters[i]);
 			}
 
-			if (isStream) {
+			if (isStream || isIDBRequest) {
 				data.onError = onError;
 			}
 

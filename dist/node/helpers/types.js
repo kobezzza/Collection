@@ -32,6 +32,7 @@ exports.isLikeArray = isLikeArray;
 exports.isGenerator = isGenerator;
 exports.isIterator = isIterator;
 exports.isStream = isStream;
+exports.isIDBRequest = isIDBRequest;
 exports.getType = getType;
 exports.getStructure = getStructure;
 exports.isStructure = isStructure;
@@ -203,7 +204,17 @@ function isIterator(obj) {
  * @return {boolean}
  */
 function isStream(obj) {
-  return Boolean(obj && typeof obj.pipe === 'function' && typeof obj.read === 'function' && typeof obj.on === 'function' && typeof obj.once === 'function' && typeof obj.removeListener === 'function');
+  return Boolean(obj && typeof obj.pipe === 'function' && typeof obj.read === 'function' && typeof obj.addListener === 'function' && typeof obj.removeListener === 'function');
+}
+
+/**
+ * Returns true if the specified value is a IDBRequest instance
+ *
+ * @param {?} obj - source value
+ * @return {boolean}
+ */
+function isIDBRequest(obj) {
+  return typeof IDBRequest === 'function' && obj instanceof IDBRequest;
 }
 
 /**
@@ -249,6 +260,8 @@ function getType(obj, opt_use) {
         type = 'iterator';
       } else if (isStream(obj)) {
         type = 'stream';
+      } else if (isIDBRequest(obj)) {
+        type = 'idbRequest';
       }
   }
 
