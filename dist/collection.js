@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.0
+ * Collection v6.0.1
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sat, 26 Aug 2017 15:02:50 GMT
+ * Date: 'Sat, 26 Aug 2017 15:08:18 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 0, 0];
+Collection.prototype.VERSION = [6, 0, 1];
 
 /**
  * Creates an instance of Collection
@@ -536,6 +536,11 @@ var cbArgsList = ['el', 'key', 'data', 'cbCtx'];
 
 var filterArgsList = ['el', 'key', 'data', 'filterCtx'];
 
+var mapSet = {
+	'map': true,
+	'set': true
+};
+
 /**
  * Compiles a loop by the specified parameters
  *
@@ -544,7 +549,7 @@ var filterArgsList = ['el', 'key', 'data', 'filterCtx'];
  * @return {!Function}
  */
 function compileCycle(key, p) {
-	var isMapSet = { 'map': true, 'set': true }[p.type],
+	var isMapSet = mapSet[p.type],
 	    isAsync = p.thread || p.async;
 
 	var cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT);
@@ -1160,6 +1165,11 @@ var invalidTypes = {
 	'weakSet': true
 };
 
+var mapSet$1 = {
+	'map': true,
+	'set': true
+};
+
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
@@ -1318,7 +1328,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			cb[LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
 
 			return this;
-		} else if ({ 'map': true, 'set': true }[type] && !p.startIndex && p.endIndex === false) {
+		} else if (mapSet$1[type] && !p.startIndex && p.endIndex === false) {
 			cb[LENGTH_REQUEST] = data.size;
 			return this;
 		}
@@ -1715,6 +1725,11 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 
 /* eslint-disable no-loop-func */
 
+var simpleType = {
+	'array': true,
+	'object': true
+};
+
 /**
  * Extends the collection by another objects
  *
@@ -1855,11 +1870,6 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	if (isAsync) {
 		promise = Promise.resolve();
 	}
-
-	var simpleType = {
-		'array': true,
-		'object': true
-	};
 
 	if (p.notOwn && !simpleType[type]) {
 		p.notOwn = false;
@@ -2485,6 +2495,11 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	return p.result;
 };
 
+var invalidTypes$1 = {
+	'iterator': true,
+	'generator': true
+};
+
 /**
  * Removes elements from the collection by the specified condition/link
  *
@@ -2511,7 +2526,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	var type = getType(this.data, p.use),
 	    isRealArray = type === 'array' && isArray(this.data);
 
-	if ({ 'iterator': true, 'generator': true }[type]) {
+	if (invalidTypes$1[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 

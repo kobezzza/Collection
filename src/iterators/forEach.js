@@ -23,6 +23,11 @@ const invalidTypes = {
 	'weakSet': true
 };
 
+const mapSet = {
+	'map': true,
+	'set': true
+};
+
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
@@ -193,7 +198,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 			return this;
 
-		} else if ({'map': true, 'set': true}[type] && !p.startIndex && p.endIndex === false) {
+		} else if (mapSet[type] && !p.startIndex && p.endIndex === false) {
 			cb[LENGTH_REQUEST] = data.size;
 			return this;
 		}

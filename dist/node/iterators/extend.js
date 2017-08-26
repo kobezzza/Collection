@@ -22,6 +22,11 @@ var _gcc = require('../helpers/gcc');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const simpleType = {
+	'array': true,
+	'object': true
+};
+
 /**
  * Extends the collection by another objects
  *
@@ -155,11 +160,6 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 	if (isAsync) {
 		promise = Promise.resolve();
 	}
-
-	const simpleType = {
-		'array': true,
-		'object': true
-	};
 
 	if (p.notOwn && !simpleType[type]) {
 		p.notOwn = false;

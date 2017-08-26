@@ -15,6 +15,11 @@ import { isArray, isBoolean, isStructure, getStructure, canExtended, getType } f
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
+const simpleType = {
+	'array': true,
+	'object': true
+};
+
 /**
  * Extends the collection by another objects
  *
@@ -152,11 +157,6 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	if (isAsync) {
 		promise = Promise.resolve();
 	}
-
-	const simpleType = {
-		'array': true,
-		'object': true
-	};
 
 	if (p.notOwn && !simpleType[type]) {
 		p.notOwn = false;

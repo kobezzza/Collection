@@ -31,6 +31,11 @@ const invalidTypes = {
 	'weakSet': true
 };
 
+const mapSet = {
+	'map': true,
+	'set': true
+};
+
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
@@ -184,7 +189,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 			cb[_base.LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? _link.slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
 
 			return this;
-		} else if ({ 'map': true, 'set': true }[type] && !p.startIndex && p.endIndex === false) {
+		} else if (mapSet[type] && !p.startIndex && p.endIndex === false) {
 			cb[_base.LENGTH_REQUEST] = data.size;
 			return this;
 		}

@@ -53,6 +53,11 @@ const filterArgsList = [
 	'filterCtx'
 ];
 
+const mapSet = {
+	'map': true,
+	'set': true
+};
+
 /**
  * Compiles a loop by the specified parameters
  *
@@ -62,7 +67,7 @@ const filterArgsList = [
  */
 export function compileCycle(key, p) {
 	const
-		isMapSet = {'map': true, 'set': true}[p.type],
+		isMapSet = mapSet[p.type],
 		isAsync = p.thread || p.async;
 
 	const cantModI = !(

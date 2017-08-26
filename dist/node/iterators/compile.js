@@ -53,6 +53,11 @@ const cbArgsList = ['el', 'key', 'data', 'cbCtx'];
 
 const filterArgsList = ['el', 'key', 'data', 'filterCtx'];
 
+const mapSet = {
+	'map': true,
+	'set': true
+};
+
 /**
  * Compiles a loop by the specified parameters
  *
@@ -61,7 +66,7 @@ const filterArgsList = ['el', 'key', 'data', 'filterCtx'];
  * @return {!Function}
  */
 function compileCycle(key, p) {
-	const isMapSet = { 'map': true, 'set': true }[p.type],
+	const isMapSet = mapSet[p.type],
 	      isAsync = p.thread || p.async;
 
 	const cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT);

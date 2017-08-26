@@ -14,6 +14,11 @@ import { getType, isFunction, isArray, isNumber } from '../helpers/types';
 import { byLink, splice } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
+const invalidTypes = {
+	'iterator': true,
+	'generator': true
+};
+
 /**
  * Removes elements from the collection by the specified condition/link
  *
@@ -47,7 +52,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 		type = getType(this.data, p.use),
 		isRealArray = type === 'array' && isArray(this.data);
 
-	if ({'iterator': true, 'generator': true}[type]) {
+	if (invalidTypes[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
