@@ -193,8 +193,7 @@ export function isStream(obj) {
 		obj &&
 		typeof obj.pipe === 'function' &&
 		typeof obj.read === 'function' &&
-		typeof obj.on === 'function' &&
-		typeof obj.once === 'function' &&
+		typeof obj.addListener === 'function' &&
 		typeof obj.removeListener === 'function'
 	);
 }

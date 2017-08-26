@@ -98,9 +98,12 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		}
 
 		const
-			cursor = data;
+			cursor = data,
+			on = `add${isIDBRequest ? 'Event' : ''}Listener`,
+			off = `remove${isIDBRequest ? 'Event' : ''}Listener`,
+			dataEvent = isStream ? 'data' : 'success';
 
-		cursor.on('error', (err) => {
+		cursor[on]('error', (err) => {
 			if (data.onError) {
 				data.onError(err);
 
@@ -113,7 +116,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			hasEnded = false;
 
 		if (isStream) {
-			cursor.on('end', () => hasEnded = true);
+			cursor[on]('end', () => hasEnded = true);
 		}
 
 		data = {
@@ -125,12 +128,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				return {
 					done: false,
 					value: new Promise((resolve, reject) => {
-						const
-							dataEvent = isStream ? 'data' : 'success';
-
-						isStream && cursor.addEventListener('end', end);
-						cursor.addEventListener(dataEvent, data);
-						cursor.addEventListener('error', end);
+						isStream && cursor[on]('end', end);
+						cursor[on](dataEvent, data);
+						cursor[on]('error', end);
 
 						function data(data) {
 							clear();
@@ -163,9 +163,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 						}
 
 						function clear() {
-							isStream && cursor.removeListener('end', end);
-							cursor.removeListener('error', error);
-							cursor.removeListener(dataEvent, data);
+							isStream && cursor[off]('end', end);
+							cursor[off]('error', error);
+							cursor[off](dataEvent, data);
 						}
 					})
 				};
