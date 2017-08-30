@@ -42,7 +42,7 @@ if (_links.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 					_core2.default.ready = true;
 				}
 			}
-		} catch (ignore) {}
+		} catch (_) {}
 	} else if (_hacks.IS_NODE) {
 		try {
 			const cache = require(require('path').join(__dirname, 'collection.tmp.js'));
@@ -51,7 +51,7 @@ if (_links.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 				cache['exec']();
 				_core2.default.cache.str = cache['cache'];
 			}
-		} catch (ignore) {} finally {
+		} catch (_) {} finally {
 			_core2.default.ready = true;
 		}
 	}
