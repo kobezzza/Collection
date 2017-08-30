@@ -162,76 +162,72 @@ export function compileCycle(key, p) {
 				raceStore = new Set();
 
 			childResult = [];
+			function waitFactory(store, max, promise) {
+				function end(err) {
+					parallelI && parallelI--;
+					ctx.thread.pause && ctx.next();
+				}
+
+				if (promise) {
+					parallelI++;
+
+					if (parallelI >= max) {
+						ctx.yield();
+					}
+
+					waitFactory(store, promise).then(end, function (err) {
+						if (err && err.type === 'CollectionThreadDestroy') {
+							end();
+						}
+					});
+
+					return promise;
+				}
+
+				if (!isPromise(promise = max)) {
+					promise = typeof promise.next === 'function' ? promise.next() : promise();
+				}
+
+				ctx.child(promise);
+				store.add(promise);
+
+				promise.then(
+					function (res) {
+						if (store.has(promise)) {
+							childResult.push(res);
+							store.delete(promise);
+						}
+
+						if (waiting) {
+							ctx.next();
+						}
+					}, 
+
+					function (err) {
+						if (err && err.type === 'CollectionThreadDestroy') {
+							store.delete(promise);
+							return;
+						}
+
+						onError(err);
+					}
+				);
+
+				return promise;
+			}
 		`;
 	}
 
 	iFn += ws`
-		function waitFactory(store, max, promise) {
-			if (${!isAsync}) {
-				return false;
-			}
-
-			function end(err) {
-				parallelI && parallelI--;
-				ctx.thread.pause && ctx.next();
-			}
-
-			if (promise) {
-				parallelI++;
-
-				if (parallelI >= max) {
-					ctx.yield();
-				}
-
-				waitFactory(store, promise).then(end, function (err) {
-					if (err && err.type === 'CollectionThreadDestroy') {
-						end();
-					}
-				});
-
-				return promise;
-			}
-
-			if (!isPromise(promise = max)) {
-				promise = typeof promise.next === 'function' ? promise.next() : promise();
-			}
-
-			ctx.child(promise);
-			store.add(promise);
-
-			promise.then(
-				function (res) {
-					if (store.has(promise)) {
-						childResult.push(res);
-						store.delete(promise);
-					}
-
-					if (waiting) {
-						ctx.next();
-					}
-				}, 
-
-				function (err) {
-					if (err && err.type === 'CollectionThreadDestroy') {
-						store.delete(promise);
-						return;
-					}
-
-					onError(err);
-				}
-			);
-
-			return promise;
-		}
-
 		var ctx = {
 			$: $,
 			info: info,
-			childResult: childResult,
-			onError: onError,
 
 			true: TRUE,
 			false: FALSE,
+
+			childResult: childResult,
+			onError: onError,
 
 			get result() {
 				return p.result;
@@ -287,7 +283,9 @@ export function compileCycle(key, p) {
 				waitFactory(raceStore, promise).then(function () {
 					if (raceI < max) {
 						raceI++;
+
 						if (raceI === max) {
+							raceI = 0;
 							raceStore.clear();
 						}
 					}
@@ -297,6 +295,10 @@ export function compileCycle(key, p) {
 			},
 
 			wait: function (max, promise) {
+				if (${!isAsync}) {
+					return false;
+				}
+
 				return waitFactory(waitStore, max, promise);
 			},
 
