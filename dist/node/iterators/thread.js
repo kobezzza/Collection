@@ -161,7 +161,7 @@ _core.Collection.prototype._addToStack = function (obj, priority, onError, opt_o
 
 		try {
 			obj.throw(err);
-		} catch (ignore) {}
+		} catch (_) {}
 
 		onError(err);
 		return err;

@@ -18,7 +18,7 @@ var _gcc = require('../helpers/gcc');
 const IS_NODE = exports.IS_NODE = (() => {
 	try {
 		return typeof process === 'object' && {}.toString.call(process) === '[object process]';
-	} catch (ignore) {
+	} catch (_) {
 		return false;
 	}
 })();
@@ -35,7 +35,7 @@ const LOCAL_STORAGE_SUPPORT = exports.LOCAL_STORAGE_SUPPORT = !IS_NODE && (() =>
 		localStorage.setItem(mod, mod);
 		localStorage.removeItem(mod);
 		return true;
-	} catch (ignore) {
+	} catch (_) {
 		return false;
 	}
 })();

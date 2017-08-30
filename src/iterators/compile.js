@@ -169,8 +169,8 @@ export function compileCycle(key, p) {
 			resultOfWait: resultOfWait,
 			onError: onError,
 
-			TRUE: TRUE,
-			FALSE: FALSE,
+			true: TRUE,
+			false: FALSE,
 
 			get result() {
 				return p.result;

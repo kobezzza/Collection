@@ -21,13 +21,13 @@ $$Collection.prototype.VERSION;
 
 /**
  * @typedef {{
- *   TRUE,
- *   FALSE,
+ *   true,
+ *   false,
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
- *   onError: (function(?)|undefined),
  *   resultOfWait: !Array,
+ *   onError: (function(?)|undefined),
  *   yield: function(?): boolean,
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
@@ -45,13 +45,13 @@ var $$CollectionCtx;
 
 /**
  * @typedef {{
- *   TRUE,
- *   FALSE,
+ *   true,
+ *   false,
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
- *   onError: (function(?)|undefined),
  *   resultOfWait: !Array,
+ *   onError: (function(?)|undefined),
  *   yield: function(?): boolean,
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
@@ -70,12 +70,6 @@ var $$CollectionCbCtx;
 
 /** @type {?} */
 var IGNORE;
-
-/** @type {?} */
-var TRUE;
-
-/** @type {?} */
-var FALSE;
 
 /** @type {?} */
 var $;

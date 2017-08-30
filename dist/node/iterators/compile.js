@@ -100,7 +100,7 @@ function compileCycle(key, p) {
 		var
 			limit = 1,
 			looper = 0,
-			waitResult;
+			resultOfWait;
 
 		var
 			length,
@@ -153,7 +153,7 @@ function compileCycle(key, p) {
 				wait = new Set(),
 				waiting = false;
 
-			waitResult = [];
+			resultOfWait = [];
 		`;
 	}
 
@@ -161,11 +161,11 @@ function compileCycle(key, p) {
 		var ctx = {
 			$: $,
 			info: info,
-			waitResult: waitResult,
+			resultOfWait: resultOfWait,
 			onError: onError,
 
-			TRUE: TRUE,
-			FALSE: FALSE,
+			true: TRUE,
+			false: FALSE,
 
 			get result() {
 				return p.result;
@@ -266,7 +266,7 @@ function compileCycle(key, p) {
 				promise.then(
 					function (res) {
 						if (wait.has(promise)) {
-							waitResult.push(res);
+							resultOfWait.push(res);
 							wait.delete(promise);
 						}
 
@@ -919,7 +919,7 @@ function compileCycle(key, p) {
 						script.src = URL.createObjectURL(new Blob([text], { type: 'application/javascript' }));
 						document.head.appendChild(script);
 					}
-				} catch (ignore) {}
+				} catch (_) {}
 			}, delay);
 		} else if (_hacks.IS_NODE) {
 			clearTimeout(timeout);

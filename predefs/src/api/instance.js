@@ -20,8 +20,8 @@ $$Collection.prototype.VERSION;
 
 /**
  * @typedef {{
- *   TRUE,
- *   FALSE,
+ *   true,
+ *   false,
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
@@ -44,8 +44,8 @@ var $$CollectionCtx;
 
 /**
  * @typedef {{
- *   TRUE,
- *   FALSE,
+ *   true,
+ *   false,
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
@@ -69,12 +69,6 @@ var $$CollectionCbCtx;
 
 /** @type {?} */
 var IGNORE;
-
-/** @type {?} */
-var TRUE;
-
-/** @type {?} */
-var FALSE;
 
 /** @type {?} */
 var $;

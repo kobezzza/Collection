@@ -329,7 +329,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 					try {
 						thread.throw(err);
-					} catch (ignore) {}
+					} catch (_) {}
 
 					reject(err);
 					return err;
