@@ -18,6 +18,8 @@ var _link = require('../helpers/link');
 
 var _base = require('../consts/base');
 
+var _hacks = require('../consts/hacks');
+
 var _thread = require('../consts/thread');
 
 var _compile = require('./compile');
@@ -209,6 +211,8 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		filterArgs = p.filterArgs.length ? p.filterArgs : false;
 	}
 
+	const lengthKey = _hacks.SYMBOL_SUPPORT ? Symbol() : 'value';
+
 	let cbLength;
 	if (cbArgs === false || cbArgs > 3) {
 		const p = (0, _gcc.any)(Object.assign({}, opt_params, {
@@ -220,11 +224,11 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		}));
 
 		cbLength = opt_reset => {
-			if (!cbLength.value || opt_reset) {
-				cbLength.value = this.length(filters, p);
+			if (lengthKey in cbLength === false || opt_reset) {
+				return cbLength[lengthKey] = this.length(filters, p);
 			}
 
-			return cbLength.value;
+			return cbLength[lengthKey];
 		};
 	}
 
@@ -239,11 +243,11 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		}));
 
 		fLength = opt_reset => {
-			if (!fLength.value || opt_reset) {
-				fLength.value = this.length(null, p);
+			if (lengthKey in fLength === false || opt_reset) {
+				return fLength[lengthKey] = this.length(null, p);
 			}
 
-			return fLength.value;
+			return fLength[lengthKey];
 		};
 	}
 

@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 30 Aug 2017 12:29:19 GMT
+ * Date: 'Wed, 30 Aug 2017 13:23:20 GMT
  */
 
 (function (global, factory) {
@@ -1348,6 +1348,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filterArgs = p.filterArgs.length ? p.filterArgs : false;
 	}
 
+	var lengthKey = SYMBOL_SUPPORT ? Symbol() : 'value';
+
 	var cbLength = void 0;
 	if (cbArgs === false || cbArgs > 3) {
 		var _p = any(Object.assign({}, opt_params, {
@@ -1359,11 +1361,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		}));
 
 		cbLength = function (opt_reset) {
-			if (!cbLength.value || opt_reset) {
-				cbLength.value = _this.length(filters, _p);
+			if (lengthKey in cbLength === false || opt_reset) {
+				return cbLength[lengthKey] = _this.length(filters, _p);
 			}
 
-			return cbLength.value;
+			return cbLength[lengthKey];
 		};
 	}
 
@@ -1378,11 +1380,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		}));
 
 		fLength = function (opt_reset) {
-			if (!fLength.value || opt_reset) {
-				fLength.value = _this.length(null, _p2);
+			if (lengthKey in fLength === false || opt_reset) {
+				return fLength[lengthKey] = _this.length(null, _p2);
 			}
 
-			return fLength.value;
+			return fLength[lengthKey];
 		};
 	}
 

@@ -13,6 +13,7 @@ import { tmpCycle } from '../consts/cache';
 import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
 import { slice } from '../helpers/link';
 import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
+import { SYMBOL_SUPPORT } from '../consts/hacks';
 import { PRIORITY } from '../consts/thread';
 import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
@@ -219,6 +220,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		filterArgs = p.filterArgs.length ? p.filterArgs : false;
 	}
 
+	const
+		lengthKey = SYMBOL_SUPPORT ? Symbol() : 'value';
+
 	let cbLength;
 	if (cbArgs === false || cbArgs > 3) {
 		const p = any(Object.assign({}, opt_params, {
@@ -230,11 +234,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		}));
 
 		cbLength = (opt_reset) => {
-			if (!cbLength.value || opt_reset) {
-				cbLength.value = this.length(filters, p);
+			if (lengthKey in cbLength === false || opt_reset) {
+				return cbLength[lengthKey] = this.length(filters, p);
 			}
 
-			return cbLength.value;
+			return cbLength[lengthKey];
 		};
 	}
 
@@ -249,11 +253,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		}));
 
 		fLength = (opt_reset) => {
-			if (!fLength.value || opt_reset) {
-				fLength.value = this.length(null, p);
+			if (lengthKey in fLength === false || opt_reset) {
+				return fLength[lengthKey] = this.length(null, p);
 			}
 
-			return fLength.value;
+			return fLength[lengthKey];
 		};
 	}
 
