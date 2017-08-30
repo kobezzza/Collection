@@ -100,7 +100,7 @@ function compileCycle(key, p) {
 		var
 			limit = 1,
 			looper = 0,
-			resultOfWait;
+			childResult;
 
 		var
 			length,
@@ -155,7 +155,7 @@ function compileCycle(key, p) {
 				wait = new Set(),
 				waiting = false;
 
-			resultOfWait = [];
+			childResult = [];
 		`;
 	}
 
@@ -163,7 +163,7 @@ function compileCycle(key, p) {
 		var ctx = {
 			$: $,
 			info: info,
-			resultOfWait: resultOfWait,
+			childResult: childResult,
 			onError: onError,
 
 			true: TRUE,
@@ -268,7 +268,7 @@ function compileCycle(key, p) {
 				promise.then(
 					function (res) {
 						if (wait.has(promise)) {
-							resultOfWait.push(res);
+							childResult.push(res);
 							wait.delete(promise);
 						}
 

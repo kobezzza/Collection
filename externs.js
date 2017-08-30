@@ -26,7 +26,7 @@ $$Collection.prototype.VERSION;
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
- *   resultOfWait: !Array,
+ *   childResult: !Array,
  *   onError: (function(?)|undefined),
  *   yield: function(?): boolean,
  *   next: function(?): boolean,
@@ -50,7 +50,7 @@ var $$CollectionCtx;
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
- *   resultOfWait: !Array,
+ *   childResult: !Array,
  *   onError: (function(?)|undefined),
  *   yield: function(?): boolean,
  *   next: function(?): boolean,
@@ -81,7 +81,7 @@ var info;
 var onError;
 
 /** @type {?} */
-var resultOfWait;
+var childResult;
 
 /** @type {?} */
 var next;
