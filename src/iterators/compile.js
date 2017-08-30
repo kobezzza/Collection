@@ -122,6 +122,8 @@ export function compileCycle(key, p) {
 			$ = {};
 
 		var info = {
+			filters: filters,
+			mult: ${p.mult},
 			startIndex: ${p.startIndex},
 			endIndex: ${p.endIndex},
 			from: ${p.from},
