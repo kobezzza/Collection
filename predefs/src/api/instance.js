@@ -18,7 +18,8 @@ function $$Collection(collection) {}
 /** @type {!Array<number>} */
 $$Collection.prototype.VERSION;
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   TRUE,
  *   FALSE,
  *   $: !Object,
@@ -41,7 +42,8 @@ $$Collection.prototype.VERSION;
  */
 var $$CollectionCtx;
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   TRUE,
  *   FALSE,
  *   $: !Object,
@@ -122,7 +124,8 @@ var $$CollectionThreadCb;
 /** @typedef {($$CollectionCb|Array<$$CollectionCb>|undefined)} */
 var $$CollectionFilter;
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   filter: $$CollectionFilter,
  *   mult: (?boolean|undefined),
  *   count: (number|number|null|undefined),
@@ -159,7 +162,8 @@ var result;
  */
 $$Collection.prototype.forEach = function (cb, opt_params) {};
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   filter: $$CollectionFilter,
  *   mult: (?boolean|undefined),
  *   count: (number|number|null|undefined),
@@ -227,7 +231,8 @@ var onChunk;
 /** @type {?} */
 var onIterationEnd;
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   filter: $$CollectionFilter,
  *   count: (number|number|null|undefined),
  *   from: (number|number|null|undefined),
@@ -263,7 +268,8 @@ $$Collection.prototype.length = function (opt_filter, opt_params) {};
  */
 $$Collection.prototype.get = function (opt_filter, opt_params) {};
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   filter: $$CollectionFilter,
  *   mult: (?boolean|undefined),
  *   count: (number|number|null|undefined),
@@ -338,7 +344,8 @@ $$Collection.prototype.search = function (opt_filter, opt_params) {};
  */
 $$Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {};
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   useMap: (?boolean|undefined),
  *   saveKeys: (?boolean|undefined),
  *   filter: $$CollectionFilter,
@@ -395,7 +402,8 @@ var $$CollectionSetReport;
 /** @type {?} */
 var newValue;
 
-/** @typedef {{
+/**
+ * @typedef {{
  *   filter: $$CollectionFilter,
  *   create: (?boolean|undefined),
  *   key: ($$CollectionLink|undefined),
