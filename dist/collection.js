@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 30 Aug 2017 09:12:24 GMT
+ * Date: 'Wed, 30 Aug 2017 09:41:40 GMT
  */
 
 (function (global, factory) {
@@ -1349,7 +1349,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	var cbLength = void 0;
-	if (cbArgs && cbArgs > 3) {
+	if (cbArgs === false || cbArgs > 3) {
 		var _p = any(Object.assign({}, opt_params, {
 			onChunk: null,
 			onIterationEnd: null,
@@ -1368,7 +1368,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	var fLength = void 0;
-	if (filterArgs && Math.max.apply(null, any(filterArgs)) > 3) {
+	if (filterArgs === false || Math.max.apply(null, any(filterArgs)) > 3) {
 		var _p2 = any(Object.assign({}, opt_params, {
 			onChunk: null,
 			onIterationEnd: null,

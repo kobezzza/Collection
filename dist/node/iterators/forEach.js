@@ -210,7 +210,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	let cbLength;
-	if (cbArgs && cbArgs > 3) {
+	if (cbArgs === false || cbArgs > 3) {
 		const p = (0, _gcc.any)(Object.assign({}, opt_params, {
 			onChunk: null,
 			onIterationEnd: null,
@@ -229,7 +229,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	let fLength;
-	if (filterArgs && Math.max.apply(null, (0, _gcc.any)(filterArgs)) > 3) {
+	if (filterArgs === false || Math.max.apply(null, (0, _gcc.any)(filterArgs)) > 3) {
 		const p = (0, _gcc.any)(Object.assign({}, opt_params, {
 			onChunk: null,
 			onIterationEnd: null,
