@@ -182,6 +182,10 @@ export function compileCycle(key, p) {
 				p.result = value;
 			},
 
+			get value() {
+				return yieldVal;
+			},
+
 			yield: function (opt_val) {
 				if (${!isAsync}) {
 					return false;
@@ -864,8 +868,7 @@ export function compileCycle(key, p) {
 		if (yielder) {
 			yielder = false;
 			ctx.thread.pause = true;
-			yield yieldVal;
-			yieldVal = undefined;
+			yieldVal = yield yieldVal;
 		}
 	`;
 
