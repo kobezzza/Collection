@@ -122,7 +122,7 @@ export function compileCycle(key, p) {
 			$ = {};
 
 		var info = {
-			filters: filters,
+			filters: filters.slice(0),
 			mult: ${p.mult},
 			startIndex: ${p.startIndex},
 			endIndex: ${p.endIndex},
