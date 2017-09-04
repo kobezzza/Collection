@@ -157,7 +157,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 									resolve(iterator.value);
 									iterator.continue();
 								} else {
-									resolve();
+									resolve(IGNORE);
 								}
 							}
 						}

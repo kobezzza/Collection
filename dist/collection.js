@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 04 Sep 2017 08:03:09 GMT
+ * Date: 'Mon, 04 Sep 2017 08:44:38 GMT
  */
 
 (function (global, factory) {
@@ -1307,7 +1307,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 									resolve(iterator.value);
 									iterator.continue();
 								} else {
-									resolve();
+									resolve(IGNORE);
 								}
 							}
 						}
