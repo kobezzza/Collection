@@ -38,6 +38,10 @@ const mapSet = {
 	'set': true
 };
 
+const TRUE = [],
+      FALSE = [],
+      IGNORE = [];
+
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
@@ -105,8 +109,6 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	const filters = p.filter,
 	      isStream = type === 'stream',
 	      isIDBRequest = type === 'idbRequest';
-
-	const IGNORE = {};
 
 	if (isStream || isIDBRequest) {
 		if (!p.thread) {
@@ -256,6 +258,8 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	const fn = (0, _gcc.any)(_cache.tmpCycle[key] || (0, _compile.compileCycle)(key, p));
 
 	const args = {
+		TRUE,
+		FALSE,
 		IGNORE,
 		data,
 		cb,

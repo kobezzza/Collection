@@ -97,8 +97,9 @@ function compileCycle(key, p) {
 			onError = o.onError;
 
 		var
-			TRUE = [],
-			FALSE = [];
+			TRUE = o.TRUE,
+			FALSE = o.FALSE,
+			IGNORE = o.IGNORE;
 
 		var
 			i = -1,
@@ -477,7 +478,7 @@ function compileCycle(key, p) {
 				yield;
 			}
 
-			if (el === o.IGNORE) {
+			if (el === IGNORE) {
 				continue;
 			}
 
