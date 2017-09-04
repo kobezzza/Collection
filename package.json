@@ -17,7 +17,9 @@
   "bugs": {
     "url": "https://github.com/kobezzza/Collection/issues"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
   "keywords": [
     "javascript",
     "iterators",
@@ -33,7 +35,7 @@
     "closurecompiler-externs": "^1.0.4",
     "coveralls": "^2.11.2",
     "del": "^3.0.0",
-    "eslint": "^4.5.0",
+    "eslint": "^4.6.1",
     "glob": "^7.1.2",
     "gulp": "^3.8.9",
     "gulp-babel": "^7.0.0",

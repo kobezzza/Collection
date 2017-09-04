@@ -8,5 +8,5 @@ node_js:
   - "7"
   - "8"
 
-script: "npm run-script test-travis"
+script: "npm run-script test"
 after_script: "npm install coveralls@2 && cat ./coverage/lcov.info | coveralls"
