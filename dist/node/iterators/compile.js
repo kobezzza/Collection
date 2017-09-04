@@ -111,7 +111,8 @@ function compileCycle(key, p) {
 
 		var
 			limit = 1,
-			looper = 0;
+			looper = 0,
+			childResult;
 
 		var
 			length,
@@ -139,77 +140,29 @@ function compileCycle(key, p) {
 				time = 0;
 
 			var
+				thread = o.self,
 				yielder = false,
 				yieldVal;
+
+			function isPromise(obj) {
+				return typeof Promise === 'function' && obj instanceof Promise;
+			}
+
+			function resolveEl(res) {
+				el = res;
+				thread.next();
+			}
+
+			function resolveCb(res) {
+				r = res;
+				thread.next();
+			}
+
+			function resolveFilter(res) {
+				f = res;
+				thread.next();
+			}
 		`;
-
-		if (needCtx) {
-			iFn += `
-				var
-					parallelI = 0,
-					raceI = 0,
-					waiting = false;
-
-				var
-					waitStore = new Set(),
-					raceStore = new Set(),
-					childResult = [];
-
-				function waitFactory(store, max, promise) {
-					function end(err) {
-						parallelI && parallelI--;
-						ctx.thread.pause && ctx.next();
-					}
-
-					if (promise) {
-						parallelI++;
-
-						if (parallelI >= max) {
-							ctx.yield();
-						}
-
-						waitFactory(store, promise).then(end, function (err) {
-							if (err && err.type === 'CollectionThreadDestroy') {
-								end();
-							}
-						});
-
-						return promise;
-					}
-
-					if (!isPromise(promise = max)) {
-						promise = typeof promise.next === 'function' ? promise.next() : promise();
-					}
-
-					ctx.child(promise);
-					store.add(promise);
-
-					promise.then(
-						function (res) {
-							if (store.has(promise)) {
-								childResult.push(res);
-								store.delete(promise);
-							}
-
-							if (waiting) {
-								ctx.next();
-							}
-						}, 
-
-						function (err) {
-							if (err && err.type === 'CollectionThreadDestroy') {
-								store.delete(promise);
-								return;
-							}
-
-							onError(err);
-						}
-					);
-
-					return promise;
-				}
-			`;
-		}
 	}
 
 	if (needCtx) {
@@ -291,18 +244,77 @@ function compileCycle(key, p) {
 					return FALSE;
 				}
 			};
-
-			var cbCtx = Object.create(ctx);
-			cbCtx.length = o.cbLength;
-
-			var filterCtx = Object.create(ctx);
-			filterCtx.length = o.fLength;
 		`;
-	}
 
-	if (isAsync) {
-		if (needCtx) {
+		if (isAsync) {
 			iFn += _string.ws`
+				ctx.thread = thread;
+				thread.ctx = ctx;
+
+				var
+					parallelI = 0,
+					raceI = 0,
+					waiting = false;
+
+				var
+					waitStore = new Set(),
+					raceStore = new Set();
+
+				childResult = [];
+				function waitFactory(store, max, promise) {
+					function end(err) {
+						parallelI && parallelI--;
+						thread.pause && ctx.next();
+					}
+
+					if (promise) {
+						parallelI++;
+
+						if (parallelI >= max) {
+							ctx.yield();
+						}
+
+						waitFactory(store, promise).then(end, function (err) {
+							if (err && err.type === 'CollectionThreadDestroy') {
+								end();
+							}
+						});
+
+						return promise;
+					}
+
+					if (!isPromise(promise = max)) {
+						promise = typeof promise.next === 'function' ? promise.next() : promise();
+					}
+
+					ctx.child(promise);
+					store.add(promise);
+
+					promise.then(
+						function (res) {
+							if (store.has(promise)) {
+								childResult.push(res);
+								store.delete(promise);
+							}
+
+							if (waiting) {
+								ctx.next();
+							}
+						}, 
+
+						function (err) {
+							if (err && err.type === 'CollectionThreadDestroy') {
+								store.delete(promise);
+								return;
+							}
+
+							onError(err);
+						}
+					);
+
+					return promise;
+				}
+
 				ctx.yield = function () {
 					yielder = true;
 					yieldVal = opt_val;
@@ -310,16 +322,16 @@ function compileCycle(key, p) {
 				};
 
 				ctx.next = function (opt_val) {
-					ctx.thread.next(opt_val);
+					thread.next(opt_val);
 					return true;
 				};
 
-				ctx.child = function (thread) {
-					if (!thread.thread) {
+				ctx.child = function (obj) {
+					if (!obj.thread) {
 						return false;
 					}
 
-					ctx.thread.children.push(thread.thread);
+					thread.children.push(obj.thread);
 					return true;
 				};
 
@@ -351,23 +363,23 @@ function compileCycle(key, p) {
 					ctx.yield();
 					return new Promise(function (resolve, reject) {
 						var
-							sleep = ctx.thread.sleep;
+							sleep = thread.sleep;
 
 						if (sleep != null) {
 							sleep.resume();
 						}
 
-						sleep = ctx.thread.sleep = {
+						sleep = thread.sleep = {
 							resume: function () {
 								clearTimeout(sleep.id);
-								ctx.thread.sleep = null;
+								thread.sleep = null;
 								resolve();
 							},
 
 							id: setTimeout(function () {
 								if (opt_test) {
 									try {
-										ctx.thread.sleep = null;
+										thread.sleep = null;
 										var test = opt_test(ctx);
 
 										if (test) {
@@ -392,56 +404,40 @@ function compileCycle(key, p) {
 					});
 				};
 			`;
+		} else {
+			iFn += _string.ws`
+				ctx.yield = function () {
+					return false;
+				};
+
+				ctx.next = function (opt_val) {
+					return false;
+				};
+
+				ctx.child = function (obj) {
+					return false;
+				};
+
+				ctx.race = function (max, promise) {
+					return false;
+				};
+
+				ctx.wait = function (max, promise) {
+					return false;
+				};
+
+				ctx.sleep = function (time, opt_test, opt_interval) {
+					return false;
+				};
+			`;
 		}
 
 		iFn += _string.ws`
-			function isPromise(obj) {
-				return typeof Promise === 'function' && obj instanceof Promise;
-			}
+			var cbCtx = Object.create(ctx);
+			cbCtx.length = o.cbLength;
 
-			function resolveEl(res) {
-				el = res;
-				ctx.next();
-			}
-
-			function resolveCb(res) {
-				r = res;
-				ctx.next();
-			}
-
-			function resolveFilter(res) {
-				f = res;
-				ctx.next();
-			}
-
-			ctx.thread = o.self;
-			ctx.thread.ctx = ctx;
-		`;
-	} else if (needCtx) {
-		iFn += _string.ws`
-			ctx.yield = function () {
-				return false;
-			};
-
-			ctx.next = function (opt_val) {
-				return false;
-			};
-
-			ctx.child = function (thread) {
-				return false;
-			};
-
-			ctx.race = function (max, promise) {
-				return false;
-			};
-
-			ctx.wait = function (max, promise) {
-				return false;
-			};
-
-			ctx.sleep = function (time, opt_test, opt_interval) {
-				return false;
-			};
+			var filterCtx = Object.create(ctx);
+			filterCtx.length = o.fLength;
 		`;
 	}
 
@@ -465,7 +461,7 @@ function compileCycle(key, p) {
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
 
-			if (time > priority[ctx.thread.priority]) {
+			if (time > priority[thread.priority]) {
 				yield;
 				time = 0;
 				timeStart = null;
@@ -477,7 +473,7 @@ function compileCycle(key, p) {
 		getEl = _string.ws`
 			while (isPromise(el)) {
 				el = el.then(resolveEl, onError);
-				ctx.thread.pause = true;
+				thread.pause = true;
 				yield;
 			}
 
@@ -800,7 +796,7 @@ function compileCycle(key, p) {
 				iFn += _string.ws`
 					while (isPromise(f)) {
 						f.then(resolveFilter, onError);
-						ctx.thread.pause = true;
+						thread.pause = true;
 						yield;
 					}
 				`;
@@ -826,7 +822,7 @@ function compileCycle(key, p) {
 		tmp += _string.ws`
 			while (isPromise(r)) {
 				r.then(resolveCb, onError);
-				ctx.thread.pause = true;
+				thread.pause = true;
 				yield;
 			}
 		`;
@@ -856,7 +852,7 @@ function compileCycle(key, p) {
 	const yielder = _string.ws`
 		if (yielder) {
 			yielder = false;
-			ctx.thread.pause = true;
+			thread.pause = true;
 			yieldVal = yield yieldVal;
 		}
 	`;
@@ -900,16 +896,16 @@ function compileCycle(key, p) {
 	}
 
 	iFn += '}';
-	if (isAsync) {
+	if (isAsync && needCtx) {
 		iFn += _string.ws`
 			waiting = true;
 			while (waitStore.size) {
-				ctx.thread.pause = true;
+				thread.pause = true;
 				yield;
 			}
 
 			while (raceStore.size) {
-				ctx.thread.pause = true;
+				thread.pause = true;
 				yield;
 			}
 		`;
