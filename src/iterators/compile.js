@@ -97,7 +97,8 @@ export function compileCycle(key, p) {
 			data = o.data,
 			cb = o.cb,
 			filters = o.filters,
-			priority = o.priority;
+			priority = o.priority,
+			IGNORE = o.ignore;
 
 		var
 			onIterationEnd = o.onIterationEnd,
@@ -487,7 +488,7 @@ export function compileCycle(key, p) {
 				yield;
 			}
 
-			if (el === o.IGNORE) {
+			if (el === IGNORE) {
 				continue;
 			}
 
