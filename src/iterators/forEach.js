@@ -277,10 +277,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		p.inverseFilter,
 		p.reverse,
 		p.mult,
-		p.count,
-		p.from,
-		p.startIndex,
-		p.endIndex
+		Boolean(p.count),
+		Boolean(p.from),
+		Boolean(p.startIndex),
+		p.endIndex !== false
 	].join();
 
 	const
@@ -297,7 +297,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		fLength,
 		priority: PRIORITY,
 		onComplete: p.onComplete,
-		onIterationEnd: p.onIterationEnd
+		onIterationEnd: p.onIterationEnd,
+		count: p.count,
+		from: p.from,
+		startIndex: p.startIndex,
+		endIndex: p.endIndex
 	};
 
 	//#if iterators.thread
