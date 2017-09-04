@@ -71,6 +71,12 @@ var $$CollectionCtx;
 var $$CollectionCbCtx;
 
 /** @type {?} */
+var TRUE;
+
+/** @type {?} */
+var FALSE;
+
+/** @type {?} */
 var IGNORE;
 
 /** @type {?} */
