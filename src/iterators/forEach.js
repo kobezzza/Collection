@@ -159,7 +159,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 									iterator.continue();
 
 								} else {
-									resolve();
+									resolve(IGNORE);
 								}
 							}
 						}
