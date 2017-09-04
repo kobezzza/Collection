@@ -105,8 +105,8 @@ export function compileCycle(key, p) {
 			onError = o.onError;
 
 		var
-			TRUE = {},
-			FALSE = {};
+			TRUE = [],
+			FALSE = [];
 
 		var
 			i = -1,
@@ -132,8 +132,8 @@ export function compileCycle(key, p) {
 			key;
 
 		var
-			slice = [].slice,
-			hasOwnProperty = {}.hasOwnProperty;
+			slice = TRUE.slice,
+			hasOwnProperty = TRUE.hasOwnProperty;
 	`;
 
 	if (p.withDescriptor) {
@@ -148,12 +148,117 @@ export function compileCycle(key, p) {
 				time = 0;
 
 			var
+				thread = o.self,
 				yielder = false,
 				yieldVal;
+
+			function isPromise(obj) {
+				return typeof Promise === 'function' && obj instanceof Promise;
+			}
+
+			function resolveEl(res) {
+				el = res;
+				thread.next();
+			}
+
+			function resolveCb(res) {
+				r = res;
+				thread.next();
+			}
+
+			function resolveFilter(res) {
+				f = res;
+				thread.next();
+			}
+		`;
+	}
+
+	if (needCtx) {
+		iFn += ws`
+			var ctx = {
+				$: {},
+				info: {
+					filters: filters.slice(0),
+					mult: ${p.mult},
+					startIndex: ${p.startIndex},
+					endIndex: ${p.endIndex},
+					from: ${p.from},
+					count: ${p.count},
+					live: ${p.live},
+					reverse: ${p.reverse},
+					withDescriptor: ${p.withDescriptor},
+					notOwn: ${p.notOwn},
+					inverseFilter: ${p.inverseFilter},
+					type: '${p.type}',
+					async: ${p.async},
+					thread: ${p.thread},
+					priority: ${p.thread} && '${p.priority}',
+					length: ${p.length}
+				},
+
+				true: TRUE,
+				false: FALSE,
+
+				childResult: childResult,
+				onError: onError,
+
+				get result() {
+					return p.result;
+				},
+
+				set result(value) {
+					p.result = value;
+				},
+
+				get value() {
+					return yieldVal;
+				},
+
+				jump: function (val) {
+					if (${cantModI}) {
+						return false;
+					}
+
+					var diff = i - n;
+					n = val - 1;
+					i = n + diff;
+
+					return i;
+				},
+
+				i: function (val) {
+					if (val === undefined) {
+						return i;
+					}
+
+					if (${cantModI}) {
+						return false;
+					}
+
+					n += val;
+					i += val;
+
+					return i;
+				},
+
+				get reset() {
+					breaker = true;
+					limit++;
+					return FALSE;
+				},
+
+				get break() {
+					breaker = true;
+					return FALSE;
+				}
+			};
 		`;
 
-		if (needCtx) {
-			iFn += `
+		if (isAsync) {
+			iFn += ws`
+				ctx.thread = thread;
+				thread.ctx = ctx;
+
 				var
 					parallelI = 0,
 					raceI = 0,
@@ -167,7 +272,7 @@ export function compileCycle(key, p) {
 				function waitFactory(store, max, promise) {
 					function end(err) {
 						parallelI && parallelI--;
-						ctx.thread.pause && ctx.next();
+						thread.pause && ctx.next();
 					}
 
 					if (promise) {
@@ -217,85 +322,28 @@ export function compileCycle(key, p) {
 
 					return promise;
 				}
-			`;
-		}
-	}
 
-	if (needCtx) {
-		iFn += ws`
-			var ctx = {
-				$: {},
-				info: {
-					filters: filters.slice(0),
-					mult: ${p.mult},
-					startIndex: ${p.startIndex},
-					endIndex: ${p.endIndex},
-					from: ${p.from},
-					count: ${p.count},
-					live: ${p.live},
-					reverse: ${p.reverse},
-					withDescriptor: ${p.withDescriptor},
-					notOwn: ${p.notOwn},
-					inverseFilter: ${p.inverseFilter},
-					type: '${p.type}',
-					async: ${p.async},
-					thread: ${p.thread},
-					priority: ${p.thread} && '${p.priority}',
-					length: ${p.length}
-				},
-
-				true: TRUE,
-				false: FALSE,
-
-				childResult: childResult,
-				onError: onError,
-
-				get result() {
-					return p.result;
-				},
-
-				set result(value) {
-					p.result = value;
-				},
-
-				get value() {
-					return yieldVal;
-				},
-
-				yield: function (opt_val) {
-					if (${!isAsync}) {
-						return false;
-					}
-
+				ctx.yield = function () {
 					yielder = true;
 					yieldVal = opt_val;
-
 					return true;
-				},
+				};
 
-				next: function (opt_val) {
-					if (${!isAsync}) {
+				ctx.next = function (opt_val) {
+					thread.next(opt_val);
+					return true;
+				};
+
+				ctx.child = function (obj) {
+					if (!obj.thread) {
 						return false;
 					}
 
-					ctx.thread.next(opt_val);
+					thread.children.push(obj.thread);
 					return true;
-				},
+				};
 
-				child: function (thread) {
-					if (${!isAsync} || !thread.thread) {
-						return false;
-					}
-
-					ctx.thread.children.push(thread.thread);
-					return true;
-				},
-
-				race: function (max, promise) {
-					if (${!isAsync}) {
-						return false;
-					}
-
+				ctx.race = function (max, promise) {
 					if (!promise) {
 						promise = max;
 						max = 1;
@@ -313,41 +361,33 @@ export function compileCycle(key, p) {
 					});
 
 					return promise;
-				},
+				};
 
-				wait: function (max, promise) {
-					if (${!isAsync}) {
-						return false;
-					}
-
+				ctx.wait = function (max, promise) {
 					return waitFactory(waitStore, max, promise);
-				},
+				};
 
-				sleep: function (time, opt_test, opt_interval) {
-					if (${!isAsync}) {
-						return false;
-					}
-
+				ctx.sleep = function (time, opt_test, opt_interval) {
 					ctx.yield();
 					return new Promise(function (resolve, reject) {
 						var
-							sleep = ctx.thread.sleep;
+							sleep = thread.sleep;
 
 						if (sleep != null) {
 							sleep.resume();
 						}
 
-						sleep = ctx.thread.sleep = {
+						sleep = thread.sleep = {
 							resume: function () {
 								clearTimeout(sleep.id);
-								ctx.thread.sleep = null;
+								thread.sleep = null;
 								resolve();
 							},
 
 							id: setTimeout(function () {
 								if (opt_test) {
 									try {
-										ctx.thread.sleep = null;
+										thread.sleep = null;
 										var test = opt_test(ctx);
 
 										if (test) {
@@ -370,78 +410,43 @@ export function compileCycle(key, p) {
 							}, time)
 						};
 					});
-				},
+				};
+			`;
 
-				jump: function (val) {
-					if (${cantModI}) {
-						return false;
-					}
+		} else {
+			iFn += ws`
+				ctx.yield = function () {
+					return false;
+				};
 
-					var diff = i - n;
-					n = val - 1;
-					i = n + diff;
+				ctx.next = function (opt_val) {
+					return false;
+				};
 
-					return i;
-				},
+				ctx.child = function (obj) {
+					return false;
+				};
 
-				i: function (val) {
-					if (val === undefined) {
-						return i;
-					}
+				ctx.race = function (max, promise) {
+					return false;
+				};
 
-					if (${cantModI}) {
-						return false;
-					}
+				ctx.wait = function (max, promise) {
+					return false;
+				};
 
-					n += val;
-					i += val;
+				ctx.sleep = function (time, opt_test, opt_interval) {
+					return false;
+				};
+			`;
+		}
 
-					return i;
-				},
-
-				get reset() {
-					breaker = true;
-					limit++;
-					return FALSE;
-				},
-
-				get break() {
-					breaker = true;
-					return FALSE;
-				}
-			};
-
+		iFn += ws`
 			var cbCtx = Object.create(ctx);
 			cbCtx.length = o.cbLength;
 
 			var filterCtx = Object.create(ctx);
 			filterCtx.length = o.fLength;
-		`;
-	}
-
-	if (isAsync) {
-		iFn += ws`
-			function isPromise(obj) {
-				return typeof Promise === 'function' && obj instanceof Promise;
-			}
-
-			function resolveEl(res) {
-				el = res;
-				ctx.next();
-			}
-
-			function resolveCb(res) {
-				r = res;
-				ctx.next();
-			}
-
-			function resolveFilter(res) {
-				f = res;
-				ctx.next();
-			}
-
-			ctx.thread = o.self;
-			ctx.thread.ctx = ctx;
 		`;
 	}
 
@@ -466,7 +471,7 @@ export function compileCycle(key, p) {
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
 
-			if (time > priority[ctx.thread.priority]) {
+			if (time > priority[thread.priority]) {
 				yield;
 				time = 0;
 				timeStart = null;
@@ -478,7 +483,7 @@ export function compileCycle(key, p) {
 		getEl = ws`
 			while (isPromise(el)) {
 				el = el.then(resolveEl, onError);
-				ctx.thread.pause = true;
+				thread.pause = true;
 				yield;
 			}
 
@@ -819,7 +824,7 @@ export function compileCycle(key, p) {
 				iFn += ws`
 					while (isPromise(f)) {
 						f.then(resolveFilter, onError);
-						ctx.thread.pause = true;
+						thread.pause = true;
 						yield;
 					}
 				`;
@@ -846,7 +851,7 @@ export function compileCycle(key, p) {
 		tmp += ws`
 			while (isPromise(r)) {
 				r.then(resolveCb, onError);
-				ctx.thread.pause = true;
+				thread.pause = true;
 				yield;
 			}
 		`;
@@ -877,7 +882,7 @@ export function compileCycle(key, p) {
 	const yielder = ws`
 		if (yielder) {
 			yielder = false;
-			ctx.thread.pause = true;
+			thread.pause = true;
 			yieldVal = yield yieldVal;
 		}
 	`;
@@ -925,12 +930,12 @@ export function compileCycle(key, p) {
 		iFn += ws`
 			waiting = true;
 			while (waitStore.size) {
-				ctx.thread.pause = true;
+				thread.pause = true;
 				yield;
 			}
 
 			while (raceStore.size) {
-				ctx.thread.pause = true;
+				thread.pause = true;
 				yield;
 			}
 		`;
