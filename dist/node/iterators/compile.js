@@ -92,7 +92,7 @@ function compileCycle(key, p) {
 			count = o.count,
 			from = o.from,
 			startIndex = o.startIndex || 0,
-			endIndex = o.endIndex !== false ? p.endIndex + 1 : 0;
+			endIndex = o.endIndex !== false ? o.endIndex + 1 : 0;
 
 		var
 			onIterationEnd = o.onIterationEnd,
