@@ -123,10 +123,6 @@ function compileCycle(key, p) {
 		var
 			el,
 			key;
-
-		var
-			slice = TRUE.slice,
-			hasOwnProperty = TRUE.hasOwnProperty;
 	`;
 
 	if (p.withDescriptor) {
@@ -497,7 +493,8 @@ function compileCycle(key, p) {
 			iFn += _string.ws`
 				var
 					clone = data,
-					dLength = data.length - 1;
+					dLength = data.length - 1,
+					slice = IGNORE.slice;
 			`;
 
 			if (p.reverse) {
@@ -558,7 +555,11 @@ function compileCycle(key, p) {
 			break;
 
 		case 'object':
-			iFn += 'var selfHasOwn = data.hasOwnProperty;';
+			iFn += _string.ws`
+				var
+					selfHasOwn = data.hasOwnProperty,
+					hasOwnProperty = IGNORE.hasOwnProperty;
+			`;
 
 			if (p.reverse || _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
 				iFn += 'var tmpArray;';
