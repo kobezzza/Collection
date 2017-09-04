@@ -406,27 +406,7 @@ function compileCycle(key, p) {
 			`;
 		} else {
 			iFn += _string.ws`
-				ctx.yield = function () {
-					return false;
-				};
-
-				ctx.next = function (opt_val) {
-					return false;
-				};
-
-				ctx.child = function (obj) {
-					return false;
-				};
-
-				ctx.race = function (max, promise) {
-					return false;
-				};
-
-				ctx.wait = function (max, promise) {
-					return false;
-				};
-
-				ctx.sleep = function (time, opt_test, opt_interval) {
+				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = function () {
 					return false;
 				};
 			`;
