@@ -926,7 +926,7 @@ export function compileCycle(key, p) {
 	}
 
 	iFn += '}';
-	if (isAsync) {
+	if (isAsync && needCtx) {
 		iFn += ws`
 			waiting = true;
 			while (waitStore.size) {
