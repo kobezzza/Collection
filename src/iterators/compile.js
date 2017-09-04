@@ -105,8 +105,8 @@ export function compileCycle(key, p) {
 			onError = o.onError;
 
 		var
-			TRUE = [],
-			FALSE = [],
+			TRUE = o.TRUE,
+			FALSE = o.FALSE,
 			IGNORE = o.IGNORE;
 
 		var
