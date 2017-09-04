@@ -253,7 +253,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		};
 	}
 
-	const key = [type, cbArgs, filters.length, filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, p.count, p.from, p.startIndex, p.endIndex].join();
+	const key = [type, cbArgs, filters.length, filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false].join();
 
 	const fn = (0, _gcc.any)(_cache.tmpCycle[key] || (0, _compile.compileCycle)(key, p));
 
@@ -268,7 +268,11 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		fLength,
 		priority: _thread.PRIORITY,
 		onComplete: p.onComplete,
-		onIterationEnd: p.onIterationEnd
+		onIterationEnd: p.onIterationEnd,
+		count: p.count,
+		from: p.from,
+		startIndex: p.startIndex,
+		endIndex: p.endIndex
 	};
 
 	//#if iterators.thread

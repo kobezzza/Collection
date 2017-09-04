@@ -71,9 +71,6 @@ function compileCycle(key, p) {
 
 	const cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT);
 
-	const startIndex = p.startIndex || 0,
-	      endIndex = p.endIndex !== false ? p.endIndex + 1 : 0;
-
 	const cbArgs = cbArgsList.slice(0, p.length ? p.cbArgs : cbArgsList.length),
 	      filterArgs = [];
 
@@ -90,6 +87,12 @@ function compileCycle(key, p) {
 			cb = o.cb,
 			filters = o.filters,
 			priority = o.priority;
+
+		var
+			count = o.count,
+			from = o.from,
+			startIndex = o.startIndex || 0,
+			endIndex = o.endIndex !== false ? p.endIndex + 1 : 0;
 
 		var
 			onIterationEnd = o.onIterationEnd,
@@ -169,10 +172,10 @@ function compileCycle(key, p) {
 				info: {
 					filters: filters.slice(0),
 					mult: ${p.mult},
-					startIndex: ${p.startIndex},
-					endIndex: ${p.endIndex},
-					from: ${p.from},
-					count: ${p.count},
+					startIndex: startIndex,
+					endIndex: endIndex,
+					from: from,
+					count: count,
 					live: ${p.live},
 					reverse: ${p.reverse},
 					withDescriptor: ${p.withDescriptor},
@@ -438,10 +441,6 @@ function compileCycle(key, p) {
 		`;
 	}
 
-	if (p.from) {
-		iFn += `var from = ${p.from};`;
-	}
-
 	let threadStart = '',
 	    threadEnd = '',
 	    getEl = '';
@@ -501,29 +500,29 @@ function compileCycle(key, p) {
 				iFn += 'clone = slice.call(clone).reverse();';
 			}
 
-			if ((p.reverse || !p.live) && (startIndex || endIndex)) {
+			if ((p.reverse || !p.live) && (p.startIndex || p.endIndex)) {
 				iFn += _string.ws`
-					clone = slice.call(clone, ${startIndex}, ${endIndex || 'data.length'});
+					clone = slice.call(clone, startIndex, endIndex || data.length);
 				`;
 			}
 
 			if (!p.reverse && p.live) {
 				iFn += _string.ws`
-					for (n = ${startIndex - 1}; ++n < clone.length;) {
+					for (n = startIndex - 1; ++n < clone.length;) {
 						i = n;
 				`;
 
-				if (startIndex) {
+				if (p.startIndex) {
 					iFn += _string.ws`
-						if (n < ${startIndex}) {
+						if (n < startIndex) {
 							continue;
 						}
 					`;
 				}
 
-				if (endIndex) {
+				if (p.endIndex) {
 					iFn += _string.ws`
-						if (n > ${endIndex}) {
+						if (n > endIndex) {
 							break;
 						};
 					`;
@@ -532,14 +531,14 @@ function compileCycle(key, p) {
 				iFn += _string.ws`
 					length = clone.length;
 					for (n = -1; ++n < length;) {
-						i = n + ${startIndex};
+						i = n + startIndex;
 				`;
 			}
 
 			if (defArgs) {
 				if (maxArgsLength > 1) {
-					if (startIndex) {
-						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + ${startIndex + (p.reverse ? ')' : '')};`;
+					if (p.startIndex) {
+						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + startIndex ${p.reverse ? ')' : ''};`;
 					} else {
 						iFn += `key = ${p.reverse ? 'dLength - ' : ''} n;`;
 					}
@@ -610,8 +609,8 @@ function compileCycle(key, p) {
 					iFn += 'tmpArray.reverse();';
 				}
 
-				if (startIndex || endIndex) {
-					iFn += `tmpArray = tmpArray.slice(${startIndex}, ${endIndex || 'tmpArray.length'});`;
+				if (p.startIndex || p.endIndex) {
+					iFn += `tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);`;
 				}
 
 				iFn += _string.ws`
@@ -623,7 +622,7 @@ function compileCycle(key, p) {
 							continue;
 						}
 
-						i = n + ${startIndex};
+						i = n + startIndex;
 				`;
 			} else {
 				iFn += 'for (key in data) {';
@@ -645,17 +644,17 @@ function compileCycle(key, p) {
 					i = n;
 				`;
 
-				if (startIndex) {
+				if (p.startIndex) {
 					iFn += _string.ws`
-						if (n < ${startIndex}) {
+						if (n < startIndex) {
 							continue;
 						}
 					`;
 				}
 
-				if (endIndex) {
+				if (p.endIndex) {
 					iFn += _string.ws`
-						if (n > ${endIndex}) {
+						if (n > endIndex) {
 							break;
 						};
 					`;
@@ -718,15 +717,15 @@ function compileCycle(key, p) {
 					var size = tmpArray.length;
 				`;
 
-				if (startIndex || endIndex) {
-					iFn += `tmpArray = tmpArray.slice(${startIndex}, ${endIndex || 'tmpArray.length'});`;
+				if (p.startIndex || p.endIndex) {
+					iFn += `tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);`;
 				}
 
 				iFn += _string.ws`
 					length = tmpArray.length;
 					for (n = -1; ++n < length;) {
 						${defArgs ? 'key = tmpArray[n];' : ''}
-						i = n + ${startIndex};
+						i = n + startIndex;
 				`;
 			} else {
 				gen();
@@ -739,17 +738,17 @@ function compileCycle(key, p) {
 						i = n;
 				`;
 
-				if (startIndex) {
+				if (p.startIndex) {
 					iFn += _string.ws`
-						if (n < ${startIndex}) {
+						if (n < startIndex) {
 							continue;
 						}
 					`;
 				}
 
-				if (endIndex) {
+				if (p.endIndex) {
 					iFn += _string.ws`
-						if (n > ${endIndex}) {
+						if (n > endIndex) {
 							break;
 						};
 					`;
@@ -780,7 +779,7 @@ function compileCycle(key, p) {
 	iFn += threadStart;
 	if (p.count) {
 		iFn += _string.ws`
-			if (j === ${p.count}) {
+			if (j === count) {
 				break;
 			}
 		`;
