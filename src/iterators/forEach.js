@@ -46,6 +46,7 @@ const
  *   *) [from = 0] - number of skipping successful iterations
  *   *) [startIndex = 0] - number of skipping successful iterations
  *   *) [endIndex] - end iteration position
+ *   *) [reverse] - if true, then the iteration will be from the end
  *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
  *   *) [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
  *   *) [notOwn = false] - iteration type:
