@@ -108,6 +108,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	const
 		filters = p.filter,
+		fCount = filters.length;
+
+	const
 		isStream = type === 'stream',
 		isIDBRequest = type === 'idbRequest';
 
@@ -195,7 +198,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	// Optimization for the length request
-	if (!filters.length && cb[LENGTH_REQUEST]) {
+	if (!fCount && cb[LENGTH_REQUEST]) {
 		if (type === 'array') {
 			cb[LENGTH_REQUEST] = (
 				p.startIndex || p.endIndex !== false ?
@@ -220,7 +223,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		cbArgs = p.cbArgs = cb[FN_LENGTH] || cb.length;
 		p.filterArgs = [];
 
-		for (let i = 0; i < filters.length; i++) {
+		for (let i = 0; i < fCount; i++) {
 			p.filterArgs.push(filters[i][FN_LENGTH] || filters[i].length);
 		}
 
@@ -271,7 +274,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	const key = [
 		type,
 		cbArgs,
-		filters.length,
+		fCount < 5 ? fCount : Boolean(fCount),
 		filterArgs,
 		p.length,
 		p.async,
@@ -340,7 +343,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				};
 			}
 
-			for (let i = 0; i < filters.length; i++) {
+			for (let i = 0; i < fCount; i++) {
 				filters[i] = wrap(filters[i]);
 			}
 
