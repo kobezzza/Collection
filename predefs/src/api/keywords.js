@@ -70,10 +70,7 @@ var fLength;
 var onComplete;
 
 /** @type {?} */
-var on;
-
-/** @type {?} */
-var once;
+var addListener;
 
 /** @type {?} */
 var removeListener;
@@ -86,3 +83,15 @@ var pipe;
 
 /** @type {?} */
 var resume;
+
+/** @type {?} */
+var TRUE;
+
+/** @type {?} */
+var FALSE;
+
+/** @type {?} */
+var IGNORE;
+
+/** @type {?} */
+var notAsync;

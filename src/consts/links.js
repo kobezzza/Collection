@@ -9,4 +9,7 @@
  */
 
 export const
-	GLOBAL = new Function('return this')();
+	GLOBAL = new Function('return this')(),
+	TRUE = [],
+	FALSE = [],
+	IGNORE = [];

@@ -13,11 +13,16 @@ import { tmpCycle } from '../consts/cache';
 import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
 import { slice } from '../helpers/link';
 import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
+import { TRUE, FALSE, IGNORE } from '../consts/links';
 import { SYMBOL_SUPPORT } from '../consts/hacks';
 import { PRIORITY } from '../consts/thread';
 import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
 import './length';
+
+function notAsync() {
+	return false;
+}
 
 const invalidTypes = {
 	'weakMap': true,
@@ -28,15 +33,6 @@ const mapSet = {
 	'map': true,
 	'set': true
 };
-
-function notAsync() {
-	return false;
-}
-
-const
-	TRUE = [],
-	FALSE = [],
-	IGNORE = [];
 
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
