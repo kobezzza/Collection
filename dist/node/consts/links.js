@@ -9,4 +9,7 @@
  */
 
 exports.__esModule = true;
-const GLOBAL = exports.GLOBAL = new Function('return this')();
+const GLOBAL = exports.GLOBAL = new Function('return this')(),
+      TRUE = exports.TRUE = [],
+      FALSE = exports.FALSE = [],
+      IGNORE = exports.IGNORE = [];

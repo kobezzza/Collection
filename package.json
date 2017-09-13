@@ -3,7 +3,7 @@
   "description": "Minimalistic JavaScript library for working with collections of data.",
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "collection.js",
-  "version": "6.0.7",
+  "version": "6.0.8",
   "license": "MIT",
   "author": {
     "name": "kobezzza",
@@ -30,6 +30,7 @@
   "devDependencies": {
     "async": "^2.5.0",
     "babel-core": "^6.26.0",
+    "babel-plugin-transform-remove-strict-mode": "0.0.2",
     "babel-preset-es2015-rollup": "^3.0.0",
     "bower": "^1.7.9",
     "closurecompiler-externs": "^1.0.4",
@@ -49,7 +50,7 @@
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.6.0",
-    "gulp-rollup": "^2.14.0",
+    "gulp-rollup": "^2.15.0",
     "gulp-run": "^1.6.7",
     "gulp-wrap": "^0.13.0",
     "istanbul": "^0.4.2",
@@ -58,6 +59,6 @@
     "rollup-plugin-babel": "^3.0.0",
     "sugar": "^2.0.0",
     "through2": "^2.0.0",
-    "yaspeller": "^3.3.0"
+    "yaspeller": "^4.0.0"
   }
 }

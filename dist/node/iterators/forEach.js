@@ -18,6 +18,8 @@ var _link = require('../helpers/link');
 
 var _base = require('../consts/base');
 
+var _links = require('../consts/links');
+
 var _hacks = require('../consts/hacks');
 
 var _thread = require('../consts/thread');
@@ -28,6 +30,10 @@ var _gcc = require('../helpers/gcc');
 
 require('./length');
 
+function notAsync() {
+	return false;
+}
+
 const invalidTypes = {
 	'weakMap': true,
 	'weakSet': true
@@ -37,10 +43,6 @@ const mapSet = {
 	'map': true,
 	'set': true
 };
-
-const TRUE = [],
-      FALSE = [],
-      IGNORE = [];
 
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
@@ -54,6 +56,7 @@ const TRUE = [],
  *   *) [from = 0] - number of skipping successful iterations
  *   *) [startIndex = 0] - number of skipping successful iterations
  *   *) [endIndex] - end iteration position
+ *   *) [reverse] - if true, then the iteration will be from the end
  *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
  *   *) [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
  *   *) [notOwn = false] - iteration type:
@@ -107,7 +110,9 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	const filters = p.filter,
-	      isStream = type === 'stream',
+	      fCount = filters.length;
+
+	const isStream = type === 'stream',
 	      isIDBRequest = type === 'idbRequest';
 
 	if (isStream || isIDBRequest) {
@@ -159,14 +164,14 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 									resolve(iterator.value);
 									iterator.continue();
 								} else {
-									resolve(IGNORE);
+									resolve(_links.IGNORE);
 								}
 							}
 						}
 
 						function end() {
 							clear();
-							resolve(IGNORE);
+							resolve(_links.IGNORE);
 						}
 
 						function error(err) {
@@ -188,7 +193,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	// Optimization for the length request
-	if (!filters.length && cb[_base.LENGTH_REQUEST]) {
+	if (!fCount && cb[_base.LENGTH_REQUEST]) {
 		if (type === 'array') {
 			cb[_base.LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? _link.slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
 
@@ -206,7 +211,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		cbArgs = p.cbArgs = cb[_base.FN_LENGTH] || cb.length;
 		p.filterArgs = [];
 
-		for (let i = 0; i < filters.length; i++) {
+		for (let i = 0; i < fCount; i++) {
 			p.filterArgs.push(filters[i][_base.FN_LENGTH] || filters[i].length);
 		}
 
@@ -253,14 +258,15 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		};
 	}
 
-	const key = [type, cbArgs, filters.length, filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false].join();
+	const key = [type, cbArgs, fCount < 5 ? fCount : Boolean(fCount), filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false].join();
 
 	const fn = (0, _gcc.any)(_cache.tmpCycle[key] || (0, _compile.compileCycle)(key, p));
 
 	const args = {
-		TRUE,
-		FALSE,
-		IGNORE,
+		TRUE: _links.TRUE,
+		FALSE: _links.FALSE,
+		IGNORE: _links.IGNORE,
+		notAsync,
 		data,
 		cb,
 		cbLength,
@@ -303,7 +309,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 				};
 			}
 
-			for (let i = 0; i < filters.length; i++) {
+			for (let i = 0; i < fCount; i++) {
 				filters[i] = wrap(filters[i]);
 			}
 
