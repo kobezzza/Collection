@@ -29,6 +29,10 @@ const mapSet = {
 	'set': true
 };
 
+function notAsync() {
+	return false;
+}
+
 const
 	TRUE = [],
 	FALSE = [],
@@ -291,6 +295,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		TRUE,
 		FALSE,
 		IGNORE,
+		notAsync,
 		data,
 		cb,
 		cbLength,

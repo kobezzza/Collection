@@ -80,13 +80,14 @@ export function compileCycle(key, p) {
 		cbArgs = cbArgsList.slice(0, p.length ? p.cbArgs : cbArgsList.length),
 		filterArgs = [];
 
-	for (let i = 0; i < p.filter.length; i++) {
-		filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
-	}
-
 	const
 		maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
-		needCtx = maxArgsLength > 3;
+		needCtx = maxArgsLength > 3,
+		fLength = p.filter.length;
+
+	for (let i = 0; i < fLength; i++) {
+		filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
+	}
 
 	let iFn = ws`
 		var 
@@ -114,7 +115,8 @@ export function compileCycle(key, p) {
 		var
 			i = -1,
 			j = 0,
-			n = -1;
+			n = -1,
+			fI = -1;
 
 		var
 			breaker = false,
@@ -126,6 +128,7 @@ export function compileCycle(key, p) {
 			childResult;
 
 		var
+			fLength = filters.length,
 			length,
 			f,
 			r;
@@ -414,9 +417,7 @@ export function compileCycle(key, p) {
 
 		} else {
 			iFn += ws`
-				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = function () {
-					return false;
-				};
+				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = o.notAsync;
 			`;
 		}
 
@@ -793,11 +794,34 @@ export function compileCycle(key, p) {
 	}
 
 	iFn += getEl;
-	if (p.filter.length) {
-		for (let i = 0; i < p.filter.length; i++) {
+	if (fLength) {
+		if (fLength < 5) {
+			for (let i = 0; i < fLength; i++) {
+				iFn += ws`
+					if (f === undefined || f === true) {
+						f = filters[${i}](${filterArgs[i]});
+				`;
+
+				if (isAsync) {
+					iFn += ws`
+						while (isPromise(f)) {
+							f.then(resolveFilter, onError);
+							thread.pause = true;
+							yield;
+						}
+					`;
+				}
+
+				iFn += ws`
+						f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
+					}
+				`;
+			}
+
+		} else {
 			iFn += ws`
-				if (f === undefined || f === true) {
-					f = filters[${i}](${filterArgs[i]});
+				for (fI = -1; ++fI < fLength;) {
+					f = filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)});
 			`;
 
 			if (isAsync) {
@@ -812,6 +836,9 @@ export function compileCycle(key, p) {
 
 			iFn += ws`
 					f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
+					if (!f) {
+						break;
+					}
 				}
 			`;
 		}
@@ -855,7 +882,7 @@ export function compileCycle(key, p) {
 		iFn += tmp;
 	}
 
-	if (p.filter.length) {
+	if (fLength) {
 		iFn += '}';
 	}
 
@@ -881,7 +908,7 @@ export function compileCycle(key, p) {
 		`;
 	}
 
-	if (p.filter.length) {
+	if (fLength) {
 		iFn += 'f = undefined;';
 	}
 
