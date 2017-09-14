@@ -43,14 +43,14 @@ const cbArgsList = [
 	'el',
 	'key',
 	'data',
-	'cbCtx'
+	'ctx'
 ];
 
 const filterArgsList = [
 	'el',
 	'key',
 	'data',
-	'filterCtx'
+	'fCtx'
 ];
 
 const mapSet = {
@@ -201,6 +201,7 @@ export function compileCycle(key, p) {
 				true: TRUE,
 				false: FALSE,
 
+				length: o.cbLength,
 				childResult: childResult,
 				onError: onError,
 
@@ -254,6 +255,9 @@ export function compileCycle(key, p) {
 					return FALSE;
 				}
 			};
+
+			var fCtx = Object.create(ctx);
+			fCtx.length = o.fLength;
 		`;
 
 		if (isAsync) {
@@ -420,14 +424,6 @@ export function compileCycle(key, p) {
 				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = o.notAsync;
 			`;
 		}
-
-		iFn += ws`
-			var cbCtx = Object.create(ctx);
-			cbCtx.length = o.cbLength;
-
-			var filterCtx = Object.create(ctx);
-			filterCtx.length = o.fLength;
-		`;
 	}
 
 	let
