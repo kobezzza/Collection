@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 14 Sep 2017 08:02:31 GMT
+ * Date: 'Thu, 14 Sep 2017 08:09:36 GMT
  */
 
 (function (global, factory) {

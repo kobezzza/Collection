@@ -38,36 +38,11 @@ $$Collection.prototype.VERSION;
  *   i: function(number): (number|boolean),
  *   reset: boolean,
  *   break: boolean,
- *   thread: (!Generator|undefined)
- * }}
- */
-var $$CollectionCtx;
-
-/**
- * @typedef {{
- *   true,
- *   false,
- *   $: !Object,
- *   info: !Object,
- *   result: ?,
- *   childResult: !Array,
- *   onError: (function(?)|undefined),
- *   value: ?,
- *   yield: function(?): boolean,
- *   next: function(?): boolean,
- *   child: function(!Promise): boolean,
- *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
- *   race: function((number|!Promise), !Promise=): !Promise,
- *   wait: function((number|!Promise), !Promise=): !Promise,
- *   jump: function(number): (number|boolean),
- *   i: function(number): (number|boolean),
- *   reset: boolean,
- *   break: boolean,
  *   thread: (!Generator|undefined),
  *   length: function(?boolean=): number
  * }}
  */
-var $$CollectionCbCtx;
+var $$CollectionCtx;
 
 /** @type {?} */
 var $;
@@ -108,7 +83,7 @@ var thread;
 /** @type {?} */
 var length;
 
-/** @typedef {function(?, ?, !Object, $$CollectionCbCtx): ?} */
+/** @typedef {function(?, ?, !Object, $$CollectionCtx): ?} */
 var $$CollectionCb;
 
 /** @typedef {function($$CollectionCtx): ?} */
@@ -296,7 +271,7 @@ var initial;
  */
 $$Collection.prototype.map = function (cb, opt_params) {};
 
-/** @typedef {function(?, ?, ?, !Object, $$CollectionCbCtx): ?} */
+/** @typedef {function(?, ?, ?, !Object, $$CollectionCtx): ?} */
 var $$CollectionReduceCb;
 
 /**
