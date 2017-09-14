@@ -49,9 +49,9 @@ function returnCache(cache) {
 	return text;
 }
 
-const cbArgsList = ['el', 'key', 'data', 'cbCtx'];
+const cbArgsList = ['el', 'key', 'data', 'ctx'];
 
-const filterArgsList = ['el', 'key', 'data', 'filterCtx'];
+const filterArgsList = ['el', 'key', 'data', 'fCtx'];
 
 const mapSet = {
 	'map': true,
@@ -194,6 +194,7 @@ function compileCycle(key, p) {
 				true: TRUE,
 				false: FALSE,
 
+				length: o.cbLength,
 				childResult: childResult,
 				onError: onError,
 
@@ -247,6 +248,9 @@ function compileCycle(key, p) {
 					return FALSE;
 				}
 			};
+
+			var fCtx = Object.create(ctx);
+			fCtx.length = o.fLength;
 		`;
 
 		if (isAsync) {
@@ -412,14 +416,6 @@ function compileCycle(key, p) {
 				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = o.notAsync;
 			`;
 		}
-
-		iFn += _string.ws`
-			var cbCtx = Object.create(ctx);
-			cbCtx.length = o.cbLength;
-
-			var filterCtx = Object.create(ctx);
-			filterCtx.length = o.fLength;
-		`;
 	}
 
 	let threadStart = '',
