@@ -995,7 +995,7 @@ declare const $C: {
 	extend<T, A>(
 		deepOrParams: boolean | CollectionJS.ExtendParams<T>,
 		target?: T,
-		...source: any[]
+		...source: A[]
 	): T & A;
 
 	clone(source: any): any;
