@@ -232,10 +232,10 @@ declare namespace CollectionJS {
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<Object | Map> & ThreadObj;
+		): Promise<Object | Map<any, any>> & ThreadObj;
 
 		extend(
-			deepOrParams: boolean | ExtendParams,
+			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
 		): Promise<T> & ThreadObj;
 
@@ -326,10 +326,10 @@ declare namespace CollectionJS {
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<Object | Map> & ThreadObj;
+		): Promise<Object | Map<any, any>> & ThreadObj;
 
 		extend(
-			deepOrParams: boolean | ExtendParams,
+			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
 		): Promise<T> & ThreadObj;
 
@@ -418,10 +418,10 @@ declare namespace CollectionJS {
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Object | Map | Promise<Object | Map> & ThreadObj;
+		): Object | Map<any, any> | Promise<Object | Map<any, any>> & ThreadObj;
 
 		extend(
-			deepOrParams: boolean | ExtendParams,
+			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
 		): T | Promise<T> & ThreadObj;
 
@@ -513,10 +513,10 @@ declare namespace CollectionJS {
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Object | Map | Promise<Object | Map> & ThreadObj;
+		): Object | Map<any, any> | Promise<Object | Map<any, any>> & ThreadObj;
 
 		extend(
-			deepOrParams: boolean | ExtendParams,
+			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
 		): T | Promise<T> & ThreadObj;
 
@@ -528,7 +528,7 @@ declare const $C: {
 	<T>(collection: T): CollectionJS.Collection<T>;
 
 	extend: <T>(
-		deepOrParams: boolean | CollectionJS.ExtendParams,
+		deepOrParams: boolean | CollectionJS.ExtendParams<T>,
 		target?: T,
 		...source: any[]
 	) => T | Promise<T> & CollectionJS.ThreadObj
