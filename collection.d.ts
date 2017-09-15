@@ -986,11 +986,17 @@ declare namespace CollectionJS {
 declare const $C: {
 	<T>(collection: T): CollectionJS.Collection<T>;
 
-	extend<T>(
+	extend<T, A>(
+		params: CollectionJS.ExtendParams<T> & CollectionJS.Async,
+		target?: T,
+		...source: A[]
+	): Promise<T & A> & CollectionJS.ThreadObj;
+
+	extend<T, A>(
 		deepOrParams: boolean | CollectionJS.ExtendParams<T>,
 		target?: T,
 		...source: any[]
-	): T | Promise<T> & CollectionJS.ThreadObj
+	): T & A;
 
 	clone(source: any): any;
 	in(link: CollectionJS.Link, target: any): boolean;
