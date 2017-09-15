@@ -69,30 +69,52 @@ declare namespace CollectionJS {
 		info: Info;
 		result: any;
 		childResult: any[];
-		thread: Thread;
 		onError: (err: Error) => void;
-		length(reset?: boolean): number | Promise<number>;
 		i(value?: number): number | false;
 		jump(value: number): number | false;
 		yield(value: any): boolean;
 		next(value: any): boolean;
 		child(thread: Promise<any>): boolean;
-		wait<T>(promise: asyncOperation): Promise<T> | false;
-		wait<T>(max: number, promise: asyncOperation): Promise<T> | false;
-		race<T>(promise: asyncOperation): Promise<T> | false;
-		race<T>(max: number, promise: asyncOperation): Promise<T> | false;
-		sleep(time: number, test?: (ctx: Context) => any, interval?: boolean): Promise<void>;
+	}
+
+	interface AsyncContext extends Context {
+		thread: Thread;
+		length(reset?: boolean): Promise<number>;
+		wait(promise: asyncOperation): Promise<any>;
+		wait(max: number, promise: asyncOperation): Promise<any>;
+		race(promise: asyncOperation): Promise<any>;
+		race(max: number, promise: asyncOperation): Promise<any>;
+		sleep(time: number, test?: (ctx: AsyncContext) => any, interval?: boolean): Promise<void>;
+	}
+
+	interface SyncContext extends Context {
+		length(reset?: boolean): number;
+		wait(promise: asyncOperation): false;
+		wait(max: number, promise: asyncOperation): false;
+		race(promise: asyncOperation): false;
+		race(max: number, promise: asyncOperation): false;
+		sleep(time: number, test?: (ctx: SyncContext) => any, interval?: boolean): false;
 	}
 
 	interface Callback<T> {
-		(item: any, index: any, collection: T, context: Context): any;
+		(item: any, index: any, collection: T, context: SyncContext): any;
+	}
+
+	interface AsyncCallback<T> {
+		(item: any, index: any, collection: T, context: AsyncContext): any;
 	}
 
 	interface EventCallback {
-		(context: Context): any;
+		(context: SyncContext): any;
+	}
+
+	interface AsyncEventCallback {
+		(context: AsyncContext): any;
 	}
 
 	type Filter<T> = Array<Callback<T>> | Callback<T>;
+	type AsyncFilter<T> = Array<AsyncCallback<T>> | AsyncCallback<T>;
+
 	interface SingleBaseParams<T> {
 		filter?: Filter<T>;
 		count?: number;
@@ -109,7 +131,14 @@ declare namespace CollectionJS {
 		async?: boolean;
 		thread?: boolean;
 		priority?: string;
-		onChunk?: EventCallback;
+		onChunk?: AsyncEventCallback;
+	}
+
+	interface AsyncSingleBaseParams<T> extends SingleCollection<T> {
+		onIterationEnd?: AsyncEventCallback;
+	}
+
+	interface SyncSingleBaseParams<T> extends SingleCollection<T> {
 		onIterationEnd?: EventCallback;
 	}
 
@@ -124,7 +153,11 @@ declare namespace CollectionJS {
 		newValue: any;
 	}
 
-	interface BaseParams<T> extends SingleBaseParams<T> {
+	interface BaseParams<T> extends SyncSingleBaseParams<T> {
+		mult?: boolean;
+	}
+
+	interface AsyncBaseParams<T> extends AsyncSingleBaseParams<T> {
 		mult?: boolean;
 	}
 
@@ -132,7 +165,15 @@ declare namespace CollectionJS {
 		result?: any;
 	}
 
+	interface AsyncForEachParams<T> extends AsyncBaseParams<T> {
+		result?: any;
+	}
+
 	interface MapParams<T> extends BaseParams<T> {
+		initial?: any;
+	}
+
+	interface AsyncMapParams<T> extends AsyncBaseParams<T> {
 		initial?: any;
 	}
 
@@ -140,12 +181,31 @@ declare namespace CollectionJS {
 		create?: boolean;
 	}
 
-	interface GroupParams<T> extends SingleBaseParams<T> {
+	interface AsyncSetParams<T> extends AsyncBaseParams<T> {
+		create?: boolean;
+	}
+
+	interface GroupParams<T> extends SyncSingleBaseParams<T> {
 		useMap?: boolean;
 		saveKeys?: boolean;
 	}
 
-	interface ExtendParams<T> extends SingleBaseParams<T> {
+	interface AsyncGroupParams<T> extends AsyncSingleBaseParams<T> {
+		useMap?: boolean;
+		saveKeys?: boolean;
+	}
+
+	interface ExtendParams<T> extends SyncSingleBaseParams<T> {
+		deep?: boolean,
+		traits?: boolean,
+		withDescriptor?: boolean,
+		withAccessors?: boolean,
+		withProto?: boolean,
+		concatArray?: boolean,
+		concatFn?: (...arrays: any[]) => any[]
+	}
+
+	interface AsyncExtendParams<T> extends AsyncSingleBaseParams<T> {
 		deep?: boolean,
 		traits?: boolean,
 		withDescriptor?: boolean,
@@ -161,7 +221,17 @@ declare namespace CollectionJS {
 			item: any,
 			index: any,
 			collection: T,
-			context: Context
+			context: SyncContext
+		): boolean | any;
+	}
+
+	interface AsyncReduceCallback<T> {
+		(
+			result: any,
+			item: any,
+			index: any,
+			collection: T,
+			context: AsyncContext
 		): boolean | any;
 	}
 
@@ -174,110 +244,110 @@ declare namespace CollectionJS {
 		reverse: SingleAsyncCollection<T>;
 
 		thread(
-			priority?: string | EventCallback,
-			onChunk?: EventCallback
+			priority?: string | AsyncEventCallback,
+			onChunk?: AsyncEventCallback
 		): SingleAsyncCollection<T>;
 
-		filter(...filters: Array<Filter<T>>): SingleAsyncCollection<T>;
+		filter(...filters: Array<AsyncFilter<T>>): SingleAsyncCollection<T>;
 		start(value: number): SingleAsyncCollection<T>;
 		end(value: number): SingleAsyncCollection<T>;
 		from(value: number): SingleAsyncCollection<T>;
 		object(notOwn: boolean | -1): SingleAsyncCollection<T>;
 
 		forEach(
-			cb: Callback<T>,
-			params?: ForEachParams<T>
+			cb: AsyncCallback<T>,
+			params?: AsyncForEachParams<T>
 		): Promise<SingleAsyncCollection<T>> & ThreadObj;
 
 		length(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncSingleBaseParams<T>,
+			params?: AsyncSingleBaseParams<T>
 		): Promise<number> & ThreadObj;
 
 		map(
-			cb?: Callback<T> | MapParams<T>,
-			filterOrParams?: Filter<T> | MapParams<T>
+			cb?: AsyncCallback<T> | AsyncMapParams<T>,
+			filterOrParams?: AsyncFilter<T> | AsyncMapParams<T>
 		): Promise<T> & ThreadObj;
 
 		reduce<A>(
-			cb: ReduceCallback<T>,
+			cb: AsyncReduceCallback<T>,
 			initialValue?: A,
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncBaseParams<T>,
+			params?: AsyncBaseParams<T>
 		): Promise<A> & ThreadObj;
 
 		get(
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncBaseParams<T>,
+			params?: AsyncBaseParams<T>
 		): Promise<any> & ThreadObj;
 
-		set(
-			value: any,
-			filterOrParams?: Filter<T> | SetParams<T>,
-			params?: SetParams<T>
-		): Promise<SetReport> & ThreadObj;
-
-		remove(
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
-		): Promise<Report> & ThreadObj;
-
 		get(
-			filterOrParams?: Link,
-			params?: BaseParams<T>
+			link?: Link,
+			params?: AsyncBaseParams<T>
 		): any;
 
 		set(
 			value: any,
-			filterOrParams?: Link,
+			filterOrParams?: AsyncFilter<T> | AsyncSetParams<T>,
+			params?: AsyncSetParams<T>
+		): Promise<SetReport> & ThreadObj;
+
+		set(
+			value: any,
+			link?: Link,
 			params?: SetParams<T>
 		): SetReport;
 
 		remove(
-			filterOrParams?: Link,
+			filterOrParams?: AsyncFilter<T> | AsyncBaseParams<T>,
+			params?: AsyncBaseParams<T>
+		): Promise<Report> & ThreadObj;
+
+		remove(
+			link?: Link,
 			params?: BaseParams<T>
 		): Report;
 
 		search(
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncBaseParams<T>,
+			params?: AsyncBaseParams<T>
 		): Promise<any> & ThreadObj;
 
 		includes(
 			searchElement: any,
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncSingleBaseParams<T>,
+			params?: AsyncSingleBaseParams<T>
 		): Promise<boolean> & ThreadObj;
 
 		every(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncSingleBaseParams<T>,
+			params?: AsyncSingleBaseParams<T>
 		): Promise<boolean> & ThreadObj;
 
 		some(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncSingleBaseParams<T>,
+			params?: AsyncSingleBaseParams<T>
 		): Promise<boolean> & ThreadObj;
 
 		group(
 			field: any,
-			params: GroupParams<T> & {useMap: true}
+			params: AsyncGroupParams<T> & {useMap: true}
 		): Promise<Map<any, any>> & ThreadObj;
 
 		group(
 			field: any,
-			filter: Filter<T>,
-			params: GroupParams<T> & {useMap: true}
+			filter: AsyncFilter<T>,
+			params: AsyncGroupParams<T> & {useMap: true}
 		): Promise<Map<any, any>> & ThreadObj;
 
 		group(
 			field: any,
-			filter: Filter<T>,
-			params: GroupParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncGroupParams<T>
 		): Promise<Object> & ThreadObj;
 
 		extend(
-			deepOrParams: boolean | ExtendParams<T>,
+			deepOrParams: boolean | AsyncExtendParams<T>,
 			...source: any[]
 		): Promise<T> & ThreadObj;
 
@@ -294,11 +364,11 @@ declare namespace CollectionJS {
 		reverse: AsyncCollection<T>;
 
 		thread(
-			priority?: string | EventCallback,
-			onChunk?: EventCallback
+			priority?: string | AsyncEventCallback,
+			onChunk?: AsyncEventCallback
 		): AsyncCollection<T>;
 
-		filter(...filters: Array<Filter<T>>): AsyncCollection<T>;
+		filter(...filters: Array<AsyncFilter<T>>): AsyncCollection<T>;
 		start(value: number): AsyncCollection<T>;
 		end(value: number): AsyncCollection<T>;
 		count(value: number): AsyncCollection<T>;
@@ -306,99 +376,137 @@ declare namespace CollectionJS {
 		object(notOwn: boolean | -1): AsyncCollection<T>;
 
 		forEach(
-			cb: Callback<T>,
-			params?: ForEachParams<T>
+			cb: AsyncCallback<T>,
+			params?: AsyncForEachParams<T>
 		): Promise<AsyncCollection<T>> & ThreadObj;
 
 		length(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncSingleBaseParams<T>,
+			params?: AsyncSingleBaseParams<T>
 		): Promise<number> & ThreadObj;
 
 		map(
-			cb?: Callback<T> | MapParams<T>,
-			filterOrParams?: Filter<T> | MapParams<T>
+			cb?: AsyncCallback<T> | AsyncMapParams<T>,
+			filterOrParams?: AsyncFilter<T> | AsyncMapParams<T>
 		): Promise<T> & ThreadObj;
 
 		reduce<A>(
-			cb: ReduceCallback<T>,
+			cb: AsyncReduceCallback<T>,
 			initialValue?: A,
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncBaseParams<T>,
+			params?: AsyncBaseParams<T>
 		): Promise<A> & ThreadObj;
 
 		get(
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
-		): Promise<any | any[]> & ThreadObj;
-
-		set(
-			value: any,
-			filterOrParams?: Filter<T> | SetParams<T>,
-			params?: SetParams<T>
-		): Promise<SetReport | SetReport[]> & ThreadObj;
-
-		remove(
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
-		): Promise<Report | Report[]> & ThreadObj;
+			params: AsyncBaseParams<T> & Single
+		): Promise<any> & ThreadObj;
 
 		get(
-			filterOrParams?: Link,
-			params?: BaseParams<T>
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Single
+		): Promise<any> & ThreadObj;
+
+		get(
+			filterOrParams?: AsyncFilter<T> | AsyncBaseParams<T>,
+			params?: AsyncBaseParams<T>
+		): Promise<any[]> & ThreadObj;
+
+		get(
+			link?: Link,
+			params?: AsyncBaseParams<T>
 		): any;
 
 		set(
 			value: any,
-			filterOrParams?: Link,
-			params?: SetParams<T>
+			params: AsyncSetParams<T> & Single
+		): Promise<SetReport> & ThreadObj;
+
+		set(
+			value: any,
+			filter: AsyncFilter<T>,
+			params: AsyncSetParams<T> & Single
+		): Promise<SetReport> & ThreadObj;
+
+		set(
+			value: any,
+			filterOrParams?: AsyncFilter<T> | AsyncSetParams<T>,
+			params?: AsyncSetParams<T>
+		): Promise<SetReport[]> & ThreadObj;
+
+		set(
+			value: any,
+			link?: Link,
+			params?: AsyncSetParams<T>
 		): SetReport;
 
 		remove(
-			filterOrParams?: Link,
-			params?: BaseParams<T>
+			params: AsyncBaseParams<T> & Single
+		): Promise<Report> & ThreadObj;
+
+		remove(
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Single
+		): Promise<Report> & ThreadObj;
+
+		remove(
+			filterOrParams?: AsyncFilter<T> | AsyncBaseParams<T>,
+			params?: AsyncBaseParams<T>
+		): Promise<Report[]> & ThreadObj;
+
+		remove(
+			link?: Link,
+			params?: AsyncBaseParams<T>
 		): Report;
 
 		search(
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
-		): Promise<any | any[]> & ThreadObj;
+			params: AsyncBaseParams<T> & Single
+		): Promise<any> & ThreadObj;
+
+		search(
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Single
+		): Promise<any> & ThreadObj;
+
+		search(
+			filterOrParams?: AsyncFilter<T> | AsyncBaseParams<T>,
+			params?: AsyncBaseParams<T>
+		): Promise<any[]> & ThreadObj;
 
 		includes(
 			searchElement: any,
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncSingleBaseParams<T>,
+			params?: AsyncSingleBaseParams<T>
 		): Promise<boolean> & ThreadObj;
 
 		every(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncSingleBaseParams<T>,
+			params?: AsyncSingleBaseParams<T>
 		): Promise<boolean> & ThreadObj;
 
 		some(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: AsyncFilter<T> | AsyncSingleBaseParams<T>,
+			params?: AsyncSingleBaseParams<T>
 		): Promise<boolean> & ThreadObj;
 
 		group(
 			field: any,
-			params: GroupParams<T> & {useMap: true}
+			params: AsyncGroupParams<T> & {useMap: true}
 		): Promise<Map<any, any>> & ThreadObj;
 
 		group(
 			field: any,
-			filter: Filter<T>,
-			params: GroupParams<T> & {useMap: true}
+			filter: AsyncFilter<T>,
+			params: AsyncGroupParams<T> & {useMap: true}
 		): Promise<Map<any, any>> & ThreadObj;
 
 		group(
 			field: any,
-			filter: Filter<T>,
-			params: GroupParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncGroupParams<T> & Async
 		): Promise<Object> & ThreadObj;
 
 		extend(
-			deepOrParams: boolean | ExtendParams<T>,
+			deepOrParams: boolean | AsyncExtendParams<T>,
 			...source: any[]
 		): Promise<T> & ThreadObj;
 
@@ -414,19 +522,19 @@ declare namespace CollectionJS {
 		reverse: SingleCollection<T>;
 
 		thread(
-			priority?: string | EventCallback,
-			onChunk?: EventCallback
+			priority?: string | AsyncEventCallback,
+			onChunk?: AsyncEventCallback
 		): SingleCollection<T>;
 
-		filter(...filters: Array<Filter<T>>): SingleCollection<T>;
+		filter(...filters: Array<AsyncFilter<T>>): SingleCollection<T>;
 		start(value: number): SingleCollection<T>;
 		end(value: number): SingleCollection<T>;
 		from(value: number): SingleCollection<T>;
 		object(notOwn: boolean | -1): SingleCollection<T>;
 
 		forEach(
-			cb: Callback<T>,
-			params?: ForEachParams<T> & Async
+			cb: AsyncCallback<T>,
+			params?: AsyncForEachParams<T> & Async
 		): Promise<Collection<T>> & ThreadObj;
 
 		forEach(
@@ -435,26 +543,26 @@ declare namespace CollectionJS {
 		): Collection<T>;
 
 		length(
-			params: SingleBaseParams<T> & Async
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<number> & ThreadObj;
 
 		length(
-			filter: Filter<T>,
-			params: SingleBaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<number> & ThreadObj;
 
 		length(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
+			filterOrParams?: Filter<T> | SyncSingleBaseParams<T>,
 			params?: SingleBaseParams<T>
 		): number;
 
 		map(
-			params: MapParams<T> & Async
+			params: AsyncMapParams<T> & Async
 		): Promise<T> & ThreadObj;
 
 		map(
-			cb: Callback<T>,
-			params: MapParams<T> & Async
+			cb: AsyncCallback<T>,
+			params: AsyncMapParams<T> & Async
 		): Promise<T> & ThreadObj;
 
 		map(
@@ -463,16 +571,16 @@ declare namespace CollectionJS {
 		): T;
 
 		reduce<A>(
-			cb: ReduceCallback<T>,
+			cb: AsyncReduceCallback<T>,
 			initialValue: A,
-			params: BaseParams<T> & Async
+			params: AsyncBaseParams<T> & Async
 		): Promise<A> & ThreadObj;
 
 		reduce<A>(
-			cb: ReduceCallback<T>,
+			cb: AsyncReduceCallback<T>,
 			initialValue: A,
-			filter: Filter<T>,
-			params: BaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Async
 		): Promise<A> & ThreadObj;
 
 		reduce<A>(
@@ -483,12 +591,12 @@ declare namespace CollectionJS {
 		): A;
 
 		get(
-			params: BaseParams<T> & Async
+			params: AsyncBaseParams<T> & Async
 		): Promise<any> & ThreadObj;
 
 		get(
-			filter: Filter<T>,
-			params: BaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Async
 		): Promise<any> & ThreadObj;
 
 		get(
@@ -503,13 +611,13 @@ declare namespace CollectionJS {
 
 		set(
 			value: any,
-			params: SetParams<T> & Async
+			params: AsyncSetParams<T> & Async
 		): Promise<SetReport> & ThreadObj;
 
 		set(
 			value: any,
-			filter: Filter<T>,
-			params: SetParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSetParams<T> & Async
 		): Promise<SetReport> & ThreadObj;
 
 		set(
@@ -525,12 +633,12 @@ declare namespace CollectionJS {
 		): SetReport;
 
 		remove(
-			params: BaseParams<T> & Async
+			params: AsyncBaseParams<T> & Async
 		): Promise<Report> & ThreadObj;
 
 		remove(
-			filter: Filter<T>,
-			params: BaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Async
 		): Promise<Report> & ThreadObj;
 
 		remove(
@@ -544,12 +652,12 @@ declare namespace CollectionJS {
 		): Report;
 
 		search(
-			params: BaseParams<T> & Async
+			params: AsyncBaseParams<T> & Async
 		): Promise<any> & ThreadObj;
 
 		search(
-			filter: Filter<T>,
-			params: BaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Async
 		): Promise<any> & ThreadObj;
 
 		search(
@@ -559,69 +667,69 @@ declare namespace CollectionJS {
 
 		includes(
 			searchElement: any,
-			params: SingleBaseParams<T> & Async
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		includes(
 			searchElement: any,
-			filter: Filter<T>,
-			params: SingleBaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		includes(
 			searchElement: any,
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: Filter<T> | SyncSingleBaseParams<T>,
+			params?: SyncSingleBaseParams<T>
 		): boolean;
 
 		every(
-			params: SingleBaseParams<T> & Async
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		every(
-			filter: Filter<T>,
-			params: SingleBaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		every(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: Filter<T> | SyncSingleBaseParams<T>,
+			params?: SyncSingleBaseParams<T>
 		): boolean;
 
 		some(
-			params: SingleBaseParams<T> & Async
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		some(
-			filter: Filter<T>,
-			params: SingleBaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		some(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: Filter<T> | SyncSingleBaseParams<T>,
+			params?: SyncSingleBaseParams<T>
 		): boolean;
 
 		group(
 			field: any,
-			params: GroupParams<T> & Async & {useMap: true}
+			params: AsyncGroupParams<T> & Async & {useMap: true}
 		): Promise<Map<any, any>> & ThreadObj;
 
 		group(
 			field: any,
-			filter: Filter<T>,
-			params: GroupParams<T> & Async & {useMap: true}
+			filter: AsyncFilter<T>,
+			params: AsyncGroupParams<T> & Async & {useMap: true}
 		): Promise<Map<any, any>> & ThreadObj;
 
 		group(
 			field: any,
-			params: GroupParams<T> & Async
+			params: AsyncGroupParams<T> & Async
 		): Promise<Object> & ThreadObj;
 
 		group(
 			field: any,
-			filter: Filter<T>,
-			params: GroupParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncGroupParams<T> & Async
 		): Promise<Object> & ThreadObj;
 
 		group(
@@ -638,11 +746,11 @@ declare namespace CollectionJS {
 		group(
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
-			params?: SingleBaseParams<T>
+			params?: GroupParams<T>
 		): Object;
 
 		extend(
-			params: ExtendParams<T> & Async,
+			params: AsyncExtendParams<T> & Async,
 			...source: any[]
 		): Promise<T> & ThreadObj;
 
@@ -665,11 +773,11 @@ declare namespace CollectionJS {
 		async: AsyncCollection<T>;
 
 		thread(
-			priority?: string | EventCallback,
-			onChunk?: EventCallback
+			priority?: string | AsyncEventCallback,
+			onChunk?: AsyncEventCallback
 		): AsyncCollection<T>;
 
-		filter(...filters: Array<Filter<T>>): Collection<T>;
+		filter(...filters: Array<AsyncFilter<T>>): Collection<T>;
 		start(value: number): Collection<T>;
 		end(value: number): Collection<T>;
 		count(value: number): Collection<T>;
@@ -677,8 +785,8 @@ declare namespace CollectionJS {
 		object(notOwn: boolean | -1): Collection<T>;
 
 		forEach(
-			cb: Callback<T>,
-			params?: ForEachParams<T> & Async
+			cb: AsyncCallback<T>,
+			params?: AsyncForEachParams<T> & Async
 		): Promise<Collection<T>> & ThreadObj;
 
 		forEach(
@@ -687,12 +795,12 @@ declare namespace CollectionJS {
 		): Collection<T>;
 
 		length(
-			params: SingleBaseParams<T> & Async
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<number> & ThreadObj;
 
 		length(
-			filter: Filter<T>,
-			params: SingleBaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<number> & ThreadObj;
 
 		length(
@@ -701,12 +809,12 @@ declare namespace CollectionJS {
 		): number;
 
 		map(
-			params: MapParams<T> & Async
+			params: AsyncMapParams<T> & Async
 		): Promise<T> & ThreadObj;
 
 		map(
-			cb: Callback<T>,
-			params: MapParams<T> & Async
+			cb: AsyncCallback<T>,
+			params: AsyncMapParams<T> & Async
 		): Promise<T> & ThreadObj;
 
 		map(
@@ -715,16 +823,16 @@ declare namespace CollectionJS {
 		): T;
 
 		reduce<A>(
-			cb: ReduceCallback<T>,
+			cb: AsyncReduceCallback<T>,
 			initialValue: A,
-			params: BaseParams<T> & Async
+			params: AsyncBaseParams<T> & Async
 		): Promise<A> & ThreadObj;
 
 		reduce<A>(
-			cb: ReduceCallback<T>,
+			cb: AsyncReduceCallback<T>,
 			initialValue: A,
-			filter: Filter<T>,
-			params: BaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Async
 		): Promise<A> & ThreadObj;
 
 		reduce<A>(
@@ -735,21 +843,21 @@ declare namespace CollectionJS {
 		): A;
 
 		get(
-			params: BaseParams<T> & SingleAsync
+			params: AsyncBaseParams<T> & SingleAsync
 		): Promise<any> & ThreadObj;
 
 		get(
-			filter: Filter<T>,
-			params: BaseParams<T> & SingleAsync
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & SingleAsync
 		): Promise<any> & ThreadObj;
 
 		get(
-			params: BaseParams<T> & Async
+			params: AsyncBaseParams<T> & Async
 		): Promise<any[]> & ThreadObj;
 
 		get(
-			filter: Filter<T>,
-			params: BaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Async
 		): Promise<any[]> & ThreadObj;
 
 		get(
@@ -773,24 +881,24 @@ declare namespace CollectionJS {
 
 		set(
 			value: any,
-			params: SetParams<T> & SingleAsync
+			params: AsyncSetParams<T> & SingleAsync
 		): Promise<SetReport> & ThreadObj;
 
 		set(
 			value: any,
-			filter: Filter<T>,
-			params: SetParams<T> & SingleAsync
+			filter: AsyncFilter<T>,
+			params: AsyncSetParams<T> & SingleAsync
 		): Promise<SetReport> & ThreadObj;
 
 		set(
 			value: any,
-			params: SetParams<T> & Async
+			params: AsyncSetParams<T> & Async
 		): Promise<SetReport[]> & ThreadObj;
 
 		set(
 			value: any,
-			filter: Filter<T>,
-			params: SetParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSetParams<T> & Async
 		): Promise<SetReport[]> & ThreadObj;
 
 		set(
@@ -817,21 +925,21 @@ declare namespace CollectionJS {
 		): SetReport;
 
 		remove(
-			params: BaseParams<T> & SingleAsync
+			params: AsyncBaseParams<T> & SingleAsync
 		): Promise<Report> & ThreadObj;
 
 		remove(
-			filter: Filter<T>,
-			params: BaseParams<T> & SingleAsync
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & SingleAsync
 		): Promise<Report> & ThreadObj;
 
 		remove(
-			params: BaseParams<T> & Async
+			params: AsyncBaseParams<T> & Async
 		): Promise<Report[]> & ThreadObj;
 
 		remove(
-			filter: Filter<T>,
-			params: BaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Async
 		): Promise<Report[]> & ThreadObj;
 
 		remove(
@@ -854,21 +962,21 @@ declare namespace CollectionJS {
 		): Report;
 
 		search(
-			params: BaseParams<T> & SingleAsync
+			params: AsyncBaseParams<T> & SingleAsync
 		): Promise<any> & ThreadObj;
 
 		search(
-			filter: Filter<T>,
-			params: BaseParams<T> & SingleAsync
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & SingleAsync
 		): Promise<any> & ThreadObj;
 
 		search(
-			params: BaseParams<T> & Async
+			params: AsyncBaseParams<T> & Async
 		): Promise<any[]> & ThreadObj;
 
 		search(
-			filter: Filter<T>,
-			params: BaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncBaseParams<T> & Async
 		): Promise<any[]> & ThreadObj;
 
 		search(
@@ -887,69 +995,69 @@ declare namespace CollectionJS {
 
 		includes(
 			searchElement: any,
-			params: SingleBaseParams<T> & Async
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		includes(
 			searchElement: any,
-			filter: Filter<T>,
-			params: SingleBaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		includes(
 			searchElement: any,
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: Filter<T> | SyncSingleBaseParams<T>,
+			params?: SyncSingleBaseParams<T>
 		): boolean;
 
 		every(
-			params: SingleBaseParams<T> & Async
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		every(
-			filter: Filter<T>,
-			params: SingleBaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		every(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: Filter<T> | SyncSingleBaseParams<T>,
+			params?: SyncSingleBaseParams<T>
 		): boolean;
 
 		some(
-			params: SingleBaseParams<T> & Async
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		some(
-			filter: Filter<T>,
-			params: SingleBaseParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncSingleBaseParams<T> & Async
 		): Promise<boolean> & ThreadObj;
 
 		some(
-			filterOrParams?: Filter<T> | SingleBaseParams<T>,
-			params?: SingleBaseParams<T>
+			filterOrParams?: Filter<T> | SyncSingleBaseParams<T>,
+			params?: SyncSingleBaseParams<T>
 		): boolean;
 
 		group(
 			field: any,
-			params: GroupParams<T> & Async & {useMap: true}
+			params: AsyncGroupParams<T> & Async & {useMap: true}
 		): Promise<Map<any, any>> & ThreadObj;
 
 		group(
 			field: any,
-			filter: Filter<T>,
-			params: GroupParams<T> & Async & {useMap: true}
+			filter: AsyncFilter<T>,
+			params: AsyncGroupParams<T> & Async & {useMap: true}
 		): Promise<Map<any, any>> & ThreadObj;
 
 		group(
 			field: any,
-			params: GroupParams<T> & Async
+			params: AsyncGroupParams<T> & Async
 		): Promise<Object> & ThreadObj;
 
 		group(
 			field: any,
-			filter: Filter<T>,
-			params: GroupParams<T> & Async
+			filter: AsyncFilter<T>,
+			params: AsyncGroupParams<T> & Async
 		): Promise<Object> & ThreadObj;
 
 		group(
@@ -966,11 +1074,11 @@ declare namespace CollectionJS {
 		group(
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
-			params?: SingleBaseParams<T>
+			params?: GroupParams<T>
 		): Object;
 
 		extend(
-			params: ExtendParams<T> & Async,
+			params: AsyncExtendParams<T> & Async,
 			...source: any[]
 		): Promise<T> & ThreadObj;
 
@@ -987,7 +1095,7 @@ declare const $C: {
 	<T>(collection: T): CollectionJS.Collection<T>;
 
 	extend<T>(
-		params: CollectionJS.ExtendParams<T> & CollectionJS.Async,
+		params: CollectionJS.AsyncExtendParams<T> & CollectionJS.Async,
 		target?: T,
 		...source: any[]
 	): Promise<T> & CollectionJS.ThreadObj;
