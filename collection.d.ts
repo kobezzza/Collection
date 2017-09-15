@@ -200,20 +200,36 @@ declare namespace CollectionJS {
 		): Promise<any> & ThreadObj;
 
 		get(
-			filterOrParams?: Filter<T> | BaseParams<T> | Link,
+			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
 		): Promise<any> & ThreadObj;
 
 		set(
 			value: any,
-			filterOrParams?: Filter<T> | SetParams<T> | Link,
+			filterOrParams?: Filter<T> | SetParams<T>,
 			params?: SetParams<T>
 		): Promise<SetReport> & ThreadObj;
 
 		remove(
-			filterOrParams?: Filter<T> | BaseParams<T> | Link,
+			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
 		): Promise<Report> & ThreadObj;
+
+		get(
+			filterOrParams?: Link,
+			params?: BaseParams<T>
+		): any;
+
+		set(
+			value: any,
+			filterOrParams?: Link,
+			params?: SetParams<T>
+		): SetReport;
+
+		remove(
+			filterOrParams?: Link,
+			params?: BaseParams<T>
+		): Report;
 
 		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
@@ -294,20 +310,36 @@ declare namespace CollectionJS {
 		): Promise<any> & ThreadObj;
 
 		get(
-			filterOrParams?: Filter<T> | BaseParams<T> | Link,
+			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
 		): Promise<any | any[]> & ThreadObj;
 
 		set(
 			value: any,
-			filterOrParams?: Filter<T> | SetParams<T> | Link,
+			filterOrParams?: Filter<T> | SetParams<T>,
 			params?: SetParams<T>
 		): Promise<SetReport | SetReport[]> & ThreadObj;
 
 		remove(
-			filterOrParams?: Filter<T> | BaseParams<T> | Link,
+			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
 		): Promise<Report | Report[]> & ThreadObj;
+
+		get(
+			filterOrParams?: Link,
+			params?: BaseParams<T>
+		): any;
+
+		set(
+			value: any,
+			filterOrParams?: Link,
+			params?: SetParams<T>
+		): SetReport;
+
+		remove(
+			filterOrParams?: Link,
+			params?: BaseParams<T>
+		): Report;
 
 		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
@@ -386,20 +418,36 @@ declare namespace CollectionJS {
 		): any | Promise<any> & ThreadObj;
 
 		get(
-			filterOrParams?: Filter<T> | BaseParams<T> | Link,
+			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
 		): any | Promise<any> & ThreadObj;
 
 		set(
 			value: any,
-			filterOrParams?: Filter<T> | SetParams<T> | Link,
+			filterOrParams?: Filter<T> | SetParams<T>,
 			params?: SetParams<T>
 		): SetReport | Promise<SetReport> & ThreadObj;
 
 		remove(
-			filterOrParams?: Filter<T> | BaseParams<T> | Link,
+			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
 		): Report | Promise<Report> & ThreadObj;
+
+		get(
+			filterOrParams?: Link,
+			params?: BaseParams<T>
+		): any;
+
+		set(
+			value: any,
+			filterOrParams?: Link,
+			params?: SetParams<T>
+		): SetReport;
+
+		remove(
+			filterOrParams?: Link,
+			params?: BaseParams<T>
+		): Report;
 
 		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
@@ -481,20 +529,36 @@ declare namespace CollectionJS {
 		): any | Promise<any> & ThreadObj;
 
 		get(
-			filterOrParams?: Filter<T> | BaseParams<T> | Link,
+			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
 		): any | any[] | Promise<any | any[]> & ThreadObj;
 
 		set(
 			value: any,
-			filterOrParams?: Filter<T> | SetParams<T> | Link,
+			filterOrParams?: Filter<T> | SetParams<T>,
 			params?: SetParams<T>
 		): SetReport | SetReport[] | Promise<SetReport | SetReport[]> & ThreadObj;
 
 		remove(
-			filterOrParams?: Filter<T> | BaseParams<T> | Link,
+			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
 		): Report | Report[] | Promise<Report | Report[]> & ThreadObj;
+
+		get(
+			filterOrParams?: Link,
+			params?: BaseParams<T>
+		): any;
+
+		set(
+			value: any,
+			filterOrParams?: Link,
+			params?: SetParams<T>
+		): SetReport;
+
+		remove(
+			filterOrParams?: Link,
+			params?: BaseParams<T>
+		): Report;
 
 		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
@@ -535,12 +599,12 @@ declare namespace CollectionJS {
 declare const $C: {
 	<T>(collection: T): CollectionJS.Collection<T>;
 
-	extend: <T>(
+	extend<T>(
 		deepOrParams: boolean | CollectionJS.ExtendParams<T>,
 		target?: T,
 		...source: any[]
-	) => T | Promise<T> & CollectionJS.ThreadObj
+	): T | Promise<T> & CollectionJS.ThreadObj
 
-	clone: (source: any) => any;
-	in: <T>(link: CollectionJS.Link, target: T) => boolean;
+	clone(source: any): any;
+	in(link: CollectionJS.Link, target: any): boolean;
 };
