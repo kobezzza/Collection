@@ -261,14 +261,25 @@ declare namespace CollectionJS {
 
 		group(
 			field: any,
-			filterOrParams?: Filter<T> | GroupParams<T>,
-			params?: SingleBaseParams<T>
-		): Promise<Object | Map<any, any>> & ThreadObj;
+			params: GroupParams<T> & {useMap: true}
+		): Promise<Map<any, any>> & ThreadObj;
 
-		extend(
+		group(
+			field: any,
+			filter: Filter<T>,
+			params: GroupParams<T> & {useMap: true}
+		): Promise<Map<any, any>> & ThreadObj;
+
+		group(
+			field: any,
+			filter: Filter<T>,
+			params: GroupParams<T> & Async
+		): Promise<Object> & ThreadObj;
+
+		extend<A>(
 			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
-		): Promise<T> & ThreadObj;
+		): Promise<T & A> & ThreadObj;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -371,14 +382,25 @@ declare namespace CollectionJS {
 
 		group(
 			field: any,
-			filterOrParams?: Filter<T> | GroupParams<T>,
-			params?: SingleBaseParams<T>
-		): Promise<Object | Map<any, any>> & ThreadObj;
+			params: GroupParams<T> & {useMap: true}
+		): Promise<Map<any, any>> & ThreadObj;
 
-		extend(
+		group(
+			field: any,
+			filter: Filter<T>,
+			params: GroupParams<T> & {useMap: true}
+		): Promise<Map<any, any>> & ThreadObj;
+
+		group(
+			field: any,
+			filter: Filter<T>,
+			params: GroupParams<T> & Async
+		): Promise<Object> & ThreadObj;
+
+		extend<A>(
 			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
-		): Promise<T> & ThreadObj;
+		): Promise<T & A> & ThreadObj;
 
 		link(link: CollectionJS.Link): boolean;
 	}
