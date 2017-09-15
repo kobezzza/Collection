@@ -295,7 +295,7 @@ declare namespace CollectionJS {
 		set(
 			value: any,
 			link?: Link,
-			params?: SetParams<T>
+			params?: AsyncSetParams<T>
 		): SetReport;
 
 		remove(
@@ -305,7 +305,7 @@ declare namespace CollectionJS {
 
 		remove(
 			link?: Link,
-			params?: BaseParams<T>
+			params?: AsyncBaseParams<T>
 		): Report;
 
 		search(
