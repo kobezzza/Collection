@@ -52,6 +52,13 @@ declare namespace CollectionJS {
 		thread: Thread
 	};
 
+	type Single = {
+		mult: false
+	};
+
+	type Async = {async: true} | {thread: true};
+	type SingleAsync = Async & Single;
+
 	interface Context {
 		readonly true: TRUE;
 		readonly false: FALSE;
@@ -188,16 +195,16 @@ declare namespace CollectionJS {
 		): Promise<number> & ThreadObj;
 
 		map(
-			callback?: Callback<T> | MapParams<T>,
+			cb?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
 		): Promise<T> & ThreadObj;
 
-		reduce(
-			callback: ReduceCallback<T>,
-			initialValue?: any,
+		reduce<A>(
+			cb: ReduceCallback<T>,
+			initialValue?: A,
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): Promise<any> & ThreadObj;
+		): Promise<A> & ThreadObj;
 
 		get(
 			filterOrParams?: Filter<T> | BaseParams<T>,
@@ -298,16 +305,16 @@ declare namespace CollectionJS {
 		): Promise<number> & ThreadObj;
 
 		map(
-			callback?: Callback<T> | MapParams<T>,
+			cb?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
 		): Promise<T> & ThreadObj;
 
-		reduce(
-			callback: ReduceCallback<T>,
-			initialValue?: any,
+		reduce<A>(
+			cb: ReduceCallback<T>,
+			initialValue?: A,
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): Promise<any> & ThreadObj;
+		): Promise<A> & ThreadObj;
 
 		get(
 			filterOrParams?: Filter<T> | BaseParams<T>,
@@ -406,16 +413,16 @@ declare namespace CollectionJS {
 		): number | Promise<number> & ThreadObj;
 
 		map(
-			callback?: Callback<T> | MapParams<T>,
+			cb?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
 		): T | Promise<T> & ThreadObj;
 
-		reduce(
-			callback: ReduceCallback<T>,
-			initialValue?: any,
+		reduce<A>(
+			cb: ReduceCallback<T>,
+			initialValue?: A,
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): any | Promise<any> & ThreadObj;
+		): A | Promise<A> & ThreadObj;
 
 		get(
 			filterOrParams?: Filter<T> | BaseParams<T>,
@@ -508,89 +515,306 @@ declare namespace CollectionJS {
 
 		forEach(
 			cb: Callback<T>,
+			params?: ForEachParams<T> & Async
+		): Promise<Collection<T>> & ThreadObj;
+
+		forEach(
+			cb: Callback<T>,
 			params?: ForEachParams<T>
-		): Collection<T> | Promise<Collection<T>> & ThreadObj;
+		): Collection<T>;
+
+		length(
+			params: SingleBaseParams<T> & Async
+		): Promise<number> & ThreadObj;
+
+		length(
+			filter: Filter<T>,
+			params: SingleBaseParams<T> & Async
+		): Promise<number> & ThreadObj;
 
 		length(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): number | Promise<number> & ThreadObj;
+		): number;
 
 		map(
-			callback?: Callback<T> | MapParams<T>,
+			params: MapParams<T> & Async
+		): Promise<T> & ThreadObj;
+
+		map(
+			cb: Callback<T>,
+			params: MapParams<T> & Async
+		): Promise<T> & ThreadObj;
+
+		map(
+			cb?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
-		): T | Promise<T> & ThreadObj;
+		): T;
 
-		reduce(
+		reduce<A>(
+			cb: ReduceCallback<T>,
+			initialValue: A,
+			params: BaseParams<T> & Async
+		): Promise<A> & ThreadObj;
+
+		reduce<A>(
+			cb: ReduceCallback<T>,
+			initialValue: A,
+			filter: Filter<T>,
+			params: BaseParams<T> & Async
+		): Promise<A> & ThreadObj;
+
+		reduce<A>(
 			callback: ReduceCallback<T>,
-			initialValue?: any,
+			initialValue?: A,
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): any | Promise<any> & ThreadObj;
+		): A;
+
+		get(
+			params: BaseParams<T> & SingleAsync
+		): Promise<any> & ThreadObj;
+
+		get(
+			filter: Filter<T>,
+			params: BaseParams<T> & SingleAsync
+		): Promise<any> & ThreadObj;
+
+		get(
+			params: BaseParams<T> & Async
+		): Promise<any[]> & ThreadObj;
+
+		get(
+			filter: Filter<T>,
+			params: BaseParams<T> & Async
+		): Promise<any[]> & ThreadObj;
+
+		get(
+			params: BaseParams<T> & Single
+		): any;
+
+		get(
+			filter: Filter<T>,
+			params: BaseParams<T> & Single
+		): any;
 
 		get(
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): any | any[] | Promise<any | any[]> & ThreadObj;
-
-		set(
-			value: any,
-			filterOrParams?: Filter<T> | SetParams<T>,
-			params?: SetParams<T>
-		): SetReport | SetReport[] | Promise<SetReport | SetReport[]> & ThreadObj;
-
-		remove(
-			filterOrParams?: Filter<T> | BaseParams<T>,
-			params?: BaseParams<T>
-		): Report | Report[] | Promise<Report | Report[]> & ThreadObj;
+		): any[];
 
 		get(
-			filterOrParams?: Link,
+			link?: Link,
 			params?: BaseParams<T>
 		): any;
 
 		set(
 			value: any,
-			filterOrParams?: Link,
+			params: SetParams<T> & SingleAsync
+		): Promise<SetReport> & ThreadObj;
+
+		set(
+			value: any,
+			filter: Filter<T>,
+			params: SetParams<T> & SingleAsync
+		): Promise<SetReport> & ThreadObj;
+
+		set(
+			value: any,
+			params: SetParams<T> & Async
+		): Promise<SetReport[]> & ThreadObj;
+
+		set(
+			value: any,
+			filter: Filter<T>,
+			params: SetParams<T> & Async
+		): Promise<SetReport[]> & ThreadObj;
+
+		set(
+			value: any,
+			params: SetParams<T> & Single
+		): SetReport;
+
+		set(
+			value: any,
+			filter: Filter<T>,
+			params: SetParams<T> & Single
+		): SetReport;
+
+		set(
+			value: any,
+			filterOrParams?: Filter<T> | SetParams<T>,
+			params?: SetParams<T>
+		): SetReport[];
+
+		set(
+			value: any,
+			link?: Link,
 			params?: SetParams<T>
 		): SetReport;
 
 		remove(
-			filterOrParams?: Link,
+			params: BaseParams<T> & SingleAsync
+		): Promise<Report> & ThreadObj;
+
+		remove(
+			filter: Filter<T>,
+			params: BaseParams<T> & SingleAsync
+		): Promise<Report> & ThreadObj;
+
+		remove(
+			params: BaseParams<T> & Async
+		): Promise<Report[]> & ThreadObj;
+
+		remove(
+			filter: Filter<T>,
+			params: BaseParams<T> & Async
+		): Promise<Report[]> & ThreadObj;
+
+		remove(
+			params: BaseParams<T> & Single
+		): Report;
+
+		remove(
+			filter: Filter<T>,
+			params: BaseParams<T> & Single
+		): Report;
+
+		remove(
+			filterOrParams?: Filter<T> | BaseParams<T>,
+			params?: BaseParams<T>
+		): Report[];
+
+		remove(
+			link?: Link,
 			params?: BaseParams<T>
 		): Report;
 
 		search(
+			params: BaseParams<T> & SingleAsync
+		): Promise<any> & ThreadObj;
+
+		search(
+			filter: Filter<T>,
+			params: BaseParams<T> & SingleAsync
+		): Promise<any> & ThreadObj;
+
+		search(
+			params: BaseParams<T> & Async
+		): Promise<any[]> & ThreadObj;
+
+		search(
+			filter: Filter<T>,
+			params: BaseParams<T> & Async
+		): Promise<any[]> & ThreadObj;
+
+		search(
+			params: BaseParams<T> & Single
+		): any;
+
+		search(
+			filter: Filter<T>,
+			params: BaseParams<T> & Single
+		): any;
+
+		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): any | any[] | Promise<any | any[]> & ThreadObj;
+		): any[];
+
+		includes(
+			searchElement: any,
+			params: SingleBaseParams<T> & Async
+		): Promise<boolean> & ThreadObj;
+
+		includes(
+			searchElement: any,
+			filter: Filter<T>,
+			params: SingleBaseParams<T> & Async
+		): Promise<boolean> & ThreadObj;
 
 		includes(
 			searchElement: any,
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean> & ThreadObj;
+		): boolean;
+
+		every(
+			params: SingleBaseParams<T> & Async
+		): Promise<boolean> & ThreadObj;
+
+		every(
+			filter: Filter<T>,
+			params: SingleBaseParams<T> & Async
+		): Promise<boolean> & ThreadObj;
 
 		every(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean> & ThreadObj;
+		): boolean;
+
+		some(
+			params: SingleBaseParams<T> & Async
+		): Promise<boolean> & ThreadObj;
+
+		some(
+			filter: Filter<T>,
+			params: SingleBaseParams<T> & Async
+		): Promise<boolean> & ThreadObj;
 
 		some(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean> & ThreadObj;
+		): boolean;
+
+		group(
+			field: any,
+			params: GroupParams<T> & Async & {useMap: true}
+		): Promise<Map<any, any>> & ThreadObj;
+
+		group(
+			field: any,
+			filter: Filter<T>,
+			params: GroupParams<T> & Async & {useMap: true}
+		): Promise<Map<any, any>> & ThreadObj;
+
+		group(
+			field: any,
+			params: GroupParams<T> & Async
+		): Promise<Object> & ThreadObj;
+
+		group(
+			field: any,
+			filter: Filter<T>,
+			params: GroupParams<T> & Async
+		): Promise<Object> & ThreadObj;
+
+		group(
+			field: any,
+			params: GroupParams<T> & {useMap: true}
+		): Map<any, any>;
+
+		group(
+			field: any,
+			filter: Filter<T>,
+			params: GroupParams<T> & {useMap: true}
+		): Map<any, any>;
 
 		group(
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Object | Map<any, any> | Promise<Object | Map<any, any>> & ThreadObj;
+		): Object;
 
-		extend(
+		extend<A>(
+			params: ExtendParams<T> & Async,
+			...source: A[]
+		): Promise<T & A> & ThreadObj;
+
+		extend<A>(
 			deepOrParams: boolean | ExtendParams<T>,
-			...source: any[]
-		): T | Promise<T> & ThreadObj;
+			...source: A[]
+		): T & A;
 
 		link(link: CollectionJS.Link): boolean;
 	}
