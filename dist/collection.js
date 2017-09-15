@@ -1,11 +1,11 @@
 /*!
- * Collection v6.1.0
+ * Collection v6.1.1
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Fri, 15 Sep 2017 17:10:00 GMT
+ * Date: 'Fri, 15 Sep 2017 17:16:03 GMT
  */
 
 (function (global, factory) {
@@ -379,7 +379,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 1, 0];
+Collection.prototype.VERSION = [6, 1, 1];
 
 /**
  * Creates an instance of Collection

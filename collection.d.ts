@@ -1039,3 +1039,7 @@ declare const $C: {
 	clone(source: any): any;
 	in(link: CollectionJS.Link, target: any): boolean;
 };
+
+declare module 'collection.js' {
+	export = $C;
+}
