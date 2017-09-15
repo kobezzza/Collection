@@ -40,6 +40,10 @@ declare namespace CollectionJS {
 		destroy();
 	}
 
+	type ThreadObj = {
+		thread: Thread
+	};
+
 	interface Context {
 		readonly true: TRUE;
 		readonly false: FALSE;
@@ -168,72 +172,72 @@ declare namespace CollectionJS {
 		forEach(
 			cb: Callback<T>,
 			params?: ForEachParams<T>
-		): Promise<SingleAsyncCollection<T>>;
+		): Promise<SingleAsyncCollection<T>> & ThreadObj;
 
 		length(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<number>;
+		): Promise<number> & ThreadObj;
 
 		map(
 			callback: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
-		): Promise<T>;
+		): Promise<T> & ThreadObj;
 
 		reduce(
 			callback: ReduceCallback<T>,
 			initialValue?: any,
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): Promise<any>;
+		): Promise<any> & ThreadObj;
 
 		get(
 			filterOrParams?: Filter<T> | BaseParams<T> | Link,
 			params?: BaseParams<T>
-		): Promise<any>;
+		): Promise<any> & ThreadObj;
 
 		set(
 			value: any,
 			filterOrParams?: Filter<T> | SetParams<T> | Link,
 			params?: SetParams<T>
-		): Promise<SetReport>;
+		): Promise<SetReport> & ThreadObj;
 
 		remove(
 			filterOrParams?: Filter<T> | BaseParams<T> | Link,
 			params?: BaseParams<T>
-		): Promise<Report>;
+		): Promise<Report> & ThreadObj;
 
 		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): Promise<any>;
+		): Promise<any> & ThreadObj;
 
 		includes(
 			searchElement: any,
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<boolean>;
+		): Promise<boolean> & ThreadObj;
 
 		every(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<boolean>;
+		): Promise<boolean> & ThreadObj;
 
 		some(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<boolean>;
+		): Promise<boolean> & ThreadObj;
 
 		group(
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<Object | Map>;
+		): Promise<Object | Map> & ThreadObj;
 
 		extend(
 			deepOrParams: boolean | ExtendParams,
 			...source: any[]
-		): Promise<T>;
+		): Promise<T> & ThreadObj;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -262,72 +266,72 @@ declare namespace CollectionJS {
 		forEach(
 			cb: Callback<T>,
 			params?: ForEachParams<T>
-		): Promise<AsyncCollection<T>>;
+		): Promise<AsyncCollection<T>> & ThreadObj;
 
 		length(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<number>;
+		): Promise<number> & ThreadObj;
 
 		map(
 			callback: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
-		): Promise<T>;
+		): Promise<T> & ThreadObj;
 
 		reduce(
 			callback: ReduceCallback<T>,
 			initialValue?: any,
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): Promise<any>;
+		): Promise<any> & ThreadObj;
 
 		get(
 			filterOrParams?: Filter<T> | BaseParams<T> | Link,
 			params?: BaseParams<T>
-		): Promise<any | any[]>;
+		): Promise<any | any[]> & ThreadObj;
 
 		set(
 			value: any,
 			filterOrParams?: Filter<T> | SetParams<T> | Link,
 			params?: SetParams<T>
-		): Promise<SetReport | SetReport[]>;
+		): Promise<SetReport | SetReport[]> & ThreadObj;
 
 		remove(
 			filterOrParams?: Filter<T> | BaseParams<T> | Link,
 			params?: BaseParams<T>
-		): Promise<Report | Report[]>;
+		): Promise<Report | Report[]> & ThreadObj;
 
 		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): Promise<any | any[]>;
+		): Promise<any | any[]> & ThreadObj;
 
 		includes(
 			searchElement: any,
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<boolean>;
+		): Promise<boolean> & ThreadObj;
 
 		every(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<boolean>;
+		): Promise<boolean> & ThreadObj;
 
 		some(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<boolean>;
+		): Promise<boolean> & ThreadObj;
 
 		group(
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Promise<Object | Map>;
+		): Promise<Object | Map> & ThreadObj;
 
 		extend(
 			deepOrParams: boolean | ExtendParams,
 			...source: any[]
-		): Promise<T>;
+		): Promise<T> & ThreadObj;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -354,72 +358,72 @@ declare namespace CollectionJS {
 		forEach(
 			cb: Callback<T>,
 			params?: ForEachParams<T>
-		): SingleCollection<T> | Promise<SingleCollection<T>>;
+		): SingleCollection<T> | Promise<SingleCollection<T>> & ThreadObj;
 
 		length(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): number | Promise<number>;
+		): number | Promise<number> & ThreadObj;
 
 		map(
 			callback: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
-		): T | Promise<T>;
+		): T | Promise<T> & ThreadObj;
 
 		reduce(
 			callback: ReduceCallback<T>,
 			initialValue?: any,
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): any | Promise<any>;
+		): any | Promise<any> & ThreadObj;
 
 		get(
 			filterOrParams?: Filter<T> | BaseParams<T> | Link,
 			params?: BaseParams<T>
-		): any | Promise<any>;
+		): any | Promise<any> & ThreadObj;
 
 		set(
 			value: any,
 			filterOrParams?: Filter<T> | SetParams<T> | Link,
 			params?: SetParams<T>
-		): SetReport | Promise<SetReport>;
+		): SetReport | Promise<SetReport> & ThreadObj;
 
 		remove(
 			filterOrParams?: Filter<T> | BaseParams<T> | Link,
 			params?: BaseParams<T>
-		): Report | Promise<Report>;
+		): Report | Promise<Report> & ThreadObj;
 
 		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): any | Promise<any>;
+		): any | Promise<any> & ThreadObj;
 
 		includes(
 			searchElement: any,
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean>;
+		): boolean | Promise<boolean> & ThreadObj;
 
 		every(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean>;
+		): boolean | Promise<boolean> & ThreadObj;
 
 		some(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean>;
+		): boolean | Promise<boolean> & ThreadObj;
 
 		group(
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Object | Map | Promise<Object | Map>;
+		): Object | Map | Promise<Object | Map> & ThreadObj;
 
 		extend(
 			deepOrParams: boolean | ExtendParams,
 			...source: any[]
-		): T | Promise<T>;
+		): T | Promise<T> & ThreadObj;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -449,72 +453,72 @@ declare namespace CollectionJS {
 		forEach(
 			cb: Callback<T>,
 			params?: ForEachParams<T>
-		): Collection<T> | Promise<Collection<T>>;
+		): Collection<T> | Promise<Collection<T>> & ThreadObj;
 
 		length(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): number | Promise<number>;
+		): number | Promise<number> & ThreadObj;
 
 		map(
 			callback: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
-		): T | Promise<T>;
+		): T | Promise<T> & ThreadObj;
 
 		reduce(
 			callback: ReduceCallback<T>,
 			initialValue?: any,
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): any | Promise<any>;
+		): any | Promise<any> & ThreadObj;
 
 		get(
 			filterOrParams?: Filter<T> | BaseParams<T> | Link,
 			params?: BaseParams<T>
-		): any | any[] | Promise<any | any[]>;
+		): any | any[] | Promise<any | any[]> & ThreadObj;
 
 		set(
 			value: any,
 			filterOrParams?: Filter<T> | SetParams<T> | Link,
 			params?: SetParams<T>
-		): SetReport | SetReport[] | Promise<SetReport | SetReport[]>;
+		): SetReport | SetReport[] | Promise<SetReport | SetReport[]> & ThreadObj;
 
 		remove(
 			filterOrParams?: Filter<T> | BaseParams<T> | Link,
 			params?: BaseParams<T>
-		): Report | Report[] | Promise<Report | Report[]>;
+		): Report | Report[] | Promise<Report | Report[]> & ThreadObj;
 
 		search(
 			filterOrParams?: Filter<T> | BaseParams<T>,
 			params?: BaseParams<T>
-		): any | any[] | Promise<any | any[]>;
+		): any | any[] | Promise<any | any[]> & ThreadObj;
 
 		includes(
 			searchElement: any,
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean>;
+		): boolean | Promise<boolean> & ThreadObj;
 
 		every(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean>;
+		): boolean | Promise<boolean> & ThreadObj;
 
 		some(
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
-		): boolean | Promise<boolean>;
+		): boolean | Promise<boolean> & ThreadObj;
 
 		group(
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Object | Map | Promise<Object | Map>;
+		): Object | Map | Promise<Object | Map> & ThreadObj;
 
 		extend(
 			deepOrParams: boolean | ExtendParams,
 			...source: any[]
-		): T | Promise<T>;
+		): T | Promise<T> & ThreadObj;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -527,7 +531,7 @@ declare const $C: {
 		deepOrParams: boolean | CollectionJS.ExtendParams,
 		target?: T,
 		...source: any[]
-	) => T
+	) => T | Promise<T> & CollectionJS.ThreadObj
 
 	clone: (source: any) => any;
 	in: <T>(link: CollectionJS.Link, target: T) => boolean;
