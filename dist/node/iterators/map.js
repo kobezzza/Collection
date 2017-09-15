@@ -20,18 +20,18 @@ var _gcc = require('../helpers/gcc');
  * Creates a new collection based on the current by the specified parameters
  *
  * @see Collection.prototype.forEach
- * @param {($$CollectionCb|$$Collection_map)} cb - callback function
+ * @param {($$CollectionCb|$$Collection_map)=} opt_cb - callback function
  * @param {($$Collection_map|$$CollectionFilter)=} [opt_params] - additional parameters:
  *   *) [initial] - initial object for adding elements
  *
  * @return {(!Object|!Promise<!Object>)}
  */
-_core.Collection.prototype.map = function (cb, opt_params) {
+_core.Collection.prototype.map = function (opt_cb, opt_params) {
 	let p = opt_params || {};
 
-	if (!(0, _types.isFunction)(cb)) {
-		p = cb || p;
-		cb = el => el;
+	if (!(0, _types.isFunction)(opt_cb)) {
+		p = opt_cb || p;
+		opt_cb = el => el;
 	}
 
 	if ((0, _types.isArray)(p) || (0, _types.isFunction)(p)) {
@@ -83,7 +83,7 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 	switch (type) {
 		case 'array':
 			fn = function () {
-				const val = cb.apply(null, arguments);
+				const val = opt_cb.apply(null, arguments);
 
 				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.push(val), fn[_base.ON_ERROR]);
@@ -92,12 +92,12 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 				res.push(val);
 			};
 
-			fn[_base.FN_LENGTH] = cb.length;
+			fn[_base.FN_LENGTH] = opt_cb.length;
 			break;
 
 		case 'object':
 			fn = function (el, key) {
-				const val = cb.apply(null, arguments);
+				const val = opt_cb.apply(null, arguments);
 
 				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res[key] = val, fn[_base.ON_ERROR]);
@@ -106,13 +106,13 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 				res[key] = val;
 			};
 
-			fn[_base.FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
+			fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
 			break;
 
 		case 'map':
 		case 'weakMap':
 			fn = function (el, key) {
-				const val = cb.apply(null, arguments);
+				const val = opt_cb.apply(null, arguments);
 
 				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.set(key, val), fn[_base.ON_ERROR]);
@@ -121,13 +121,13 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 				res.set(key, val);
 			};
 
-			fn[_base.FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
+			fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
 			break;
 
 		case 'set':
 		case 'weakSep':
 			fn = function () {
-				const val = cb.apply(null, arguments);
+				const val = opt_cb.apply(null, arguments);
 
 				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.add(val), fn[_base.ON_ERROR]);
@@ -136,7 +136,7 @@ _core.Collection.prototype.map = function (cb, opt_params) {
 				res.add(val);
 			};
 
-			fn[_base.FN_LENGTH] = cb.length;
+			fn[_base.FN_LENGTH] = opt_cb.length;
 			break;
 	}
 

@@ -4,7 +4,7 @@
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "collection.js",
   "typings": "collection.d.ts",
-  "version": "6.0.9",
+  "version": "6.1.0",
   "license": "MIT",
   "author": {
     "name": "kobezzza",
@@ -33,7 +33,7 @@
     "babel-core": "^6.26.0",
     "babel-plugin-transform-remove-strict-mode": "0.0.2",
     "babel-preset-es2015-rollup": "^3.0.0",
-    "bower": "^1.7.9",
+    "bower": "^1.8.2",
     "closurecompiler-externs": "^1.0.4",
     "coveralls": "^2.11.2",
     "del": "^3.0.0",

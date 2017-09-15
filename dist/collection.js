@@ -1,11 +1,11 @@
 /*!
- * Collection v6.0.9
+ * Collection v6.1.0
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 14 Sep 2017 08:09:36 GMT
+ * Date: 'Fri, 15 Sep 2017 17:10:00 GMT
  */
 
 (function (global, factory) {
@@ -379,7 +379,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 0, 9];
+Collection.prototype.VERSION = [6, 1, 0];
 
 /**
  * Creates an instance of Collection
@@ -1296,8 +1296,8 @@ var PRIORITY = {
  * Returns the number of elements in the collection by the specified parameters
  *
  * @see Collection.prototype.forEach
- * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
- * @param {?$$CollectionBase=} [opt_params] - additional parameters
+ * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter] - function filter or an array of functions
+ * @param {?$$CollectionSingleBase=} [opt_params] - additional parameters
  * @return {(number|!Promise<number>)}
  */
 Collection.prototype.length = function (opt_filter, opt_params) {
@@ -2198,18 +2198,18 @@ Object.assign($C, { extend: $C.extend, clone: $C.clone });
  * Creates a new collection based on the current by the specified parameters
  *
  * @see Collection.prototype.forEach
- * @param {($$CollectionCb|$$Collection_map)} cb - callback function
+ * @param {($$CollectionCb|$$Collection_map)=} opt_cb - callback function
  * @param {($$Collection_map|$$CollectionFilter)=} [opt_params] - additional parameters:
  *   *) [initial] - initial object for adding elements
  *
  * @return {(!Object|!Promise<!Object>)}
  */
-Collection.prototype.map = function (cb, opt_params) {
+Collection.prototype.map = function (opt_cb, opt_params) {
 	var p = opt_params || {};
 
-	if (!isFunction(cb)) {
-		p = cb || p;
-		cb = function (el) {
+	if (!isFunction(opt_cb)) {
+		p = opt_cb || p;
+		opt_cb = function (el) {
 			return el;
 		};
 	}
@@ -2263,7 +2263,7 @@ Collection.prototype.map = function (cb, opt_params) {
 	switch (type) {
 		case 'array':
 			fn = function () {
-				var val = cb.apply(null, arguments);
+				var val = opt_cb.apply(null, arguments);
 
 				if (isAsync && isPromise(val)) {
 					return val.then(function (val) {
@@ -2274,12 +2274,12 @@ Collection.prototype.map = function (cb, opt_params) {
 				res.push(val);
 			};
 
-			fn[FN_LENGTH] = cb.length;
+			fn[FN_LENGTH] = opt_cb.length;
 			break;
 
 		case 'object':
 			fn = function (el, key) {
-				var val = cb.apply(null, arguments);
+				var val = opt_cb.apply(null, arguments);
 
 				if (isAsync && isPromise(val)) {
 					return val.then(function (val) {
@@ -2290,13 +2290,13 @@ Collection.prototype.map = function (cb, opt_params) {
 				res[key] = val;
 			};
 
-			fn[FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
+			fn[FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
 			break;
 
 		case 'map':
 		case 'weakMap':
 			fn = function (el, key) {
-				var val = cb.apply(null, arguments);
+				var val = opt_cb.apply(null, arguments);
 
 				if (isAsync && isPromise(val)) {
 					return val.then(function (val) {
@@ -2307,13 +2307,13 @@ Collection.prototype.map = function (cb, opt_params) {
 				res.set(key, val);
 			};
 
-			fn[FN_LENGTH] = fn.length > cb.length ? fn.length : cb.length;
+			fn[FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
 			break;
 
 		case 'set':
 		case 'weakSep':
 			fn = function () {
-				var val = cb.apply(null, arguments);
+				var val = opt_cb.apply(null, arguments);
 
 				if (isAsync && isPromise(val)) {
 					return val.then(function (val) {
@@ -2324,7 +2324,7 @@ Collection.prototype.map = function (cb, opt_params) {
 				res.add(val);
 			};
 
-			fn[FN_LENGTH] = cb.length;
+			fn[FN_LENGTH] = opt_cb.length;
 			break;
 	}
 
