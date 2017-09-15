@@ -276,10 +276,10 @@ declare namespace CollectionJS {
 			params: GroupParams<T> & Async
 		): Promise<Object> & ThreadObj;
 
-		extend<A>(
+		extend(
 			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
-		): Promise<T & A> & ThreadObj;
+		): Promise<T> & ThreadObj;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -397,10 +397,10 @@ declare namespace CollectionJS {
 			params: GroupParams<T> & Async
 		): Promise<Object> & ThreadObj;
 
-		extend<A>(
+		extend(
 			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
-		): Promise<T & A> & ThreadObj;
+		): Promise<T> & ThreadObj;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -641,15 +641,15 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<T>
 		): Object;
 
-		extend<A>(
+		extend(
 			params: ExtendParams<T> & Async,
-			...source: A[]
-		): Promise<T & A> & ThreadObj;
+			...source: any[]
+		): Promise<T> & ThreadObj;
 
-		extend<A>(
+		extend(
 			deepOrParams: boolean | ExtendParams<T>,
-			...source: A[]
-		): T & A;
+			...source: any[]
+		): T;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -969,15 +969,15 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<T>
 		): Object;
 
-		extend<A>(
+		extend(
 			params: ExtendParams<T> & Async,
-			...source: A[]
-		): Promise<T & A> & ThreadObj;
+			...source: any[]
+		): Promise<T> & ThreadObj;
 
-		extend<A>(
+		extend(
 			deepOrParams: boolean | ExtendParams<T>,
-			...source: A[]
-		): T & A;
+			...source: any[]
+		): T;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -986,17 +986,17 @@ declare namespace CollectionJS {
 declare const $C: {
 	<T>(collection: T): CollectionJS.Collection<T>;
 
-	extend<T, A>(
+	extend<T>(
 		params: CollectionJS.ExtendParams<T> & CollectionJS.Async,
 		target?: T,
-		...source: A[]
-	): Promise<T & A> & CollectionJS.ThreadObj;
+		...source: any[]
+	): Promise<T> & CollectionJS.ThreadObj;
 
-	extend<T, A>(
+	extend<T>(
 		deepOrParams: boolean | CollectionJS.ExtendParams<T>,
 		target?: T,
-		...source: A[]
-	): T & A;
+		...source: any[]
+	): T;
 
 	clone(source: any): any;
 	in(link: CollectionJS.Link, target: any): boolean;
