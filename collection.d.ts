@@ -188,7 +188,7 @@ declare namespace CollectionJS {
 		): Promise<number> & ThreadObj;
 
 		map(
-			callback: Callback<T> | MapParams<T>,
+			callback?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
 		): Promise<T> & ThreadObj;
 
@@ -298,7 +298,7 @@ declare namespace CollectionJS {
 		): Promise<number> & ThreadObj;
 
 		map(
-			callback: Callback<T> | MapParams<T>,
+			callback?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
 		): Promise<T> & ThreadObj;
 
@@ -406,7 +406,7 @@ declare namespace CollectionJS {
 		): number | Promise<number> & ThreadObj;
 
 		map(
-			callback: Callback<T> | MapParams<T>,
+			callback?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
 		): T | Promise<T> & ThreadObj;
 
@@ -517,7 +517,7 @@ declare namespace CollectionJS {
 		): number | Promise<number> & ThreadObj;
 
 		map(
-			callback: Callback<T> | MapParams<T>,
+			callback?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
 		): T | Promise<T> & ThreadObj;
 
