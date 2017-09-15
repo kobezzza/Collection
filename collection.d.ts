@@ -1,3 +1,11 @@
+/*!
+ * Collection
+ * https://github.com/kobezzza/Collection
+ *
+ * Released under the MIT license
+ * https://github.com/kobezzza/Collection/blob/master/LICENSE
+ */
+
 declare namespace CollectionJS {
 	type Link = any | any[];
 	type asyncOperation = Promise<any> | (() => Promise<any>);

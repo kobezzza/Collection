@@ -70,7 +70,7 @@ gulp.task('head', (cb) => {
 		});
 	}
 
-	gulp.src(['./@(src|gulp)/**/*.js', './predefs/src/**/*.js', './collection.js'], {base: './'})
+	gulp.src(['./@(src|gulp)/**/*.js', './predefs/src/**/*.js', './collection.js', 'collection.d.ts'], {base: './'})
 		.pipe(test())
 		.pipe(replace(headRgxp, ''))
 		.pipe(header(fullHead))
