@@ -8,6 +8,7 @@
 
 declare namespace CollectionJS {
 	type Link = any | any[];
+	type HashTable = {[key: string]: any};
 	type asyncOperation = Promise<any> | (() => Promise<any>);
 
 	interface TRUE {
@@ -65,7 +66,7 @@ declare namespace CollectionJS {
 		readonly reset: FALSE;
 		readonly break: FALSE;
 		readonly value: any;
-		$: Object;
+		$: HashTable;
 		info: Info;
 		result: any;
 		childResult: any[];
@@ -274,7 +275,7 @@ declare namespace CollectionJS {
 			field: any,
 			filter: Filter<T>,
 			params: GroupParams<T> & Async
-		): Promise<Object> & ThreadObj;
+		): Promise<HashTable> & ThreadObj;
 
 		extend(
 			deepOrParams: boolean | ExtendParams<T>,
@@ -433,7 +434,7 @@ declare namespace CollectionJS {
 			field: any,
 			filter: Filter<T>,
 			params: GroupParams<T> & Async
-		): Promise<Object> & ThreadObj;
+		): Promise<HashTable> & ThreadObj;
 
 		extend(
 			deepOrParams: boolean | ExtendParams<T>,
@@ -654,13 +655,13 @@ declare namespace CollectionJS {
 		group(
 			field: any,
 			params: GroupParams<T> & Async
-		): Promise<Object> & ThreadObj;
+		): Promise<HashTable> & ThreadObj;
 
 		group(
 			field: any,
 			filter: Filter<T>,
 			params: GroupParams<T> & Async
-		): Promise<Object> & ThreadObj;
+		): Promise<HashTable> & ThreadObj;
 
 		group(
 			field: any,
@@ -677,7 +678,7 @@ declare namespace CollectionJS {
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Object;
+		): HashTable;
 
 		extend(
 			params: ExtendParams<T> & Async,
@@ -982,13 +983,13 @@ declare namespace CollectionJS {
 		group(
 			field: any,
 			params: GroupParams<T> & Async
-		): Promise<Object> & ThreadObj;
+		): Promise<HashTable> & ThreadObj;
 
 		group(
 			field: any,
 			filter: Filter<T>,
 			params: GroupParams<T> & Async
-		): Promise<Object> & ThreadObj;
+		): Promise<HashTable> & ThreadObj;
 
 		group(
 			field: any,
@@ -1005,7 +1006,7 @@ declare namespace CollectionJS {
 			field: any,
 			filterOrParams?: Filter<T> | GroupParams<T>,
 			params?: SingleBaseParams<T>
-		): Object;
+		): HashTable;
 
 		extend(
 			params: ExtendParams<T> & Async,
