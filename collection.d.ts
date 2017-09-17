@@ -195,6 +195,15 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<T>
 		): Promise<number> & ThreadObj;
 
+		map<A>(
+			params: MapParams<T> & {initial: A}
+		): Promise<A> & ThreadObj;
+
+		map<A>(
+			cb: Callback<T>,
+			params: MapParams<T> & {initial: A}
+		): Promise<A> & ThreadObj;
+
 		map(
 			cb?: Callback<T> | MapParams<T>,
 			filterOrParams?: Filter<T> | MapParams<T>
@@ -315,6 +324,15 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
 		): Promise<number> & ThreadObj;
+
+		map<A>(
+			params: MapParams<T> & {initial: A}
+		): Promise<A> & ThreadObj;
+
+		map<A>(
+			cb: Callback<T>,
+			params: MapParams<T> & {initial: A}
+		): Promise<A> & ThreadObj;
 
 		map(
 			cb?: Callback<T> | MapParams<T>,
@@ -486,6 +504,24 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
 		): number;
+
+		map<A>(
+			params: MapParams<T> & Async & {initial: A}
+		): Promise<A> & ThreadObj;
+
+		map<A>(
+			cb: Callback<T>,
+			params: MapParams<T> & Async & {initial: A}
+		): Promise<A> & ThreadObj;
+
+		map<A>(
+			params: MapParams<T> & {initial: A}
+		): A;
+
+		map<A>(
+			cb: Callback<T>,
+			params: MapParams<T> & {initial: A}
+		): A;
 
 		map(
 			params: MapParams<T> & Async
@@ -738,6 +774,24 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<T> | SingleBaseParams<T>,
 			params?: SingleBaseParams<T>
 		): number;
+
+		map<A>(
+			params: MapParams<T> & Async & {initial: A}
+		): Promise<A> & ThreadObj;
+
+		map<A>(
+			cb: Callback<T>,
+			params: MapParams<T> & Async & {initial: A}
+		): Promise<A> & ThreadObj;
+
+		map<A>(
+			params: MapParams<T> & {initial: A}
+		): A;
+
+		map<A>(
+			cb: Callback<T>,
+			params: MapParams<T> & {initial: A}
+		): A;
 
 		map(
 			params: MapParams<T> & Async
@@ -1011,12 +1065,12 @@ declare namespace CollectionJS {
 		extend(
 			params: ExtendParams<T> & Async,
 			...source: any[]
-		): Promise<T> & ThreadObj;
+		): Promise<T & HashTable> & ThreadObj;
 
 		extend(
 			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
-		): T;
+		): T & HashTable;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -1029,13 +1083,13 @@ declare const $C: {
 		params: CollectionJS.ExtendParams<T> & CollectionJS.Async,
 		target?: T,
 		...source: any[]
-	): Promise<T> & CollectionJS.ThreadObj;
+	): Promise<T & CollectionJS.HashTable> & CollectionJS.ThreadObj;
 
 	extend<T>(
 		deepOrParams: boolean | CollectionJS.ExtendParams<T>,
 		target?: T,
 		...source: any[]
-	): T;
+	): T & CollectionJS.HashTable;
 
 	clone(source: any): any;
 	in(link: CollectionJS.Link, target: any): boolean;
