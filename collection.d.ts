@@ -8,7 +8,7 @@
 
 declare namespace CollectionJS {
 	type Link = any | any[];
-	type HashTable = {[key: string]: any};
+	type HashTable = Record<string, any>;
 	type asyncOperation = Promise<any> | (() => Promise<any>);
 
 	interface TRUE {
