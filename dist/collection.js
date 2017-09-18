@@ -1,11 +1,11 @@
 /*!
- * Collection v6.1.4
+ * Collection v6.1.5
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 18 Sep 2017 11:29:22 GMT
+ * Date: 'Mon, 18 Sep 2017 16:32:15 GMT
  */
 
 (function (global, factory) {
@@ -379,7 +379,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 1, 4];
+Collection.prototype.VERSION = [6, 1, 5];
 
 /**
  * Creates an instance of Collection
@@ -462,7 +462,7 @@ var LENGTH_REQUEST = SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTIO
 var FN_LENGTH = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 var ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 35;
+var CACHE_VERSION = 36;
 var CACHE_KEY = '__COLLECTION_CACHE__';
 var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
