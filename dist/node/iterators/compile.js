@@ -132,7 +132,7 @@ function compileCycle(key, p) {
 	`;
 
 	if (p.withDescriptor) {
-		iFn = 'var getDescriptor = Object.getOwnPropertyDescriptor;';
+		iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
 	}
 
 	if (isAsync) {

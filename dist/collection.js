@@ -1,11 +1,11 @@
 /*!
- * Collection v6.1.3
+ * Collection v6.1.4
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 17 Sep 2017 07:30:33 GMT
+ * Date: 'Mon, 18 Sep 2017 11:29:22 GMT
  */
 
 (function (global, factory) {
@@ -379,7 +379,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 1, 3];
+Collection.prototype.VERSION = [6, 1, 4];
 
 /**
  * Creates an instance of Collection
@@ -725,7 +725,7 @@ function compileCycle(key, p) {
 	var iFn = ws(_templateObject);
 
 	if (p.withDescriptor) {
-		iFn = 'var getDescriptor = Object.getOwnPropertyDescriptor;';
+		iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
 	}
 
 	if (isAsync) {
