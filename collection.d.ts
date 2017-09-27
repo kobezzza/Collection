@@ -281,7 +281,7 @@ declare namespace CollectionJS {
 		extend(
 			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
-		): ThreadObj<T>;
+		): ThreadObj<T & AnyRecord>;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -449,7 +449,7 @@ declare namespace CollectionJS {
 		extend(
 			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
-		): ThreadObj<T>;
+		): ThreadObj<T & AnyRecord>;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -711,12 +711,12 @@ declare namespace CollectionJS {
 		extend(
 			params: ExtendParams<T> & Async,
 			...source: any[]
-		): ThreadObj<T>;
+		): ThreadObj<T & AnyRecord>;
 
 		extend(
 			deepOrParams: boolean | ExtendParams<T>,
 			...source: any[]
-		): T;
+		): T & AnyRecord;
 
 		link(link: CollectionJS.Link): boolean;
 	}
@@ -1075,7 +1075,7 @@ declare const $C: {
 		params: CollectionJS.ExtendParams<T> & CollectionJS.Async,
 		target?: T,
 		...source: any[]
-	): Promise<T & CollectionJS.AnyRecord> & CollectionJS.ThreadObj;
+	): CollectionJS.ThreadObj<T & CollectionJS.AnyRecord>;
 
 	extend<T>(
 		deepOrParams: boolean | CollectionJS.ExtendParams<T>,
