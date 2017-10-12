@@ -322,7 +322,7 @@ function compileCycle(key, p) {
 					return promise;
 				}
 
-				ctx.yield = function () {
+				ctx.yield = function (opt_val) {
 					yielder = true;
 					yieldVal = opt_val;
 					return true;
