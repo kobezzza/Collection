@@ -97,12 +97,12 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 		if (isNumber(max)) {
 			cb = function (el, i, data, o) {
-				o[fn](max, async () => old.apply(this, arguments));
+				o[fn](max, new Promise((r) => r(old.apply(this, arguments))));
 			};
 
 		} else {
 			cb = function (el, i, data, o) {
-				o[fn](async () => old.apply(this, arguments));
+				o[fn](new Promise((r) => r(old.apply(this, arguments))));
 			};
 		}
 	}
