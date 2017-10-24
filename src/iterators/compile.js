@@ -312,10 +312,10 @@ export function compileCycle(key, p) {
 
 				iFn += ws`
 					if (maxParallelIsNumber) {
-						ctx[${fn}](maxParallel, new Promise((r) => r(res)));
+						ctx['${fn}'](maxParallel, new Promise((r) => r(res)));
 
 					} else {
-						ctx[${fn}](new Promise((r) => r(res)));
+						ctx['${fn}'](new Promise((r) => r(res)));
 					}
 				`;
 
