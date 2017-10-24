@@ -77,7 +77,8 @@ function compileCycle(key, p) {
 	const maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
 	      needParallel = p.parallel || p.race,
 	      needCtx = maxArgsLength > 3 || needParallel,
-	      fLength = p.filter.length;
+	      fLength = p.filter.length,
+	      needWrapper = fLength && isAsync || needParallel;
 
 	for (let i = 0; i < fLength; i++) {
 		filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
@@ -130,7 +131,8 @@ function compileCycle(key, p) {
 		var
 			fLength = filters.length,
 			length,
-			r;
+			r,
+			f;
 
 		var
 			el,
@@ -175,7 +177,10 @@ function compileCycle(key, p) {
 		`;
 	}
 
-	if (fLength || needParallel) {
+	const resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`,
+	      callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
+
+	if (needWrapper) {
 		iFn += _string.ws`
 			cb = function (${cbArgs}) {
 				var f = ${fLength ? undefined : true};
@@ -185,67 +190,25 @@ function compileCycle(key, p) {
 			iFn += 'var fIsPromise, res;';
 		}
 
-		const resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`;
-
 		if (fLength) {
 			if (fLength < 5) {
 				for (let i = 0; i < fLength; i++) {
 					const callFilter = `filters[${i}](${filterArgs[i]})`;
 
-					if (isAsync) {
-						iFn += _string.ws`
-							if (${!i ? 'f === undefined || ' : ''}f === true || fIsPromise) {
-								if (fIsPromise) {
-									f = f.then(function (f) {
-										${resolveFilterVal};
-
-										if (f) {
-											return ${callFilter};
-
-										} else {
-											return FALSE;
-										}
-
-									}, onError);
-
-								} else {
-									f = ${callFilter};
-									fIsPromise = isPromise(f);
-
-									if (!fIsPromise) {
-										${resolveFilterVal}
-									}
-								}
-							}
-						`;
-					} else {
-						iFn += _string.ws`
-							if (${!i ? 'f === undefined || ' : ''}f === true) {
-								f = ${callFilter};
-								${resolveFilterVal}
-							}
-						`;
-					}
-				}
-			} else {
-				const callFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
-
-				if (isAsync) {
 					iFn += _string.ws`
-						for (fI = -1; ++fI < fLength;) {
+						if (${!i ? 'f === undefined || ' : ''}f === true || fIsPromise) {
 							if (fIsPromise) {
-								f = f.then((function (fI) {
-									return function (f) {
-										f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
+								f = f.then(function (f) {
+									${resolveFilterVal};
 
-										if (f) {
-											return ${callFilter};
+									if (f) {
+										return ${callFilter};
 
-										} else {
-											return FALSE;
-										}
-									};
-								})(fI), onError);
+									} else {
+										return FALSE;
+									}
+
+								}, onError);
 
 							} else {
 								f = ${callFilter};
@@ -254,25 +217,41 @@ function compileCycle(key, p) {
 								if (!fIsPromise) {
 									${resolveFilterVal}
 								}
-
-								if (!f) {
-									break;
-								}
 							}
 						}
 					`;
-				} else {
-					iFn += _string.ws`
-						for (fI = -1; ++fI < fLength;) {
-							f = ${callFilter};
-							${resolveFilterVal}
+				}
+			} else {
+				iFn += _string.ws`
+					for (fI = -1; ++fI < fLength;) {
+						if (fIsPromise) {
+							f = f.then((function (fI) {
+								return function (f) {
+									${resolveFilterVal}
+
+									if (f) {
+										return ${callCycleFilter};
+
+									} else {
+										return FALSE;
+									}
+								};
+							})(fI), onError);
+
+						} else {
+							f = ${callCycleFilter};
+							fIsPromise = isPromise(f);
+
+							if (!fIsPromise) {
+								${resolveFilterVal}
+							}
 
 							if (!f) {
 								break;
 							}
 						}
-					`;
-				}
+					}
+				`;
 			}
 		}
 
@@ -957,14 +936,49 @@ function compileCycle(key, p) {
 	}
 
 	iFn += getEl;
-	iFn += `r = cb(${cbArgs});`;
+
+	let tmp = '';
+
+	if (!needWrapper) {
+		if (fLength) {
+			if (fLength < 5) {
+				for (let i = 0; i < fLength; i++) {
+					iFn += _string.ws`
+						if (${!i ? 'f === undefined || ' : ''}f === true) {
+							f = filters[${i}](${filterArgs[i]});
+							${resolveFilterVal}
+						}
+					`;
+				}
+			} else {
+				iFn += _string.ws`
+					for (fI = -1; ++fI < fLength;) {
+						f = ${callCycleFilter};
+						${resolveFilterVal}
+
+						if (!f) {
+							break;
+						}
+					}
+				`;
+			}
+
+			iFn += 'if (f) {';
+		}
+
+		if (p.count) {
+			tmp += 'j++;';
+		}
+	}
+
+	tmp += `r = cb(${cbArgs});`;
 
 	if (!p.mult) {
-		iFn += 'breaker = true;';
+		tmp += 'breaker = true;';
 	}
 
 	if (isAsync) {
-		iFn += _string.ws`
+		tmp += _string.ws`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
 					rCbSet.add(r);
@@ -975,6 +989,23 @@ function compileCycle(key, p) {
 				yield;
 			}
 		`;
+	}
+
+	if (!needWrapper && p.from) {
+		iFn += _string.ws`
+			if (from !== 0) {
+				from--;
+
+			} else {
+				${tmp}
+			}
+		`;
+	} else {
+		iFn += tmp;
+	}
+
+	if (!needWrapper && fLength) {
+		iFn += '}';
 	}
 
 	const yielder = _string.ws`
