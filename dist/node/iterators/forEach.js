@@ -97,6 +97,22 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		p.use = 'for in';
 	}
 
+	if (p.parallel || p.race) {
+		const old = cb,
+		      max = p.parallel || p.race,
+		      fn = p.parallel ? 'wait' : 'race';
+
+		if ((0, _types.isNumber)(max)) {
+			cb = function (el, i, data, o) {
+				o[fn](max, new Promise(r => r(old.apply(this, arguments))));
+			};
+		} else {
+			cb = function (el, i, data, o) {
+				o[fn](new Promise(r => r(old.apply(this, arguments))));
+			};
+		}
+	}
+
 	this._isThread(p);
 	if (p.thread && !_thread.PRIORITY[p.priority]) {
 		p.priority = 'normal';

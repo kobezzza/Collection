@@ -109,6 +109,7 @@ function compileCycle(key, p) {
 			i = -1,
 			j = 0,
 			n = -1,
+			id = 0,
 			fI = -1;
 
 		var
@@ -150,18 +151,26 @@ function compileCycle(key, p) {
 			function isPromise(obj) {
 				return typeof Promise === 'function' && obj instanceof Promise;
 			}
+			
+			var
+				rElMap = new Set(),
+				rCbMap = new Set(),
+				rFMap = new Set();
 
 			function resolveEl(res) {
+				rElMap.delete(el);
 				el = res;
 				thread.next();
 			}
 
 			function resolveCb(res) {
+				rCbMap.delete(r);
 				r = res;
 				thread.next();
 			}
 
 			function resolveFilter(res) {
+				rFMap.delete(f);
 				f = res;
 				thread.next();
 			}
@@ -235,6 +244,10 @@ function compileCycle(key, p) {
 					i += val;
 
 					return i;
+				},
+
+				get id() {
+					return id;
 				},
 
 				get reset() {
@@ -445,7 +458,11 @@ function compileCycle(key, p) {
 	if (isAsync) {
 		getEl = _string.ws`
 			while (isPromise(el)) {
-				el = el.then(resolveEl, onError);
+				if (!rElMap.has(el)) {
+					rElMap.set(el);
+					el = el.then(resolveEl, onError);
+				}
+
 				thread.pause = true;
 				yield;
 			}
@@ -754,6 +771,8 @@ function compileCycle(key, p) {
 	}
 
 	iFn += threadStart;
+	iFn += 'id++;';
+
 	if (p.count) {
 		iFn += _string.ws`
 			if (j === count) {
@@ -774,7 +793,11 @@ function compileCycle(key, p) {
 				if (isAsync) {
 					iFn += _string.ws`
 						while (isPromise(f)) {
-							f.then(resolveFilter, onError);
+							if (!rFMap.has(f)) {
+								rFMap.set(f);
+								f.then(resolveFilter, onError);
+							}
+
 							thread.pause = true;
 							yield;
 						}
@@ -795,7 +818,11 @@ function compileCycle(key, p) {
 			if (isAsync) {
 				iFn += _string.ws`
 					while (isPromise(f)) {
-						f.then(resolveFilter, onError);
+						if (!rFMap.has(f)) {
+							rFMap.set(f);
+							f.then(resolveFilter, onError);
+						}
+
 						thread.pause = true;
 						yield;
 					}
@@ -824,7 +851,11 @@ function compileCycle(key, p) {
 	if (isAsync) {
 		tmp += _string.ws`
 			while (isPromise(r)) {
-				r.then(resolveCb, onError);
+				if (!rCbMap.has(r)) {
+					rCbMap.set(r);
+					r.then(resolveCb, onError);
+				}
+
 				thread.pause = true;
 				yield;
 			}
