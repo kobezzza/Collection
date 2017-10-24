@@ -417,9 +417,7 @@ export function compileCycle(key, p) {
 
 				var
 					waitStore = new WeakSet(),
-					waitFStore = Object.create(null),
-					raceStore = new WeakSet(),
-					raceFStore = Object.create(null);
+					raceStore = new WeakSet();
 
 				childResult = [];
 				function waitFactory(store, max, promise) {
@@ -476,26 +474,6 @@ export function compileCycle(key, p) {
 					return promise;
 				}
 
-				function raceFactory(store, max, promise) {
-					if (!promise) {
-						promise = max;
-						max = 1;
-					}
-
-					waitFactory(store, promise).then(function () {
-						if (raceI < max) {
-							raceI++;
-
-							if (raceI === max) {
-								raceI = 0;
-								store.clear();
-							}
-						}
-					});
-
-					return promise;
-				};
-
 				ctx.yield = function (opt_val) {
 					yielder = true;
 					yieldVal = opt_val;
@@ -517,11 +495,27 @@ export function compileCycle(key, p) {
 				};
 
 				ctx.race = function (max, promise) {
-					return raceFactory(waitStore, max, promise);
+					if (!promise) {
+						promise = max;
+						max = 1;
+					}
+
+					waitFactory(raceStore, promise).then(function () {
+						if (raceI < max) {
+							raceI++;
+
+							if (raceI === max) {
+								raceI = 0;
+								raceStore.clear();
+							}
+						}
+					});
+
+					return promise;
 				};
 
 				fCtx.race = function (max, promise) {
-					return raceFactory(waitFStore[id] || new WeakSet(, max, promise);
+					throw new Error(".race can't be used inside a filter");
 				};
 
 				ctx.wait = function (max, promise) {
@@ -529,7 +523,7 @@ export function compileCycle(key, p) {
 				};
 
 				fCtx.wait = function (max, promise) {
-					return waitFactory(waitFStore[id] || new WeakSet(), max, promise);
+					throw new Error(".wait can't be used inside a filter");
 				};
 
 				ctx.sleep = function (time, opt_test, opt_interval) {
