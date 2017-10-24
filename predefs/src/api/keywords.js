@@ -95,3 +95,6 @@ var IGNORE;
 
 /** @type {?} */
 var notAsync;
+
+/** @type {?} */
+var maxParallel;

@@ -646,6 +646,9 @@ var IGNORE;
 /** @type {?} */
 var notAsync;
 
+/** @type {?} */
+var maxParallel;
+
 /**
  * @param {$$CollectionType=} collection
  * @return {!$$Collection}
