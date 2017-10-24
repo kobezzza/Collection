@@ -49,6 +49,8 @@ export function P() {
 		async: false,
 		thread: false,
 		length: true,
+		parallel: false,
+		race: false,
 		filter: []
 	}, $C.config);
 }

@@ -82,7 +82,7 @@ export function compileCycle(key, p) {
 
 	const
 		maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
-		needCtx = maxArgsLength > 3,
+		needCtx = maxArgsLength > 3 || p.parallel || p.race,
 		fLength = p.filter.length;
 
 	for (let i = 0; i < fLength; i++) {
@@ -95,7 +95,9 @@ export function compileCycle(key, p) {
 			cb = o.cb,
 			baseCb = cb,
 			filters = o.filters,
-			priority = o.priority;
+			priority = o.priority,
+			maxParallel = o.maxParallel,
+			maxParallelIsNumber = typeof maxParallel === 'number';
 	`;
 
 	iFn += ws`
@@ -186,7 +188,7 @@ export function compileCycle(key, p) {
 		`;
 
 		if (isAsync) {
-			iFn += 'var fIsPromise;';
+			iFn += 'var fIsPromise, res;';
 		}
 
 		const
@@ -297,13 +299,29 @@ export function compileCycle(key, p) {
 						return undefined;
 					});
 
-					return f;
-				}
+					res = f;
 
-				if (f) {
-					return baseCb(${cbArgs});
+				} else if (f) {
+					res = baseCb(${cbArgs});
 				}
 			`;
+
+			if (p.parallel || p.race) {
+				const
+					fn = p.parallel ? 'wait' : 'race';
+
+				iFn += ws`
+					if (maxParallelIsNumber) {
+						ctx[${fn}](maxParallel, new Promise((r) => r(res)));
+
+					} else {
+						ctx[${fn}](new Promise((r) => r(res)));
+					}
+				`;
+
+			} else {
+				iFn += 'return res;';
+			}
 
 		} else {
 			iFn += ws`

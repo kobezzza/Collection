@@ -89,24 +89,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		p.use = 'for in';
 	}
 
-	if (p.parallel || p.race) {
-		const
-			old = cb,
-			max = p.parallel || p.race,
-			fn = p.parallel ? 'wait' : 'race';
-
-		if (isNumber(max)) {
-			cb = function (el, i, data, o) {
-				o[fn](max, new Promise((r) => r(old.apply(this, arguments))));
-			};
-
-		} else {
-			cb = function (el, i, data, o) {
-				o[fn](new Promise((r) => r(old.apply(this, arguments))));
-			};
-		}
-	}
-
 	this._isThread(p);
 	if (p.thread && !PRIORITY[p.priority]) {
 		p.priority = 'normal';
@@ -302,7 +284,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		Boolean(p.count),
 		Boolean(p.from),
 		Boolean(p.startIndex),
-		p.endIndex !== false
+		p.endIndex !== false,
+		p.parallel,
+		p.race
 	].join();
 
 	const
@@ -324,7 +308,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		count: p.count,
 		from: p.from,
 		startIndex: p.startIndex,
-		endIndex: p.endIndex
+		endIndex: p.endIndex,
+		maxParallel: p.parallel || p.race
 	};
 
 	//#if iterators.thread
