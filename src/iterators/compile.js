@@ -158,7 +158,7 @@ export function compileCycle(key, p) {
 			function isPromise(obj) {
 				return typeof Promise === 'function' && obj instanceof Promise;
 			}
-			
+
 			var
 				rElMap = new Set(),
 				rCbMap = new Set(),
