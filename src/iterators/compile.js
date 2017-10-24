@@ -1056,6 +1056,9 @@ export function compileCycle(key, p) {
 	if (isAsync && needCtx) {
 		iFn += ws`
 			waiting = true;
+			thread.pause = true;
+			yield;
+
 			while (waitStore.size) {
 				thread.pause = true;
 				yield;
