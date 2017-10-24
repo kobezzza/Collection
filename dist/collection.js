@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.3
+ * Collection v6.3.4
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Tue, 24 Oct 2017 21:07:31 GMT
+ * Date: 'Tue, 24 Oct 2017 22:12:55 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 3];
+Collection.prototype.VERSION = [6, 3, 4];
 
 /**
  * Creates an instance of Collection
@@ -464,7 +464,7 @@ var LENGTH_REQUEST = SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTIO
 var FN_LENGTH = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 var ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 43;
+var CACHE_VERSION = 44;
 var CACHE_KEY = '__COLLECTION_CACHE__';
 var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
@@ -1613,7 +1613,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		};
 	}
 
-	var key = [type, cbArgs, fCount < 5 ? fCount : Boolean(fCount), filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false, p.parallel, p.race].join();
+	var key = [type, cbArgs, fCount < 5 ? fCount : Boolean(fCount), filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false, Boolean(p.parallel), Boolean(p.race)].join();
 
 	var fn = any(tmpCycle[key] || compileCycle(key, p));
 
@@ -1879,24 +1879,24 @@ Collection.prototype.object = function (opt_notOwn) {
 /**
  * Sets .async to true and .parallel for the operation
  *
- * @param opt_max
+ * @param {(boolean|number|null)=} [opt_max]
  * @return {!Collection}
  */
 Collection.prototype.parallel = function (opt_max) {
 	this.p.async = true;
-	this.p.parallel = opt_max || true;
+	this.p.parallel = isNumber(opt_max) ? opt_max || true : Boolean(opt_max);
 	return this;
 };
 
 /**
  * Sets .async to true and .race for the operation
  *
- * @param opt_max
+ * @param {(boolean|number|null)=} [opt_max]
  * @return {!Collection}
  */
 Collection.prototype.race = function (opt_max) {
 	this.p.async = true;
-	this.p.race = opt_max || true;
+	this.p.race = isNumber(opt_max) ? opt_max || true : Boolean(opt_max);
 	return this;
 };
 
