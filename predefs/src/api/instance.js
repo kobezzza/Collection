@@ -36,6 +36,7 @@ $$Collection.prototype.VERSION;
  *   wait: function((number|!Promise), !Promise=): !Promise,
  *   jump: function(number): (number|boolean),
  *   i: function(number): (number|boolean),
+ *   id: number,
  *   reset: boolean,
  *   break: boolean,
  *   thread: (!Generator|undefined),
@@ -73,6 +74,9 @@ var jump;
 
 /** @type {?} */
 var i;
+
+/** @type {?} */
+var id;
 
 /** @type {?} */
 var reset;

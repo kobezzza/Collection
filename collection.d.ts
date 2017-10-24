@@ -57,6 +57,7 @@ declare namespace CollectionJS {
 		readonly reset: FALSE;
 		readonly break: FALSE;
 		readonly value: any;
+		readonly id: number;
 		$: AnyRecord;
 		info: Info;
 		result: any;
