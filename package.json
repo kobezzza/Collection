@@ -35,7 +35,7 @@
     "babel-preset-es2015-rollup": "^3.0.0",
     "bower": "^1.8.2",
     "closurecompiler-externs": "^1.0.4",
-    "coveralls": "^2.13.3",
+    "coveralls": "^3.0.0",
     "del": "^3.0.0",
     "eslint": "^4.9.0",
     "glob": "^7.1.2",
