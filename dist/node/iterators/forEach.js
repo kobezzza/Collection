@@ -97,22 +97,6 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		p.use = 'for in';
 	}
 
-	if (p.parallel || p.race) {
-		const old = cb,
-		      max = p.parallel || p.race,
-		      fn = p.parallel ? 'wait' : 'race';
-
-		if ((0, _types.isNumber)(max)) {
-			cb = function (el, i, data, o) {
-				o[fn](max, new Promise(r => r(old.apply(this, arguments))));
-			};
-		} else {
-			cb = function (el, i, data, o) {
-				o[fn](new Promise(r => r(old.apply(this, arguments))));
-			};
-		}
-	}
-
 	this._isThread(p);
 	if (p.thread && !_thread.PRIORITY[p.priority]) {
 		p.priority = 'normal';
@@ -274,7 +258,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		};
 	}
 
-	const key = [type, cbArgs, fCount < 5 ? fCount : Boolean(fCount), filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false].join();
+	const key = [type, cbArgs, fCount < 5 ? fCount : Boolean(fCount), filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false, p.parallel, p.race].join();
 
 	const fn = (0, _gcc.any)(_cache.tmpCycle[key] || (0, _compile.compileCycle)(key, p));
 
@@ -294,7 +278,8 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		count: p.count,
 		from: p.from,
 		startIndex: p.startIndex,
-		endIndex: p.endIndex
+		endIndex: p.endIndex,
+		maxParallel: p.parallel || p.race
 	};
 
 	//#if iterators.thread

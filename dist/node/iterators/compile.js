@@ -75,7 +75,7 @@ function compileCycle(key, p) {
 	      filterArgs = [];
 
 	const maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
-	      needCtx = maxArgsLength > 3,
+	      needCtx = maxArgsLength > 3 || p.parallel || p.race,
 	      fLength = p.filter.length;
 
 	for (let i = 0; i < fLength; i++) {
@@ -83,12 +83,17 @@ function compileCycle(key, p) {
 	}
 
 	let iFn = _string.ws`
-		var 
+		var
 			data = o.data,
 			cb = o.cb,
+			baseCb = cb,
 			filters = o.filters,
-			priority = o.priority;
+			priority = o.priority,
+			maxParallel = o.maxParallel,
+			maxParallelIsNumber = typeof maxParallel === 'number';
+	`;
 
+	iFn += _string.ws`
 		var
 			count = o.count,
 			from = o.from,
@@ -124,7 +129,6 @@ function compileCycle(key, p) {
 		var
 			fLength = filters.length,
 			length,
-			f,
 			r;
 
 		var
@@ -154,8 +158,7 @@ function compileCycle(key, p) {
 
 			var
 				rElSet = new Set(),
-				rCbSet = new Set(),
-				rFSet = new Set();
+				rCbSet = new Set();
 
 			function resolveEl(res) {
 				rElSet.delete(el);
@@ -168,13 +171,151 @@ function compileCycle(key, p) {
 				r = res;
 				thread.next();
 			}
-
-			function resolveFilter(res) {
-				rFSet.delete(f);
-				f = res;
-				thread.next();
-			}
 		`;
+	}
+
+	if (fLength) {
+		iFn += _string.ws`
+			cb = function (${cbArgs}) {
+				var f;
+		`;
+
+		if (isAsync) {
+			iFn += 'var fIsPromise, res;';
+		}
+
+		const resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`;
+
+		if (fLength < 5) {
+			for (let i = 0; i < fLength; i++) {
+				const callFilter = `filters[${i}](${filterArgs[i]})`;
+
+				if (isAsync) {
+					iFn += _string.ws`
+						if (${!i ? 'f === undefined || ' : ''}f === true || fIsPromise) {
+							if (fIsPromise) {
+								f = f.then(function (f) {
+									${resolveFilterVal};
+
+									if (f) {
+										return ${callFilter};
+
+									} else {
+										return FALSE;
+									}
+
+								}, onError);
+
+							} else {
+								f = ${callFilter};
+								fIsPromise = isPromise(f);
+
+								if (!fIsPromise) {
+									${resolveFilterVal}
+								}
+							}
+						}
+					`;
+				} else {
+					iFn += _string.ws`
+						if (${!i ? 'f === undefined || ' : ''}f === true) {
+							f = ${callFilter};
+							${resolveFilterVal}
+						}
+					`;
+				}
+			}
+		} else {
+			const callFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
+
+			if (isAsync) {
+				iFn += _string.ws`
+					for (fI = -1; ++fI < fLength;) {
+						if (fIsPromise) {
+							f = f.then((function (fI) {
+								return function (f) {
+									f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
+
+									if (f) {
+										return ${callFilter};
+
+									} else {
+										return FALSE;
+									}
+								};
+							})(fI), onError);
+
+						} else {
+							f = ${callFilter};
+							fIsPromise = isPromise(f);
+
+							if (!fIsPromise) {
+								${resolveFilterVal}
+							}
+
+							if (!f) {
+								break;
+							}
+						}
+					}
+				`;
+			} else {
+				iFn += _string.ws`
+					for (fI = -1; ++fI < fLength;) {
+						f = ${callFilter};
+						${resolveFilterVal}
+
+						if (!f) {
+							break;
+						}
+					}
+				`;
+			}
+		}
+
+		if (isAsync) {
+			iFn += _string.ws`
+				if (fIsPromise) {
+					f = f.then(function (f) {
+						${resolveFilterVal}
+
+						if (f) {
+							return baseCb(${cbArgs});
+						}
+
+						return undefined;
+					});
+
+					res = f;
+
+				} else if (f) {
+					res = baseCb(${cbArgs});
+				}
+			`;
+
+			if (p.parallel || p.race) {
+				const fn = p.parallel ? 'wait' : 'race';
+
+				iFn += _string.ws`
+					if (maxParallelIsNumber) {
+						ctx['${fn}'](maxParallel, new Promise((r) => r(res)));
+
+					} else {
+						ctx['${fn}'](new Promise((r) => r(res)));
+					}
+				`;
+			} else {
+				iFn += 'return res;';
+			}
+		} else {
+			iFn += _string.ws`
+				if (f) {
+					return baseCb(${cbArgs});
+				}
+			`;
+		}
+
+		iFn += '};';
 	}
 
 	if (needCtx) {
@@ -277,8 +418,8 @@ function compileCycle(key, p) {
 					waiting = false;
 
 				var
-					waitStore = new Set(),
-					raceStore = new Set();
+					waitStore = new WeakSet(),
+					raceStore = new WeakSet();
 
 				childResult = [];
 				function waitFactory(store, max, promise) {
@@ -320,7 +461,7 @@ function compileCycle(key, p) {
 							if (waiting) {
 								ctx.next();
 							}
-						}, 
+						},
 
 						function (err) {
 							if (err && err.type === 'CollectionThreadDestroy') {
@@ -375,8 +516,16 @@ function compileCycle(key, p) {
 					return promise;
 				};
 
+				fCtx.race = function () {
+					throw new Error(".race can't be used inside a filter");
+				};
+
 				ctx.wait = function (max, promise) {
 					return waitFactory(waitStore, max, promise);
+				};
+
+				fCtx.wait = function () {
+					throw new Error(".wait can't be used inside a filter");
 				};
 
 				ctx.sleep = function (time, opt_test, opt_interval) {
@@ -782,74 +931,17 @@ function compileCycle(key, p) {
 	}
 
 	iFn += getEl;
-	if (fLength) {
-		if (fLength < 5) {
-			for (let i = 0; i < fLength; i++) {
-				iFn += _string.ws`
-					if (f === undefined || f === true) {
-						f = filters[${i}](${filterArgs[i]});
-				`;
 
-				if (isAsync) {
-					iFn += _string.ws`
-						while (isPromise(f)) {
-							if (!rFSet.has(f)) {
-								rFSet.add(f);
-								f.then(resolveFilter, onError);
-							}
+	let resolveCbValue = 'r = ';
 
-							thread.pause = true;
-							yield;
-						}
-					`;
-				}
-
-				iFn += _string.ws`
-						f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
-					}
-				`;
-			}
-		} else {
-			iFn += _string.ws`
-				for (fI = -1; ++fI < fLength;) {
-					f = filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)});
-			`;
-
-			if (isAsync) {
-				iFn += _string.ws`
-					while (isPromise(f)) {
-						if (!rFSet.has(f)) {
-							rFSet.add(f);
-							f.then(resolveFilter, onError);
-						}
-
-						thread.pause = true;
-						yield;
-					}
-				`;
-			}
-
-			iFn += _string.ws`
-					f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
-					if (!f) {
-						break;
-					}
-				}
-			`;
-		}
-
-		iFn += 'if (f) {';
-	}
-
-	let tmp = 'r = ';
 	if (p.mult) {
-		tmp += `cb(${cbArgs});`;
+		resolveCbValue += `cb(${cbArgs});`;
 	} else {
-		tmp += `cb(${cbArgs}); breaker = true;`;
+		resolveCbValue += `cb(${cbArgs}); breaker = true;`;
 	}
 
 	if (isAsync) {
-		tmp += _string.ws`
+		resolveCbValue += _string.ws`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
 					rCbSet.add(r);
@@ -863,7 +955,7 @@ function compileCycle(key, p) {
 	}
 
 	if (p.count) {
-		tmp += 'j++;';
+		resolveCbValue += 'j++;';
 	}
 
 	if (p.from) {
@@ -872,15 +964,11 @@ function compileCycle(key, p) {
 				from--;
 
 			} else {
-				${tmp}
+				${resolveCbValue}
 			}
 		`;
 	} else {
-		iFn += tmp;
-	}
-
-	if (fLength) {
-		iFn += '}';
+		iFn += resolveCbValue;
 	}
 
 	const yielder = _string.ws`
@@ -903,10 +991,6 @@ function compileCycle(key, p) {
 				break;
 			}
 		`;
-	}
-
-	if (fLength) {
-		iFn += 'f = undefined;';
 	}
 
 	iFn += _string.ws`
@@ -933,6 +1017,9 @@ function compileCycle(key, p) {
 	if (isAsync && needCtx) {
 		iFn += _string.ws`
 			waiting = true;
+			thread.pause = true;
+			yield;
+
 			while (waitStore.size) {
 				thread.pause = true;
 				yield;
