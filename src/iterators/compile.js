@@ -189,22 +189,22 @@ export function compileCycle(key, p) {
 		}
 
 		const
-			resolveFnVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`;
+			resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`;
 
 		if (fLength < 5) {
 			for (let i = 0; i < fLength; i++) {
 				const
-					callFn = `filters[${i}](${filterArgs[i]})`;
+					callFilter = `filters[${i}](${filterArgs[i]})`;
 
 				if (isAsync) {
 					iFn += ws`
 						if (${!i ? 'f === undefined || ' : ''}f === true || fIsPromise) {
 							if (fIsPromise) {
 								f = f.then(function (f) {
-									${resolveFnVal};
+									${resolveFilterVal};
 
 									if (f) {
-										return ${callFn};
+										return ${callFilter};
 
 									} else {
 										return FALSE;
@@ -213,11 +213,11 @@ export function compileCycle(key, p) {
 								}, onError);
 
 							} else {
-								f = ${callFn};
+								f = ${callFilter};
 								fIsPromise = isPromise(f);
 
 								if (!fIsPromise) {
-									${resolveFnVal}
+									${resolveFilterVal}
 								}
 							}
 						}
@@ -226,8 +226,8 @@ export function compileCycle(key, p) {
 				} else {
 					iFn += ws`
 						if (${!i ? 'f === undefined || ' : ''}f === true) {
-							f = ${callFn};
-							${resolveFnVal}
+							f = ${callFilter};
+							${resolveFilterVal}
 						}
 					`;
 				}
@@ -235,7 +235,7 @@ export function compileCycle(key, p) {
 
 		} else {
 			const
-				callFn = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
+				callFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
 
 			if (isAsync) {
 				iFn += ws`
@@ -246,7 +246,7 @@ export function compileCycle(key, p) {
 									f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;
 
 									if (f) {
-										return ${callFn};
+										return ${callFilter};
 
 									} else {
 										return FALSE;
@@ -255,11 +255,11 @@ export function compileCycle(key, p) {
 							})(fI), onError);
 
 						} else {
-							f = ${callFn};
+							f = ${callFilter};
 							fIsPromise = isPromise(f);
 
 							if (!fIsPromise) {
-								${resolveFnVal}
+								${resolveFilterVal}
 							}
 
 							if (!f) {
@@ -272,8 +272,8 @@ export function compileCycle(key, p) {
 			} else {
 				iFn += ws`
 					for (fI = -1; ++fI < fLength;) {
-						f = ${callFn};
-						${resolveFnVal}
+						f = ${callFilter};
+						${resolveFilterVal}
 
 						if (!f) {
 							break;
@@ -282,6 +282,37 @@ export function compileCycle(key, p) {
 				`;
 			}
 		}
+
+		if (isAsync) {
+			iFn += ws`
+				if (fIsPromise) {
+					f.then(function (f) {
+						${resolveFilterVal}
+
+						if (f) {
+							return cb(${cbArgs});
+						}
+
+						return undefined;
+					});
+
+					return f;
+				}
+
+				if (f) {
+					return cb(${cbArgs});
+				}
+			`;
+
+		} else {
+			iFn += ws`
+				if (f) {
+					return cb(${cbArgs});
+				}
+			`;
+		}
+
+		iFn += '};';
 	}
 
 	if (needCtx) {
@@ -1036,6 +1067,7 @@ export function compileCycle(key, p) {
 		tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
 
 	} else {
+		console.log(iFn);
 		tmpCycle[key] = new Function('o', 'p', iFn);
 	}
 
