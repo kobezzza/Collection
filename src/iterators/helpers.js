@@ -167,6 +167,30 @@ Collection.prototype.object = function (opt_notOwn) {
 	return this;
 };
 
+/**
+ * Sets .async to true and .parallel for the operation
+ *
+ * @param opt_max
+ * @return {!Collection}
+ */
+Collection.prototype.parallel = function (opt_max) {
+	this.p.async = true;
+	this.p.parallel = opt_max || true;
+	return this;
+};
+
+/**
+ * Sets .async to true and .race for the operation
+ *
+ * @param opt_max
+ * @return {!Collection}
+ */
+Collection.prototype.race = function (opt_max) {
+	this.p.async = true;
+	this.p.race = opt_max || true;
+	return this;
+};
+
 Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} */ {
 	async: {
 		/**

@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
-import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
+import { getType, isObjectInstance, isArray, isFunction, isNumber } from '../helpers/types';
 import { slice } from '../helpers/link';
 import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
 import { TRUE, FALSE, IGNORE } from '../consts/links';
@@ -87,6 +87,24 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	if (!p.use && p.notOwn) {
 		p.use = 'for in';
+	}
+
+	if (p.parallel || p.race) {
+		const
+			old = cb,
+			max = p.parallel || p.race,
+			fn = p.parallel ? 'wait' : 'race';
+
+		if (isNumber(max)) {
+			cb = function (el, i, data, o) {
+				o[fn](max, async () => old.apply(this, arguments));
+			};
+
+		} else {
+			cb = function (el, i, data, o) {
+				o[fn](async () => old.apply(this, arguments));
+			};
+		}
 	}
 
 	this._isThread(p);

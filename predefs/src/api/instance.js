@@ -123,6 +123,9 @@ var async;
 /** @type {?} */
 var result;
 
+/** @type {?} */
+var parallel;
+
 /**
  * @param {$$CollectionCb} cb
  * @param {?$$Collection_forEach=} [opt_params]
@@ -511,6 +514,18 @@ $$Collection.prototype.count = function (value) {};
  * @return {!$$Collection}
  */
 $$Collection.prototype.object = function (opt_notOwn) {};
+
+/**
+ * @param {(boolean|number|null)=} [opt_max]
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.parallel = function (opt_max) {};
+
+/**
+ * @param {(boolean|number|null)=} [opt_max]
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.race = function (opt_max) {};
 
 /** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.async;

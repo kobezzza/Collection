@@ -176,6 +176,8 @@ declare namespace CollectionJS {
 		end(value: number): SingleAsyncCollection<T>;
 		from(value: number): SingleAsyncCollection<T>;
 		object(notOwn: boolean | -1): SingleAsyncCollection<T>;
+		parallel(max: boolean | number): SingleAsyncCollection<T>;
+		race(max: boolean | number): SingleAsyncCollection<T>;
 
 		forEach(
 			cb: Callback<T>,
@@ -306,6 +308,8 @@ declare namespace CollectionJS {
 		count(value: number): AsyncCollection<T>;
 		from(value: number): AsyncCollection<T>;
 		object(notOwn: boolean | -1): AsyncCollection<T>;
+		parallel(max: boolean | number): AsyncCollection<T>;
+		race(max: boolean | number): AsyncCollection<T>;
 
 		forEach(
 			cb: Callback<T>,
@@ -472,6 +476,8 @@ declare namespace CollectionJS {
 		end(value: number): SingleCollection<T>;
 		from(value: number): SingleCollection<T>;
 		object(notOwn: boolean | -1): SingleCollection<T>;
+		parallel(max: boolean | number): SingleCollection<T>;
+		race(max: boolean | number): SingleCollection<T>;
 
 		forEach(
 			cb: Callback<T>,
@@ -742,6 +748,8 @@ declare namespace CollectionJS {
 		count(value: number): Collection<T>;
 		from(value: number): Collection<T>;
 		object(notOwn: boolean | -1): Collection<T>;
+		parallel(max: boolean | number): Collection<T>;
+		race(max: boolean | number): Collection<T>;
 
 		forEach(
 			cb: Callback<T>,
