@@ -93,6 +93,7 @@ export function compileCycle(key, p) {
 		var
 			data = o.data,
 			cb = o.cb,
+			baseCb = cb,
 			filters = o.filters,
 			priority = o.priority;
 	`;
@@ -290,7 +291,7 @@ export function compileCycle(key, p) {
 						${resolveFilterVal}
 
 						if (f) {
-							return cb(${cbArgs});
+							return baseCb(${cbArgs});
 						}
 
 						return undefined;
@@ -300,14 +301,14 @@ export function compileCycle(key, p) {
 				}
 
 				if (f) {
-					return cb(${cbArgs});
+					return baseCb(${cbArgs});
 				}
 			`;
 
 		} else {
 			iFn += ws`
 				if (f) {
-					return cb(${cbArgs});
+					return baseCb(${cbArgs});
 				}
 			`;
 		}
@@ -1067,7 +1068,6 @@ export function compileCycle(key, p) {
 		tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
 
 	} else {
-		console.log(iFn);
 		tmpCycle[key] = new Function('o', 'p', iFn);
 	}
 
