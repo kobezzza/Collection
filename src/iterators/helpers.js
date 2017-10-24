@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { isFunction } from '../helpers/types';
+import { isFunction, isNumber } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
@@ -170,24 +170,24 @@ Collection.prototype.object = function (opt_notOwn) {
 /**
  * Sets .async to true and .parallel for the operation
  *
- * @param opt_max
+ * @param {(boolean|number|null)=} [opt_max]
  * @return {!Collection}
  */
 Collection.prototype.parallel = function (opt_max) {
 	this.p.async = true;
-	this.p.parallel = opt_max || true;
+	this.p.parallel = isNumber(opt_max) ? opt_max || true : Boolean(opt_max);
 	return this;
 };
 
 /**
  * Sets .async to true and .race for the operation
  *
- * @param opt_max
+ * @param {(boolean|number|null)=} [opt_max]
  * @return {!Collection}
  */
 Collection.prototype.race = function (opt_max) {
 	this.p.async = true;
-	this.p.race = opt_max || true;
+	this.p.race = isNumber(opt_max) ? opt_max || true : Boolean(opt_max);
 	return this;
 };
 

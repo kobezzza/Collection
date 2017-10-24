@@ -285,8 +285,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		Boolean(p.from),
 		Boolean(p.startIndex),
 		p.endIndex !== false,
-		p.parallel,
-		p.race
+		Boolean(p.parallel),
+		Boolean(p.race)
 	].join();
 
 	const
