@@ -273,6 +273,28 @@ function compileCycle(key, p) {
 			}
 		}
 
+		let fnCountHelper = '';
+
+		if (p.from) {
+			fnCountHelper += _string.ws`
+				if (from === 0) {
+					return;
+				}
+
+				from--;
+		`;
+		}
+
+		if (p.count) {
+			fnCountHelper += _string.ws`
+				if (j === count) {
+					return;
+				}
+
+				j++;
+			`;
+		}
+
 		if (isAsync) {
 			iFn += _string.ws`
 				if (fIsPromise) {
@@ -280,15 +302,15 @@ function compileCycle(key, p) {
 						${resolveFilterVal}
 
 						if (f) {
+							${fnCountHelper}
 							return baseCb(${cbArgs});
 						}
-
-						return undefined;
 					});
 
 					res = f;
 
 				} else if (f) {
+					${fnCountHelper}
 					res = baseCb(${cbArgs});
 				}
 			`;
@@ -310,6 +332,7 @@ function compileCycle(key, p) {
 		} else {
 			iFn += _string.ws`
 				if (f) {
+					${fnCountHelper}
 					return baseCb(${cbArgs});
 				}
 			`;
@@ -931,17 +954,14 @@ function compileCycle(key, p) {
 	}
 
 	iFn += getEl;
+	iFn += `r = cb(${cbArgs});`;
 
-	let resolveCbValue = 'r = ';
-
-	if (p.mult) {
-		resolveCbValue += `cb(${cbArgs});`;
-	} else {
-		resolveCbValue += `cb(${cbArgs}); breaker = true;`;
+	if (!p.mult) {
+		iFn += 'breaker = true;';
 	}
 
 	if (isAsync) {
-		resolveCbValue += _string.ws`
+		iFn += _string.ws`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
 					rCbSet.add(r);
@@ -952,23 +972,6 @@ function compileCycle(key, p) {
 				yield;
 			}
 		`;
-	}
-
-	if (p.count) {
-		resolveCbValue += 'j++;';
-	}
-
-	if (p.from) {
-		iFn += _string.ws`
-			if (from !== 0) {
-				from--;
-
-			} else {
-				${resolveCbValue}
-			}
-		`;
-	} else {
-		iFn += resolveCbValue;
 	}
 
 	const yielder = _string.ws`
