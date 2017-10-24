@@ -183,7 +183,7 @@ export function compileCycle(key, p) {
 
 	if (fLength) {
 		iFn += ws`
-			cb = function () {
+			cb = function (${cbArgs}) {
 				var f;
 		`;
 
@@ -289,7 +289,7 @@ export function compileCycle(key, p) {
 		if (isAsync) {
 			iFn += ws`
 				if (fIsPromise) {
-					f.then(function (f) {
+					f = f.then(function (f) {
 						${resolveFilterVal}
 
 						if (f) {
