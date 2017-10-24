@@ -153,24 +153,24 @@ function compileCycle(key, p) {
 			}
 
 			var
-				rElMap = new Set(),
-				rCbMap = new Set(),
-				rFMap = new Set();
+				rElSet = new Set(),
+				rCbSet = new Set(),
+				rFSet = new Set();
 
 			function resolveEl(res) {
-				rElMap.delete(el);
+				rElSet.delete(el);
 				el = res;
 				thread.next();
 			}
 
 			function resolveCb(res) {
-				rCbMap.delete(r);
+				rCbSet.delete(r);
 				r = res;
 				thread.next();
 			}
 
 			function resolveFilter(res) {
-				rFMap.delete(f);
+				rFSet.delete(f);
 				f = res;
 				thread.next();
 			}
@@ -458,8 +458,8 @@ function compileCycle(key, p) {
 	if (isAsync) {
 		getEl = _string.ws`
 			while (isPromise(el)) {
-				if (!rElMap.has(el)) {
-					rElMap.set(el);
+				if (!rElSet.has(el)) {
+					rElSet.add(el);
 					el = el.then(resolveEl, onError);
 				}
 
@@ -793,8 +793,8 @@ function compileCycle(key, p) {
 				if (isAsync) {
 					iFn += _string.ws`
 						while (isPromise(f)) {
-							if (!rFMap.has(f)) {
-								rFMap.set(f);
+							if (!rFSet.has(f)) {
+								rFSet.add(f);
 								f.then(resolveFilter, onError);
 							}
 
@@ -818,8 +818,8 @@ function compileCycle(key, p) {
 			if (isAsync) {
 				iFn += _string.ws`
 					while (isPromise(f)) {
-						if (!rFMap.has(f)) {
-							rFMap.set(f);
+						if (!rFSet.has(f)) {
+							rFSet.add(f);
 							f.then(resolveFilter, onError);
 						}
 
@@ -851,8 +851,8 @@ function compileCycle(key, p) {
 	if (isAsync) {
 		tmp += _string.ws`
 			while (isPromise(r)) {
-				if (!rCbMap.has(r)) {
-					rCbMap.set(r);
+				if (!rCbSet.has(r)) {
+					rCbSet.add(r);
 					r.then(resolveCb, onError);
 				}
 
