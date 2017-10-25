@@ -288,50 +288,40 @@ export function compileCycle(key, p) {
 			`;
 		}
 
-		if (isAsync) {
+		iFn += ws`
+			if (fIsPromise) {
+				f = f.then(function (f) {
+					${fLength ? resolveFilterVal : ''}
+
+					if (f) {
+						${fnCountHelper}
+						return baseCb(${cbArgs});
+					}
+				});
+
+				res = f;
+
+			} else if (f) {
+				${fnCountHelper}
+				res = baseCb(${cbArgs});
+			}
+		`;
+
+		if (needParallel) {
+			const
+				fn = p.parallel ? 'wait' : 'race';
+
 			iFn += ws`
-				if (fIsPromise) {
-					f = f.then(function (f) {
-						${fLength ? resolveFilterVal : ''}
+				if (maxParallelIsNumber) {
+					ctx['${fn}'](maxParallel, new Promise((r) => r(res)));
 
-						if (f) {
-							${fnCountHelper}
-							return baseCb(${cbArgs});
-						}
-					});
-
-					res = f;
-
-				} else if (f) {
-					${fnCountHelper}
-					res = baseCb(${cbArgs});
+				} else {
+					ctx['${fn}'](new Promise((r) => r(res)));
 				}
 			`;
-
-			if (needParallel) {
-				const
-					fn = p.parallel ? 'wait' : 'race';
-
-				iFn += ws`
-					if (maxParallelIsNumber) {
-						ctx['${fn}'](maxParallel, new Promise((r) => r(res)));
-
-					} else {
-						ctx['${fn}'](new Promise((r) => r(res)));
-					}
-				`;
-
-			} else {
-				iFn += 'return res;';
-			}
 
 		} else {
-			iFn += ws`
-				if (f) {
-					${fnCountHelper}
-					return baseCb(${cbArgs});
-				}
-			`;
+			iFn += 'return res;';
 		}
 
 		iFn += '};';
