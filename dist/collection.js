@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.5
+ * Collection v6.3.6
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 25 Oct 2017 05:39:03 GMT
+ * Date: 'Wed, 25 Oct 2017 15:21:57 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 5];
+Collection.prototype.VERSION = [6, 3, 6];
 
 /**
  * Creates an instance of Collection
@@ -464,7 +464,7 @@ var LENGTH_REQUEST = SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTIO
 var FN_LENGTH = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 var ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 45;
+var CACHE_VERSION = 46;
 var CACHE_KEY = '__COLLECTION_CACHE__';
 var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
@@ -631,7 +631,7 @@ var _templateObject = taggedTemplateLiteral(['\nvar\ndata = o.data,\ncb = o.cb,\
 var _templateObject2 = taggedTemplateLiteral(['\nvar\ncount = o.count,\nfrom = o.from,\nstartIndex = o.startIndex || 0,\nendIndex = o.endIndex !== false ? o.endIndex + 1 : 0;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError;\nvar\nTRUE = o.TRUE,\nFALSE = o.FALSE,\nIGNORE = o.IGNORE;\nvar\ni = -1,\nj = 0,\nn = -1,\nid = 0,\nfI = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nchildResult;\nvar\nfLength = filters.length,\nlength,\nr,\nf;\nvar\nel,\nkey;\n'], ['\nvar\ncount = o.count,\nfrom = o.from,\nstartIndex = o.startIndex || 0,\nendIndex = o.endIndex !== false ? o.endIndex + 1 : 0;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError;\nvar\nTRUE = o.TRUE,\nFALSE = o.FALSE,\nIGNORE = o.IGNORE;\nvar\ni = -1,\nj = 0,\nn = -1,\nid = 0,\nfI = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nchildResult;\nvar\nfLength = filters.length,\nlength,\nr,\nf;\nvar\nel,\nkey;\n']);
 var _templateObject3 = taggedTemplateLiteral(['\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nthread = o.self,\nyielder = false,\nyieldVal;\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nvar\nrElSet = new Set(),\nrCbSet = new Set();\nfunction resolveEl(res) {\nrElSet.delete(el);\nel = res;\nthread.next();\n}\nfunction resolveCb(res) {\nrCbSet.delete(r);\nr = res;\nthread.next();\n}\n'], ['\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nthread = o.self,\nyielder = false,\nyieldVal;\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nvar\nrElSet = new Set(),\nrCbSet = new Set();\nfunction resolveEl(res) {\nrElSet.delete(el);\nel = res;\nthread.next();\n}\nfunction resolveCb(res) {\nrCbSet.delete(r);\nr = res;\nthread.next();\n}\n']);
 var _templateObject4 = taggedTemplateLiteral(['\ncb = function (', ') {\nvar\nf = ', ',\nfIsPromise,\nres;\n'], ['\ncb = function (', ') {\nvar\nf = ', ',\nfIsPromise,\nres;\n']);
-var _templateObject5 = taggedTemplateLiteral(['\nif (', 'f === true || fIsPromise) {\nif (fIsPromise) {\nf = f.then(function (f) {\n', ';\nif (f) {\nreturn ', ';\n} else {\nreturn FALSE;\n}\n}, onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\n}\n}\n'], ['\nif (', 'f === true || fIsPromise) {\nif (fIsPromise) {\nf = f.then(function (f) {\n', ';\nif (f) {\nreturn ', ';\n} else {\nreturn FALSE;\n}\n}, onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\n}\n}\n']);
+var _templateObject5 = taggedTemplateLiteral(['\nif (', ') {\nif (fIsPromise) {\nf = f.then(function (f) {\n', ';\nif (f) {\nreturn ', ';\n} else {\nreturn FALSE;\n}\n}, onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\n}\n}\n'], ['\nif (', ') {\nif (fIsPromise) {\nf = f.then(function (f) {\n', ';\nif (f) {\nreturn ', ';\n} else {\nreturn FALSE;\n}\n}, onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\n}\n}\n']);
 var _templateObject6 = taggedTemplateLiteral(['\nfor (fI = -1; ++fI < fLength;) {\nif (fIsPromise) {\nf = f.then((function (fI) {\nreturn function (f) {\n', '\nif (f) {\nreturn ', ';\n} else {\nreturn FALSE;\n}\n};\n})(fI), onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\nif (!f) {\nbreak;\n}\n}\n}\n'], ['\nfor (fI = -1; ++fI < fLength;) {\nif (fIsPromise) {\nf = f.then((function (fI) {\nreturn function (f) {\n', '\nif (f) {\nreturn ', ';\n} else {\nreturn FALSE;\n}\n};\n})(fI), onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\nif (!f) {\nbreak;\n}\n}\n}\n']);
 var _templateObject7 = taggedTemplateLiteral(['\nif (from === 0) {\nreturn;\n}\nfrom--;\n'], ['\nif (from === 0) {\nreturn;\n}\nfrom--;\n']);
 var _templateObject8 = taggedTemplateLiteral(['\nif (j === count) {\nreturn;\n}\nj++;\n'], ['\nif (j === count) {\nreturn;\n}\nj++;\n']);
@@ -662,7 +662,7 @@ var _templateObject32 = taggedTemplateLiteral(['\nvar tmpArray = [];\nfor (var s
 var _templateObject33 = taggedTemplateLiteral(['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + startIndex;\n'], ['\nlength = tmpArray.length;\nfor (n = -1; ++n < length;) {\n', '\ni = n + startIndex;\n']);
 var _templateObject34 = taggedTemplateLiteral(['\nfor (key = cursor.next(); \'done\' in key ? !key.done : key; key = cursor.next()) {\nbrkIf = \'done\' in key === false;\n', '\nn++;\ni = n;\n'], ['\nfor (key = cursor.next(); \'done\' in key ? !key.done : key; key = cursor.next()) {\nbrkIf = \'done\' in key === false;\n', '\nn++;\ni = n;\n']);
 var _templateObject35 = taggedTemplateLiteral(['\nif (j === count) {\nbreak;\n}\n'], ['\nif (j === count) {\nbreak;\n}\n']);
-var _templateObject36 = taggedTemplateLiteral(['\nif (', 'f === true) {\nf = filters[', '](', ');\n', '\n}\n'], ['\nif (', 'f === true) {\nf = filters[', '](', ');\n', '\n}\n']);
+var _templateObject36 = taggedTemplateLiteral(['\nif (', ') {\nf = filters[', '](', ');\n', '\n}\n'], ['\nif (', ') {\nf = filters[', '](', ');\n', '\n}\n']);
 var _templateObject37 = taggedTemplateLiteral(['\nfor (fI = -1; ++fI < fLength;) {\nf = ', ';\n', '\nif (!f) {\nbreak;\n}\n}\n'], ['\nfor (fI = -1; ++fI < fLength;) {\nf = ', ';\n', '\nif (!f) {\nbreak;\n}\n}\n']);
 var _templateObject38 = taggedTemplateLiteral(['\nwhile (isPromise(r)) {\nif (!rCbSet.has(r)) {\nrCbSet.add(r);\nr.then(resolveCb, onError);\n}\nthread.pause = true;\nyield;\n}\n'], ['\nwhile (isPromise(r)) {\nif (!rCbSet.has(r)) {\nrCbSet.add(r);\nr.then(resolveCb, onError);\n}\nthread.pause = true;\nyield;\n}\n']);
 var _templateObject39 = taggedTemplateLiteral(['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n'], ['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n']);
@@ -753,7 +753,7 @@ function compileCycle(key, p) {
 				for (var _i = 0; _i < fLength; _i++) {
 					var callFilter = 'filters[' + _i + '](' + filterArgs[_i] + ')';
 
-					iFn += ws(_templateObject5, !_i ? 'f === undefined || ' : '', resolveFilterVal, callFilter, callFilter, resolveFilterVal);
+					iFn += ws(_templateObject5, _i ? 'f' : 'true', resolveFilterVal, callFilter, callFilter, resolveFilterVal);
 				}
 			} else {
 				iFn += ws(_templateObject6, resolveFilterVal, callCycleFilter, callCycleFilter, resolveFilterVal);
@@ -993,7 +993,7 @@ function compileCycle(key, p) {
 		if (fLength) {
 			if (fLength < 5) {
 				for (var _i2 = 0; _i2 < fLength; _i2++) {
-					iFn += ws(_templateObject36, !_i2 ? 'f === undefined || ' : '', _i2, filterArgs[_i2], resolveFilterVal);
+					iFn += ws(_templateObject36, _i2 ? 'f' : 'true', _i2, filterArgs[_i2], resolveFilterVal);
 				}
 			} else {
 				iFn += ws(_templateObject37, callCycleFilter, resolveFilterVal);

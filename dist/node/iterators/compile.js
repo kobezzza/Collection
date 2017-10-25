@@ -195,7 +195,7 @@ function compileCycle(key, p) {
 					const callFilter = `filters[${i}](${filterArgs[i]})`;
 
 					iFn += _string.ws`
-						if (${!i ? 'f === undefined || ' : ''}f === true || fIsPromise) {
+						if (${i ? 'f' : 'true'}) {
 							if (fIsPromise) {
 								f = f.then(function (f) {
 									${resolveFilterVal};
@@ -926,7 +926,7 @@ function compileCycle(key, p) {
 			if (fLength < 5) {
 				for (let i = 0; i < fLength; i++) {
 					iFn += _string.ws`
-						if (${!i ? 'f === undefined || ' : ''}f === true) {
+						if (${i ? 'f' : 'true'}) {
 							f = filters[${i}](${filterArgs[i]});
 							${resolveFilterVal}
 						}
