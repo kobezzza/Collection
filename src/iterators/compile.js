@@ -191,12 +191,11 @@ export function compileCycle(key, p) {
 	if (needWrapper) {
 		iFn += ws`
 			cb = function (${cbArgs}) {
-				var f = ${fLength ? undefined : true};
+				var
+					f = ${fLength ? undefined : true},
+					fIsPromise,
+					res;
 		`;
-
-		if (isAsync) {
-			iFn += 'var fIsPromise, res;';
-		}
 
 		if (fLength) {
 			if (fLength < 5) {
