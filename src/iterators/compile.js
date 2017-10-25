@@ -524,16 +524,8 @@ export function compileCycle(key, p) {
 					return promise;
 				};
 
-				fCtx.race = function () {
-					throw new Error(".race can't be used inside a filter");
-				};
-
 				ctx.wait = function (max, promise) {
 					return waitFactory(waitStore, max, promise);
-				};
-
-				fCtx.wait = function () {
-					throw new Error(".wait can't be used inside a filter");
 				};
 
 				ctx.sleep = function (time, opt_test, opt_interval) {
