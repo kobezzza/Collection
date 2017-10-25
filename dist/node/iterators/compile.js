@@ -183,12 +183,11 @@ function compileCycle(key, p) {
 	if (needWrapper) {
 		iFn += _string.ws`
 			cb = function (${cbArgs}) {
-				var f = ${fLength ? undefined : true};
+				var
+					f = ${fLength ? undefined : true},
+					fIsPromise,
+					res;
 		`;
-
-		if (isAsync) {
-			iFn += 'var fIsPromise, res;';
-		}
 
 		if (fLength) {
 			if (fLength < 5) {
@@ -277,47 +276,38 @@ function compileCycle(key, p) {
 			`;
 		}
 
-		if (isAsync) {
-			iFn += _string.ws`
-				if (fIsPromise) {
-					f = f.then(function (f) {
-						${fLength ? resolveFilterVal : ''}
+		iFn += _string.ws`
+			if (fIsPromise) {
+				f = f.then(function (f) {
+					${fLength ? resolveFilterVal : ''}
 
-						if (f) {
-							${fnCountHelper}
-							return baseCb(${cbArgs});
-						}
-					});
-
-					res = f;
-
-				} else if (f) {
-					${fnCountHelper}
-					res = baseCb(${cbArgs});
-				}
-			`;
-
-			if (needParallel) {
-				const fn = p.parallel ? 'wait' : 'race';
-
-				iFn += _string.ws`
-					if (maxParallelIsNumber) {
-						ctx['${fn}'](maxParallel, new Promise((r) => r(res)));
-
-					} else {
-						ctx['${fn}'](new Promise((r) => r(res)));
+					if (f) {
+						${fnCountHelper}
+						return baseCb(${cbArgs});
 					}
-				`;
-			} else {
-				iFn += 'return res;';
+				});
+
+				res = f;
+
+			} else if (f) {
+				${fnCountHelper}
+				res = baseCb(${cbArgs});
 			}
-		} else {
+		`;
+
+		if (needParallel) {
+			const fn = p.parallel ? 'wait' : 'race';
+
 			iFn += _string.ws`
-				if (f) {
-					${fnCountHelper}
-					return baseCb(${cbArgs});
+				if (maxParallelIsNumber) {
+					ctx['${fn}'](maxParallel, new Promise((r) => r(res)));
+
+				} else {
+					ctx['${fn}'](new Promise((r) => r(res)));
 				}
 			`;
+		} else {
+			iFn += 'return res;';
 		}
 
 		iFn += '};';
@@ -521,16 +511,8 @@ function compileCycle(key, p) {
 					return promise;
 				};
 
-				fCtx.race = function () {
-					throw new Error(".race can't be used inside a filter");
-				};
-
 				ctx.wait = function (max, promise) {
 					return waitFactory(waitStore, max, promise);
-				};
-
-				fCtx.wait = function () {
-					throw new Error(".wait can't be used inside a filter");
 				};
 
 				ctx.sleep = function (time, opt_test, opt_interval) {
