@@ -216,11 +216,9 @@ export function compileCycle(key, p) {
 
 									if (f) {
 										return ${callFilter};
-
-									} else {
-										return FALSE;
 									}
 
+									return FALSE;
 								}, onError);
 
 							} else {
