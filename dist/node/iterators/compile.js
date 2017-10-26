@@ -77,25 +77,22 @@ function compileCycle(key, p) {
 	const maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
 	      needParallel = p.parallel || p.race,
 	      needCtx = maxArgsLength > 3 || needParallel,
-	      fLength = p.filter.length,
-	      needWrapper = fLength && isAsync || needParallel;
+	      fLength = p.filter.length;
 
 	for (let i = 0; i < fLength; i++) {
 		filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
 	}
+
+	const resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`,
+	      callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
 
 	let iFn = _string.ws`
 		var
 			data = o.data,
 			cb = o.cb,
 			baseCb = cb,
-			filters = o.filters,
-			priority = o.priority,
-			maxParallel = o.maxParallel,
-			maxParallelIsNumber = typeof maxParallel === 'number';
-	`;
+			filters = o.filters;
 
-	iFn += _string.ws`
 		var
 			count = o.count,
 			from = o.from,
@@ -120,8 +117,7 @@ function compileCycle(key, p) {
 			fI = -1;
 
 		var
-			breaker = false,
-			brkIf = false;
+			breaker = false;
 
 		var
 			limit = 1,
@@ -146,12 +142,18 @@ function compileCycle(key, p) {
 	if (isAsync) {
 		iFn += _string.ws`
 			var
+				priority = o.priority,
+				maxParallel = o.maxParallel,
+				maxParallelIsNumber = typeof maxParallel === 'number';
+
+			var
 				timeStart,
 				timeEnd,
 				time = 0;
 
 			var
 				thread = o.self,
+				brkIf = false,
 				yielder = false,
 				yieldVal;
 
@@ -160,33 +162,35 @@ function compileCycle(key, p) {
 			}
 
 			var
-				rElSet = new Set(),
 				rCbSet = new Set();
-
-			function resolveEl(res) {
-				rElSet.delete(el);
-				el = res;
-				thread.next();
-			}
 
 			function resolveCb(res) {
 				rCbSet.delete(r);
 				r = res;
 				thread.next();
 			}
-		`;
-	}
 
-	const resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`,
-	      callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
-
-	if (needWrapper) {
-		iFn += _string.ws`
 			cb = function (${cbArgs}) {
 				var
 					f = ${fLength ? undefined : true},
-					fIsPromise,
+					fIsPromise = isPromise(el),
 					res;
+
+				if (fIsPromise) {
+					f = el.then(function (val) {
+						el = val;
+
+						if (el === IGNORE) {
+							return FALSE;
+						}
+
+						if (brkIf && el === null) {
+							breaker = true;
+							return FALSE;
+						}
+
+					}, onError);
+				}
 		`;
 
 		if (fLength) {
@@ -195,7 +199,7 @@ function compileCycle(key, p) {
 					const callFilter = `filters[${i}](${filterArgs[i]})`;
 
 					iFn += _string.ws`
-						if (${i ? 'f' : 'true'}) {
+						if (${i ? 'f' : 'f === undefined || f'}) {
 							if (fIsPromise) {
 								f = f.then(function (f) {
 									${resolveFilterVal};
@@ -279,7 +283,7 @@ function compileCycle(key, p) {
 		iFn += _string.ws`
 			if (fIsPromise) {
 				f = f.then(function (f) {
-					${fLength ? resolveFilterVal : ''}
+					${resolveFilterVal}
 
 					if (f) {
 						${fnCountHelper}
@@ -568,8 +572,7 @@ function compileCycle(key, p) {
 	}
 
 	let threadStart = '',
-	    threadEnd = '',
-	    getEl = '';
+	    threadEnd = '';
 
 	if (p.thread) {
 		threadStart = _string.ws`
@@ -587,28 +590,6 @@ function compileCycle(key, p) {
 				yield;
 				time = 0;
 				timeStart = null;
-			}
-		`;
-	}
-
-	if (isAsync) {
-		getEl = _string.ws`
-			while (isPromise(el)) {
-				if (!rElSet.has(el)) {
-					rElSet.add(el);
-					el = el.then(resolveEl, onError);
-				}
-
-				thread.pause = true;
-				yield;
-			}
-
-			if (el === IGNORE) {
-				continue;
-			}
-
-			if (brkIf && el === null) {
-				break;
 			}
 		`;
 	}
@@ -701,7 +682,7 @@ function compileCycle(key, p) {
 					if (p.notOwn) {
 						if (p.notOwn === -1) {
 							iFn += _string.ws`
-								for (var key in data) {
+								for (key in data) {
 									${threadStart}
 									if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
 										continue;
@@ -713,7 +694,7 @@ function compileCycle(key, p) {
 							`;
 						} else {
 							iFn += _string.ws`
-								for (var key in data) {
+								for (key in data) {
 									${threadStart}
 									tmpArray.push(key);
 									${threadEnd}
@@ -722,7 +703,7 @@ function compileCycle(key, p) {
 						}
 					} else {
 						iFn += _string.ws`
-							for (var key in data) {
+							for (key in data) {
 								${threadStart}
 								if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 									break;
@@ -805,41 +786,42 @@ function compileCycle(key, p) {
 		case 'set':
 		case 'generator':
 		case 'iterator':
-			const gen = () => {
-				if (isMapSet) {
-					iFn += 'var cursor = data.keys();';
+			if (isMapSet) {
+				iFn += 'var cursor = data.keys();';
 
-					if (!p.live && !p.reverse) {
-						iFn += 'var size = data.size;';
-					}
-				} else if (p.type === 'generator') {
-					iFn += 'var cursor = data();';
-				} else {
-					iFn += _string.ws`
-						var
-							iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
-							cursor;
-
-						if (typeof data.next === 'function') {
-							cursor = data;
-
-						} else {
-							cursor = (iteratorKey ? data[iteratorKey]() : data['@@iterator'] && data['@@iterator']()) || data;
-						}
-					`;
+				if (!p.live && !p.reverse) {
+					iFn += 'var size = data.size;';
 				}
-			};
+			} else if (p.type === 'generator') {
+				iFn += 'var cursor = data();';
+			} else {
+				iFn += _string.ws`
+					var
+						iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
+						cursor;
+
+					if (typeof data.next === 'function') {
+						cursor = data;
+
+					} else {
+						cursor = (iteratorKey ? data[iteratorKey]() : data['@@iterator'] && data['@@iterator']()) || data;
+					}
+				`;
+			}
+
+			iFn += _string.ws`
+				${p.reverse ? 'var tmpArray = [];' : ''}
+				for (
+					key = cursor.next(), brkIf = 'done' in key === false; 
+					'done' in key ? !key.done : key; 
+					key = cursor.next()
+				) {
+			`;
 
 			if (p.reverse) {
-				gen();
 				iFn += _string.ws`
-					var tmpArray = [];
-					for (var step = cursor.next(); 'done' in step ? !step.done : step; step = cursor.next()) {
 						${threadStart}
-						brkIf = 'done' in step === false;
-						el = 'value' in step ? step.value : step;
-						${getEl}
-						tmpArray.push(el);
+						tmpArray.push('value' in key ? key.value : key);
 						${threadEnd}
 					}
 
@@ -858,14 +840,10 @@ function compileCycle(key, p) {
 						i = n + startIndex;
 				`;
 			} else {
-				gen();
-
 				iFn += _string.ws`
-					for (key = cursor.next(); 'done' in key ? !key.done : key; key = cursor.next()) {
-						brkIf = 'done' in key === false;
-						${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
-						n++;
-						i = n;
+					${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
+					n++;
+					i = n;
 				`;
 
 				if (p.startIndex) {
@@ -917,11 +895,9 @@ function compileCycle(key, p) {
 		`;
 	}
 
-	iFn += getEl;
-
 	let tmp = '';
 
-	if (!needWrapper) {
+	if (!isAsync) {
 		if (fLength) {
 			if (fLength < 5) {
 				for (let i = 0; i < fLength; i++) {
@@ -973,7 +949,7 @@ function compileCycle(key, p) {
 		`;
 	}
 
-	if (!needWrapper && p.from) {
+	if (!isAsync && p.from) {
 		iFn += _string.ws`
 			if (from !== 0) {
 				from--;
@@ -986,7 +962,7 @@ function compileCycle(key, p) {
 		iFn += tmp;
 	}
 
-	if (!needWrapper && fLength) {
+	if (!isAsync && fLength) {
 		iFn += '}';
 	}
 
@@ -1094,6 +1070,7 @@ function compileCycle(key, p) {
 						exports.exec = function () { ${returnCache(cache)} };
 					`, () => {});
 			}, delay);
+
 			timeout['unref']();
 		}
 	}

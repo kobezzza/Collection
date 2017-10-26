@@ -4,7 +4,7 @@
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "collection.js",
   "typings": "collection.d.ts",
-  "version": "6.3.6",
+  "version": "6.3.7",
   "license": "MIT",
   "author": {
     "name": "kobezzza",
