@@ -90,6 +90,10 @@ export function compileCycle(key, p) {
 		filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
 	}
 
+	const
+		resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`,
+		callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
+
 	let iFn = ws`
 		var
 			data = o.data,
@@ -173,15 +177,7 @@ export function compileCycle(key, p) {
 				r = res;
 				thread.next();
 			}
-		`;
-	}
 
-	const
-		resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`,
-		callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
-
-	if (isAsync) {
-		iFn += ws`
 			cb = function (${cbArgs}) {
 				var
 					f = ${fLength ? undefined : true},
@@ -706,7 +702,7 @@ export function compileCycle(key, p) {
 					if (p.notOwn) {
 						if (p.notOwn === -1) {
 							iFn += ws`
-								for (var key in data) {
+								for (key in data) {
 									${threadStart}
 									if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
 										continue;
@@ -719,7 +715,7 @@ export function compileCycle(key, p) {
 
 						} else {
 							iFn += ws`
-								for (var key in data) {
+								for (key in data) {
 									${threadStart}
 									tmpArray.push(key);
 									${threadEnd}
@@ -729,7 +725,7 @@ export function compileCycle(key, p) {
 
 					} else {
 						iFn += ws`
-							for (var key in data) {
+							for (key in data) {
 								${threadStart}
 								if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 									break;
@@ -817,44 +813,44 @@ export function compileCycle(key, p) {
 		case 'set':
 		case 'generator':
 		case 'iterator':
-			const gen = () => {
-				if (isMapSet) {
-					iFn += 'var cursor = data.keys();';
+			if (isMapSet) {
+				iFn += 'var cursor = data.keys();';
 
-					if (!p.live && !p.reverse) {
-						iFn += 'var size = data.size;';
-					}
-
-				} else if (p.type === 'generator') {
-					iFn += 'var cursor = data();';
-
-				} else {
-					iFn += ws`
-						var
-							iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
-							cursor;
-
-						if (typeof data.next === 'function') {
-							cursor = data;
-
-						} else {
-							cursor = (iteratorKey ? data[iteratorKey]() : data['@@iterator'] && data['@@iterator']()) || data;
-						}
-					`;
+				if (!p.live && !p.reverse) {
+					iFn += 'var size = data.size;';
 				}
-			};
+
+			} else if (p.type === 'generator') {
+				iFn += 'var cursor = data();';
+
+			} else {
+				iFn += ws`
+					var
+						iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
+						cursor;
+
+					if (typeof data.next === 'function') {
+						cursor = data;
+
+					} else {
+						cursor = (iteratorKey ? data[iteratorKey]() : data['@@iterator'] && data['@@iterator']()) || data;
+					}
+				`;
+			}
+
+			iFn += ws`
+				${p.reverse ? 'var tmpArray = [];' : ''}
+				for (
+					key = cursor.next(), brkIf = 'done' in key === false; 
+					'done' in key ? !key.done : key; 
+					key = cursor.next()
+				) {
+			`;
 
 			if (p.reverse) {
-				gen();
 				iFn += ws`
-					var tmpArray = [];
-					for (
-						var step = cursor.next(), brkIf = 'done' in step === false; 
-						'done' in step ? !step.done : step; 
-						step = cursor.next()
-					) {
 						${threadStart}
-						tmpArray.push('value' in step ? step.value : step);
+						tmpArray.push('value' in key ? key.value : key);
 						${threadEnd}
 					}
 
@@ -874,17 +870,10 @@ export function compileCycle(key, p) {
 				`;
 
 			} else {
-				gen();
-
 				iFn += ws`
-					for (
-						key = cursor.next(), brkIf = 'done' in key === false; 
-						'done' in key ? !key.done : key; 
-						key = cursor.next()
-					) {
-						${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
-						n++;
-						i = n;
+					${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
+					n++;
+					i = n;
 				`;
 
 				if (p.startIndex) {
