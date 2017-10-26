@@ -848,9 +848,12 @@ export function compileCycle(key, p) {
 				gen();
 				iFn += ws`
 					var tmpArray = [];
-					for (var step = cursor.next(); 'done' in step ? !step.done : step; step = cursor.next()) {
+					for (
+						var step = cursor.next(), brkIf = 'done' in step === false; 
+						'done' in step ? !step.done : step; 
+						step = cursor.next()
+					) {
 						${threadStart}
-						brkIf = 'done' in step === false;
 						tmpArray.push('value' in step ? step.value : step);
 						${threadEnd}
 					}
@@ -874,8 +877,11 @@ export function compileCycle(key, p) {
 				gen();
 
 				iFn += ws`
-					for (key = cursor.next(); 'done' in key ? !key.done : key; key = cursor.next()) {
-						brkIf = 'done' in key === false;
+					for (
+						key = cursor.next(), brkIf = 'done' in key === false; 
+						'done' in key ? !key.done : key; 
+						key = cursor.next()
+					) {
 						${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
 						n++;
 						i = n;
