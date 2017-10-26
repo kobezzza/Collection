@@ -212,7 +212,7 @@ export function compileCycle(key, p) {
 						callFilter = `filters[${i}](${filterArgs[i]})`;
 
 					iFn += ws`
-						if (f) {
+						if (${i ? 'f' : 'f === undefined || f'}) {
 							if (fIsPromise) {
 								f = f.then(function (f) {
 									${resolveFilterVal};
