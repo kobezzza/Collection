@@ -1121,8 +1121,8 @@ export function compileCycle(key, p) {
 
 					() => {}
 				);
-
 			}, delay);
+
 			timeout['unref']();
 		}
 	}
