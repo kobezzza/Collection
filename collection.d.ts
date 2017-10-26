@@ -101,6 +101,8 @@ declare namespace CollectionJS {
 		use?: string;
 		length?: boolean;
 		async?: boolean;
+		parallel?: boolean | number;
+		race?: boolean | number;
 		thread?: boolean;
 		priority?: string;
 		onChunk?: EventCallback;

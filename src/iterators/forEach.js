@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
-import { getType, isObjectInstance, isArray, isFunction, isNumber } from '../helpers/types';
+import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
 import { slice } from '../helpers/link';
 import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
 import { TRUE, FALSE, IGNORE } from '../consts/links';
@@ -60,8 +60,14 @@ const mapSet = {
  *
  *   *) [use] - type of the using iterator (for, for of, for in)
  *   *) [length = true] - if false, then function parameters optimization won't be apply
- *   *) [async = false] - if true, then operation will be executed as async (returns a promise)
- *   *) [thread = false] - if true, then operation will be executed in a thread (returns a promise)
+ *   *) [async = false] - if true, then the operation will be executed as async (returns a promise)
+ *   *) [thread = false] - if true, then the operation will be executed in a thread (returns a promise)
+ *   *) [parallel = false] - if true or number, then the operation will be executed as async and parallel
+ *        (number is max parallel operations)
+ *
+ *   *  [race = false] - if true or number, then the operation will be executed as async and parallel with race
+ *        (number is max parallel operations)
+ *
  *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
  *   *) [onChunk] - callback function for chunks
  *   *) [onIterationEnd] - callback function for the end of iterations
