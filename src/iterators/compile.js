@@ -197,6 +197,7 @@ export function compileCycle(key, p) {
 							return FALSE;
 						}
 
+						return el;
 					}, onError);
 				}
 		`;
@@ -840,8 +841,9 @@ export function compileCycle(key, p) {
 
 			iFn += ws`
 				${p.reverse ? 'var tmpArray = [];' : ''}
+
 				for (
-					key = cursor.next(), brkIf = 'done' in key === false; 
+					key = cursor.next(), brkIf = ('done' in key === false); 
 					'done' in key ? !key.done : key; 
 					key = cursor.next()
 				) {
