@@ -1036,7 +1036,7 @@ export function compileCycle(key, p) {
 		looper++;
 
 		if (onIterationEnd) {
-			onIterationEnd(ctx);
+			onIterationEnd(${needCtx ? 'ctx' : ''});
 		}
 	`;
 
