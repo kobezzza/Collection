@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.7
+ * Collection v6.3.8
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 26 Oct 2017 15:24:25 GMT
+ * Date: 'Fri, 27 Oct 2017 13:44:10 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 7];
+Collection.prototype.VERSION = [6, 3, 8];
 
 /**
  * Creates an instance of Collection
@@ -464,7 +464,7 @@ var LENGTH_REQUEST = SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTIO
 var FN_LENGTH = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 var ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 47;
+var CACHE_VERSION = 48;
 var CACHE_KEY = '__COLLECTION_CACHE__';
 var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
@@ -666,7 +666,7 @@ var _templateObject36 = taggedTemplateLiteral(['\nwhile (isPromise(r)) {\nif (!r
 var _templateObject37 = taggedTemplateLiteral(['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n'], ['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n']);
 var _templateObject38 = taggedTemplateLiteral(['\nif (yielder) {\nyielder = false;\nthread.pause = true;\nyieldVal = yield yieldVal;\n}\n'], ['\nif (yielder) {\nyielder = false;\nthread.pause = true;\nyieldVal = yield yieldVal;\n}\n']);
 var _templateObject39 = taggedTemplateLiteral(['\nsize--;\nif (!size) {\nbreak;\n}\n'], ['\nsize--;\nif (!size) {\nbreak;\n}\n']);
-var _templateObject40 = taggedTemplateLiteral(['\nif (breaker) {\nbreak;\n}\n', '\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(ctx);\n}\n'], ['\nif (breaker) {\nbreak;\n}\n', '\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(ctx);\n}\n']);
+var _templateObject40 = taggedTemplateLiteral(['\nif (breaker) {\nbreak;\n}\n', '\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(', ');\n}\n'], ['\nif (breaker) {\nbreak;\n}\n', '\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(', ');\n}\n']);
 var _templateObject41 = taggedTemplateLiteral(['\nwaiting = true;\nthread.pause = true;\nyield;\nwhile (waitStore.size) {\nthread.pause = true;\nyield;\n}\nwhile (raceStore.size) {\nthread.pause = true;\nyield;\n}\n'], ['\nwaiting = true;\nthread.pause = true;\nyield;\nwhile (waitStore.size) {\nthread.pause = true;\nyield;\n}\nwhile (raceStore.size) {\nthread.pause = true;\nyield;\n}\n']);
 var _templateObject42 = taggedTemplateLiteral(['\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n'], ['\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n']);
 
@@ -1018,7 +1018,7 @@ function compileCycle(key, p) {
 		iFn += ws(_templateObject39);
 	}
 
-	iFn += ws(_templateObject40, threadEnd);
+	iFn += ws(_templateObject40, threadEnd, needCtx ? 'ctx' : '');
 
 	if (isAsync) {
 		iFn += yielder;
