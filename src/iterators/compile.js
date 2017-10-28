@@ -83,6 +83,7 @@ export function compileCycle(key, p) {
 	const
 		maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
 		needParallel = p.parallel || p.race,
+		parallelFn = p.parallel ? 'wait' : 'race',
 		needCtx = maxArgsLength > 3 || needParallel,
 		fLength = p.filter.length;
 
@@ -186,18 +187,17 @@ export function compileCycle(key, p) {
 
 				if (fIsPromise) {
 					f = el.then(function (val) {
-						el = val;
-
-						if (el === IGNORE) {
+						if (val === IGNORE) {
 							return FALSE;
 						}
 
-						if (brkIf && el === null) {
+						if (brkIf && val === null) {
 							breaker = true;
 							return FALSE;
 						}
 
-						return el;
+						el = val;
+						return TRUE;
 					}, onError);
 				}
 		`;
@@ -310,15 +310,12 @@ export function compileCycle(key, p) {
 		`;
 
 		if (needParallel) {
-			const
-				fn = p.parallel ? 'wait' : 'race';
-
 			iFn += ws`
 				if (maxParallelIsNumber) {
-					ctx['${fn}'](maxParallel, new Promise((r) => r(res)));
+					ctx['${parallelFn}'](maxParallel, new Promise((r) => r(res)));
 
 				} else {
-					ctx['${fn}'](new Promise((r) => r(res)));
+					ctx['${parallelFn}'](new Promise((r) => r(res)));
 				}
 			`;
 
@@ -429,8 +426,8 @@ export function compileCycle(key, p) {
 					waiting = false;
 
 				var
-					waitStore = new WeakSet(),
-					raceStore = new WeakSet();
+					waitStore = new Set(),
+					raceStore = new Set();
 
 				childResult = [];
 				function waitFactory(store, max, promise) {
@@ -609,6 +606,30 @@ export function compileCycle(key, p) {
 	}
 
 	iFn += 'while (limit !== looper) {';
+
+	const yielder = ws`
+		if (yielder) {
+			yielder = false;
+			thread.pause = true;
+			yieldVal = yield yieldVal;
+		}
+	`;
+
+	const asyncWait = ws`
+		waiting = true;
+		thread.pause = true;
+		yield;
+
+		while (waitStore.size) {
+			thread.pause = true;
+			yield;
+		}
+
+		while (raceStore.size) {
+			thread.pause = true;
+			yield;
+		}
+	`;
 
 	const
 		defArgs = maxArgsLength || isAsync;
@@ -841,8 +862,8 @@ export function compileCycle(key, p) {
 				${p.reverse ? 'var tmpArray = [];' : ''}
 
 				for (
-					key = cursor.next(), brkIf = ('done' in key === false); 
-					'done' in key ? !key.done : key; 
+					key = cursor.next(), brkIf = ('done' in key === false);
+					'done' in key ? !key.done : key;
 					key = cursor.next()
 				) {
 			`;
@@ -850,10 +871,35 @@ export function compileCycle(key, p) {
 			if (p.reverse) {
 				iFn += ws`
 						${threadStart}
-						tmpArray.push('value' in key ? key.value : key);
+						el = 'value' in key ? key.value : key;
+				`;
+
+				if (needParallel) {
+					iFn += ws`
+						if (maxParallelIsNumber) {
+							if (isPromise(el)) {
+								ctx['${parallelFn}'](maxParallel, el);
+							}
+
+							${yielder}
+						}
+					`;
+				}
+
+				iFn += ws`
+						if (el !== IGNORE) {
+							if (brkIf && el === null) {
+								${threadEnd}
+								break;
+							}
+
+							tmpArray.push(el);
+						}
+
 						${threadEnd}
 					}
 
+					${asyncWait}
 					tmpArray.reverse();
 					var size = tmpArray.length;
 				`;
@@ -863,7 +909,7 @@ export function compileCycle(key, p) {
 				}
 
 				iFn += ws`
-					length = tmpArray.length;
+					length = size;
 					for (n = -1; ++n < length;) {
 						${defArgs ? 'key = tmpArray[n];' : ''}
 						i = n + startIndex;
@@ -923,6 +969,7 @@ export function compileCycle(key, p) {
 	if (p.count) {
 		iFn += ws`
 			if (j === count) {
+				${threadEnd}
 				break;
 			}
 		`;
@@ -1002,14 +1049,6 @@ export function compileCycle(key, p) {
 		iFn += '}';
 	}
 
-	const yielder = ws`
-		if (yielder) {
-			yielder = false;
-			thread.pause = true;
-			yieldVal = yield yieldVal;
-		}
-	`;
-
 	if (isAsync) {
 		iFn += yielder;
 	}
@@ -1019,17 +1058,18 @@ export function compileCycle(key, p) {
 			size--;
 
 			if (!size) {
+				${threadEnd}
 				break;
 			}
 		`;
 	}
 
 	iFn += ws`
+			${threadEnd}
+
 			if (breaker) {
 				break;
 			}
-
-			${threadEnd}
 		}
 
 		breaker = false;
@@ -1046,21 +1086,7 @@ export function compileCycle(key, p) {
 
 	iFn += '}';
 	if (isAsync && needCtx) {
-		iFn += ws`
-			waiting = true;
-			thread.pause = true;
-			yield;
-
-			while (waitStore.size) {
-				thread.pause = true;
-				yield;
-			}
-
-			while (raceStore.size) {
-				thread.pause = true;
-				yield;
-			}
-		`;
+		iFn += asyncWait;
 	}
 
 	iFn += ws`
