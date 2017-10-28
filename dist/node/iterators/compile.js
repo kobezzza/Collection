@@ -76,6 +76,7 @@ function compileCycle(key, p) {
 
 	const maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
 	      needParallel = p.parallel || p.race,
+	      parallelFn = p.parallel ? 'wait' : 'race',
 	      needCtx = maxArgsLength > 3 || needParallel,
 	      fLength = p.filter.length;
 
@@ -178,18 +179,17 @@ function compileCycle(key, p) {
 
 				if (fIsPromise) {
 					f = el.then(function (val) {
-						el = val;
-
-						if (el === IGNORE) {
+						if (val === IGNORE) {
 							return FALSE;
 						}
 
-						if (brkIf && el === null) {
+						if (brkIf && val === null) {
 							breaker = true;
 							return FALSE;
 						}
 
-						return el;
+						el = val;
+						return TRUE;
 					}, onError);
 				}
 		`;
@@ -299,14 +299,12 @@ function compileCycle(key, p) {
 		`;
 
 		if (needParallel) {
-			const fn = p.parallel ? 'wait' : 'race';
-
 			iFn += _string.ws`
 				if (maxParallelIsNumber) {
-					ctx['${fn}'](maxParallel, new Promise((r) => r(res)));
+					ctx['${parallelFn}'](maxParallel, new Promise((r) => r(res)));
 
 				} else {
-					ctx['${fn}'](new Promise((r) => r(res)));
+					ctx['${parallelFn}'](new Promise((r) => r(res)));
 				}
 			`;
 		} else {
@@ -416,8 +414,8 @@ function compileCycle(key, p) {
 					waiting = false;
 
 				var
-					waitStore = new WeakSet(),
-					raceStore = new WeakSet();
+					waitStore = new Set(),
+					raceStore = new Set();
 
 				childResult = [];
 				function waitFactory(store, max, promise) {
@@ -595,6 +593,50 @@ function compileCycle(key, p) {
 
 	iFn += 'while (limit !== looper) {';
 
+	const yielder = _string.ws`
+		if (yielder) {
+			yielder = false;
+			thread.pause = true;
+			yieldVal = yield yieldVal;
+		}
+	`;
+
+	const asyncWait = _string.ws`
+		waiting = true;
+		thread.pause = true;
+		yield;
+
+		while (waitStore.size) {
+			thread.pause = true;
+			yield;
+		}
+
+		while (raceStore.size) {
+			thread.pause = true;
+			yield;
+		}
+	`;
+
+	let indexLimits = '';
+
+	if (p.startIndex) {
+		indexLimits = _string.ws`
+			if (n < startIndex) {
+				${threadEnd}
+				continue;
+			}
+		`;
+	}
+
+	if (p.endIndex) {
+		indexLimits += _string.ws`
+			if (n > endIndex) {
+				${threadEnd}
+				break;
+			};
+		`;
+	}
+
 	const defArgs = maxArgsLength || isAsync;
 
 	switch (p.type) {
@@ -619,28 +661,15 @@ function compileCycle(key, p) {
 			if (!p.reverse && p.live) {
 				iFn += _string.ws`
 					for (n = startIndex - 1; ++n < clone.length;) {
+						${threadStart}
 						i = n;
+						${indexLimits}
 				`;
-
-				if (p.startIndex) {
-					iFn += _string.ws`
-						if (n < startIndex) {
-							continue;
-						}
-					`;
-				}
-
-				if (p.endIndex) {
-					iFn += _string.ws`
-						if (n > endIndex) {
-							break;
-						};
-					`;
-				}
 			} else {
 				iFn += _string.ws`
 					length = clone.length;
 					for (n = -1; ++n < length;) {
+						${threadStart}
 						i = n + startIndex;
 				`;
 			}
@@ -726,25 +755,32 @@ function compileCycle(key, p) {
 				iFn += _string.ws`
 					length = tmpArray.length;
 					for (n = -1; ++n < length;) {
+						${threadStart}
 						key = tmpArray[n];
 
 						if (key in data === false) {
+							${threadEnd}
 							continue;
 						}
 
 						i = n + startIndex;
 				`;
 			} else {
-				iFn += 'for (key in data) {';
+				iFn += _string.ws`
+					for (key in data) {
+						${threadStart}
+				`;
 
 				if (p.notOwn === false) {
 					iFn += _string.ws`
 						if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
+							${threadEnd}
 							break;
 						}`;
 				} else if (p.notOwn === -1) {
 					iFn += _string.ws`
 						if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
+							${threadEnd}
 							continue;
 						}`;
 				}
@@ -752,23 +788,8 @@ function compileCycle(key, p) {
 				iFn += _string.ws`
 					n++;
 					i = n;
+					${indexLimits}
 				`;
-
-				if (p.startIndex) {
-					iFn += _string.ws`
-						if (n < startIndex) {
-							continue;
-						}
-					`;
-				}
-
-				if (p.endIndex) {
-					iFn += _string.ws`
-						if (n > endIndex) {
-							break;
-						};
-					`;
-				}
 			}
 
 			if (defArgs) {
@@ -812,19 +833,42 @@ function compileCycle(key, p) {
 				${p.reverse ? 'var tmpArray = [];' : ''}
 
 				for (
-					key = cursor.next(), brkIf = ('done' in key === false); 
-					'done' in key ? !key.done : key; 
+					key = cursor.next(), brkIf = ('done' in key === false);
+					'done' in key ? !key.done : key;
 					key = cursor.next()
 				) {
+					${threadStart}
 			`;
 
 			if (p.reverse) {
+				iFn += "el = 'value' in key ? key.value : key;";
+
+				if (needParallel) {
+					iFn += _string.ws`
+						if (maxParallelIsNumber) {
+							if (isPromise(el)) {
+								ctx['${parallelFn}'](maxParallel, el);
+							}
+
+							${yielder}
+						}
+					`;
+				}
+
 				iFn += _string.ws`
-						${threadStart}
-						tmpArray.push('value' in key ? key.value : key);
+						if (el !== IGNORE) {
+							if (brkIf && el === null) {
+								${threadEnd}
+								break;
+							}
+
+							tmpArray.push(el);
+						}
+
 						${threadEnd}
 					}
 
+					${asyncWait}
 					tmpArray.reverse();
 					var size = tmpArray.length;
 				`;
@@ -834,8 +878,9 @@ function compileCycle(key, p) {
 				}
 
 				iFn += _string.ws`
-					length = tmpArray.length;
+					length = size;
 					for (n = -1; ++n < length;) {
+						${threadStart}
 						${defArgs ? 'key = tmpArray[n];' : ''}
 						i = n + startIndex;
 				`;
@@ -844,23 +889,8 @@ function compileCycle(key, p) {
 					${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
 					n++;
 					i = n;
+					${indexLimits}
 				`;
-
-				if (p.startIndex) {
-					iFn += _string.ws`
-						if (n < startIndex) {
-							continue;
-						}
-					`;
-				}
-
-				if (p.endIndex) {
-					iFn += _string.ws`
-						if (n > endIndex) {
-							break;
-						};
-					`;
-				}
 			}
 
 			if (defArgs) {
@@ -884,12 +914,12 @@ function compileCycle(key, p) {
 			break;
 	}
 
-	iFn += threadStart;
 	iFn += 'id++;';
 
 	if (p.count) {
 		iFn += _string.ws`
 			if (j === count) {
+				${threadEnd}
 				break;
 			}
 		`;
@@ -966,14 +996,6 @@ function compileCycle(key, p) {
 		iFn += '}';
 	}
 
-	const yielder = _string.ws`
-		if (yielder) {
-			yielder = false;
-			thread.pause = true;
-			yieldVal = yield yieldVal;
-		}
-	`;
-
 	if (isAsync) {
 		iFn += yielder;
 	}
@@ -983,17 +1005,18 @@ function compileCycle(key, p) {
 			size--;
 
 			if (!size) {
+				${threadEnd}
 				break;
 			}
 		`;
 	}
 
 	iFn += _string.ws`
+			${threadEnd}
+
 			if (breaker) {
 				break;
 			}
-
-			${threadEnd}
 		}
 
 		breaker = false;
@@ -1010,21 +1033,7 @@ function compileCycle(key, p) {
 
 	iFn += '}';
 	if (isAsync && needCtx) {
-		iFn += _string.ws`
-			waiting = true;
-			thread.pause = true;
-			yield;
-
-			while (waitStore.size) {
-				thread.pause = true;
-				yield;
-			}
-
-			while (raceStore.size) {
-				thread.pause = true;
-				yield;
-			}
-		`;
+		iFn += asyncWait;
 	}
 
 	iFn += _string.ws`

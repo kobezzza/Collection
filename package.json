@@ -4,7 +4,7 @@
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "collection.js",
   "typings": "collection.d.ts",
-  "version": "6.3.8",
+  "version": "6.3.9",
   "license": "MIT",
   "author": {
     "name": "kobezzza",
@@ -37,7 +37,7 @@
     "closurecompiler-externs": "^1.0.4",
     "coveralls": "^3.0.0",
     "del": "^3.0.0",
-    "eslint": "^4.9.0",
+    "eslint": "^4.10.0",
     "glob": "^7.1.2",
     "gulp": "^3.8.9",
     "gulp-babel": "^7.0.0",
