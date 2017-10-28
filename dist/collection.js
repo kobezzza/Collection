@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.9
+ * Collection v6.3.10
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sat, 28 Oct 2017 18:37:47 GMT
+ * Date: 'Sat, 28 Oct 2017 18:45:35 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 9];
+Collection.prototype.VERSION = [6, 3, 10];
 
 /**
  * Creates an instance of Collection
@@ -464,7 +464,7 @@ var LENGTH_REQUEST = SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTIO
 var FN_LENGTH = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 var ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 49;
+var CACHE_VERSION = 50;
 var CACHE_KEY = '__COLLECTION_CACHE__';
 var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
@@ -958,7 +958,9 @@ function compileCycle(key, p) {
 			break;
 	}
 
-	iFn += 'id++;';
+	if (needCtx) {
+		iFn += 'id++;';
+	}
 
 	if (p.count) {
 		iFn += ws(_templateObject37, threadEnd);

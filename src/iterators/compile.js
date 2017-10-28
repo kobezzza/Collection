@@ -947,7 +947,9 @@ export function compileCycle(key, p) {
 			break;
 	}
 
-	iFn += 'id++;';
+	if (needCtx) {
+		iFn += 'id++;';
+	}
 
 	if (p.count) {
 		iFn += ws`
