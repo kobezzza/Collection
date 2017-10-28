@@ -631,6 +631,27 @@ export function compileCycle(key, p) {
 		}
 	`;
 
+	let
+		indexLimits = '';
+
+	if (p.startIndex) {
+		indexLimits = ws`
+			if (n < startIndex) {
+				${threadEnd}
+				continue;
+			}
+		`;
+	}
+
+	if (p.endIndex) {
+		indexLimits += ws`
+			if (n > endIndex) {
+				${threadEnd}
+				break;
+			};
+		`;
+	}
+
 	const
 		defArgs = maxArgsLength || isAsync;
 
@@ -656,29 +677,16 @@ export function compileCycle(key, p) {
 			if (!p.reverse && p.live) {
 				iFn += ws`
 					for (n = startIndex - 1; ++n < clone.length;) {
+						${threadStart}
 						i = n;
+						${indexLimits}
 				`;
-
-				if (p.startIndex) {
-					iFn += ws`
-						if (n < startIndex) {
-							continue;
-						}
-					`;
-				}
-
-				if (p.endIndex) {
-					iFn += ws`
-						if (n > endIndex) {
-							break;
-						};
-					`;
-				}
 
 			} else {
 				iFn += ws`
 					length = clone.length;
 					for (n = -1; ++n < length;) {
+						${threadStart}
 						i = n + startIndex;
 				`;
 			}
@@ -769,9 +777,11 @@ export function compileCycle(key, p) {
 				iFn += ws`
 					length = tmpArray.length;
 					for (n = -1; ++n < length;) {
+						${threadStart}
 						key = tmpArray[n];
 
 						if (key in data === false) {
+							${threadEnd}
 							continue;
 						}
 
@@ -779,11 +789,15 @@ export function compileCycle(key, p) {
 				`;
 
 			} else {
-				iFn += 'for (key in data) {';
+				iFn += ws`
+					for (key in data) {
+						${threadStart}
+				`;
 
 				if (p.notOwn === false) {
 					iFn += ws`
 						if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
+							${threadEnd}
 							break;
 						}`
 					;
@@ -791,6 +805,7 @@ export function compileCycle(key, p) {
 				} else if (p.notOwn === -1) {
 					iFn += ws`
 						if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
+							${threadEnd}
 							continue;
 						}`
 					;
@@ -799,23 +814,8 @@ export function compileCycle(key, p) {
 				iFn += ws`
 					n++;
 					i = n;
+					${indexLimits}
 				`;
-
-				if (p.startIndex) {
-					iFn += ws`
-						if (n < startIndex) {
-							continue;
-						}
-					`;
-				}
-
-				if (p.endIndex) {
-					iFn += ws`
-						if (n > endIndex) {
-							break;
-						};
-					`;
-				}
 			}
 
 			if (defArgs) {
@@ -866,13 +866,11 @@ export function compileCycle(key, p) {
 					'done' in key ? !key.done : key;
 					key = cursor.next()
 				) {
+					${threadStart}
 			`;
 
 			if (p.reverse) {
-				iFn += ws`
-						${threadStart}
-						el = 'value' in key ? key.value : key;
-				`;
+				iFn += "el = 'value' in key ? key.value : key;";
 
 				if (needParallel) {
 					iFn += ws`
@@ -911,6 +909,7 @@ export function compileCycle(key, p) {
 				iFn += ws`
 					length = size;
 					for (n = -1; ++n < length;) {
+						${threadStart}
 						${defArgs ? 'key = tmpArray[n];' : ''}
 						i = n + startIndex;
 				`;
@@ -920,23 +919,8 @@ export function compileCycle(key, p) {
 					${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
 					n++;
 					i = n;
+					${indexLimits}
 				`;
-
-				if (p.startIndex) {
-					iFn += ws`
-						if (n < startIndex) {
-							continue;
-						}
-					`;
-				}
-
-				if (p.endIndex) {
-					iFn += ws`
-						if (n > endIndex) {
-							break;
-						};
-					`;
-				}
 			}
 
 			if (defArgs) {
@@ -963,7 +947,6 @@ export function compileCycle(key, p) {
 			break;
 	}
 
-	iFn += threadStart;
 	iFn += 'id++;';
 
 	if (p.count) {
