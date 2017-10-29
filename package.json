@@ -29,6 +29,10 @@
     "generators"
   ],
   "devDependencies": {
+    "@types/async": "^2.0.44",
+    "@types/del": "^3.0.0",
+    "@types/gulp": "^4.0.5",
+    "@types/rollup": "^0.41.1",
     "async": "^2.5.0",
     "babel-core": "^6.26.0",
     "babel-plugin-transform-remove-strict-mode": "0.0.2",
