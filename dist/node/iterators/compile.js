@@ -603,8 +603,6 @@ function compileCycle(key, p) {
 
 	const asyncWait = _string.ws`
 		waiting = true;
-		thread.pause = true;
-		yield;
 
 		while (waitStore.size) {
 			thread.pause = true;

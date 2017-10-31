@@ -21,6 +21,6 @@ export const
 	ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
 export const
-	CACHE_VERSION = 50,
+	CACHE_VERSION = 51,
 	CACHE_KEY = '__COLLECTION_CACHE__',
 	CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
