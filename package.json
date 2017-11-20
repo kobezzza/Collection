@@ -60,7 +60,7 @@
     "gulp-wrap": "^0.13.0",
     "istanbul": "^0.4.2",
     "jasmine": "^2.8.0",
-    "monic": "^2.4.0",
+    "monic": "^2.4.1",
     "rollup-plugin-babel": "^3.0.0",
     "sugar": "^2.0.0",
     "through2": "^2.0.0",
