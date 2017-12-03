@@ -11,7 +11,7 @@
  */
 
 import $C, { Collection, P } from '../core';
-import { isArray, isBoolean, isStructure, getStructure, canExtended, getType } from '../helpers/types';
+import { isArray, isBoolean, isStructure, getSameAs, canExtended, getType } from '../helpers/types';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
@@ -207,7 +207,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 			const
 				valIsArray = isArray(val),
-				struct = valIsArray ? [] : getStructure(val);
+				struct = valIsArray ? [] : getSameAs(val);
 
 			if (p.deep && val && (valIsArray || struct)) {
 				const

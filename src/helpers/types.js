@@ -272,12 +272,12 @@ export const
 	isNative = /\[native code]/;
 
 /**
- * Returns true if the specified object is one of JS data structures
+ * Returns a new object with the same type as source
  *
  * @param {?} obj - source object
  * @return {?}
  */
-export function getStructure(obj) {
+export function getSameAs(obj) {
 	if (!obj) {
 		return false;
 	}
