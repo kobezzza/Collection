@@ -34,7 +34,7 @@ exports.isIterator = isIterator;
 exports.isStream = isStream;
 exports.isIDBRequest = isIDBRequest;
 exports.getType = getType;
-exports.getStructure = getStructure;
+exports.getSameAs = getSameAs;
 exports.isStructure = isStructure;
 exports.canExtended = canExtended;
 function isFunction(obj) {
@@ -272,12 +272,12 @@ function getType(obj, opt_use) {
 const isNative = exports.isNative = /\[native code]/;
 
 /**
- * Returns true if the specified object is one of JS data structures
+ * Returns a new object with the same type as source
  *
  * @param {?} obj - source object
  * @return {?}
  */
-function getStructure(obj) {
+function getSameAs(obj) {
   if (!obj) {
     return false;
   }

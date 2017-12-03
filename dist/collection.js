@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.12
+ * Collection v6.3.13
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 20 Nov 2017 11:15:58 GMT
+ * Date: 'Sun, 03 Dec 2017 13:00:02 GMT
  */
 
 (function (global, factory) {
@@ -266,12 +266,12 @@ function getType(obj, opt_use) {
 var isNative = /\[native code]/;
 
 /**
- * Returns true if the specified object is one of JS data structures
+ * Returns a new object with the same type as source
  *
  * @param {?} obj - source object
  * @return {?}
  */
-function getStructure(obj) {
+function getSameAs(obj) {
   if (!obj) {
     return false;
   }
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 12];
+Collection.prototype.VERSION = [6, 3, 13];
 
 /**
  * Creates an instance of Collection
@@ -438,6 +438,7 @@ var IS_NODE = function () {
 var IS_BROWSER = !IS_NODE && typeof window === 'object';
 var BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function';
 var OBJECT_KEYS_NATIVE_SUPPORT = isNative.test(Object.keys && any(Object.keys).toString());
+var OBJECT_ASSIGN_NATIVE_SUPPORT = isNative.test(Object.assign && any(Object.assign).toString());
 var SYMBOL_SUPPORT = typeof Symbol === 'function';
 
 var LOCAL_STORAGE_SUPPORT = !IS_NODE && function () {
@@ -1986,7 +1987,8 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	var _arguments = arguments;
 	var create = Object.create,
 	    defineProperty = Object.defineProperty,
-	    getPrototypeOf = Object.getPrototypeOf;
+	    getPrototypeOf = Object.getPrototypeOf,
+	    assign = Object.assign;
 
 
 	var p = any(deepOrParams);
@@ -1998,7 +2000,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		}
 
 		this._filter(p)._isThread(p);
-		p = any(Object.assign(Object.create(this.p), p));
+		p = any(assign(Object.create(this.p), p));
 	}
 
 	var withDescriptor = p.withDescriptor && !p.withAccessors,
@@ -2057,6 +2059,16 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	var setVal = void 0;
 	p.result = data;
 
+	if (!p.deep && p.withUndef && p.mult && simpleType[type] && OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
+		var _args = [];
+
+		for (var _i = 1; _i < arguments.length; _i++) {
+			_args.push(arguments[_i]);
+		}
+
+		return assign.apply(undefined, [data].concat(_args));
+	}
+
 	switch (type) {
 		case 'weakMap':
 		case 'map':
@@ -2111,8 +2123,8 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 	var dataIsSimple = simpleType[type];
 
-	var _loop = function (_i) {
-		var arg = _arguments[_i];
+	var _loop = function (_i2) {
+		var arg = _arguments[_i2];
 
 		if (!arg) {
 			return 'continue';
@@ -2148,7 +2160,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 				}
 
 				var valIsArray = isArray(val),
-				    struct = valIsArray ? [] : getStructure(val);
+				    struct = valIsArray ? [] : getSameAs(val);
 
 				if (p.deep && val && (valIsArray || struct)) {
 					var isExt = p.withProto && dataIsSimple && canExtended(src);
@@ -2201,8 +2213,8 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		});
 	};
 
-	for (var _i = 1; _i < arguments.length; _i++) {
-		var _ret = _loop(_i);
+	for (var _i2 = 1; _i2 < arguments.length; _i2++) {
+		var _ret = _loop(_i2);
 
 		if (_ret === 'continue') continue;
 	}

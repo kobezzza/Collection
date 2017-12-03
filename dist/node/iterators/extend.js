@@ -16,6 +16,8 @@ var _core2 = _interopRequireDefault(_core);
 
 var _types = require('../helpers/types');
 
+var _hacks = require('../consts/hacks');
+
 var _link = require('../helpers/link');
 
 var _gcc = require('../helpers/gcc');
@@ -46,7 +48,7 @@ const simpleType = {
  * @return {(!Object|!Promise)}
  */
 _core.Collection.prototype.extend = function (deepOrParams, args) {
-	const { create, defineProperty, getPrototypeOf } = Object;
+	const { create, defineProperty, getPrototypeOf, assign } = Object;
 
 	let p = (0, _gcc.any)(deepOrParams);
 	if (p instanceof _core.P === false) {
@@ -57,7 +59,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 		}
 
 		this._filter(p)._isThread(p);
-		p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+		p = (0, _gcc.any)(assign(Object.create(this.p), p));
 	}
 
 	const withDescriptor = p.withDescriptor && !p.withAccessors,
@@ -114,6 +116,16 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 
 	let setVal;
 	p.result = data;
+
+	if (!p.deep && p.withUndef && p.mult && simpleType[type] && _hacks.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
+		const args = [];
+
+		for (let i = 1; i < arguments.length; i++) {
+			args.push(arguments[i]);
+		}
+
+		return assign(data, ...args);
+	}
 
 	switch (type) {
 		case 'weakMap':
@@ -203,7 +215,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 			}
 
 			const valIsArray = (0, _types.isArray)(val),
-			      struct = valIsArray ? [] : (0, _types.getStructure)(val);
+			      struct = valIsArray ? [] : (0, _types.getSameAs)(val);
 
 			if (p.deep && val && (valIsArray || struct)) {
 				const isExt = p.withProto && dataIsSimple && (0, _types.canExtended)(src);
