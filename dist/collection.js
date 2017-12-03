@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.13
+ * Collection v6.3.14
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 03 Dec 2017 13:00:02 GMT
+ * Date: 'Sun, 03 Dec 2017 13:16:19 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 13];
+Collection.prototype.VERSION = [6, 3, 14];
 
 /**
  * Creates an instance of Collection
@@ -465,7 +465,7 @@ var LENGTH_REQUEST = SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTIO
 var FN_LENGTH = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 var ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 51;
+var CACHE_VERSION = 52;
 var CACHE_KEY = '__COLLECTION_CACHE__';
 var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
@@ -628,8 +628,8 @@ var taggedTemplateLiteral = function (strings, raw) {
   }));
 };
 
-var _templateObject = taggedTemplateLiteral(['\nvar\ndata = o.data,\ncb = o.cb,\nbaseCb = cb,\nfilters = o.filters;\nvar\ncount = o.count,\nfrom = o.from,\nstartIndex = o.startIndex || 0,\nendIndex = o.endIndex !== false ? o.endIndex + 1 : 0;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError;\nvar\nTRUE = o.TRUE,\nFALSE = o.FALSE,\nIGNORE = o.IGNORE;\nvar\ni = -1,\nj = 0,\nn = -1,\nid = 0,\nfI = -1;\nvar\nbreaker = false;\nvar\nlimit = 1,\nlooper = 0,\nchildResult;\nvar\nfLength = filters.length,\nlength,\nr,\nf;\nvar\nel,\nkey;\n'], ['\nvar\ndata = o.data,\ncb = o.cb,\nbaseCb = cb,\nfilters = o.filters;\nvar\ncount = o.count,\nfrom = o.from,\nstartIndex = o.startIndex || 0,\nendIndex = o.endIndex !== false ? o.endIndex + 1 : 0;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError;\nvar\nTRUE = o.TRUE,\nFALSE = o.FALSE,\nIGNORE = o.IGNORE;\nvar\ni = -1,\nj = 0,\nn = -1,\nid = 0,\nfI = -1;\nvar\nbreaker = false;\nvar\nlimit = 1,\nlooper = 0,\nchildResult;\nvar\nfLength = filters.length,\nlength,\nr,\nf;\nvar\nel,\nkey;\n']);
-var _templateObject2 = taggedTemplateLiteral(['\nvar\npriority = o.priority,\nmaxParallel = o.maxParallel,\nmaxParallelIsNumber = typeof maxParallel === \'number\';\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nthread = o.self,\nbrkIf = false,\nyielder = false,\nyieldVal;\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nvar\nrCbSet = new Set();\nfunction resolveCb(res) {\nrCbSet.delete(r);\nr = res;\nthread.next();\n}\ncb = function (', ') {\nvar\nf = ', ',\nfIsPromise = isPromise(el),\nres;\nif (fIsPromise) {\nf = el.then(function (val) {\nif (val === IGNORE) {\nreturn FALSE;\n}\nif (brkIf && val === null) {\nbreaker = true;\nreturn FALSE;\n}\nel = val;\nreturn TRUE;\n}, onError);\n}\n'], ['\nvar\npriority = o.priority,\nmaxParallel = o.maxParallel,\nmaxParallelIsNumber = typeof maxParallel === \'number\';\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nthread = o.self,\nbrkIf = false,\nyielder = false,\nyieldVal;\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nvar\nrCbSet = new Set();\nfunction resolveCb(res) {\nrCbSet.delete(r);\nr = res;\nthread.next();\n}\ncb = function (', ') {\nvar\nf = ', ',\nfIsPromise = isPromise(el),\nres;\nif (fIsPromise) {\nf = el.then(function (val) {\nif (val === IGNORE) {\nreturn FALSE;\n}\nif (brkIf && val === null) {\nbreaker = true;\nreturn FALSE;\n}\nel = val;\nreturn TRUE;\n}, onError);\n}\n']);
+var _templateObject = taggedTemplateLiteral(['\nvar\ndata = o.data,\ncb = o.cb,\nbaseCb = cb,\nfilters = o.filters;\nvar\ncount = o.count,\nfrom = o.from,\nstartIndex = o.startIndex || 0,\nendIndex = o.endIndex !== false ? o.endIndex + 1 : 0;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError;\nvar\nTRUE = o.TRUE,\nFALSE = o.FALSE,\nIGNORE = o.IGNORE;\nvar\ni = -1,\nj = 0,\nn = -1,\nid = 0,\nfI = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nchildResult;\nvar\nfLength = filters.length,\nlength,\nr,\nf;\nvar\nel,\nkey;\n'], ['\nvar\ndata = o.data,\ncb = o.cb,\nbaseCb = cb,\nfilters = o.filters;\nvar\ncount = o.count,\nfrom = o.from,\nstartIndex = o.startIndex || 0,\nendIndex = o.endIndex !== false ? o.endIndex + 1 : 0;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError;\nvar\nTRUE = o.TRUE,\nFALSE = o.FALSE,\nIGNORE = o.IGNORE;\nvar\ni = -1,\nj = 0,\nn = -1,\nid = 0,\nfI = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nchildResult;\nvar\nfLength = filters.length,\nlength,\nr,\nf;\nvar\nel,\nkey;\n']);
+var _templateObject2 = taggedTemplateLiteral(['\nvar\npriority = o.priority,\nmaxParallel = o.maxParallel,\nmaxParallelIsNumber = typeof maxParallel === \'number\';\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nthread = o.self,\nthread = o.self,\nyielder = false,\nyieldVal;\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nvar\nrCbSet = new Set();\nfunction resolveCb(res) {\nrCbSet.delete(r);\nr = res;\nthread.next();\n}\ncb = function (', ') {\nvar\nf = ', ',\nfIsPromise = isPromise(el),\nres;\nif (fIsPromise) {\nf = el.then(function (val) {\nif (val === IGNORE) {\nreturn FALSE;\n}\nif (brkIf && val === null) {\nbreaker = true;\nreturn FALSE;\n}\nel = val;\nreturn TRUE;\n}, onError);\n}\n'], ['\nvar\npriority = o.priority,\nmaxParallel = o.maxParallel,\nmaxParallelIsNumber = typeof maxParallel === \'number\';\nvar\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nthread = o.self,\nthread = o.self,\nyielder = false,\nyieldVal;\nfunction isPromise(obj) {\nreturn typeof Promise === \'function\' && obj instanceof Promise;\n}\nvar\nrCbSet = new Set();\nfunction resolveCb(res) {\nrCbSet.delete(r);\nr = res;\nthread.next();\n}\ncb = function (', ') {\nvar\nf = ', ',\nfIsPromise = isPromise(el),\nres;\nif (fIsPromise) {\nf = el.then(function (val) {\nif (val === IGNORE) {\nreturn FALSE;\n}\nif (brkIf && val === null) {\nbreaker = true;\nreturn FALSE;\n}\nel = val;\nreturn TRUE;\n}, onError);\n}\n']);
 var _templateObject3 = taggedTemplateLiteral(['\nif (', ') {\nif (fIsPromise) {\nf = f.then(function (f) {\n', ';\nif (f) {\nreturn ', ';\n}\nreturn FALSE;\n}, onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\n}\n}\n'], ['\nif (', ') {\nif (fIsPromise) {\nf = f.then(function (f) {\n', ';\nif (f) {\nreturn ', ';\n}\nreturn FALSE;\n}, onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\n}\n}\n']);
 var _templateObject4 = taggedTemplateLiteral(['\nfor (fI = -1; ++fI < fLength;) {\nif (fIsPromise) {\nf = f.then((function (fI) {\nreturn function (f) {\n', '\nif (f) {\nreturn ', ';\n} else {\nreturn FALSE;\n}\n};\n})(fI), onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\nif (!f) {\nbreak;\n}\n}\n}\n'], ['\nfor (fI = -1; ++fI < fLength;) {\nif (fIsPromise) {\nf = f.then((function (fI) {\nreturn function (f) {\n', '\nif (f) {\nreturn ', ';\n} else {\nreturn FALSE;\n}\n};\n})(fI), onError);\n} else {\nf = ', ';\nfIsPromise = isPromise(f);\nif (!fIsPromise) {\n', '\n}\nif (!f) {\nbreak;\n}\n}\n}\n']);
 var _templateObject5 = taggedTemplateLiteral(['\nif (from === 0) {\nreturn;\n}\nfrom--;\n'], ['\nif (from === 0) {\nreturn;\n}\nfrom--;\n']);
@@ -2056,10 +2056,10 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		}
 	}
 
-	var setVal = void 0;
+	var dataIsSimple = simpleType[type];
 	p.result = data;
 
-	if (!p.deep && p.withUndef && p.mult && simpleType[type] && OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
+	if (!p.deep && p.withUndef && p.mult && dataIsSimple && OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
 		var _args = [];
 
 		for (var _i = 1; _i < arguments.length; _i++) {
@@ -2069,6 +2069,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		return assign.apply(undefined, [data].concat(_args));
 	}
 
+	var setVal = void 0;
 	switch (type) {
 		case 'weakMap':
 		case 'map':
@@ -2117,11 +2118,9 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		promise = Promise.resolve();
 	}
 
-	if (p.notOwn && !simpleType[type]) {
+	if (p.notOwn && !dataIsSimple) {
 		p.notOwn = false;
 	}
-
-	var dataIsSimple = simpleType[type];
 
 	var _loop = function (_i2) {
 		var arg = _arguments[_i2];

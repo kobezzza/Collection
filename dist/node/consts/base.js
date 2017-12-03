@@ -28,6 +28,6 @@ const LENGTH_REQUEST = exports.LENGTH_REQUEST = _hacks.SYMBOL_SUPPORT ? Symbol('
       FN_LENGTH = exports.FN_LENGTH = _hacks.SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length',
       ON_ERROR = exports.ON_ERROR = _hacks.SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-const CACHE_VERSION = exports.CACHE_VERSION = 51,
+const CACHE_VERSION = exports.CACHE_VERSION = 52,
       CACHE_KEY = exports.CACHE_KEY = '__COLLECTION_CACHE__',
       CACHE_VERSION_KEY = exports.CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';

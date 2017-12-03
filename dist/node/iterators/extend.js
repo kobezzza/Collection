@@ -114,10 +114,10 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 		}
 	}
 
-	let setVal;
+	const dataIsSimple = simpleType[type];
 	p.result = data;
 
-	if (!p.deep && p.withUndef && p.mult && simpleType[type] && _hacks.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
+	if (!p.deep && p.withUndef && p.mult && dataIsSimple && _hacks.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
 		const args = [];
 
 		for (let i = 1; i < arguments.length; i++) {
@@ -127,6 +127,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 		return assign(data, ...args);
 	}
 
+	let setVal;
 	switch (type) {
 		case 'weakMap':
 		case 'map':
@@ -173,11 +174,9 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 		promise = Promise.resolve();
 	}
 
-	if (p.notOwn && !simpleType[type]) {
+	if (p.notOwn && !dataIsSimple) {
 		p.notOwn = false;
 	}
-
-	const dataIsSimple = simpleType[type];
 
 	for (let i = 1; i < arguments.length; i++) {
 		const arg = arguments[i];

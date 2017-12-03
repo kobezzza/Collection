@@ -118,7 +118,8 @@ function compileCycle(key, p) {
 			fI = -1;
 
 		var
-			breaker = false;
+			breaker = false,
+			brkIf = false;
 
 		var
 			limit = 1,
@@ -154,7 +155,7 @@ function compileCycle(key, p) {
 
 			var
 				thread = o.self,
-				brkIf = false,
+				thread = o.self,
 				yielder = false,
 				yieldVal;
 
