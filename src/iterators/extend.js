@@ -110,10 +110,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		}
 	}
 
-	const
-		dataIsSimple = simpleType[type];
-
-	let setVal;
+	const dataIsSimple = simpleType[type];
 	p.result = data;
 
 	if (
@@ -146,6 +143,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		return assign(data, ...args);
 	}
 
+	let setVal;
 	switch (type) {
 		case 'weakMap':
 		case 'map':
