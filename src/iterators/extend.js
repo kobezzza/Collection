@@ -110,6 +110,9 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		}
 	}
 
+	const
+		dataIsSimple = simpleType[type];
+
 	let setVal;
 	p.result = data;
 
@@ -117,7 +120,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		!p.deep &&
 		p.withUndef &&
 		p.mult &&
-		simpleType[type] &&
+		dataIsSimple &&
 		OBJECT_ASSIGN_NATIVE_SUPPORT &&
 		!p.concatArray &&
 		!p.withProto &&
@@ -189,12 +192,9 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		promise = Promise.resolve();
 	}
 
-	if (p.notOwn && !simpleType[type]) {
+	if (p.notOwn && !dataIsSimple) {
 		p.notOwn = false;
 	}
-
-	const
-		dataIsSimple = simpleType[type];
 
 	for (let i = 1; i < arguments.length; i++) {
 		const
