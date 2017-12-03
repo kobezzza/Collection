@@ -12,6 +12,7 @@
 
 import $C, { Collection, P } from '../core';
 import { isArray, isBoolean, isStructure, getSameAs, canExtended, getType } from '../helpers/types';
+import { OBJECT_ASSIGN_NATIVE_SUPPORT } from '../consts/hacks';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
@@ -40,7 +41,7 @@ const simpleType = {
  */
 Collection.prototype.extend = function (deepOrParams, args) {
 	const
-		{create, defineProperty, getPrototypeOf} = Object;
+		{create, defineProperty, getPrototypeOf, assign} = Object;
 
 	let p = any(deepOrParams);
 	if (p instanceof P === false) {
@@ -52,7 +53,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		}
 
 		this._filter(p)._isThread(p);
-		p = any(Object.assign(Object.create(this.p), p));
+		p = any(assign(Object.create(this.p), p));
 	}
 
 	const
@@ -111,6 +112,36 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 	let setVal;
 	p.result = data;
+
+	if (
+		!p.deep &&
+		p.withUndef &&
+		p.mult &&
+		simpleType[type] &&
+		OBJECT_ASSIGN_NATIVE_SUPPORT &&
+		!p.concatArray &&
+		!p.withProto &&
+		!p.withDescriptor &&
+		!p.withAccessors &&
+		!p.traits &&
+		!p.filter.length &&
+		!p.async &&
+		!p.from &&
+		!p.count &&
+		!p.startIndex &&
+		!p.endIndex &&
+		!p.notOwn &&
+		!p.reverse
+	) {
+		const
+			args = [];
+
+		for (let i = 1; i < arguments.length; i++) {
+			args.push(arguments[i]);
+		}
+
+		return assign(data, ...args);
+	}
 
 	switch (type) {
 		case 'weakMap':
