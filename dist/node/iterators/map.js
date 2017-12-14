@@ -125,7 +125,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 			break;
 
 		case 'set':
-		case 'weakSep':
+		case 'weakSet':
 			fn = function () {
 				const val = opt_cb.apply(null, arguments);
 

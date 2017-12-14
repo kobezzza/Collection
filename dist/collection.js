@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.14
+ * Collection v6.3.15
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 03 Dec 2017 13:16:19 GMT
+ * Date: 'Thu, 14 Dec 2017 11:39:56 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 14];
+Collection.prototype.VERSION = [6, 3, 15];
 
 /**
  * Creates an instance of Collection
@@ -2372,7 +2372,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 			break;
 
 		case 'set':
-		case 'weakSep':
+		case 'weakSet':
 			fn = function () {
 				var val = opt_cb.apply(null, arguments);
 
