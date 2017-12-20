@@ -45,7 +45,7 @@
     "glob": "^7.1.2",
     "gulp": "^3.8.9",
     "gulp-babel": "^7.0.0",
-    "gulp-bump": "^2.8.0",
+    "gulp-bump": "^2.9.0",
     "gulp-cached": "^1.0.4",
     "gulp-closure-compiler": "^0.4.0",
     "gulp-eol": "^0.1.1",
@@ -61,7 +61,7 @@
     "istanbul": "^0.4.2",
     "jasmine": "^2.8.0",
     "monic": "^2.5.0",
-    "rollup-plugin-babel": "^3.0.0",
+    "rollup-plugin-babel": "^3.0.3",
     "sugar": "^2.0.0",
     "through2": "^2.0.0",
     "yaspeller": "^4.0.3"
