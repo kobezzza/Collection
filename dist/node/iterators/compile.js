@@ -594,27 +594,34 @@ function compileCycle(key, p) {
 
 	iFn += 'while (limit !== looper) {';
 
-	const yielder = _string.ws`
-		if (yielder) {
-			yielder = false;
-			thread.pause = true;
-			yieldVal = yield yieldVal;
-		}
-	`;
+	let yielder = '',
+	    asyncWait = '';
 
-	const asyncWait = _string.ws`
-		waiting = true;
+	if (isAsync) {
+		yielder = _string.ws`
+			if (yielder) {
+				yielder = false;
+				thread.pause = true;
+				yieldVal = yield yieldVal;
+			}
+		`;
 
-		while (waitStore.size) {
-			thread.pause = true;
-			yield;
-		}
+		if (needCtx) {
+			asyncWait = _string.ws`
+				waiting = true;
 
-		while (raceStore.size) {
-			thread.pause = true;
-			yield;
+				while (waitStore.size) {
+					thread.pause = true;
+					yield;
+				}
+
+				while (raceStore.size) {
+					thread.pause = true;
+					yield;
+				}
+			`;
 		}
-	`;
+	}
 
 	let indexLimits = '';
 
@@ -997,10 +1004,7 @@ function compileCycle(key, p) {
 		iFn += '}';
 	}
 
-	if (isAsync) {
-		iFn += yielder;
-	}
-
+	iFn += yielder;
 	if (!p.live && !p.reverse && isMapSet) {
 		iFn += _string.ws`
 			size--;
@@ -1028,16 +1032,12 @@ function compileCycle(key, p) {
 		}
 	`;
 
-	if (isAsync) {
-		iFn += yielder;
-	}
-
-	iFn += '}';
-	if (isAsync && needCtx) {
-		iFn += asyncWait;
-	}
-
 	iFn += _string.ws`
+			${yielder}
+		}
+
+		${asyncWait}
+
 		if (onComplete) {
 			onComplete(p.result);
 		}

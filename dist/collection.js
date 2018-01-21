@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.15
+ * Collection v6.3.16
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 14 Dec 2017 11:39:56 GMT
+ * Date: 'Sun, 21 Jan 2018 15:11:14 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 15];
+Collection.prototype.VERSION = [6, 3, 16];
 
 /**
  * Creates an instance of Collection
@@ -465,7 +465,7 @@ var LENGTH_REQUEST = SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTIO
 var FN_LENGTH = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 var ON_ERROR = SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-var CACHE_VERSION = 52;
+var CACHE_VERSION = 53;
 var CACHE_KEY = '__COLLECTION_CACHE__';
 var CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
@@ -671,7 +671,7 @@ var _templateObject40 = taggedTemplateLiteral(['\nwhile (isPromise(r)) {\nif (!r
 var _templateObject41 = taggedTemplateLiteral(['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n'], ['\nif (from !== 0) {\nfrom--;\n} else {\n', '\n}\n']);
 var _templateObject42 = taggedTemplateLiteral(['\nsize--;\nif (!size) {\n', '\nbreak;\n}\n'], ['\nsize--;\nif (!size) {\n', '\nbreak;\n}\n']);
 var _templateObject43 = taggedTemplateLiteral(['\n', '\nif (breaker) {\nbreak;\n}\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(', ');\n}\n'], ['\n', '\nif (breaker) {\nbreak;\n}\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(', ');\n}\n']);
-var _templateObject44 = taggedTemplateLiteral(['\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n'], ['\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n']);
+var _templateObject44 = taggedTemplateLiteral(['\n', '\n}\n', '\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n'], ['\n', '\n}\n', '\nif (onComplete) {\nonComplete(p.result);\n}\nreturn p.result;\n']);
 
 var timeout = void 0;
 var cache$1 = $C.cache.str;
@@ -797,9 +797,16 @@ function compileCycle(key, p) {
 
 	iFn += 'while (limit !== looper) {';
 
-	var yielder = ws(_templateObject14);
+	var yielder = '',
+	    asyncWait = '';
 
-	var asyncWait = ws(_templateObject15);
+	if (isAsync) {
+		yielder = ws(_templateObject14);
+
+		if (needCtx) {
+			asyncWait = ws(_templateObject15);
+		}
+	}
 
 	var indexLimits = '';
 
@@ -1007,26 +1014,14 @@ function compileCycle(key, p) {
 		iFn += '}';
 	}
 
-	if (isAsync) {
-		iFn += yielder;
-	}
-
+	iFn += yielder;
 	if (!p.live && !p.reverse && isMapSet) {
 		iFn += ws(_templateObject42, threadEnd);
 	}
 
 	iFn += ws(_templateObject43, threadEnd, needCtx ? 'ctx' : '');
 
-	if (isAsync) {
-		iFn += yielder;
-	}
-
-	iFn += '}';
-	if (isAsync && needCtx) {
-		iFn += asyncWait;
-	}
-
-	iFn += ws(_templateObject44);
+	iFn += ws(_templateObject44, yielder, asyncWait);
 
 	if (isAsync) {
 		tmpCycle[key] = new Function('return function *(o, p) { ' + iFn + ' };')();
