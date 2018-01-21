@@ -608,27 +608,35 @@ export function compileCycle(key, p) {
 
 	iFn += 'while (limit !== looper) {';
 
-	const yielder = ws`
-		if (yielder) {
-			yielder = false;
-			thread.pause = true;
-			yieldVal = yield yieldVal;
-		}
-	`;
+	let
+		yielder = '',
+		asyncWait = '';
 
-	const asyncWait = ws`
-		waiting = true;
+	if (isAsync) {
+		yielder = ws`
+			if (yielder) {
+				yielder = false;
+				thread.pause = true;
+				yieldVal = yield yieldVal;
+			}
+		`;
 
-		while (waitStore.size) {
-			thread.pause = true;
-			yield;
-		}
+		if (needCtx) {
+			asyncWait = ws`
+				waiting = true;
 
-		while (raceStore.size) {
-			thread.pause = true;
-			yield;
+				while (waitStore.size) {
+					thread.pause = true;
+					yield;
+				}
+
+				while (raceStore.size) {
+					thread.pause = true;
+					yield;
+				}
+			`;
 		}
-	`;
+	}
 
 	let
 		indexLimits = '';
@@ -1033,10 +1041,7 @@ export function compileCycle(key, p) {
 		iFn += '}';
 	}
 
-	if (isAsync) {
-		iFn += yielder;
-	}
-
+	iFn += yielder;
 	if (!p.live && !p.reverse && isMapSet) {
 		iFn += ws`
 			size--;
@@ -1064,16 +1069,12 @@ export function compileCycle(key, p) {
 		}
 	`;
 
-	if (isAsync) {
-		iFn += yielder;
-	}
-
-	iFn += '}';
-	if (isAsync && needCtx) {
-		iFn += asyncWait;
-	}
-
 	iFn += ws`
+			${yielder}
+		}
+
+		${asyncWait}
+
 		if (onComplete) {
 			onComplete(p.result);
 		}
