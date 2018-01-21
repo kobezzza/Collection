@@ -8,6 +8,8 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+global.readyToWatcher = null;
+
 const
 	gulp = require('gulp');
 
@@ -16,9 +18,6 @@ require('./gulp/other');
 require('./gulp/predefs');
 require('./gulp/build');
 require('./gulp/test');
-
-global.headRgxp = /(\/\*![\s\S]*?\*\/\n{2})/;
-global.readyToWatcher = null;
 
 gulp.task('watch', gulp.series(['build:node', 'build:client', 'bump', 'yaspeller', 'npmignore', () => {
 	require('async').whilst(

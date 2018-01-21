@@ -11,19 +11,20 @@
 const
 	gulp = require('gulp'),
 	$ = require('gulp-load-plugins')(),
-	fullHead = `${require('./helpers').getHead()} */\n\n`;
+	helpers = require('./helpers'),
+	fullHead = `${helpers.getHead()} */\n\n`;
 
 gulp.task('predefs:build', () =>
 	gulp.src('./predefs/src/index.js')
 		.pipe($.monic())
-		.pipe($.replace(headRgxp.addFlags('g'), ''))
+		.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
 		.pipe(gulp.dest('./predefs/build'))
 );
 
 gulp.task('predefs:externs', () =>
 	gulp.src('./predefs/src/index.js')
 		.pipe($.monic({flags: {externs: true}}))
-		.pipe($.replace(headRgxp.addFlags('g'), ''))
+		.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
 		.pipe($.replace(/(\s)+$/, '$1'))
 		.pipe($.header(fullHead))
 		.pipe($.rename('externs.js'))
@@ -42,17 +43,22 @@ gulp.task('predefs', gulp.parallel([
 
 gulp.task('head', () => {
 	global.readyToWatcher = false;
+
+	function filter(file) {
+		return !helpers.headRgxp.exec(file.contents.toString()) || RegExp.$1 !== fullHead;
+	}
+
 	return gulp.src([
 		'./@(src|gulp)/**/*.js',
 		'./predefs/src/**/*.js',
 		'./collection.js',
 		'collection.d.ts'
 	], {base: './'})
-		.pipe($.if((file) => !headRgxp.exec(file.contents.toString()) || RegExp.$1 !== fullHead))
-		.pipe($.replace(headRgxp, ''))
-		.pipe($.header(fullHead))
-		.pipe(gulp.dest('./'))
-		.on('end', () => {
-			global.readyToWatcher = true;
-		});
+		.pipe(
+			$.if(filter, $.replace(helpers.headRgxp, '')
+				.pipe($.header(fullHead))
+				.pipe(gulp.dest('./'))
+				.on('end', () => global.readyToWatcher = true)
+			)
+		);
 });

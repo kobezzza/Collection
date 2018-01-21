@@ -13,6 +13,8 @@ const
 	fs = require('fs');
 
 module.exports = {
+	headRgxp: /(\/\*![\s\S]*?\*\/\n{2})/,
+
 	getBuilds() {
 		delete require.cache[require.resolve('../builds')];
 		return Object(require('../builds'));

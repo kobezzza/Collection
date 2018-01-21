@@ -61,7 +61,7 @@ gulp.task('build:client', () => {
 						.pipe($.replace(/(\\t)+/g, ''))
 						.pipe($.replace(/(\\n){2,}/g, '\\n'))
 						.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
-						.pipe($.replace(headRgxp.addFlags('g'), ''))
+						.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
 						.pipe($.header(fullHead))
 						.pipe($.eol('\n'))
 						.pipe($.rename({extname: '.js'}))
