@@ -10,73 +10,49 @@
 
 const
 	gulp = require('gulp'),
-	plumber = require('gulp-plumber'),
-	through = require('through2'),
-	replace = require('gulp-replace'),
-	header = require('gulp-header');
+	$ = require('gulp-load-plugins')(),
+	fullHead = `${require('./helpers').getHead()} */\n\n`;
 
-const
-	helpers = require('./helpers'),
-	fullHead = `${helpers.getHead()} */\n\n`;
+gulp.task('predefs:build', () =>
+	gulp.src('./predefs/src/index.js')
+		.pipe($.monic())
+		.pipe($.replace(headRgxp.addFlags('g'), ''))
+		.pipe(gulp.dest('./predefs/build'))
+);
 
-gulp.task('predefs', (cb) => {
-	const
-		monic = require('gulp-monic'),
-		rename = require('gulp-rename'),
-		async = require('async'),
-		run = require('gulp-run');
+gulp.task('predefs:externs', () =>
+	gulp.src('./predefs/src/index.js')
+		.pipe($.monic({flags: {externs: true}}))
+		.pipe($.replace(headRgxp.addFlags('g'), ''))
+		.pipe($.replace(/(\s)+$/, '$1'))
+		.pipe($.header(fullHead))
+		.pipe($.rename('externs.js'))
+		.pipe(gulp.dest('./'))
+);
 
-	async.parallel([
-		(cb) => {
-			gulp.src('./predefs/src/index.js')
-				.pipe(plumber())
-				.pipe(monic())
-				.pipe(replace(headRgxp.addFlags('g'), ''))
-				.pipe(gulp.dest('./predefs/build'))
-				.on('end', cb);
-		},
+gulp.task('predefs:bower', () =>
+	$.run('bower install').exec()
+);
 
-		(cb) => {
-			gulp.src('./predefs/src/index.js')
-				.pipe(plumber())
-				.pipe(monic({flags: {externs: true}}))
-				.pipe(replace(headRgxp.addFlags('g'), ''))
-				.pipe(replace(/(\s)+$/, '$1'))
-				.pipe(header(fullHead))
-				.pipe(rename('externs.js'))
-				.pipe(gulp.dest('./'))
-				.on('end', cb);
-		},
+gulp.task('predefs', gulp.parallel([
+	'predefs:build',
+	'predefs:externs',
+	'predefs:bower'
+]));
 
-		(cb) => {
-			run('bower install').exec()
-				.pipe(plumber())
-				.on('finish', cb);
-		}
-
-	], cb);
-});
-
-gulp.task('head', (cb) => {
+gulp.task('head', () => {
 	global.readyToWatcher = false;
-
-	function test() {
-		return through.obj(function (file, enc, cb) {
-			if (!headRgxp.exec(file.contents.toString()) || RegExp.$1 !== fullHead) {
-				this.push(file);
-			}
-
-			return cb();
-		});
-	}
-
-	gulp.src(['./@(src|gulp)/**/*.js', './predefs/src/**/*.js', './collection.js', 'collection.d.ts'], {base: './'})
-		.pipe(test())
-		.pipe(replace(headRgxp, ''))
-		.pipe(header(fullHead))
+	return gulp.src([
+		'./@(src|gulp)/**/*.js',
+		'./predefs/src/**/*.js',
+		'./collection.js',
+		'collection.d.ts'
+	], {base: './'})
+		.pipe($.if((file) => !headRgxp.exec(file.contents.toString()) || RegExp.$1 !== fullHead))
+		.pipe($.replace(headRgxp, ''))
+		.pipe($.header(fullHead))
 		.pipe(gulp.dest('./'))
 		.on('end', () => {
 			global.readyToWatcher = true;
-			cb();
 		});
 });

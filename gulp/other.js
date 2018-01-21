@@ -12,36 +12,26 @@
 
 const
 	gulp = require('gulp'),
-	replace = require('gulp-replace');
+	$ = require('gulp-load-plugins')();
 
-gulp.task('copyright', (cb) => {
+gulp.task('copyright', () =>
 	gulp.src('./LICENSE')
-		.pipe(replace(/(Copyright \(c\) )(\d+)-?(\d*)/, (str, intro, from, to) => {
+		.pipe($.replace(/(Copyright \(c\) )(\d+)-?(\d*)/, (str, intro, from, to) => {
 			const year = new Date().getFullYear();
 			return intro + from + (to || from != year ? `-${year}` : '');
 		}))
 
 		.pipe(gulp.dest('./'))
-		.on('end', cb);
-});
+);
 
-gulp.task('bump', (cb) => {
-	const
-		bump = require('gulp-bump'),
-		helpers = require('./helpers');
-
+gulp.task('bump', () =>
 	gulp.src('./@(package-lock|package|bower).json')
-		.pipe(bump({version: helpers.getVersion()}))
+		.pipe($.bump({version: require('./helpers').getVersion()}))
 		.pipe(gulp.dest('./'))
-		.on('end', cb);
-});
+);
 
-gulp.task('npmignore', (cb) => {
-	const
-		fs = require('fs');
-
+gulp.task('npmignore', () =>
 	gulp.src('./.npmignore')
-		.pipe(replace(/([\s\S]*?)(?=# NPM ignore list)/, `${fs.readFileSync('./.gitignore')}\n`))
+		.pipe($.replace(/([\s\S]*?)(?=# NPM ignore list)/, `${require('fs').readFileSync('./.gitignore')}\n`))
 		.pipe(gulp.dest('./'))
-		.on('end', cb);
-});
+);

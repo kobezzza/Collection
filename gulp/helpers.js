@@ -8,14 +8,11 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-module.exports = {
-	error(cb) {
-		return (err) => {
-			console.error(err.message);
-			cb();
-		};
-	},
+const
+	path = require('path'),
+	fs = require('fs');
 
+module.exports = {
 	getBuilds() {
 		delete require.cache[require.resolve('../builds')];
 		return Object(require('../builds'));
@@ -33,10 +30,6 @@ module.exports = {
 	},
 
 	getVersion() {
-		const
-			path = require('path'),
-			fs = require('fs');
-
 		const
 			file = fs.readFileSync(path.join(__dirname, '../src/core.js')),
 			v = /VERSION\s*[:=]\s*\[(.*?)]/.exec(file)[1].split(/\s*,\s*/);
