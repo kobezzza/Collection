@@ -9,22 +9,19 @@
  */
 
 const
-	gulp = require('gulp'),
-	async = require('async'),
-	cached = require('gulp-cached');
+	gulp = require('gulp');
 
 require('sugar').extend();
 require('./gulp/other');
 require('./gulp/predefs');
 require('./gulp/build');
-require('./gulp/compile');
 require('./gulp/test');
 
 global.headRgxp = /(\/\*![\s\S]*?\*\/\n{2})/;
 global.readyToWatcher = null;
 
-gulp.task('watch', ['build', 'bump', 'yaspeller', 'npmignore'], () => {
-	async.whilst(
+gulp.task('watch', gulp.series(['build:node', 'build:client', 'bump', 'yaspeller', 'npmignore', () => {
+	require('async').whilst(
 		() =>
 			readyToWatcher === false,
 
@@ -32,20 +29,12 @@ gulp.task('watch', ['build', 'bump', 'yaspeller', 'npmignore'], () => {
 			setTimeout(cb, 500),
 
 		() => {
-			gulp.watch('./src/**/*.js', ['build']).on('change', unbind('build'));
-			gulp.watch('./src/core.js', ['bump']);
-			gulp.watch('./*.md', ['yaspeller']);
-			gulp.watch('./.gitignore', ['npmignore']);
+			gulp.watch('./src/**/*.js', gulp.parallel(['build:client', 'build:node']));
+			gulp.watch('./src/core.js', gulp.series('bump'));
+			gulp.watch('./*.md', gulp.series('yaspeller'));
+			gulp.watch('./.gitignore', gulp.series('npmignore'));
 		}
 	);
+}]));
 
-	function unbind(name) {
-		return (e) => {
-			if (e.type === 'deleted') {
-				delete cached.caches[name][e.path];
-			}
-		};
-	}
-});
-
-gulp.task('default', ['copyright', 'head', 'fullBuild', 'bump', 'yaspeller', 'npmignore']);
+gulp.task('default', gulp.series(['copyright', 'head', 'build', 'bump', 'yaspeller', 'npmignore']));

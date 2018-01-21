@@ -10,20 +10,7 @@
 
 const
 	gulp = require('gulp'),
-	plumber = require('gulp-plumber'),
-	run = require('gulp-run');
+	$ = require('gulp-load-plugins')();
 
-gulp.task('fullBuild', ['compile', 'buildNode']);
-gulp.task('test', test);
-
-function test(cb) {
-	run('node test').exec()
-		.pipe(plumber())
-		.on('finish', cb);
-}
-
-gulp.task('yaspeller', (cb) => {
-	run('yaspeller ./').exec()
-		.pipe(plumber())
-		.on('finish', cb);
-});
+gulp.task('test', () => $.run('node test').exec());
+gulp.task('yaspeller', () => $.run('yaspeller ./').exec());

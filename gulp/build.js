@@ -12,21 +12,22 @@
 
 const
 	gulp = require('gulp'),
-	plumber = require('gulp-plumber');
+	$ = require('gulp-load-plugins')();
 
-gulp.task('build', (cb) => {
-	const
-		rollup = require('gulp-rollup'),
-		monic = require('gulp-monic'),
-		babelRollup = require('rollup-plugin-babel'),
-		replace = require('gulp-replace'),
-		rename = require('gulp-rename'),
-		header = require('gulp-header'),
-		eol = require('gulp-eol');
+gulp.task('build:node', () =>
+	gulp.src('./src/**/*.js', {since: gulp.lastRun('build:node')})
+		.pipe($.babel({
+			babelrc: false,
+			plugins: [['transform-es2015-modules-commonjs', {loose: true}]]
+		}))
 
+		.pipe(gulp.dest('./dist/node'))
+);
+
+gulp.task('build:client', () => {
 	const
-		async = require('async'),
 		del = require('del'),
+		combine = require('stream-combiner2').obj,
 		helpers = require('./helpers');
 
 	const
@@ -41,57 +42,75 @@ gulp.task('build', (cb) => {
 			` * Date: '${new Date().toUTCString()}\n` +
 			' */\n\n';
 
-		tasks.push((cb) => {
+		tasks.push(
 			gulp.src('./src/index.js')
-				.pipe(plumber())
-				.pipe(monic({flags: builds[key]}))
-				.pipe(rename(name))
+				.pipe($.monic({flags: builds[key]}))
+				.pipe($.rename(name))
 				.pipe(gulp.dest('./src'))
-				.on('end', buildSrc);
+				.on('end', () =>
+					gulp.src(`./src/${name}`)
+						.pipe($.rollup({
+							allowRealFiles: true,
+							input: `./src/${name}`,
+							format: 'umd',
+							amd: {id: 'Collection'},
+							name: '$C',
+							plugins: [require('rollup-plugin-babel')()]
+						}))
 
-			function buildSrc() {
-				gulp.src(`./src/${name}`)
-					.pipe(plumber())
-					.pipe(rollup({
-						allowRealFiles: true,
-						input: `./src/${name}`,
-						format: 'umd',
-						amd: {id: 'Collection'},
-						name: '$C',
-						plugins: [babelRollup()]
-					}))
-
-					.pipe(replace(/(\\t)+/g, ''))
-					.pipe(replace(/(\\n){2,}/g, '\\n'))
-					.pipe(replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
-					.pipe(replace(headRgxp.addFlags('g'), ''))
-					.pipe(header(fullHead))
-					.pipe(eol('\n'))
-					.pipe(rename({extname: '.js'}))
-					.pipe(gulp.dest('./dist'))
-					.on('end', clean);
-			}
-
-			function clean() {
-				del(`./src/${name}`).then(() => cb());
-			}
-		});
+						.pipe($.replace(/(\\t)+/g, ''))
+						.pipe($.replace(/(\\n){2,}/g, '\\n'))
+						.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
+						.pipe($.replace(headRgxp.addFlags('g'), ''))
+						.pipe($.header(fullHead))
+						.pipe($.eol('\n'))
+						.pipe($.rename({extname: '.js'}))
+						.pipe(gulp.dest('./dist'))
+						.on('end', () => del(`./src/${name}`))
+				)
+		);
 	});
 
-	async.parallel(tasks, cb);
+	return combine(...tasks);
 });
 
-gulp.task('buildNode', (cb) => {
+gulp.task('build:compile', gulp.series(gulp.parallel(['build:client', 'predefs']), compile));
+gulp.task('build:compile:fast', compile);
+
+function compile() {
 	const
-		babel = require('gulp-babel');
+		glob = require('glob'),
+		combine = require('stream-combiner2').obj;
 
-	gulp.src('./src/**/*.js')
-		.pipe(plumber())
-		.pipe(babel({
-			babelrc: false,
-			plugins: [['transform-es2015-modules-commonjs', {loose: true}]]
-		}))
+	const
+		config = require('../gcc.json'),
+		helpers = require('./helpers');
 
-		.pipe(gulp.dest('./dist/node'))
-		.on('end', cb);
-});
+	const
+		builds = helpers.getBuilds(),
+		tasks = [];
+
+	Object.keys(builds).forEach((key) => {
+		const
+			name = key !== 'collection' ? ` (${key.replace(/^collection\./, '')})` : '',
+			gccFlags = Object.assign({fileName: `${key}.min.js`}, config);
+
+		const head =
+			`/*! Collection v${helpers.getVersion()}${name}` +
+			' | https://github.com/kobezzza/Collection/blob/master/LICENSE */\n';
+
+		tasks.push(
+			gulp.src(`./dist/${key}.js`)
+				.pipe($.closureCompiler(Object.assign(gccFlags, {compilerPath: glob.sync(gccFlags.compilerPath)})))
+				.pipe($.replace(/^\/\*[\s\S]*?\*\//, ''))
+				.pipe($.wrap('(function(){\'use strict\';<%= contents %>}).call(this);'))
+				.pipe($.header(head))
+				.pipe($.eol('\n'))
+				.pipe(gulp.dest('./dist'))
+		);
+	});
+
+	return combine(...tasks);
+}
+
+gulp.task('build', gulp.parallel(['build:compile', 'build:node']));
