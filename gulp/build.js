@@ -16,6 +16,7 @@ const
 
 gulp.task('build:node', () =>
 	gulp.src('./src/**/*.js', {since: gulp.lastRun('build:node')})
+		.pipe($.plumber())
 		.pipe($.babel({
 			babelrc: false,
 			plugins: [['transform-es2015-modules-commonjs', {loose: true}]]
@@ -44,30 +45,28 @@ gulp.task('build:client', () => {
 
 		tasks.push(
 			gulp.src('./src/index.js')
+				.pipe($.plumber())
 				.pipe($.monic({flags: builds[key]}))
 				.pipe($.rename(name))
 				.pipe(gulp.dest('./src'))
-				.on('end', () =>
-					gulp.src(`./src/${name}`)
-						.pipe($.rollup({
-							allowRealFiles: true,
-							input: `./src/${name}`,
-							format: 'umd',
-							amd: {id: 'Collection'},
-							name: '$C',
-							plugins: [require('rollup-plugin-babel')()]
-						}))
+				.pipe($.rollup({
+					allowRealFiles: true,
+					input: `./src/${name}`,
+					format: 'umd',
+					amd: {id: 'Collection'},
+					name: '$C',
+					plugins: [require('rollup-plugin-babel')()]
+				}))
 
-						.pipe($.replace(/(\\t)+/g, ''))
-						.pipe($.replace(/(\\n){2,}/g, '\\n'))
-						.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
-						.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
-						.pipe($.header(fullHead))
-						.pipe($.eol('\n'))
-						.pipe($.rename({extname: '.js'}))
-						.pipe(gulp.dest('./dist'))
-						.on('end', () => del(`./src/${name}`))
-				)
+				.pipe($.replace(/(\\t)+/g, ''))
+				.pipe($.replace(/(\\n){2,}/g, '\\n'))
+				.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
+				.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
+				.pipe($.header(fullHead))
+				.pipe($.eol('\n'))
+				.pipe($.rename({extname: '.js'}))
+				.pipe(gulp.dest('./dist'))
+				.on('end', () => del(`./src/${name}`))
 		);
 	});
 
@@ -101,6 +100,7 @@ function compile() {
 
 		tasks.push(
 			gulp.src(`./dist/${key}.js`)
+				.pipe($.plumber())
 				.pipe($.closureCompiler(Object.assign(gccFlags, {compilerPath: glob.sync(gccFlags.compilerPath)})))
 				.pipe($.replace(/^\/\*[\s\S]*?\*\//, ''))
 				.pipe($.wrap('(function(){\'use strict\';<%= contents %>}).call(this);'))

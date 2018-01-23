@@ -16,6 +16,7 @@ const
 
 gulp.task('copyright', () =>
 	gulp.src('./LICENSE')
+		.pipe($.plumber())
 		.pipe($.replace(/(Copyright \(c\) )(\d+)-?(\d*)/, (str, intro, from, to) => {
 			const year = new Date().getFullYear();
 			return intro + from + (to || from != year ? `-${year}` : '');
@@ -26,12 +27,14 @@ gulp.task('copyright', () =>
 
 gulp.task('bump', () =>
 	gulp.src('./@(package-lock|package|bower).json')
+		.pipe($.plumber())
 		.pipe($.bump({version: require('./helpers').getVersion()}))
 		.pipe(gulp.dest('./'))
 );
 
 gulp.task('npmignore', () =>
 	gulp.src('./.npmignore')
+		.pipe($.plumber())
 		.pipe($.replace(/([\s\S]*?)(?=# NPM ignore list)/, `${require('fs').readFileSync('./.gitignore')}\n`))
 		.pipe(gulp.dest('./'))
 );

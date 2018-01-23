@@ -16,6 +16,7 @@ const
 
 gulp.task('predefs:build', () =>
 	gulp.src('./predefs/src/index.js')
+		.pipe($.plumber())
 		.pipe($.monic())
 		.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
 		.pipe(gulp.dest('./predefs/build'))
@@ -23,6 +24,7 @@ gulp.task('predefs:build', () =>
 
 gulp.task('predefs:externs', () =>
 	gulp.src('./predefs/src/index.js')
+		.pipe($.plumber())
 		.pipe($.monic({flags: {externs: true}}))
 		.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
 		.pipe($.replace(/(\s)+$/, '$1'))
@@ -42,23 +44,25 @@ gulp.task('predefs', gulp.parallel([
 ]));
 
 gulp.task('head', () => {
-	global.readyToWatcher = false;
+	const
+		combine = require('stream-combiner2').obj;
 
 	function filter(file) {
 		return !helpers.headRgxp.exec(file.contents.toString()) || RegExp.$1 !== fullHead;
 	}
 
-	return gulp.src([
+	const paths = [
 		'./@(src|gulp)/**/*.js',
 		'./predefs/src/**/*.js',
 		'./collection.js',
 		'collection.d.ts'
-	], {base: './'})
-		.pipe(
-			$.if(filter, $.replace(helpers.headRgxp, '')
-				.pipe($.header(fullHead))
-				.pipe(gulp.dest('./'))
-				.on('end', () => global.readyToWatcher = true)
-			)
-		);
+	];
+
+	return gulp.src(paths, {base: './'})
+		.pipe($.plumber())
+		.pipe($.if(filter, combine(
+			$.replace(helpers.headRgxp, ''),
+			$.header(fullHead),
+			gulp.dest('./')
+		)));
 });
