@@ -55,7 +55,7 @@ gulp.task('head', () => {
 		'./@(src|gulp)/**/*.js',
 		'./predefs/src/**/*.js',
 		'./collection.js',
-		'collection.d.ts'
+		'./collection.d.ts'
 	];
 
 	return gulp.src(paths, {base: './'})
