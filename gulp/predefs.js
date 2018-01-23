@@ -44,9 +44,6 @@ gulp.task('predefs', gulp.parallel([
 ]));
 
 gulp.task('head', () => {
-	const
-		combine = require('stream-combiner2').obj;
-
 	function filter(file) {
 		return !helpers.headRgxp.exec(file.contents.toString()) || RegExp.$1 !== fullHead;
 	}
@@ -60,9 +57,8 @@ gulp.task('head', () => {
 
 	return gulp.src(paths, {base: './'})
 		.pipe($.plumber())
-		.pipe($.if(filter, combine(
-			$.replace(helpers.headRgxp, ''),
-			$.header(fullHead),
-			gulp.dest('./')
-		)));
+		.pipe($.ignore.include(filter))
+		.pipe($.replace(helpers.headRgxp, ''))
+		.pipe($.header(fullHead))
+		.pipe(gulp.dest('./'));
 });
