@@ -19,8 +19,25 @@ require('./gulp/predefs');
 require('./gulp/build');
 require('./gulp/test');
 
-gulp.task('default', gulp.series(['copyright', 'head', 'build', 'bump', 'yaspeller', 'npmignore']));
-gulp.task('dev', gulp.series(['copyright', 'head', 'build:node', 'build:client', 'bump', 'yaspeller', 'npmignore']));
+gulp.task('default', gulp.parallel([
+	'copyright',
+	'head',
+	'build',
+	'bump',
+	'yaspeller',
+	'npmignore'
+]));
+
+gulp.task('dev', gulp.parallel([
+	'copyright',
+	'head',
+	'build:node',
+	'build:client',
+	'bump',
+	'yaspeller',
+	'npmignore'
+]));
+
 gulp.task('watch', gulp.series(['dev', () => {
 	gulp.watch('./src/**/*.js', gulp.parallel(['build:client', 'build:node']));
 	gulp.watch('./src/core.js', gulp.series('bump'));
