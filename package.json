@@ -59,9 +59,9 @@
     "gulp-wrap": "^0.13.0",
     "istanbul": "^0.4.2",
     "jasmine": "^2.9.0",
+    "merge2": "^1.2.1",
     "monic": "^2.5.1",
     "rollup-plugin-babel": "^3.0.3",
-    "stream-combiner2": "^1.1.1",
     "sugar": "^2.0.0",
     "yaspeller": "^4.0.3"
   }
