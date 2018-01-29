@@ -140,7 +140,9 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			hasEnded = false;
 
 		if (isStream) {
-			cursor[on]('end', () => hasEnded = true);
+			const f = () => hasEnded = true;
+			cursor[on]('end', f);
+			cursor[on]('close', f);
 		}
 
 		data = {
@@ -152,7 +154,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				return {
 					done: false,
 					value: new Promise((resolve, reject) => {
-						isStream && cursor[on]('end', end);
+						if (isStream) {
+							cursor[on]('end', end);
+							cursor[on]('close', end);
+						}
+
 						cursor[on](dataEvent, data);
 						cursor[on]('error', end);
 
@@ -187,7 +193,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 						}
 
 						function clear() {
-							isStream && cursor[off]('end', end);
+							if (isStream) {
+								cursor[off]('end', end);
+								cursor[off]('close', end);
+							}
+
 							cursor[off]('error', error);
 							cursor[off](dataEvent, data);
 						}
@@ -196,7 +206,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			}
 		};
 
-		type = p.type = 'iterator';
+		type = p.type = /** @type {?} */ 'iterator';
 	}
 
 	// Optimization for the length request

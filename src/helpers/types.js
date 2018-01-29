@@ -179,7 +179,7 @@ export function isGenerator(obj) {
  */
 export function isIterator(obj) {
 	return Boolean(
-		obj && (typeof Symbol === 'function' ? obj[Symbol.iterator] : typeof obj['@@iterator'] === 'function')
+		obj && (typeof Symbol === 'function' ? obj[Symbol.iterator] : isFunction(obj['@@iterator']))
 	);
 }
 
@@ -192,10 +192,10 @@ export function isIterator(obj) {
 export function isStream(obj) {
 	return Boolean(
 		obj &&
-		typeof obj.pipe === 'function' &&
-		typeof obj.read === 'function' &&
-		typeof obj.addListener === 'function' &&
-		typeof obj.removeListener === 'function'
+		isFunction(obj.pipe) &&
+		isFunction(obj.read) &&
+		isFunction(obj.addListener) &&
+		isFunction(obj.removeListener)
 	);
 }
 
@@ -257,11 +257,11 @@ export function getType(obj, opt_use) {
 			} else if (isIterator(obj)) {
 				type = 'iterator';
 
-			} else if (isStream(obj)) {
-				type = 'stream';
-
 			} else if (isIDBRequest(obj)) {
 				type = 'idbRequest';
+
+			} else if (isStream(obj)) {
+				type = 'stream';
 			}
 	}
 
