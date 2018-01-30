@@ -71,6 +71,8 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
 		case 'generator':
 		case 'iterator':
+		case 'idbRequest':
+		case 'stream':
 			res = [];
 			type = 'array';
 			break;

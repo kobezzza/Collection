@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.18
+ * Collection v6.3.19
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Tue, 30 Jan 2018 11:30:18 GMT
+ * Date: 'Tue, 30 Jan 2018 12:37:09 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 18];
+Collection.prototype.VERSION = [6, 3, 19];
 
 /**
  * Creates an instance of Collection
@@ -2325,6 +2325,8 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 		case 'generator':
 		case 'iterator':
+		case 'idbRequest':
+		case 'stream':
 			res = [];
 			type = 'array';
 			break;
