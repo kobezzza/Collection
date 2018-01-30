@@ -14,7 +14,7 @@ import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types
 import { slice } from '../helpers/link';
 import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
 import { TRUE, FALSE, IGNORE } from '../consts/links';
-import { SYMBOL_SUPPORT } from '../consts/hacks';
+import { SYMBOL_NATIVE_SUPPORT } from '../consts/hacks';
 import { PRIORITY } from '../consts/thread';
 import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
@@ -243,7 +243,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	const
-		lengthKey = SYMBOL_SUPPORT ? Symbol() : 'value';
+		lengthKey = SYMBOL_NATIVE_SUPPORT ? Symbol() : 'value';
 
 	let cbLength;
 	if (cbArgs === false || cbArgs > 3) {
