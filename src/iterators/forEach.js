@@ -116,13 +116,17 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		isStream = type === 'stream',
 		isIDBRequest = type === 'idbRequest';
 
+	let
+		cursor = null;
+
 	if (isStream || isIDBRequest) {
+		cursor = data;
+
 		if (!p.thread) {
 			p.async = true;
 		}
 
 		const
-			cursor = data,
 			on = `add${isIDBRequest ? 'Event' : ''}Listener`,
 			off = `remove${isIDBRequest ? 'Event' : ''}Listener`,
 			dataEvent = isStream ? 'data' : 'success';
@@ -160,7 +164,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 						}
 
 						cursor[on](dataEvent, data);
-						cursor[on]('error', end);
+						cursor[on]('error', error);
 
 						function data(data) {
 							clear();
@@ -206,7 +210,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			}
 		};
 
-		type = p.type = /** @type {?} */ 'iterator';
+		type = p.type = 'iterator';
 	}
 
 	// Optimization for the length request
@@ -313,6 +317,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		FALSE,
 		IGNORE,
 		notAsync,
+		cursor,
 		data,
 		cb,
 		cbLength,
@@ -388,6 +393,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 					}
 
 					thread.destroyed = true;
+
+					if (isStream) {
+						cursor.destroy();
+					}
 
 					if (!err) {
 						err = new Error('Thread was destroyed');
