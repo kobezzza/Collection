@@ -4,7 +4,7 @@
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "collection.js",
   "typings": "collection.d.ts",
-  "version": "6.3.17",
+  "version": "6.3.18",
   "license": "MIT",
   "author": {
     "name": "kobezzza",
@@ -32,6 +32,7 @@
     "@types/del": "^3.0.0",
     "@types/gulp": "^4.0.5",
     "@types/gulp-load-plugins": "0.0.31",
+    "@types/node": "^9.4.0",
     "babel-core": "^6.26.0",
     "babel-plugin-transform-remove-strict-mode": "0.0.2",
     "babel-preset-es2015-rollup": "^3.0.0",

@@ -98,6 +98,3 @@ var notAsync;
 
 /** @type {?} */
 var maxParallel;
-
-/** @type {?} */
-var cursor;

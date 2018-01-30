@@ -6,6 +6,8 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+/// <reference types="node"/>
+
 declare namespace CollectionJS {
 	type Link = any | any[];
 	type AnyMap = Map<any, any>;
@@ -58,6 +60,7 @@ declare namespace CollectionJS {
 		readonly break: FALSE;
 		readonly value: any;
 		readonly id: number;
+		readonly cursor: NodeJS.ReadableStream | IDBRequest | null;
 		$: AnyRecord;
 		info: Info;
 		result: any;

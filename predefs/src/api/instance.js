@@ -22,6 +22,7 @@ $$Collection.prototype.VERSION;
  * @typedef {{
  *   true,
  *   false,
+ *   cursor: (stream.ReadableStream|IDBRequest),
  *   $: !Object,
  *   info: !Object,
  *   result: ?,
@@ -44,6 +45,9 @@ $$Collection.prototype.VERSION;
  * }}
  */
 var $$CollectionCtx;
+
+/** @type {?} */
+var cursor;
 
 /** @type {?} */
 var $;
