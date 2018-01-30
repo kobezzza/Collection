@@ -353,6 +353,7 @@ export function compileCycle(key, p) {
 				true: TRUE,
 				false: FALSE,
 
+				cursor: o.cursor,
 				length: o.cbLength,
 				childResult: childResult,
 				onError: onError,

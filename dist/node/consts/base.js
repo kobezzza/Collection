@@ -24,10 +24,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const NAMESPACE = exports.NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_kobezzza_Collection';
 _links.GLOBAL[NAMESPACE] = _core2.default;
 
-const LENGTH_REQUEST = exports.LENGTH_REQUEST = _hacks.SYMBOL_SUPPORT ? Symbol('Data length query') : '__COLLECTION_TMP__lengthQuery',
-      FN_LENGTH = exports.FN_LENGTH = _hacks.SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length',
-      ON_ERROR = exports.ON_ERROR = _hacks.SYMBOL_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
+const LENGTH_REQUEST = exports.LENGTH_REQUEST = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Data length query') : '__COLLECTION_TMP__lengthQuery',
+      FN_LENGTH = exports.FN_LENGTH = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length',
+      ON_ERROR = exports.ON_ERROR = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
 
-const CACHE_VERSION = exports.CACHE_VERSION = 53,
+const CACHE_VERSION = exports.CACHE_VERSION = 54,
       CACHE_KEY = exports.CACHE_KEY = '__COLLECTION_CACHE__',
       CACHE_VERSION_KEY = exports.CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';

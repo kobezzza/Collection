@@ -663,6 +663,9 @@ var notAsync;
 /** @type {?} */
 var maxParallel;
 
+/** @type {?} */
+var cursor;
+
 /**
  * @param {$$CollectionType=} collection
  * @return {!$$Collection}

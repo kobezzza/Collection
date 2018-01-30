@@ -121,13 +121,16 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	const isStream = type === 'stream',
 	      isIDBRequest = type === 'idbRequest';
 
+	let cursor = null;
+
 	if (isStream || isIDBRequest) {
+		cursor = data;
+
 		if (!p.thread) {
 			p.async = true;
 		}
 
-		const cursor = data,
-		      on = `add${isIDBRequest ? 'Event' : ''}Listener`,
+		const on = `add${isIDBRequest ? 'Event' : ''}Listener`,
 		      off = `remove${isIDBRequest ? 'Event' : ''}Listener`,
 		      dataEvent = isStream ? 'data' : 'success';
 
@@ -142,7 +145,9 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		let hasEnded = false;
 
 		if (isStream) {
-			cursor[on]('end', () => hasEnded = true);
+			const f = () => hasEnded = true;
+			cursor[on]('end', f);
+			cursor[on]('close', f);
 		}
 
 		data = {
@@ -154,9 +159,13 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 				return {
 					done: false,
 					value: new Promise((resolve, reject) => {
-						isStream && cursor[on]('end', end);
+						if (isStream) {
+							cursor[on]('end', end);
+							cursor[on]('close', end);
+						}
+
 						cursor[on](dataEvent, data);
-						cursor[on]('error', end);
+						cursor[on]('error', error);
 
 						function data(data) {
 							clear();
@@ -186,7 +195,11 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 						}
 
 						function clear() {
-							isStream && cursor[off]('end', end);
+							if (isStream) {
+								cursor[off]('end', end);
+								cursor[off]('close', end);
+							}
+
 							cursor[off]('error', error);
 							cursor[off](dataEvent, data);
 						}
@@ -224,7 +237,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		filterArgs = p.filterArgs.length ? p.filterArgs : false;
 	}
 
-	const lengthKey = _hacks.SYMBOL_SUPPORT ? Symbol() : 'value';
+	const lengthKey = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol() : 'value';
 
 	let cbLength;
 	if (cbArgs === false || cbArgs > 3) {
@@ -273,6 +286,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		FALSE: _links.FALSE,
 		IGNORE: _links.IGNORE,
 		notAsync,
+		cursor,
 		data,
 		cb,
 		cbLength,
@@ -345,6 +359,10 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 					}
 
 					thread.destroyed = true;
+
+					if (isStream) {
+						cursor.destroy();
+					}
 
 					if (!err) {
 						err = new Error('Thread was destroyed');

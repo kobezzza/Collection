@@ -25,7 +25,7 @@ export const
 	BLOB_SUPPORT = IS_BROWSER && typeof Blob === 'function' && typeof URL === 'function',
 	OBJECT_KEYS_NATIVE_SUPPORT = isNative.test(Object.keys && any(Object.keys).toString()),
 	OBJECT_ASSIGN_NATIVE_SUPPORT = isNative.test(Object.assign && any(Object.assign).toString()),
-	SYMBOL_SUPPORT = typeof Symbol === 'function';
+	SYMBOL_NATIVE_SUPPORT = typeof Symbol === 'function' && isNative.test(Symbol.toString());
 
 export const LOCAL_STORAGE_SUPPORT = !IS_NODE && (() => {
 	const
