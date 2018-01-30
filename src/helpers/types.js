@@ -195,7 +195,8 @@ export function isStream(obj) {
 		isFunction(obj.pipe) &&
 		isFunction(obj.read) &&
 		isFunction(obj.addListener) &&
-		isFunction(obj.removeListener)
+		isFunction(obj.removeListener) &&
+		isFunction(obj.destroy)
 	);
 }
 

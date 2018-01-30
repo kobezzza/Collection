@@ -4,7 +4,7 @@
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "collection.js",
   "typings": "collection.d.ts",
-  "version": "6.3.16",
+  "version": "6.3.17",
   "license": "MIT",
   "author": {
     "name": "kobezzza",
@@ -63,6 +63,7 @@
     "monic": "^2.5.1",
     "rollup-plugin-babel": "^3.0.3",
     "sugar": "^2.0.0",
+    "vinyl-fs": "^3.0.2",
     "yaspeller": "^4.0.3"
   }
 }
