@@ -440,7 +440,7 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
  *   withDescriptor: (?boolean|undefined),
  *   withProto: (?boolean|undefined),
  *   concatArray: (?boolean|undefined),
- *   concatFn: (?function(!Array, !Array): ?|undefined),
+ *   concatFn: (?function(!Array, !Array, ?): ?|undefined),
  *   traits: (boolean|number|null|undefined),
  *   deep: (?boolean|undefined),
  *   filter: $$CollectionFilter,

@@ -151,7 +151,7 @@ declare namespace CollectionJS {
 		withAccessors?: boolean,
 		withProto?: boolean,
 		concatArray?: boolean,
-		concatFn?: (...arrays: any[]) => any[]
+		concatFn?: (a: any[], b: any[], key: any) => any[]
 	}
 
 	interface ReduceCallback<T> {

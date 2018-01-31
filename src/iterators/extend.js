@@ -264,7 +264,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 					if (srcIsArray) {
 						if (p.concatArray) {
 							const o = isProto ? construct : src;
-							data[key] = p.concatFn ? p.concatFn(o, val) : o.concat(val);
+							data[key] = p.concatFn ? p.concatFn(o, val, key) : o.concat(val);
 							return;
 						}
 
