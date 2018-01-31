@@ -1,11 +1,11 @@
 /*!
- * Collection v6.3.19
+ * Collection v6.4.0
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Tue, 30 Jan 2018 12:37:09 GMT
+ * Date: 'Wed, 31 Jan 2018 14:32:28 GMT
  */
 
 (function (global, factory) {
@@ -381,7 +381,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 3, 19];
+Collection.prototype.VERSION = [6, 4, 0];
 
 /**
  * Creates an instance of Collection
@@ -2197,7 +2197,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 						if (srcIsArray) {
 							if (p.concatArray) {
 								var o = isProto ? construct : src;
-								data[key] = p.concatFn ? p.concatFn(o, val) : o.concat(val);
+								data[key] = p.concatFn ? p.concatFn(o, val, key) : o.concat(val);
 								return;
 							}
 
