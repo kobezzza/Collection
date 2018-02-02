@@ -25,6 +25,15 @@ module.exports = {
 		'link': true
 	},
 
+	'collection.core': {
+		'iterators.extend': true,
+		'iterators.map': true,
+		'iterators.get': true,
+		'iterators.reduce': true,
+		'iterators.search': true,
+		'iterators.some': true
+	},
+
 	'collection.node': {
 		'isNode': true,
 		'iterators.extend': true,
