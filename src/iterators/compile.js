@@ -1115,6 +1115,7 @@ export function compileCycle(key, p) {
 			}, delay);
 
 		} else if (IS_NODE) {
+			//#if isNode
 			clearTimeout(timeout);
 			timeout = setTimeout(() => {
 				require('fs').writeFile(
@@ -1131,6 +1132,7 @@ export function compileCycle(key, p) {
 			}, delay);
 
 			timeout['unref']();
+			//#endif
 		}
 	}
 

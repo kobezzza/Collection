@@ -45,6 +45,8 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 
 	} else if (IS_NODE) {
 		try {
+			//#if isNode
+
 			const
 				cache = require(require('path').join(__dirname, 'collection.tmp.js'));
 
@@ -52,6 +54,8 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 				cache['exec']();
 				$C.cache.str = cache['cache'];
 			}
+
+			//#endif
 
 		} catch (_) {
 

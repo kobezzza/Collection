@@ -58,6 +58,7 @@ gulp.task('build:client', () => {
 					plugins: [require('rollup-plugin-babel')()]
 				}))
 
+				.pipe($.monic({flags: builds[key]}))
 				.pipe($.replace(/(\\t)+/g, ''))
 				.pipe($.replace(/(\\n){2,}/g, '\\n'))
 				.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))

@@ -1104,3 +1104,7 @@ declare const $C: {
 declare module 'collection.js' {
 	export = $C;
 }
+
+declare module 'collection.js/compiled' {
+	export = $C;
+}
