@@ -1,5 +1,5 @@
 /*!
- * Collection v6.5.0
+ * Collection v6.5.0 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
@@ -741,50 +741,10 @@ function compileCycle(key, p) {
 	}
 
 
-	if (isAsync) {
-		iFn += ws(_templateObject2, cbArgs, fLength ? undefined : true);
-
-		if (fLength) {
-			if (fLength < 5) {
-				for (var _i = 0; _i < fLength; _i++) {
-					var callFilter = 'filters[' + _i + '](' + filterArgs[_i] + ')';
-
-					iFn += ws(_templateObject3, _i ? 'f' : 'f === undefined || f', resolveFilterVal, callFilter, callFilter, resolveFilterVal);
-				}
-			} else {
-				iFn += ws(_templateObject4, resolveFilterVal, callCycleFilter, callCycleFilter, resolveFilterVal);
-			}
-		}
-
-		var fnCountHelper = '';
-
-		if (p.from) {
-			fnCountHelper += ws(_templateObject5);
-		}
-
-		if (p.count) {
-			fnCountHelper += ws(_templateObject6);
-		}
-
-		iFn += ws(_templateObject7, resolveFilterVal, fnCountHelper, cbArgs, fnCountHelper, cbArgs);
-
-		if (needParallel) {
-			iFn += ws(_templateObject8, parallelFn, parallelFn);
-		} else {
-			iFn += 'return res;';
-		}
-
-		iFn += '};';
-	}
-
-
 	if (needCtx) {
 		iFn += ws(_templateObject9, p.mult, p.live, p.reverse, p.withDescriptor, p.notOwn, p.inverseFilter, p.type, p.async, p.thread, p.thread, p.priority, p.length, cantModI, cantModI);
 
 		if (isAsync) {
-
-			iFn += ws(_templateObject10);
-
 		} else {
 			iFn += ws(_templateObject11);
 		}
@@ -794,26 +754,10 @@ function compileCycle(key, p) {
 	    threadEnd = '';
 
 
-	if (p.thread) {
-		threadStart = ws(_templateObject12);
-
-		threadEnd = ws(_templateObject13);
-	}
-
-
 	iFn += 'while (limit !== looper) {';
 
 	var yielder = '',
 	    asyncWait = '';
-
-
-	if (isAsync) {
-		yielder = ws(_templateObject14);
-
-		if (needCtx) {
-			asyncWait = ws(_templateObject15);
-		}
-	}
 
 
 	var indexLimits = '';
@@ -1009,11 +953,6 @@ function compileCycle(key, p) {
 	}
 
 
-	if (isAsync) {
-		tmp += ws(_templateObject40);
-	}
-
-
 	if (!isAsync && p.from) {
 		iFn += ws(_templateObject41, tmp);
 	} else {
@@ -1034,7 +973,6 @@ function compileCycle(key, p) {
 	iFn += ws(_templateObject44, yielder, asyncWait);
 
 	if (isAsync) {
-		tmpCycle[key] = new Function('return function *(o, p) { ' + iFn + ' };')();
 	} else {
 		tmpCycle[key] = new Function('o', 'p', iFn);
 	}
@@ -1440,97 +1378,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	var cursor = null;
 
 
-	if (isStream$$1 || isIDBRequest$$1) {
-		cursor = data;
-
-		if (!p.thread) {
-			p.async = true;
-		}
-
-		var on = 'add' + (isIDBRequest$$1 ? 'Event' : '') + 'Listener',
-		    off = 'remove' + (isIDBRequest$$1 ? 'Event' : '') + 'Listener',
-		    dataEvent = isStream$$1 ? 'data' : 'success';
-
-		cursor[on]('error', function (err) {
-			if (data.onError) {
-				data.onError(err);
-			} else {
-				throw err;
-			}
-		});
-
-		var hasEnded = false;
-
-		if (isStream$$1) {
-			var f = function () {
-				return hasEnded = true;
-			};
-			cursor[on]('end', f);
-			cursor[on]('close', f);
-		}
-
-		data = {
-			next: function () {
-				if (hasEnded || cursor.readyState === 'done') {
-					return { done: true, value: undefined };
-				}
-
-				return {
-					done: false,
-					value: new Promise(function (resolve, reject) {
-						if (isStream$$1) {
-							cursor[on]('end', end);
-							cursor[on]('close', end);
-						}
-
-						cursor[on](dataEvent, data);
-						cursor[on]('error', error);
-
-						function data(data) {
-							clear();
-
-							if (isStream$$1) {
-								resolve(data);
-							} else {
-								var iterator = data.target.result;
-
-								if (iterator) {
-									resolve(iterator.value);
-									iterator.continue();
-								} else {
-									resolve(IGNORE);
-								}
-							}
-						}
-
-						function end() {
-							clear();
-							resolve(IGNORE);
-						}
-
-						function error(err) {
-							clear();
-							reject(err);
-						}
-
-						function clear() {
-							if (isStream$$1) {
-								cursor[off]('end', end);
-								cursor[off]('close', end);
-							}
-
-							cursor[off]('error', error);
-							cursor[off](dataEvent, data);
-						}
-					})
-				};
-			}
-		};
-
-		type = p.type = 'iterator';
-	}
-
-
 	// Optimization for the length request
 	if (!fCount && cb[LENGTH_REQUEST]) {
 		if (type === 'array') {
@@ -1623,89 +1470,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	};
 
 
-	if (p.thread || p.async) {
-		var thread = void 0;
-		var promise = new Promise(function (resolve, reject) {
-			function onError(err) {
-				if (thread) {
-					thread.destroy(err);
-				} else {
-					reject(err);
-				}
-			}
-
-			function wrap(fn) {
-				if (!fn) {
-					return undefined;
-				}
-
-				return function (el, key, data, o) {
-					try {
-						fn[ON_ERROR] = onError;
-						return fn(el, key, data, o);
-					} catch (err) {
-						onError(err);
-					}
-				};
-			}
-
-			for (var _i = 0; _i < fCount; _i++) {
-				filters[_i] = wrap(filters[_i]);
-			}
-
-			if (isStream$$1 || isIDBRequest$$1) {
-				data.onError = onError;
-			}
-
-			args.cb = wrap(cb);
-			args.onComplete = resolve;
-			args.onIterationEnd = wrap(p.onIterationEnd);
-			args.onError = onError;
-
-			thread = args.self = fn(args, sp);
-			thread.value = undefined;
-			thread.destroyed = false;
-			thread.sleep = null;
-			thread.pause = false;
-			thread.children = [];
-
-			if (p.thread) {
-				_this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
-			} else {
-				thread.destroy = function (err) {
-					if (thread.destroyed) {
-						return false;
-					}
-
-					thread.destroyed = true;
-
-					if (isStream$$1) {
-						cursor.destroy();
-					}
-
-					if (!err) {
-						err = new Error('Thread was destroyed');
-						err.type = 'CollectionThreadDestroy';
-						err.thread = thread;
-					}
-
-					try {
-						thread.throw(err);
-					} catch (_) {}
-
-					reject(err);
-					return err;
-				};
-
-				thread.next();
-			}
-		});
-
-		promise.thread = thread;
-		return promise;
-	}
-
-
 	fn(args, sp);
 	return this;
 };
@@ -1767,33 +1531,6 @@ Collection.prototype._filter = function (filter) {
 Collection.prototype._isThread = function (p) {
 	if (p.thread == null && (p.priority || p.onChunk)) {
 		p.thread = true;
-	}
-
-	return this;
-};
-
-
-/**
- * Marks the operation as thread
- *
- * @param {(?string|$$CollectionThreadCb)=} [opt_priority] - thread priority (low, normal, hight, critical)
- * @param {?$$CollectionThreadCb=} [opt_onChunk] - callback function for chunks
- * @return {!Collection}
- */
-Collection.prototype.thread = function (opt_priority, opt_onChunk) {
-	if (isFunction(opt_priority)) {
-		opt_onChunk = any(opt_priority);
-		opt_priority = null;
-	}
-
-	this.p.thread = true;
-
-	if (opt_priority) {
-		this.p.priority = opt_priority;
-	}
-
-	if (opt_onChunk) {
-		this.p.onChunk = opt_onChunk;
 	}
 
 	return this;
@@ -1866,43 +1603,7 @@ Collection.prototype.object = function (opt_notOwn) {
 };
 
 
-/**
- * Sets .async to true and .parallel for the operation
- *
- * @param {(boolean|number|null)=} [opt_max]
- * @return {!Collection}
- */
-Collection.prototype.parallel = function (opt_max) {
-	this.p.async = true;
-	this.p.parallel = isNumber(opt_max) ? opt_max || true : Boolean(opt_max);
-	return this;
-};
-
-/**
- * Sets .async to true and .race for the operation
- *
- * @param {(boolean|number|null)=} [opt_max]
- * @return {!Collection}
- */
-Collection.prototype.race = function (opt_max) {
-	this.p.async = true;
-	this.p.race = isNumber(opt_max) ? opt_max || true : Boolean(opt_max);
-	return this;
-};
-
-
 Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} */{
-
-	async: {
-		/**
-   * Sets .async to true for the operation
-   */
-		get: function () {
-			this.p.async = true;
-			return this;
-		}
-	},
-
 
 	live: {
 		/**
@@ -2346,13 +2047,6 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				var val = opt_cb.apply(null, arguments);
 
 
-				if (isAsync && isPromise(val)) {
-					return val.then(function (val) {
-						return res.push(val);
-					}, fn[ON_ERROR]);
-				}
-
-
 				res.push(val);
 			};
 
@@ -2362,13 +2056,6 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 		case 'object':
 			fn = function (el, key) {
 				var val = opt_cb.apply(null, arguments);
-
-
-				if (isAsync && isPromise(val)) {
-					return val.then(function (val) {
-						return res[key] = val;
-					}, fn[ON_ERROR]);
-				}
 
 
 				res[key] = val;
@@ -2383,13 +2070,6 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				var val = opt_cb.apply(null, arguments);
 
 
-				if (isAsync && isPromise(val)) {
-					return val.then(function (val) {
-						return res.set(key, val);
-					}, fn[ON_ERROR]);
-				}
-
-
 				res.set(key, val);
 			};
 
@@ -2400,13 +2080,6 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 		case 'weakSet':
 			fn = function () {
 				var val = opt_cb.apply(null, arguments);
-
-
-				if (isAsync && isPromise(val)) {
-					return val.then(function (val) {
-						return res.add(val);
-					}, fn[ON_ERROR]);
-				}
 
 
 				res.add(val);
@@ -2508,13 +2181,6 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 			}
 
 			var val = cb.apply(null, args);
-
-
-			if (isAsync && isPromise(val)) {
-				return val.then(function (val) {
-					return p.result = val;
-				}, fn[ON_ERROR]);
-			}
 
 
 			p.result = val;
@@ -2719,17 +2385,6 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 			    val = p.saveKeys ? key : el;
 
 
-			if (isAsync && isPromise(param)) {
-				return param.then(function (param) {
-					if (res.has(param)) {
-						res.get(param).push(val);
-					} else {
-						res.set(param, [val]);
-					}
-				}, fn[ON_ERROR]);
-			}
-
-
 			if (res.has(param)) {
 				res.get(param).push(val);
 			} else {
@@ -2740,17 +2395,6 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		fn = function (el, key) {
 			var param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 			    val = p.saveKeys ? key : el;
-
-
-			if (isAsync && isPromise(param)) {
-				return param.then(function (param) {
-					if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
-						res[param].push(val);
-					} else {
-						res[param] = [val];
-					}
-				}, fn[ON_ERROR]);
-			}
 
 
 			if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
@@ -3032,31 +2676,6 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					var res = value.apply(null, arguments);
 
 
-					if (isAsync && isPromise(res)) {
-						return res.then(function (res) {
-							var status = res === undefined;
-
-							if (res !== undefined && data.get(key) !== res) {
-								data.set(key, res);
-								status = data.get(key) === res;
-							}
-
-							var o = {
-								key: key,
-								value: el,
-								newValue: res,
-								result: status
-							};
-
-							if (mult) {
-								report.push(o);
-							} else {
-								p.result = o;
-							}
-						}, fn[ON_ERROR]);
-					}
-
-
 					var status = res === undefined;
 
 					if (res !== undefined && data.get(key) !== res) {
@@ -3083,32 +2702,6 @@ Collection.prototype.set = function (value, filter, opt_params) {
 			case 'set':
 				fn = function (el, key, data) {
 					var res = value.apply(null, arguments);
-
-
-					if (isAsync && isPromise(res)) {
-						return res.then(function (res) {
-							var status = res === undefined;
-
-							if (res !== undefined && !data.has(res)) {
-								data.delete(el);
-								data.add(res);
-								status = data.has(res);
-							}
-
-							var o = {
-								key: null,
-								value: el,
-								newValue: res,
-								result: status
-							};
-
-							if (mult) {
-								report.push(o);
-							} else {
-								p.result = o;
-							}
-						}, fn[ON_ERROR]);
-					}
 
 
 					var status = res === undefined;
@@ -3138,31 +2731,6 @@ Collection.prototype.set = function (value, filter, opt_params) {
 			default:
 				fn = function (el, key, data) {
 					var res = value.apply(null, arguments);
-
-
-					if (isAsync && isPromise(res)) {
-						return res.then(function (res) {
-							var status = res === undefined;
-
-							if (res !== undefined && data[key] !== res) {
-								data[key] = res;
-								status = data[key] === res;
-							}
-
-							var o = {
-								key: key,
-								value: el,
-								newValue: res,
-								result: status
-							};
-
-							if (mult) {
-								report.push(o);
-							} else {
-								p.result = o;
-							}
-						}, fn[ON_ERROR]);
-					}
 
 
 					var status = res === undefined;
@@ -3295,266 +2863,6 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 	return p.result;
 };
-
-/**
- * Returns a random number in the specified diapason
- *
- * @param {number} min - minimum
- * @param {number} max - maximum
- * @return {number}
- */
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-var intervals = [[0, 40], [41, 160], [161, 500], [501, 2000]];
-
-var lastPos = {};
-var execStack = {};
-
-for (var key in PRIORITY) {
-	if (!PRIORITY.hasOwnProperty(key)) {
-		break;
-	}
-
-	lastPos[key] = 0;
-	execStack[key] = [];
-}
-
-/**
- * Returns a working plan for the current iteration of the event loop
- * @return {!Object}
- */
-function getTasks() {
-	var tasks = {},
-	    tmp = {},
-	    mods = {},
-	    exec = Object.assign({}, execStack);
-
-	var total = 0,
-	    count = 0;
-
-	$C(exec).forEach(function (el, key) {
-		tmp[key] = $C(el).map(function (el, key) {
-			return key;
-		});
-		mods[key] = 0;
-		count++;
-	}, function (el) {
-		return el.length;
-	});
-
-	/* eslint-disable no-loop-func */
-
-	var sort = function (a, b) {
-		return b.value - a.value;
-	};
-
-	var _loop = function () {
-		var rands = [];
-
-		$C(exec).forEach(function (el, key) {
-			rands.push({
-				key: key,
-				value: PRIORITY[key]
-			});
-		}, function (el) {
-			return el.length;
-		});
-
-		rands.sort(sort);
-
-		var pos = rands.length - 1,
-		    max = 0;
-
-		$C(rands).forEach(function (el, i) {
-			var interval = intervals[pos];
-
-			if (interval[1] > max) {
-				max = interval[1];
-			}
-
-			rands[i].value = interval;
-			pos--;
-		});
-
-		var rand = getRandomInt(0, max);
-
-		$C(rands).forEach(function (_ref) {
-			var key = _ref.key,
-			    value = _ref.value;
-
-			var arr = tmp[key];
-
-			if (rand >= value[0] && rand <= value[1]) {
-				tasks[key] = tasks[key] || [];
-				var _pos = lastPos[key];
-
-				if (arr[_pos] == null) {
-					lastPos[key] = _pos = 0;
-					mods[key] = 0;
-				}
-
-				var point = exec[key][arr[_pos]];
-
-				if (point && !point.pause) {
-					mods[key]++;
-					tasks[key].push(arr[_pos]);
-					total += PRIORITY[key];
-				}
-
-				arr.splice(_pos, 1);
-				if (!arr.length) {
-					delete exec[key];
-					count--;
-				}
-
-				return false;
-			}
-		});
-
-		if (!count) {
-			return 'break';
-		}
-	};
-
-	while (total <= MAX_PRIORITY) {
-		var _ret = _loop();
-
-		if (_ret === 'break') break;
-	}
-
-	/* eslint-enable no-loop-func */
-
-	$C(mods).forEach(function (el, key) {
-		lastPos[key] += el;
-	});
-
-	return tasks;
-}
-
-var exec = 0;
-
-/**
- * Adds a task to the execution stack
- *
- * @private
- * @param {?} obj - generator object
- * @param {string} priority - task priority
- * @param {function(!Error)} onError - callback function for error handling
- * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
- */
-Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk) {
-	obj.destroy = function (err) {
-		if (obj.destroyed) {
-			return false;
-		}
-
-		clearTimeout(obj.sleep);
-		$C(obj.children).forEach(function (child) {
-			return child.destroy();
-		});
-		$C(execStack[obj.priority]).remove(function (el) {
-			return el === obj;
-		}, { mult: false });
-
-		exec--;
-		obj.destroyed = true;
-
-		if (!err) {
-			err = new Error('Thread was destroyed');
-			err.type = 'CollectionThreadDestroy';
-			err.thread = obj;
-		}
-
-		try {
-			obj.throw(err);
-		} catch (_) {}
-
-		onError(err);
-		return err;
-	};
-
-	obj.thread = true;
-	obj.priority = priority;
-	obj.onChunk = opt_onChunk;
-
-	var next = obj.next;
-
-	// With strictMode in Chrome (bug?) that method can't define as obj.next =
-	Object.defineProperty(obj, 'next', {
-		value: function () {
-			obj.pause = false;
-			if (obj.sleep !== null) {
-				obj.sleep.resume();
-			}
-
-			return next.apply(this, arguments);
-		}
-	});
-
-	exec++;
-	execStack[priority].push(obj);
-
-	function loop() {
-		$C(getTasks()).forEach(function (el, key) {
-			var prop = execStack[key];
-
-			$C(el).forEach(function (el, i, data) {
-				var obj = prop[el];
-
-				if (!obj) {
-					return;
-				}
-
-				var res = obj.next();
-				obj.value = res.value;
-
-				if (res.done) {
-					prop.splice(el, 1);
-
-					$C(data).forEach(function (el, i) {
-						if (el) {
-							data[i]--;
-						}
-					}, { startIndex: i + 1 });
-
-					exec--;
-				} else if (obj.onChunk) {
-					obj.onChunk(obj.ctx);
-				}
-			});
-		});
-
-		if (exec) {
-			setTimeout(loop, MAX_PRIORITY);
-		}
-	}
-
-	if (exec === 1) {
-		if (typeof setImmediate === 'function') {
-			setImmediate(loop);
-		} else {
-			setTimeout(loop, 0);
-		}
-	}
-};
-
-/**
- * Destroys the specified Collection worker
- *
- * @param {(Promise|?)} obj - Collection worker or any value (returns false)
- * @return {(!Error|boolean)}
- */
-$C.destroy = function (obj) {
-	if (!obj || !obj.thread) {
-		return false;
-	}
-
-	return (obj.priority ? obj : obj.thread).destroy();
-};
-
-Object.assign($C, { destroy: $C.destroy });
 
 return $C;
 

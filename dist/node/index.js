@@ -53,6 +53,7 @@ require('./iterators/set');
 require('./iterators/thread');
 
 //#endif
+//#endif
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //#if iterators.extend
@@ -99,4 +100,5 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //#endif
 
+//#if iterators.async
 //#if iterators.thread

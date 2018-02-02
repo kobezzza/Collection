@@ -1,5 +1,5 @@
 /*!
- * Collection v6.5.0
+ * Collection v6.5.0 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
@@ -1060,6 +1060,12 @@ function compileCycle(key, p) {
 				} catch (_) {}
 			}, delay);
 		} else if (IS_NODE) {
+			clearTimeout(timeout);
+			timeout = setTimeout(function () {
+				require('fs').writeFile(require('path').join(__dirname, 'collection.tmp.js'), '\nexports.version = ' + CACHE_VERSION + ';\nexports.cache = ' + JSON.stringify(cache$1) + ';\nexports.exec = function () { ' + returnCache(cache$1) + ' };\n', function () {});
+			}, delay);
+
+			timeout['unref']();
 		}
 	}
 
@@ -1087,6 +1093,14 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 		} catch (_) {}
 	} else if (IS_NODE) {
 		try {
+
+			var _cache = require(require('path').join(__dirname, 'collection.tmp.js'));
+
+			if (_cache['version'] === CACHE_VERSION) {
+				_cache['exec']();
+				$C.cache.str = _cache['cache'];
+			}
+
 		} catch (_) {} finally {
 			$C.ready = true;
 		}

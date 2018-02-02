@@ -73,6 +73,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
 
+					//#if iterators.async
+
 					if (isAsync && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
@@ -96,6 +98,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 							}
 						}, fn[_base.ON_ERROR]);
 					}
+
+					//#endif
 
 					let status = res === undefined;
 
@@ -124,6 +128,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
 
+					//#if iterators.async
+
 					if (isAsync && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
@@ -148,6 +154,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 							}
 						}, fn[_base.ON_ERROR]);
 					}
+
+					//#endif
 
 					let status = res === undefined;
 
@@ -177,6 +185,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
 
+					//#if iterators.async
+
 					if (isAsync && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
@@ -200,6 +210,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 							}
 						}, fn[_base.ON_ERROR]);
 					}
+
+					//#endif
 
 					let status = res === undefined;
 

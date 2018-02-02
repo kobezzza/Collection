@@ -87,9 +87,13 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 			fn = function () {
 				const val = opt_cb.apply(null, arguments);
 
+				//#if iterators.async
+
 				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.push(val), fn[_base.ON_ERROR]);
 				}
+
+				//#endif
 
 				res.push(val);
 			};
@@ -101,9 +105,13 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 			fn = function (el, key) {
 				const val = opt_cb.apply(null, arguments);
 
+				//#if iterators.async
+
 				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res[key] = val, fn[_base.ON_ERROR]);
 				}
+
+				//#endif
 
 				res[key] = val;
 			};
@@ -116,9 +124,13 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 			fn = function (el, key) {
 				const val = opt_cb.apply(null, arguments);
 
+				//#if iterators.async
+
 				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.set(key, val), fn[_base.ON_ERROR]);
 				}
+
+				//#endif
 
 				res.set(key, val);
 			};
@@ -131,9 +143,13 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 			fn = function () {
 				const val = opt_cb.apply(null, arguments);
 
+				//#if iterators.async
+
 				if (isAsync && (0, _types.isPromise)(val)) {
 					return val.then(val => res.add(val), fn[_base.ON_ERROR]);
 				}
+
+				//#endif
 
 				res.add(val);
 			};

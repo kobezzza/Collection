@@ -53,9 +53,13 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 
 			const val = cb.apply(null, args);
 
+			//#if iterators.async
+
 			if (isAsync && (0, _types.isPromise)(val)) {
 				return val.then(val => p.result = val, fn[_base.ON_ERROR]);
 			}
+
+			//#endif
 
 			p.result = val;
 		}

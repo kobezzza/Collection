@@ -123,6 +123,8 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 	let cursor = null;
 
+	//#if iterators.async
+
 	if (isStream || isIDBRequest) {
 		cursor = data;
 
@@ -210,6 +212,8 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 		type = p.type = 'iterator';
 	}
+
+	//#endif
 
 	// Optimization for the length request
 	if (!fCount && cb[_base.LENGTH_REQUEST]) {
@@ -303,6 +307,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	};
 
 	//#if iterators.thread
+	//#if iterators.async
 
 	if (p.thread || p.async) {
 		let thread;
@@ -386,6 +391,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		return promise;
 	}
 
+	//#endif
 	//#endif
 
 	fn(args, sp);

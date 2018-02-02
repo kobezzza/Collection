@@ -45,12 +45,16 @@ if (_links.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 		} catch (_) {}
 	} else if (_hacks.IS_NODE) {
 		try {
+			//#if isNode
+
 			const cache = require(require('path').join(__dirname, 'collection.tmp.js'));
 
 			if (cache['version'] === _base.CACHE_VERSION) {
 				cache['exec']();
 				_core2.default.cache.str = cache['cache'];
 			}
+
+			//#endif
 		} catch (_) {} finally {
 			_core2.default.ready = true;
 		}

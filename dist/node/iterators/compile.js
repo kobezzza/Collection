@@ -141,6 +141,8 @@ function compileCycle(key, p) {
 		iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
 	}
 
+	//#if iterators.async
+
 	if (isAsync) {
 		iFn += _string.ws`
 			var
@@ -315,6 +317,8 @@ function compileCycle(key, p) {
 		iFn += '};';
 	}
 
+	//#endif
+
 	if (needCtx) {
 		iFn += _string.ws`
 			var ctx = {
@@ -406,6 +410,8 @@ function compileCycle(key, p) {
 		`;
 
 		if (isAsync) {
+			//#if iterators.async
+
 			iFn += _string.ws`
 				ctx.thread = thread;
 				thread.ctx = ctx;
@@ -563,6 +569,8 @@ function compileCycle(key, p) {
 					});
 				};
 			`;
+
+			//#endif
 		} else {
 			iFn += _string.ws`
 				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = o.notAsync;
@@ -572,6 +580,9 @@ function compileCycle(key, p) {
 
 	let threadStart = '',
 	    threadEnd = '';
+
+	//#if iterators.async
+	//#if iterators.thread
 
 	if (p.thread) {
 		threadStart = _string.ws`
@@ -593,10 +604,15 @@ function compileCycle(key, p) {
 		`;
 	}
 
+	//#endif
+	//#endif
+
 	iFn += 'while (limit !== looper) {';
 
 	let yielder = '',
 	    asyncWait = '';
+
+	//#if iterators.async
 
 	if (isAsync) {
 		yielder = _string.ws`
@@ -623,6 +639,8 @@ function compileCycle(key, p) {
 			`;
 		}
 	}
+
+	//#endif
 
 	let indexLimits = '';
 
@@ -974,6 +992,8 @@ function compileCycle(key, p) {
 		tmp += 'breaker = true;';
 	}
 
+	//#if iterators.async
+
 	if (isAsync) {
 		tmp += _string.ws`
 			while (isPromise(r)) {
@@ -987,6 +1007,8 @@ function compileCycle(key, p) {
 			}
 		`;
 	}
+
+	//#endif
 
 	if (!isAsync && p.from) {
 		iFn += _string.ws`
@@ -1047,7 +1069,9 @@ function compileCycle(key, p) {
 	`;
 
 	if (isAsync) {
+		//#if iterators.async
 		_cache.tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
+		//#endif
 	} else {
 		_cache.tmpCycle[key] = new Function('o', 'p', iFn);
 	}
@@ -1073,6 +1097,7 @@ function compileCycle(key, p) {
 				} catch (_) {}
 			}, delay);
 		} else if (_hacks.IS_NODE) {
+			//#if isNode
 			clearTimeout(timeout);
 			timeout = setTimeout(() => {
 				require('fs').writeFile(require('path').join(__dirname, 'collection.tmp.js'), `
@@ -1083,6 +1108,7 @@ function compileCycle(key, p) {
 			}, delay);
 
 			timeout['unref']();
+			//#endif
 		}
 	}
 

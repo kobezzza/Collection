@@ -45,6 +45,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	const isFunc = (0, _types.isFunction)(field),
+	      isAsync = p.thread || p.async,
 	      res = p.result = p.useMap ? new Map() : Object.create(null);
 
 	let fn;
@@ -53,7 +54,9 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 			const param = isFunc ? field.apply(null, arguments) : (0, _link.byLink)(el, field),
 			      val = p.saveKeys ? key : el;
 
-			if ((0, _types.isPromise)(param)) {
+			//#if iterators.async
+
+			if (isAsync && (0, _types.isPromise)(param)) {
 				return param.then(param => {
 					if (res.has(param)) {
 						res.get(param).push(val);
@@ -62,6 +65,8 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 					}
 				}, fn[_base.ON_ERROR]);
 			}
+
+			//#endif
 
 			if (res.has(param)) {
 				res.get(param).push(val);
@@ -74,7 +79,9 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 			const param = isFunc ? field.apply(null, arguments) : (0, _link.byLink)(el, field),
 			      val = p.saveKeys ? key : el;
 
-			if ((0, _types.isPromise)(param)) {
+			//#if iterators.async
+
+			if (isAsync && (0, _types.isPromise)(param)) {
 				return param.then(param => {
 					if (res.hasOwnProperty ? res.hasOwnProperty(param) : _link.hasOwnProperty.call(res, param)) {
 						res[param].push(val);
@@ -83,6 +90,8 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 					}
 				}, fn[_base.ON_ERROR]);
 			}
+
+			//#endif
 
 			if (res.hasOwnProperty ? res.hasOwnProperty(param) : _link.hasOwnProperty.call(res, param)) {
 				res[param].push(val);
