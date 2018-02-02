@@ -44,6 +44,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 	const
 		isFunc = isFunction(field),
+		isAsync = p.thread || p.async,
 		res = p.result = p.useMap ? new Map() : Object.create(null);
 
 	let fn;
@@ -53,7 +54,9 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
-			if (isPromise(param)) {
+			//#if iterators.async
+
+			if (isAsync && isPromise(param)) {
 				return param.then((param) => {
 					if (res.has(param)) {
 						res.get(param).push(val);
@@ -63,6 +66,8 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 					}
 				}, fn[ON_ERROR]);
 			}
+
+			//#endif
 
 			if (res.has(param)) {
 				res.get(param).push(val);
@@ -78,7 +83,9 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
-			if (isPromise(param)) {
+			//#if iterators.async
+
+			if (isAsync && isPromise(param)) {
 				return param.then((param) => {
 					if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
 						res[param].push(val);
@@ -88,6 +95,8 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 					}
 				}, fn[ON_ERROR]);
 			}
+
+			//#endif
 
 			if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
 				res[param].push(val);

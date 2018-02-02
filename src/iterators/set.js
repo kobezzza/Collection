@@ -80,6 +80,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
+					//#if iterators.async
+
 					if (isAsync && isPromise(res)) {
 						return res.then((res) => {
 							let
@@ -105,6 +107,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							}
 						}, fn[ON_ERROR]);
 					}
+
+					//#endif
 
 					let
 						status = res === undefined;
@@ -136,6 +140,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
+					//#if iterators.async
+
 					if (isAsync && isPromise(res)) {
 						return res.then((res) => {
 							let
@@ -162,6 +168,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							}
 						}, fn[ON_ERROR]);
 					}
+
+					//#endif
 
 					let
 						status = res === undefined;
@@ -194,6 +202,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
+					//#if iterators.async
+
 					if (isAsync && isPromise(res)) {
 						return res.then((res) => {
 							let
@@ -219,6 +229,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							}
 						}, fn[ON_ERROR]);
 					}
+
+					//#endif
 
 					let
 						status = res === undefined;

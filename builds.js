@@ -21,17 +21,24 @@ module.exports = {
 		'iterators.group': true,
 		'iterators.remove': true,
 		'iterators.set': true,
+		'iterators.async': true,
 		'iterators.thread': true,
 		'link': true
 	},
 
-	'collection.core': {
+	'collection.sync': {
 		'iterators.extend': true,
 		'iterators.map': true,
 		'iterators.get': true,
 		'iterators.reduce': true,
+		'iterators.every': true,
+		'iterators.some': true,
 		'iterators.search': true,
-		'iterators.some': true
+		'iterators.includes': true,
+		'iterators.group': true,
+		'iterators.remove': true,
+		'iterators.set': true,
+		'link': true
 	},
 
 	'collection.node': {
@@ -47,6 +54,7 @@ module.exports = {
 		'iterators.group': true,
 		'iterators.remove': true,
 		'iterators.set': true,
+		'iterators.async': true,
 		'iterators.thread': true,
 		'link': true
 	}

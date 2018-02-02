@@ -60,6 +60,8 @@ import './iterators/remove';
 import './iterators/set';
 //#endif
 
+//#if iterators.async
 //#if iterators.thread
 import './iterators/thread';
+//#endif
 //#endif

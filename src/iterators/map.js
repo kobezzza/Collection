@@ -89,9 +89,13 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
+				//#if iterators.async
+
 				if (isAsync && isPromise(val)) {
 					return val.then((val) => res.push(val), fn[ON_ERROR]);
 				}
+
+				//#endif
 
 				res.push(val);
 			};
@@ -104,9 +108,13 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
+				//#if iterators.async
+
 				if (isAsync && isPromise(val)) {
 					return val.then((val) => res[key] = val, fn[ON_ERROR]);
 				}
+
+				//#endif
 
 				res[key] = val;
 			};
@@ -120,9 +128,13 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
+				//#if iterators.async
+
 				if (isAsync && isPromise(val)) {
 					return val.then((val) => res.set(key, val), fn[ON_ERROR]);
 				}
+
+				//#endif
 
 				res.set(key, val);
 			};
@@ -136,9 +148,13 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
+				//#if iterators.async
+
 				if (isAsync && isPromise(val)) {
 					return val.then((val) => res.add(val), fn[ON_ERROR]);
 				}
+
+				//#endif
 
 				res.add(val);
 			};

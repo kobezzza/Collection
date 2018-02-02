@@ -76,6 +76,9 @@ Collection.prototype._isThread = function (p) {
 	return this;
 };
 
+//#if iterators.async
+//#if iterators.thread
+
 /**
  * Marks the operation as thread
  *
@@ -101,6 +104,9 @@ Collection.prototype.thread = function (opt_priority, opt_onChunk) {
 
 	return this;
 };
+
+//#endif
+//#endif
 
 /**
  * Sets .startIndex for the operation
@@ -167,6 +173,8 @@ Collection.prototype.object = function (opt_notOwn) {
 	return this;
 };
 
+//#if iterators.async
+
 /**
  * Sets .async to true and .parallel for the operation
  *
@@ -191,7 +199,11 @@ Collection.prototype.race = function (opt_max) {
 	return this;
 };
 
+//#endif
+
 Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} */ {
+	//#if iterators.async
+
 	async: {
 		/**
 		 * Sets .async to true for the operation
@@ -201,6 +213,8 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 			return this;
 		}
 	},
+
+	//#endif
 
 	live: {
 		/**

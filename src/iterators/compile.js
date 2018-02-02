@@ -149,6 +149,8 @@ export function compileCycle(key, p) {
 		iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
 	}
 
+	//#if iterators.async
+
 	if (isAsync) {
 		iFn += ws`
 			var
@@ -327,6 +329,8 @@ export function compileCycle(key, p) {
 		iFn += '};';
 	}
 
+	//#endif
+
 	if (needCtx) {
 		iFn += ws`
 			var ctx = {
@@ -418,6 +422,8 @@ export function compileCycle(key, p) {
 		`;
 
 		if (isAsync) {
+			//#if iterators.async
+
 			iFn += ws`
 				ctx.thread = thread;
 				thread.ctx = ctx;
@@ -576,6 +582,8 @@ export function compileCycle(key, p) {
 				};
 			`;
 
+			//#endif
+
 		} else {
 			iFn += ws`
 				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = o.notAsync;
@@ -586,6 +594,9 @@ export function compileCycle(key, p) {
 	let
 		threadStart = '',
 		threadEnd = '';
+
+	//#if iterators.async
+	//#if iterators.thread
 
 	if (p.thread) {
 		threadStart = ws`
@@ -607,11 +618,16 @@ export function compileCycle(key, p) {
 		`;
 	}
 
+	//#endif
+	//#endif
+
 	iFn += 'while (limit !== looper) {';
 
 	let
 		yielder = '',
 		asyncWait = '';
+
+	//#if iterators.async
 
 	if (isAsync) {
 		yielder = ws`
@@ -638,6 +654,8 @@ export function compileCycle(key, p) {
 			`;
 		}
 	}
+
+	//#endif
 
 	let
 		indexLimits = '';
@@ -1010,6 +1028,8 @@ export function compileCycle(key, p) {
 		tmp += 'breaker = true;';
 	}
 
+	//#if iterators.async
+
 	if (isAsync) {
 		tmp += ws`
 			while (isPromise(r)) {
@@ -1023,6 +1043,8 @@ export function compileCycle(key, p) {
 			}
 		`;
 	}
+
+	//#endif
 
 	if (!isAsync && p.from) {
 		iFn += ws`
@@ -1084,7 +1106,9 @@ export function compileCycle(key, p) {
 	`;
 
 	if (isAsync) {
+		//#if iterators.async
 		tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
+		//#endif
 
 	} else {
 		tmpCycle[key] = new Function('o', 'p', iFn);
