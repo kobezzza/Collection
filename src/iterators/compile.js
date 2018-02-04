@@ -159,7 +159,7 @@ export function compileCycle(key, p) {
 				maxParallelIsNumber = typeof maxParallel === 'number';
 
 			var
-				done = false,
+				done,
 				timeStart,
 				timeEnd,
 				time = 0;
@@ -675,6 +675,7 @@ export function compileCycle(key, p) {
 	//#if iterators.async
 
 	if (isAsync) {
+		iFn += 'done = false;';
 		yielder = ws`
 			if (yielder) {
 				yielder = false;
@@ -1149,7 +1150,7 @@ export function compileCycle(key, p) {
 	iFn += ws`
 			${threadEnd}
 
-			if (breaker) {
+			if (breaker${isAsync ? '|| done' : ''}) {
 				break;
 			}
 		}
