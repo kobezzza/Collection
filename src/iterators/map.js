@@ -10,6 +10,7 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH, ON_ERROR } from '../consts/base';
+import { IGNORE } from '../consts/links';
 import { getType, isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
@@ -163,13 +164,32 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 					let
 						val = opt_cb.apply(null, arguments);
 
+					function end() {
+						clear();
+						resolve();
+					}
+
+					function error(err) {
+						clear();
+						reject(err);
+					}
+
+					function clear() {
+						res.removeListener('drain', write);
+						res.removeListener('error', error);
+						res.removeListener('close', end);
+					}
+
 					function write() {
+						clear();
+
 						if (res.write(val)) {
-							res.removeListener('drain', write);
-							resolve();
+							resolve(val);
 
 						} else {
 							res.addListener('drain', write);
+							res.addListener('error', error);
+							res.addListener('close', end);
 						}
 					}
 

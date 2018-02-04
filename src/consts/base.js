@@ -18,7 +18,7 @@ GLOBAL[NAMESPACE] = $C;
 export const
 	LENGTH_REQUEST = SYMBOL_NATIVE_SUPPORT ? Symbol('Data length query') : '__COLLECTION_TMP__lengthQuery',
 	FN_LENGTH = SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length',
-	ON_ERROR = SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__onError';
+	ON_ERROR = SYMBOL_NATIVE_SUPPORT ? Symbol('onError handler') : '__COLLECTION_TMP__onError';
 
 export const
 	CACHE_VERSION = 56,
