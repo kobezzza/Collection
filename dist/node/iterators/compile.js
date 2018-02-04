@@ -151,6 +151,7 @@ function compileCycle(key, p) {
 				maxParallelIsNumber = typeof maxParallel === 'number';
 
 			var
+				done,
 				timeStart,
 				timeEnd,
 				time = 0;
@@ -166,7 +167,8 @@ function compileCycle(key, p) {
 			}
 
 			var
-				rCbSet = new Set();
+				rCbSet = new Set(),
+				rElSet = new Set();
 
 			function resolveCb(res) {
 				rCbSet.delete(r);
@@ -174,11 +176,22 @@ function compileCycle(key, p) {
 				thread.next();
 			}
 
+			function resolveEl(res) {
+				rElSet.delete(r);
+				el = res;
+				thread.next();
+			}
+
 			cb = function (${cbArgs}) {
 				var
 					f = ${fLength ? undefined : true},
-					fIsPromise = isPromise(el),
+					fIsPromise = !done && isPromise(el),
 					res;
+
+				if (el === IGNORE || done) {
+					f = FALSE;
+					return;
+				}
 
 				if (fIsPromise) {
 					f = el.then(function (val) {
@@ -302,14 +315,18 @@ function compileCycle(key, p) {
 		`;
 
 		if (needParallel) {
+			//#if iterators.async
+
 			iFn += _string.ws`
 				if (maxParallelIsNumber) {
-					ctx['${parallelFn}'](maxParallel, new Promise((r) => r(res)));
+					ctx['${parallelFn}'](maxParallel, null, new Promise(function (r) { r(res); }));
 
 				} else {
 					ctx['${parallelFn}'](new Promise((r) => r(res)));
 				}
 			`;
+
+			//#endif
 		} else {
 			iFn += 'return res;';
 		}
@@ -417,8 +434,8 @@ function compileCycle(key, p) {
 				thread.ctx = ctx;
 
 				var
-					parallelI = 0,
-					raceI = 0,
+					parallelI = {null: {i: 0}},
+					raceI = {null: {i: 0}},
 					waiting = false;
 
 				var
@@ -426,16 +443,38 @@ function compileCycle(key, p) {
 					raceStore = new Set();
 
 				childResult = [];
-				function waitFactory(store, max, promise) {
+				function waitFactory(store, max, label, promise) {
+					if (!promise && label) {
+						promise = label;
+						label = null;
+					}
+
+					label = label || null;
+					var parallel = parallelI[label] = parallelI[label] || {i: 0};
+					parallel.max = max;
+
 					function end(err) {
-						parallelI && parallelI--;
-						thread.pause && ctx.next();
+						parallel.i && parallel.i--;
+						var canNext = true;
+
+						for (var key in parallelI) {
+							if (!parallelI.hasOwnProperty(key)) {
+								break;
+							}
+
+							if (parallelI[key].i >= parallelI[key].max) {
+								canNext = false;
+								break;
+							}
+						}
+
+						canNext && thread.pause && ctx.next();
 					}
 
 					if (promise) {
-						parallelI++;
+						parallel.i++;
 
-						if (parallelI >= max) {
+						if (parallel.i >= parallel.max) {
 							ctx.yield();
 						}
 
@@ -500,19 +539,25 @@ function compileCycle(key, p) {
 					return true;
 				};
 
-				ctx.race = function (max, promise) {
+				ctx.race = function (max, label, promise) {
 					if (!promise) {
-						promise = max;
-						max = 1;
+						promise = label || max;
+						max = label != null ? max : 1;
+						label = null;
 					}
 
-					waitFactory(raceStore, promise).then(function () {
-						if (raceI < max) {
-							raceI++;
+					label = label || null;
+					var race = raceI[label] = raceI[label] || {i: 0};
+					race.max = max;
 
-							if (raceI === max) {
-								raceI = 0;
+					waitFactory(raceStore, promise).then(function () {
+						if (race.i < race.max) {
+							race.i++;
+
+							if (race.i === race.max) {
+								race.i = 0;
 								raceStore.clear();
+								done = true;
 							}
 						}
 					});
@@ -520,8 +565,8 @@ function compileCycle(key, p) {
 					return promise;
 				};
 
-				ctx.wait = function (max, promise) {
-					return waitFactory(waitStore, max, promise);
+				ctx.wait = function (max, label, promise) {
+					return waitFactory(waitStore, max, label, promise);
 				};
 
 				ctx.sleep = function (time, opt_test, opt_interval) {
@@ -615,6 +660,7 @@ function compileCycle(key, p) {
 	//#if iterators.async
 
 	if (isAsync) {
+		iFn += 'done = false;';
 		yielder = _string.ws`
 			if (yielder) {
 				yielder = false;
@@ -831,6 +877,7 @@ function compileCycle(key, p) {
 		case 'set':
 		case 'generator':
 		case 'iterator':
+		case 'asyncIterator':
 			if (isMapSet) {
 				iFn += 'var cursor = data.keys();';
 
@@ -865,20 +912,44 @@ function compileCycle(key, p) {
 					${threadStart}
 			`;
 
+			let asyncIterator = '';
+
+			//#if iterators.async
+
+			if (p.type === 'asyncIterator') {
+				asyncIterator = _string.ws`
+					while (isPromise(el)) {
+						if (!rElSet.has(el)) {
+							rElSet.add(el);
+							el.then(resolveEl, onError);
+						}
+
+						thread.pause = true;
+						yield;
+					}
+				`;
+			}
+
+			//#endif
+
 			if (p.reverse) {
-				iFn += "el = 'value' in key ? key.value : key;";
+				iFn += `el = 'value' in key ? key.value : key; ${asyncIterator}`;
+
+				//#if iterators.async
 
 				if (needParallel) {
 					iFn += _string.ws`
 						if (maxParallelIsNumber) {
 							if (isPromise(el)) {
-								ctx['${parallelFn}'](maxParallel, el);
+								ctx['${parallelFn}'](maxParallel, null, el);
 							}
 
 							${yielder}
 						}
 					`;
 				}
+
+				//#endif
 
 				iFn += _string.ws`
 						if (el !== IGNORE) {
@@ -922,7 +993,7 @@ function compileCycle(key, p) {
 				if (p.type === 'map') {
 					iFn += 'el = data.get(key);';
 				} else {
-					iFn += 'el = key;';
+					iFn += `el = key; ${asyncIterator}`;
 
 					if (maxArgsLength > 1) {
 						if (p.type === 'set') {
@@ -1042,7 +1113,7 @@ function compileCycle(key, p) {
 	iFn += _string.ws`
 			${threadEnd}
 
-			if (breaker) {
+			if (breaker${isAsync ? '|| done' : ''}) {
 				break;
 			}
 		}
@@ -1062,6 +1133,7 @@ function compileCycle(key, p) {
 		${asyncWait}
 
 		if (onComplete) {
+			${isAsync ? 'done = true;' : ''}
 			onComplete(p.result);
 		}
 

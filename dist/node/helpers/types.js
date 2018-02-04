@@ -38,7 +38,7 @@ exports.getSameAs = getSameAs;
 exports.isStructure = isStructure;
 exports.canExtended = canExtended;
 function isFunction(obj) {
-  return typeof obj === 'function';
+	return typeof obj === 'function';
 }
 
 /**
@@ -48,7 +48,7 @@ function isFunction(obj) {
  * @return {boolean}
  */
 function isNumber(obj) {
-  return typeof obj === 'number';
+	return typeof obj === 'number';
 }
 
 /**
@@ -58,7 +58,7 @@ function isNumber(obj) {
  * @return {boolean}
  */
 function isString(obj) {
-  return typeof obj === 'string';
+	return typeof obj === 'string';
 }
 
 /**
@@ -68,7 +68,7 @@ function isString(obj) {
  * @return {boolean}
  */
 function isBoolean(obj) {
-  return typeof obj === 'boolean';
+	return typeof obj === 'boolean';
 }
 
 /**
@@ -78,7 +78,7 @@ function isBoolean(obj) {
  * @return {boolean}
  */
 function isArray(obj) {
-  return Array.isArray(obj) || obj instanceof Array;
+	return Array.isArray(obj) || obj instanceof Array;
 }
 
 /**
@@ -88,7 +88,7 @@ function isArray(obj) {
  * @return {boolean}
  */
 function isMap(obj) {
-  return typeof Map === 'function' && obj instanceof Map;
+	return typeof Map === 'function' && obj instanceof Map;
 }
 
 /**
@@ -98,7 +98,7 @@ function isMap(obj) {
  * @return {boolean}
  */
 function isWeakMap(obj) {
-  return typeof WeakMap === 'function' && obj instanceof WeakMap;
+	return typeof WeakMap === 'function' && obj instanceof WeakMap;
 }
 
 /**
@@ -108,7 +108,7 @@ function isWeakMap(obj) {
  * @return {boolean}
  */
 function isSet(obj) {
-  return typeof Set === 'function' && obj instanceof Set;
+	return typeof Set === 'function' && obj instanceof Set;
 }
 
 /**
@@ -118,7 +118,7 @@ function isSet(obj) {
  * @return {boolean}
  */
 function isWeakSet(obj) {
-  return typeof WeakSet === 'function' && obj instanceof WeakSet;
+	return typeof WeakSet === 'function' && obj instanceof WeakSet;
 }
 
 /**
@@ -128,7 +128,7 @@ function isWeakSet(obj) {
  * @return {boolean}
  */
 function isPromise(obj) {
-  return typeof Promise === 'function' && obj instanceof Promise;
+	return typeof Promise === 'function' && obj instanceof Promise;
 }
 
 /**
@@ -138,12 +138,12 @@ function isPromise(obj) {
  * @return {boolean}
  */
 function isPlainObject(obj) {
-  return Boolean(obj) && obj.constructor === Object;
+	return Boolean(obj) && obj.constructor === Object;
 }
 
 const objectTypes = {
-  'object': true,
-  'function': true
+	'object': true,
+	'function': true
 };
 
 /**
@@ -153,7 +153,7 @@ const objectTypes = {
  * @return {boolean}
  */
 function isObjectInstance(obj) {
-  return Boolean(obj) && objectTypes[typeof obj];
+	return Boolean(obj) && objectTypes[typeof obj];
 }
 
 const isFuncRgxp = /\[object Function]/,
@@ -166,16 +166,16 @@ const isFuncRgxp = /\[object Function]/,
  * @return {boolean}
  */
 function isLikeArray(obj) {
-  const res = isArray(obj) || obj &&
+	const res = isArray(obj) || obj &&
 
-  // The hack for PhantomJS,
-  // because it has strange bug for HTMLCollection and NodeList:
-  // typeof 'function' && instanceof Function = false
-  isObjectInstance(obj) && !isFuncRgxp.test(toString.call(obj)) && (
-  // If the object is like an array
-  obj.length > 0 && 0 in obj || obj.length === 0);
+	// The hack for PhantomJS,
+	// because it has strange bug for HTMLCollection and NodeList:
+	// typeof 'function' && instanceof Function = false
+	isObjectInstance(obj) && !isFuncRgxp.test(toString.call(obj)) && (
+	// If the object is like an array
+	obj.length > 0 && 0 in obj || obj.length === 0);
 
-  return Boolean(res);
+	return Boolean(res);
 }
 
 /**
@@ -185,7 +185,7 @@ function isLikeArray(obj) {
  * @return {boolean}
  */
 function isGenerator(obj) {
-  return isFunction(obj) && obj.constructor.name === 'GeneratorFunction';
+	return isFunction(obj) && obj.constructor.name === 'GeneratorFunction';
 }
 
 /**
@@ -195,7 +195,7 @@ function isGenerator(obj) {
  * @return {boolean}
  */
 function isIterator(obj) {
-  return Boolean(obj && (typeof Symbol === 'function' ? obj[Symbol.iterator] : isFunction(obj['@@iterator'])));
+	return Boolean(obj && (typeof Symbol === 'function' ? obj[Symbol.iterator] : isFunction(obj['@@iterator'])));
 }
 
 /**
@@ -205,7 +205,7 @@ function isIterator(obj) {
  * @return {boolean}
  */
 function isStream(obj) {
-  return Boolean(obj && isFunction(obj.pipe) && isFunction(obj.read) && isFunction(obj.addListener) && isFunction(obj.removeListener) && isFunction(obj.destroy));
+	return Boolean(obj && isFunction(obj.addListener) && isFunction(obj.removeListener) && isFunction(obj.destroy) && (isFunction(obj.write) && isFunction(obj.end) || isFunction(obj.pipe) && isFunction(obj.read) && isFunction(obj.pause) && isFunction(obj.resume)));
 }
 
 /**
@@ -215,58 +215,62 @@ function isStream(obj) {
  * @return {boolean}
  */
 function isIDBRequest(obj) {
-  return typeof IDBRequest === 'function' && obj instanceof IDBRequest;
+	return typeof IDBRequest === 'function' && obj instanceof IDBRequest;
 }
 
 /**
  * Returns the current type of an object
  *
  * @param {Object} obj - source object
- * @param {?string=} [opt_use] - cycle type for iteration: for, for of, for in
+ * @param {?string=} [opt_use] - cycle type for iteration: for, for in, for of, async for of
  * @return {?string}
  */
 function getType(obj, opt_use) {
-  if (!obj) {
-    return null;
-  }
+	if (!obj) {
+		return null;
+	}
 
-  let type = 'object';
-  switch (opt_use) {
-    case 'for':
-      type = 'array';
-      break;
+	let type = 'object';
+	switch (opt_use) {
+		case 'for':
+			type = 'array';
+			break;
 
-    case 'for of':
-      type = 'iterator';
-      break;
+		case 'for in':
+			type = 'object';
+			break;
 
-    case 'for in':
-      type = 'object';
-      break;
+		case 'for of':
+			type = 'iterator';
+			break;
 
-    default:
-      if (isMap(obj)) {
-        type = 'map';
-      } else if (isWeakMap(obj)) {
-        type = 'weakMap';
-      } else if (isSet(obj)) {
-        type = 'set';
-      } else if (isWeakSet(obj)) {
-        type = 'weakSet';
-      } else if (isGenerator(obj)) {
-        type = 'generator';
-      } else if (isLikeArray(obj)) {
-        type = 'array';
-      } else if (isIterator(obj)) {
-        type = 'iterator';
-      } else if (isIDBRequest(obj)) {
-        type = 'idbRequest';
-      } else if (isStream(obj)) {
-        type = 'stream';
-      }
-  }
+		case 'async for of':
+			type = 'asyncIterator';
+			break;
 
-  return type;
+		default:
+			if (isMap(obj)) {
+				type = 'map';
+			} else if (isWeakMap(obj)) {
+				type = 'weakMap';
+			} else if (isSet(obj)) {
+				type = 'set';
+			} else if (isWeakSet(obj)) {
+				type = 'weakSet';
+			} else if (isGenerator(obj)) {
+				type = 'generator';
+			} else if (isLikeArray(obj)) {
+				type = 'array';
+			} else if (isIterator(obj)) {
+				type = 'iterator';
+			} else if (isIDBRequest(obj)) {
+				type = 'idbRequest';
+			} else if (isStream(obj)) {
+				type = 'stream';
+			}
+	}
+
+	return type;
 }
 
 const isNative = exports.isNative = /\[native code]/;
@@ -278,27 +282,27 @@ const isNative = exports.isNative = /\[native code]/;
  * @return {?}
  */
 function getSameAs(obj) {
-  if (!obj) {
-    return false;
-  }
+	if (!obj) {
+		return false;
+	}
 
-  if (isArray(obj)) {
-    return [];
-  }
+	if (isArray(obj)) {
+		return [];
+	}
 
-  if (isPlainObject(obj)) {
-    return {};
-  }
+	if (isPlainObject(obj)) {
+		return {};
+	}
 
-  if (isMap(obj)) {
-    return new Map();
-  }
+	if (isMap(obj)) {
+		return new Map();
+	}
 
-  if (isSet(obj)) {
-    return new Set();
-  }
+	if (isSet(obj)) {
+		return new Set();
+	}
 
-  return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString()) ? {} : false;
+	return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString()) ? {} : false;
 }
 
 /**
@@ -308,15 +312,15 @@ function getSameAs(obj) {
  * @return {boolean}
  */
 function isStructure(obj) {
-  if (!obj) {
-    return false;
-  }
+	if (!obj) {
+		return false;
+	}
 
-  if (isArray(obj) || isPlainObject(obj) || isMap(obj) || isSet(obj)) {
-    return true;
-  }
+	if (isArray(obj) || isPlainObject(obj) || isMap(obj) || isSet(obj)) {
+		return true;
+	}
 
-  return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
+	return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
 }
 
 /**
@@ -326,13 +330,13 @@ function isStructure(obj) {
  * @return {boolean}
  */
 function canExtended(obj) {
-  if (!obj) {
-    return false;
-  }
+	if (!obj) {
+		return false;
+	}
 
-  if (isArray(obj) || isPlainObject(obj)) {
-    return true;
-  }
+	if (isArray(obj) || isPlainObject(obj)) {
+		return true;
+	}
 
-  return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
+	return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
 }

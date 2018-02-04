@@ -659,6 +659,12 @@ var resume;
 var pause;
 
 /** @type {?} */
+var write;
+
+/** @type {?} */
+var end;
+
+/** @type {?} */
 var TRUE;
 
 /** @type {?} */

@@ -12,6 +12,8 @@ var _core = require('../core');
 
 var _base = require('../consts/base');
 
+var _links = require('../consts/links');
+
 var _types = require('../helpers/types');
 
 var _gcc = require('../helpers/gcc');
@@ -41,44 +43,40 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 	this._filter(p)._isThread(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
-	let type = 'object';
-	if ((p.use || p.notOwn) && !p.initial) {
-		p.initial = {};
-	} else if (p.initial) {
-		type = (0, _types.getType)(p.initial);
-	} else {
-		type = (0, _types.getType)(this.data, p.use);
-	}
+	let type = p.initial ? (0, _types.getType)(p.initial) : (0, _types.getType)(this.data, p.use),
+	    res = p.initial;
 
 	const source = p.initial || this.data,
 	      isAsync = p.thread || p.async;
 
-	let res;
-	switch (type) {
-		case 'object':
-			res = {};
-			break;
-
-		case 'array':
-			if ((0, _types.isArray)(source)) {
-				res = [];
-			} else {
+	if (!res) {
+		switch (type) {
+			case 'object':
 				res = {};
-				type = 'object';
-			}
+				break;
 
-			break;
+			case 'array':
+				if ((0, _types.isArray)(source)) {
+					res = [];
+				} else {
+					res = {};
+					type = 'object';
+				}
 
-		case 'generator':
-		case 'iterator':
-		case 'idbRequest':
-		case 'stream':
-			res = [];
-			type = 'array';
-			break;
+				break;
 
-		default:
-			res = new source.constructor();
+			case 'generator':
+			case 'iterator':
+			case 'asyncIterator':
+			case 'idbRequest':
+			case 'stream':
+				res = [];
+				type = 'array';
+				break;
+
+			default:
+				res = new source.constructor();
+		}
 	}
 
 	let fn;
@@ -152,6 +150,57 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 				//#endif
 
 				res.add(val);
+			};
+
+			fn[_base.FN_LENGTH] = opt_cb.length;
+			break;
+
+		case 'stream':
+			fn = function () {
+				return new Promise((resolve, reject) => {
+					let val = opt_cb.apply(null, arguments);
+
+					function end() {
+						clear();
+						resolve();
+					}
+
+					function error(err) {
+						clear();
+						reject(err);
+					}
+
+					function clear() {
+						res.removeListener('drain', write);
+						res.removeListener('error', error);
+						res.removeListener('close', end);
+					}
+
+					function write() {
+						clear();
+
+						if (res.write(val)) {
+							resolve(val);
+						} else {
+							res.addListener('drain', write);
+							res.addListener('error', error);
+							res.addListener('close', end);
+						}
+					}
+
+					//#if iterators.async
+
+					if (isAsync && (0, _types.isPromise)(val)) {
+						return val.then(res => {
+							val = res;
+							write();
+						}, fn[_base.ON_ERROR]);
+					}
+
+					//#endif
+
+					return write();
+				});
 			};
 
 			fn[_base.FN_LENGTH] = opt_cb.length;

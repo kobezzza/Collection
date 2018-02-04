@@ -173,6 +173,17 @@ _core.Collection.prototype.object = function (opt_notOwn) {
 	return this;
 };
 
+/**
+ * Sets .use to 'for of' for the operation
+ *
+ * @param {?boolean=} [opt_async] - if true, then will be used async for of
+ * @return {!Collection}
+ */
+_core.Collection.prototype.iterator = function (opt_async) {
+	this.p.use = `${opt_async ? 'async ' : ''}for off`;
+	return this;
+};
+
 //#if iterators.async
 
 /**
@@ -183,7 +194,7 @@ _core.Collection.prototype.object = function (opt_notOwn) {
  */
 _core.Collection.prototype.parallel = function (opt_max) {
 	this.p.async = true;
-	this.p.parallel = (0, _types.isNumber)(opt_max) ? opt_max || true : Boolean(opt_max);
+	this.p.parallel = (0, _types.isNumber)(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
 
@@ -195,7 +206,7 @@ _core.Collection.prototype.parallel = function (opt_max) {
  */
 _core.Collection.prototype.race = function (opt_max) {
 	this.p.async = true;
-	this.p.race = (0, _types.isNumber)(opt_max) ? opt_max || true : Boolean(opt_max);
+	this.p.race = (0, _types.isNumber)(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
 
@@ -232,16 +243,6 @@ Object.defineProperties(_core.Collection.prototype, /** @lends {Collection.proto
    */
 		get() {
 			this.p.withDescriptor = true;
-			return this;
-		}
-	},
-
-	iterator: {
-		/**
-   * Sets .use to 'for of' for the operation
-   */
-		get() {
-			this.p.use = 'for of';
 			return this;
 		}
 	},

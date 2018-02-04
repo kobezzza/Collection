@@ -164,6 +164,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 						if (isStream) {
 							cursor[on]('end', end);
 							cursor[on]('close', end);
+							cursor.resume();
 						}
 
 						cursor[on](dataEvent, data);
@@ -200,6 +201,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 							if (isStream) {
 								cursor[off]('end', end);
 								cursor[off]('close', end);
+								cursor.pause();
 							}
 
 							cursor[off]('error', error);
@@ -210,7 +212,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 			}
 		};
 
-		type = p.type = 'iterator';
+		type = p.type = 'asyncIterator';
 	}
 
 	//#endif
@@ -344,7 +346,11 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 			}
 
 			args.cb = wrap(cb);
-			args.onComplete = resolve;
+			args.onComplete = res => {
+				(0, _types.isFunction)(p.onComplete) && p.onComplete(res);
+				resolve(res);
+			};
+
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
