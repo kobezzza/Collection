@@ -12,6 +12,24 @@ const
 	$C = require('../collection'),
 	fs = require('vinyl-fs');
 
-$C(fs.src('./*.js', {read: false})).forEach((el, key) => {
-	console.log(el, key);
-});
+$C(fs.src('./*', {read: false})).async.forEach((el, key, data, o) => {
+	console.log(el);
+
+	o.wait(4, 'foo', new Promise((resolve) => {
+		setTimeout(() => {
+			console.log(`Fast wait: ${o.i()}`);
+			resolve();
+		}, 200);
+	}));
+
+	o.wait(2, 'bar', new Promise((resolve) => {
+		setTimeout(() => {
+			console.log(`Slow wait: ${o.i()}`);
+			resolve();
+		}, 1500);
+	}));
+
+}).then(
+	() => console.log('Stream completed!'),
+	(err) => console.error(err)
+);
