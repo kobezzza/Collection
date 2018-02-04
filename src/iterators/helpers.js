@@ -173,6 +173,17 @@ Collection.prototype.object = function (opt_notOwn) {
 	return this;
 };
 
+/**
+ * Sets .use to 'for of' for the operation
+ *
+ * @param {?boolean=} [opt_async] - if true, then will be used async for of
+ * @return {!Collection}
+ */
+Collection.prototype.iterator = function (opt_async) {
+	this.p.use = `${opt_async ? 'async ' : ''}for off`;
+	return this;
+};
+
 //#if iterators.async
 
 /**
@@ -232,16 +243,6 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 		 */
 		get() {
 			this.p.withDescriptor = true;
-			return this;
-		}
-	},
-
-	iterator: {
-		/**
-		 * Sets .use to 'for of' for the operation
-		 */
-		get() {
-			this.p.use = 'for of';
 			return this;
 		}
 	},
