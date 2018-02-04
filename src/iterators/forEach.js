@@ -379,7 +379,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			}
 
 			args.cb = wrap(cb);
-			args.onComplete = resolve;
+			args.onComplete = (res) => {
+				isFunction(p.onComplete) && p.onComplete(res);
+				resolve(res);
+			};
+
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
