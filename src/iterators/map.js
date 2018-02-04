@@ -10,7 +10,6 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH, ON_ERROR } from '../consts/base';
-import { IGNORE } from '../consts/links';
 import { getType, isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
