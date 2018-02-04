@@ -175,11 +175,18 @@ export function compileCycle(key, p) {
 			}
 
 			var
-				rCbSet = new Set();
+				rCbSet = new Set(),
+				rElSet = new Set();
 
 			function resolveCb(res) {
 				rCbSet.delete(r);
 				r = res;
+				thread.next();
+			}
+
+			function resolveEl(res) {
+				rElSet.delete(r);
+				el = res;
 				thread.next();
 			}
 
@@ -189,7 +196,7 @@ export function compileCycle(key, p) {
 					fIsPromise = !done && isPromise(el),
 					res;
 
-				if (done) {
+				if (el === IGNORE || done) {
 					f = FALSE;
 					return;
 				}
@@ -319,6 +326,8 @@ export function compileCycle(key, p) {
 		`;
 
 		if (needParallel) {
+			//#if iterators.async
+
 			iFn += ws`
 				if (maxParallelIsNumber) {
 					ctx['${parallelFn}'](maxParallel, null, new Promise(function (r) { r(res); }));
@@ -327,6 +336,8 @@ export function compileCycle(key, p) {
 					ctx['${parallelFn}'](new Promise((r) => r(res)));
 				}
 			`;
+
+			//#endif
 
 		} else {
 			iFn += 'return res;';
@@ -893,6 +904,7 @@ export function compileCycle(key, p) {
 		case 'set':
 		case 'generator':
 		case 'iterator':
+		case 'asyncIterator':
 			if (isMapSet) {
 				iFn += 'var cursor = data.keys();';
 
@@ -929,8 +941,30 @@ export function compileCycle(key, p) {
 					${threadStart}
 			`;
 
+			let asyncIterator = '';
+
+			//#if iterators.async
+
+			if (p.type === 'asyncIterator') {
+				asyncIterator = ws`
+					while (isPromise(el)) {
+						if (!rElSet.has(el)) {
+							rElSet.add(el);
+							el.then(resolveEl, onError);
+						}
+
+						thread.pause = true;
+						yield;
+					}
+				`;
+			}
+
+			//#endif
+
 			if (p.reverse) {
-				iFn += "el = 'value' in key ? key.value : key;";
+				iFn += `el = 'value' in key ? key.value : key; ${asyncIterator}`;
+
+				//#if iterators.async
 
 				if (needParallel) {
 					iFn += ws`
@@ -943,6 +977,8 @@ export function compileCycle(key, p) {
 						}
 					`;
 				}
+
+				//#endif
 
 				iFn += ws`
 						if (el !== IGNORE) {
@@ -988,7 +1024,7 @@ export function compileCycle(key, p) {
 					iFn += 'el = data.get(key);';
 
 				} else {
-					iFn += 'el = key;';
+					iFn += `el = key; ${asyncIterator}`;
 
 					if (maxArgsLength > 1) {
 						if (p.type === 'set') {
