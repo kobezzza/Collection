@@ -72,6 +72,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 		case 'generator':
 		case 'iterator':
+		case 'asyncIterator':
 		case 'idbRequest':
 		case 'stream':
 			res = [];

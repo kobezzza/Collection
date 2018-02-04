@@ -214,7 +214,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			}
 		};
 
-		type = p.type = 'iterator';
+		type = p.type = 'asyncIterator';
 	}
 
 	//#endif

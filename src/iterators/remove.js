@@ -16,7 +16,10 @@ import { any } from '../helpers/gcc';
 
 const invalidTypes = {
 	'iterator': true,
-	'generator': true
+	'asyncIterator': true,
+	'generator': true,
+	'stream': true,
+	'idbRequest': true
 };
 
 /**
