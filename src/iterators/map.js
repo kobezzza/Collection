@@ -38,49 +38,43 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	this._filter(p)._isThread(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
-	let type = 'object';
-	if ((p.use || p.notOwn) && !p.initial) {
-		p.initial = {};
-
-	} else if (p.initial) {
-		type = getType(p.initial);
-
-	} else {
-		type = getType(this.data, p.use);
-	}
+	let
+		type = p.initial ? getType(p.initial) : getType(this.data, p.use),
+		res = p.initial;
 
 	const
 		source = p.initial || this.data,
 		isAsync = p.thread || p.async;
 
-	let res;
-	switch (type) {
-		case 'object':
-			res = {};
-			break;
-
-		case 'array':
-			if (isArray(source)) {
-				res = [];
-
-			} else {
+	if (!res) {
+		switch (type) {
+			case 'object':
 				res = {};
-				type = 'object';
-			}
+				break;
 
-			break;
+			case 'array':
+				if (isArray(source)) {
+					res = [];
 
-		case 'generator':
-		case 'iterator':
-		case 'asyncIterator':
-		case 'idbRequest':
-		case 'stream':
-			res = [];
-			type = 'array';
-			break;
+				} else {
+					res = {};
+					type = 'object';
+				}
 
-		default:
-			res = new source.constructor();
+				break;
+
+			case 'generator':
+			case 'iterator':
+			case 'asyncIterator':
+			case 'idbRequest':
+			case 'stream':
+				res = [];
+				type = 'array';
+				break;
+
+			default:
+				res = new source.constructor();
+		}
 	}
 
 	let fn;
@@ -158,6 +152,40 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#endif
 
 				res.add(val);
+			};
+
+			fn[FN_LENGTH] = opt_cb.length;
+			break;
+
+		case 'stream':
+			fn = function () {
+				return new Promise((resolve, reject) => {
+					let
+						val = opt_cb.apply(null, arguments);
+
+					function write() {
+						if (res.write(val)) {
+							res.removeListener('drain', write);
+							resolve();
+
+						} else {
+							res.addListener('drain', write);
+						}
+					}
+
+					//#if iterators.async
+
+					if (isAsync && isPromise(val)) {
+						return val.then((res) => {
+							val = res;
+							write();
+						}, fn[ON_ERROR]);
+					}
+
+					//#endif
+
+					return write();
+				});
 			};
 
 			fn[FN_LENGTH] = opt_cb.length;

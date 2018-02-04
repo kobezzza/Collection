@@ -192,13 +192,13 @@ export function isIterator(obj) {
 export function isStream(obj) {
 	return Boolean(
 		obj &&
-		isFunction(obj.pipe) &&
-		isFunction(obj.read) &&
 		isFunction(obj.addListener) &&
 		isFunction(obj.removeListener) &&
-		isFunction(obj.pause) &&
-		isFunction(obj.resume) &&
-		isFunction(obj.destroy)
+		isFunction(obj.destroy) &&
+		(
+			isFunction(obj.write) && isFunction(obj.end) ||
+			isFunction(obj.pipe) && isFunction(obj.read) && isFunction(obj.pause) && isFunction(obj.resume)
+		)
 	);
 }
 
