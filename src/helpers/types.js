@@ -196,6 +196,8 @@ export function isStream(obj) {
 		isFunction(obj.read) &&
 		isFunction(obj.addListener) &&
 		isFunction(obj.removeListener) &&
+		isFunction(obj.pause) &&
+		isFunction(obj.resume) &&
 		isFunction(obj.destroy)
 	);
 }

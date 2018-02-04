@@ -85,6 +85,9 @@ var pipe;
 var resume;
 
 /** @type {?} */
+var pause;
+
+/** @type {?} */
 var TRUE;
 
 /** @type {?} */

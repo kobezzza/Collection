@@ -163,6 +163,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 						if (isStream) {
 							cursor[on]('end', end);
 							cursor[on]('close', end);
+							cursor.resume();
 						}
 
 						cursor[on](dataEvent, data);
@@ -202,6 +203,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 							if (isStream) {
 								cursor[off]('end', end);
 								cursor[off]('close', end);
+								cursor.pause();
 							}
 
 							cursor[off]('error', error);
