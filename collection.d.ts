@@ -11,7 +11,7 @@
 declare namespace CollectionJS {
 	type Link = any | any[];
 	type AnyMap = Map<any, any>;
-	type AnyRecord = Record<string, any>;
+	type AnyRecord = Record<any, any>;
 	type AnyPromise = Promise<any>;
 	type asyncOperation = AnyPromise | (() => AnyPromise);
 
@@ -75,8 +75,10 @@ declare namespace CollectionJS {
 		child(thread: AnyPromise): boolean;
 		wait(promise: asyncOperation): AnyPromise;
 		wait(max: number, promise: asyncOperation): AnyPromise;
+		wait(max: number, label: string | symbol, promise: asyncOperation): AnyPromise;
 		race(promise: asyncOperation): AnyPromise;
 		race(max: number, promise: asyncOperation): AnyPromise;
+		race(max: number, label: string | symbol, promise: asyncOperation): AnyPromise;
 		sleep(time: number, test?: (ctx: Context) => any, interval?: boolean): Promise<void>;
 	}
 
@@ -165,12 +167,11 @@ declare namespace CollectionJS {
 	}
 
 	interface SingleAsyncCollection<T> {
-		array: SingleAsyncCollection<T>;
-		iterator: SingleAsyncCollection<T>;
-		live: SingleAsyncCollection<T>;
-		descriptor: SingleAsyncCollection<T>;
-		inverse: SingleAsyncCollection<T>;
-		reverse: SingleAsyncCollection<T>;
+		readonly array: SingleAsyncCollection<T>;
+		readonly live: SingleAsyncCollection<T>;
+		readonly descriptor: SingleAsyncCollection<T>;
+		readonly inverse: SingleAsyncCollection<T>;
+		readonly reverse: SingleAsyncCollection<T>;
 
 		thread(
 			priority?: string | EventCallback,
@@ -181,7 +182,8 @@ declare namespace CollectionJS {
 		start(value: number): SingleAsyncCollection<T>;
 		end(value: number): SingleAsyncCollection<T>;
 		from(value: number): SingleAsyncCollection<T>;
-		object(notOwn: boolean | -1): SingleAsyncCollection<T>;
+		object(notOwn?: boolean | -1): SingleAsyncCollection<T>;
+		iterator(async?: boolean): SingleAsyncCollection<T>;
 		parallel(max?: boolean | number): SingleAsyncCollection<T>;
 		race(max?: boolean | number): SingleAsyncCollection<T>;
 
@@ -295,13 +297,12 @@ declare namespace CollectionJS {
 	}
 
 	interface AsyncCollection<T> {
-		array: AsyncCollection<T>;
-		iterator: AsyncCollection<T>;
-		live: AsyncCollection<T>;
-		one: SingleAsyncCollection<T>;
-		descriptor: AsyncCollection<T>;
-		inverse: AsyncCollection<T>;
-		reverse: AsyncCollection<T>;
+		readonly array: AsyncCollection<T>;
+		readonly live: AsyncCollection<T>;
+		readonly one: SingleAsyncCollection<T>;
+		readonly descriptor: AsyncCollection<T>;
+		readonly inverse: AsyncCollection<T>;
+		readonly reverse: AsyncCollection<T>;
 
 		thread(
 			priority?: string | EventCallback,
@@ -313,7 +314,8 @@ declare namespace CollectionJS {
 		end(value: number): AsyncCollection<T>;
 		count(value: number): AsyncCollection<T>;
 		from(value: number): AsyncCollection<T>;
-		object(notOwn: boolean | -1): AsyncCollection<T>;
+		object(notOwn?: boolean | -1): AsyncCollection<T>;
+		iterator(async?: boolean): AsyncCollection<T>;
 		parallel(max?: boolean | number): AsyncCollection<T>;
 		race(max?: boolean | number): AsyncCollection<T>;
 
@@ -465,12 +467,11 @@ declare namespace CollectionJS {
 	}
 
 	interface SingleCollection<T> {
-		array: SingleCollection<T>;
-		iterator: SingleCollection<T>;
-		live: SingleCollection<T>;
-		descriptor: SingleCollection<T>;
-		inverse: SingleCollection<T>;
-		reverse: SingleCollection<T>;
+		readonly array: SingleCollection<T>;
+		readonly live: SingleCollection<T>;
+		readonly descriptor: SingleCollection<T>;
+		readonly inverse: SingleCollection<T>;
+		readonly reverse: SingleCollection<T>;
 
 		thread(
 			priority?: string | EventCallback,
@@ -481,7 +482,8 @@ declare namespace CollectionJS {
 		start(value: number): SingleCollection<T>;
 		end(value: number): SingleCollection<T>;
 		from(value: number): SingleCollection<T>;
-		object(notOwn: boolean | -1): SingleCollection<T>;
+		object(notOwn?: boolean | -1): SingleCollection<T>;
+		iterator(async?: boolean): SingleCollection<T>;
 		parallel(max?: boolean | number): SingleCollection<T>;
 		race(max?: boolean | number): SingleCollection<T>;
 
@@ -734,14 +736,13 @@ declare namespace CollectionJS {
 	}
 
 	interface Collection<T> {
-		array: Collection<T>;
-		iterator: Collection<T>;
-		live: Collection<T>;
-		one: SingleCollection<T>;
-		descriptor: Collection<T>;
-		inverse: Collection<T>;
-		reverse: Collection<T>;
-		async: AsyncCollection<T>;
+		readonly array: Collection<T>;
+		readonly live: Collection<T>;
+		readonly one: SingleCollection<T>;
+		readonly descriptor: Collection<T>;
+		readonly inverse: Collection<T>;
+		readonly reverse: Collection<T>;
+		readonly async: AsyncCollection<T>;
 
 		thread(
 			priority?: string | EventCallback,
@@ -753,7 +754,8 @@ declare namespace CollectionJS {
 		end(value: number): Collection<T>;
 		count(value: number): Collection<T>;
 		from(value: number): Collection<T>;
-		object(notOwn: boolean | -1): Collection<T>;
+		object(notOwn?: boolean | -1): Collection<T>;
+		iterator(async?: boolean): Collection<T>;
 		parallel(max?: boolean | number): Collection<T>;
 		race(max?: boolean | number): Collection<T>;
 

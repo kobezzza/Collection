@@ -33,8 +33,8 @@ $$Collection.prototype.VERSION;
  *   next: function(?): boolean,
  *   child: function(!Promise): boolean,
  *   sleep: function(number, (function($$CollectionCtx): boolean)=, boolean=): !Promise,
- *   race: function((number|!Promise), !Promise=): !Promise,
- *   wait: function((number|!Promise), !Promise=): !Promise,
+ *   race: function((number|!Promise), (string|symbol|!Promise)=, !Promise=): !Promise,
+ *   wait: function((number|!Promise), (string|symbol|!Promise)=, !Promise=): !Promise,
  *   jump: function(number): (number|boolean),
  *   i: function(number): (number|boolean),
  *   id: number,
@@ -538,6 +538,12 @@ $$Collection.prototype.count = function (value) {};
 $$Collection.prototype.object = function (opt_notOwn) {};
 
 /**
+ * @param {?boolean=} [opt_async]
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.iterator = function (opt_async) {};
+
+/**
  * @param {(boolean|number|null)=} [opt_max]
  * @return {!$$Collection}
  */
@@ -548,9 +554,6 @@ $$Collection.prototype.parallel = function (opt_max) {};
  * @return {!$$Collection}
  */
 $$Collection.prototype.race = function (opt_max) {};
-
-/** @type {{get: function (): !$$Collection}} */
-$$Collection.prototype.async;
 
 /** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.live;
