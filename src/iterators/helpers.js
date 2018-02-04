@@ -183,7 +183,7 @@ Collection.prototype.object = function (opt_notOwn) {
  */
 Collection.prototype.parallel = function (opt_max) {
 	this.p.async = true;
-	this.p.parallel = isNumber(opt_max) ? opt_max || true : Boolean(opt_max);
+	this.p.parallel = isNumber(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
 
@@ -195,7 +195,7 @@ Collection.prototype.parallel = function (opt_max) {
  */
 Collection.prototype.race = function (opt_max) {
 	this.p.async = true;
-	this.p.race = isNumber(opt_max) ? opt_max || true : Boolean(opt_max);
+	this.p.race = isNumber(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
 
