@@ -9,7 +9,6 @@
  */
 
 import { Collection } from '../core';
-import { ON_ERROR } from '../consts/base';
 import { getType, isFunction, isArray, isNumber } from '../helpers/types';
 import { byLink, splice } from '../helpers/link';
 import { any } from '../helpers/gcc';
@@ -204,7 +203,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 							f(ln);
 
 						} else {
-							return ctx.wait(ln).then(f, fn[ON_ERROR]);
+							return ctx.wait(ln).then(f);
 						}
 					};
 				}

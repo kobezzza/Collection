@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH, ON_ERROR } from '../consts/base';
+import { FN_LENGTH } from '../consts/base';
 import { getType, isFunction, isArray, isPromise } from '../helpers/types';
 import { byLink } from '../helpers/link';
 import { any } from '../helpers/gcc';
@@ -105,7 +105,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[ON_ERROR]);
+						});
 					}
 
 					//#endif
@@ -166,7 +166,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[ON_ERROR]);
+						});
 					}
 
 					//#endif
@@ -227,7 +227,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[ON_ERROR]);
+						});
 					}
 
 					//#endif

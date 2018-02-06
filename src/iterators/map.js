@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH, ON_ERROR } from '../consts/base';
+import { FN_LENGTH } from '../consts/base';
 import { getType, isArray, isFunction, isPromise } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
@@ -38,15 +38,16 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	this._filter(p)._isThread(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
-	let
-		type = p.initial ? getType(p.initial) : getType(this.data, p.use),
-		res = p.initial;
-
 	const
-		source = p.initial || this.data,
+		hasInitial = p.initial != null,
+		source = hasInitial ? p.initial : this.data,
 		isAsync = p.thread || p.async;
 
-	if (!res) {
+	let
+		type = hasInitial ? getType(p.initial) : getType(this.data, p.use),
+		res = p.initial;
+
+	if (!hasInitial) {
 		switch (type) {
 			case 'object':
 				res = {};
@@ -87,7 +88,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (isAsync && isPromise(val)) {
-					return val.then((val) => res.push(val), fn[ON_ERROR]);
+					return val.then((val) => res.push(val));
 				}
 
 				//#endif
@@ -106,7 +107,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (isAsync && isPromise(val)) {
-					return val.then((val) => res[key] = val, fn[ON_ERROR]);
+					return val.then((val) => res[key] = val);
 				}
 
 				//#endif
@@ -126,7 +127,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (isAsync && isPromise(val)) {
-					return val.then((val) => res.set(key, val), fn[ON_ERROR]);
+					return val.then((val) => res.set(key, val));
 				}
 
 				//#endif
@@ -146,7 +147,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (isAsync && isPromise(val)) {
-					return val.then((val) => res.add(val), fn[ON_ERROR]);
+					return val.then((val) => res.add(val));
 				}
 
 				//#endif
@@ -198,7 +199,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						return val.then((res) => {
 							val = res;
 							write();
-						}, fn[ON_ERROR]);
+						});
 					}
 
 					//#endif
@@ -209,6 +210,24 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 			fn[FN_LENGTH] = opt_cb.length;
 			break;
+
+		default:
+			fn = function () {
+				const
+					val = opt_cb.apply(null, arguments);
+
+				//#if iterators.async
+
+				if (isAsync && isPromise(val)) {
+					return val.then((val) => res += val);
+				}
+
+				//#endif
+
+				res += val;
+			};
+
+			fn[FN_LENGTH] = opt_cb.length;
 	}
 
 	p.result = res;
