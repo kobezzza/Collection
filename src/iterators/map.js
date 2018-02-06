@@ -9,8 +9,9 @@
  */
 
 import { Collection } from '../core';
+import { IS_NODE } from '../consts/hacks';
 import { FN_LENGTH } from '../consts/base';
-import { getType, isArray, isFunction, isPromise } from '../helpers/types';
+import { getType, isArray, isFunction, isPromise, isStream } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
@@ -39,12 +40,13 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
+		{data} = this,
 		hasInitial = p.initial != null,
 		source = hasInitial ? p.initial : this.data,
 		isAsync = p.thread || p.async;
 
 	let
-		type = hasInitial ? getType(p.initial) : getType(this.data, p.use),
+		type = hasInitial ? getType(p.initial) : getType(data, p.use),
 		res = p.initial;
 
 	if (!hasInitial) {
@@ -68,13 +70,50 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 			case 'iterator':
 			case 'asyncIterator':
 			case 'idbRequest':
-			case 'stream':
 				res = [];
 				type = 'array';
 				break;
 
 			default:
-				res = new source.constructor();
+				if (type === 'stream') {
+					if (IS_NODE) {
+						//#if isNode
+
+						const
+							{Transform} = require('stream');
+
+						let
+							readObj = true,
+							writeObj = true;
+
+						if (isStream(data)) {
+							if (data._readableState) {
+								readObj = data._readableState.objectMode;
+							}
+
+							if (data._writableState) {
+								writeObj = data._writableState.objectMode;
+							}
+						}
+
+						res = new Transform({
+							readableObjectMode: readObj,
+							writableObjectMode: writeObj,
+							transform(data, enc, cb) {
+								cb(null, data);
+							}
+						});
+
+						//#endif
+
+					} else {
+						res = [];
+						type = 'array';
+					}
+
+				} else {
+					res = new source.constructor();
+				}
 		}
 	}
 
@@ -162,7 +201,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 		case 'stream':
 			fn = function () {
-				return new Promise((resolve, reject) => {
+				return new Promise((resolve) => {
 					let
 						val = opt_cb.apply(null, arguments);
 
@@ -171,27 +210,27 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						resolve();
 					}
 
-					function error(err) {
-						clear();
-						reject(err);
-					}
-
 					function clear() {
 						res.removeListener('drain', write);
-						res.removeListener('error', error);
+						res.removeListener('error', end);
 						res.removeListener('close', end);
 					}
 
 					function write() {
 						clear();
 
-						if (res.write(val)) {
-							resolve(val);
+						try {
+							if (res.write(val)) {
+								resolve(val);
 
-						} else {
-							res.addListener('drain', write);
-							res.addListener('error', error);
-							res.addListener('close', end);
+							} else {
+								res.addListener('drain', write);
+								res.addListener('error', end);
+								res.addListener('close', end);
+							}
+
+						} catch (_) {
+							end();
 						}
 					}
 
@@ -234,6 +273,10 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 	const
 		returnVal = any(this.forEach(any(fn), p));
+
+	if (type === 'stream') {
+		return p.result;
+	}
 
 	if (returnVal !== this) {
 		return returnVal;
