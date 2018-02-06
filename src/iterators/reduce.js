@@ -24,6 +24,12 @@ import { any } from '../helpers/gcc';
  * @return {(?|!Promise)}
  */
 Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
+	if (this.initial != null) {
+		opt_params = opt_filter;
+		opt_filter = opt_initialValue;
+		opt_initialValue = this.initial;
+	}
+
 	let p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {

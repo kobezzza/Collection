@@ -226,13 +226,11 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#endif
 
-				res += val;
+				p.result = res += val;
 			};
 
 			fn[FN_LENGTH] = opt_cb.length;
 	}
-
-	p.result = res;
 
 	const
 		returnVal = any(this.forEach(any(fn), p));

@@ -184,6 +184,17 @@ Collection.prototype.iterator = function (opt_async) {
 	return this;
 };
 
+/**
+ * Sets .initial for the operation
+ *
+ * @param {?} value
+ * @return {!Collection}
+ */
+Collection.prototype.to = function (value) {
+	this.p.initial = value;
+	return this;
+};
+
 //#if iterators.async
 
 /**
