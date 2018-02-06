@@ -79,6 +79,8 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	}
 
 	let fn;
+	p.result = res;
+
 	switch (type) {
 		case 'array':
 			fn = function () {
