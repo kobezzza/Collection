@@ -33,6 +33,7 @@ const simpleType = {
  *   *) [withProto = false] - if true, then properties will be copied with prototypes
  *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
  *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
+ *   *) [extendFilter] - function that will be filtering values for deep extending
  *   *) [traits = false] - if true, then will be copied only new properties, or if -1, only old
  *   *) [deep = false] - if true, then properties will be copied recursively
  *
@@ -124,6 +125,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		!p.withDescriptor &&
 		!p.withAccessors &&
 		!p.traits &&
+		!p.extendFilter &&
 		!p.filter.length &&
 		!p.async &&
 		!p.from &&
@@ -234,11 +236,23 @@ Collection.prototype.extend = function (deepOrParams, args) {
 				return;
 			}
 
-			const
-				valIsArray = isArray(val),
-				struct = valIsArray ? [] : getSameAs(val);
+			let
+				canExtend = Boolean(val);
 
-			if (p.deep && val && (valIsArray || struct)) {
+			if (canExtend && p.extendFilter) {
+				canExtend = p.extendFilter(data, val, key);
+			}
+
+			let
+				valIsArray,
+				struct;
+
+			if (canExtend) {
+				valIsArray = isArray(val);
+				struct = valIsArray ? [] : getSameAs(val);
+			}
+
+			if (p.deep && canExtend && (valIsArray || struct)) {
 				const
 					isExtProto = p.withProto && dataIsSimple && canExtendProto(src);
 
