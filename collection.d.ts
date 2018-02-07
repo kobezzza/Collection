@@ -60,12 +60,12 @@ declare namespace CollectionJS {
 		readonly break: FALSE;
 		readonly value: any;
 		readonly id: number;
-		readonly cursor: NodeJS.ReadableStream | IDBRequest | null;
-		$: AnyRecord;
-		info: Info;
+		readonly cursor: NodeJS.ReadableStream | IDBRequest | undefined;
+		readonly thread: Thread | undefined;
+		readonly childResult: any[];
+		readonly info: Readonly<Info>;
 		result: any;
-		childResult: any[];
-		thread: Thread | undefined;
+		$: AnyRecord;
 		onError: (err: Error) => void;
 		length(reset?: boolean): number | Promise<number>;
 		i(value?: number): number | false;
