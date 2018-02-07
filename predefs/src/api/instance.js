@@ -295,7 +295,7 @@ var $$CollectionReduceCb;
 
 /**
  * @param {$$CollectionReduceCb} cb
- * @param {?=} [opt_initialValue]
+ * @param {(?|$$CollectionFilter|$$CollectionBase)=} [opt_initialValue]
  * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter]
  * @param {?$$CollectionBase=} [opt_params]
  * @return {(?|!Promise)}
@@ -441,6 +441,7 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
  *   withProto: (?boolean|undefined),
  *   concatArray: (?boolean|undefined),
  *   concatFn: (?function(!Array, !Array, ?): ?|undefined),
+ *   extendFilter: (?function(?, ?, ?): ?|undefined),
  *   traits: (boolean|number|null|undefined),
  *   deep: (?boolean|undefined),
  *   filter: $$CollectionFilter,
@@ -480,6 +481,9 @@ var concatArray;
 
 /** @type {?} */
 var concatFn;
+
+/** @type {?} */
+var extendFilter;
 
 /** @type {?} */
 var traits;
@@ -544,6 +548,19 @@ $$Collection.prototype.object = function (opt_notOwn) {};
 $$Collection.prototype.iterator = function (opt_async) {};
 
 /**
+ * @param {?} value
+ * @return {!$$Collection}
+ */
+$$Collection.prototype.to = function (value) {};
+
+/**
+ * @param {?boolean=} [opt_readObj]
+ * @param {?boolean=} [opt_writeObj=opt_readObj]
+ * @return {!Collection}
+ */
+$$Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {};
+
+/**
  * @param {(boolean|number|null)=} [opt_max]
  * @return {!$$Collection}
  */
@@ -560,9 +577,6 @@ $$Collection.prototype.live;
 
 /** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.descriptor;
-
-/** @type {{get: function (): !$$Collection}} */
-$$Collection.prototype.iterator;
 
 /** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.array;

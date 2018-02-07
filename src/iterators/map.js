@@ -22,7 +22,7 @@ import { any } from '../helpers/gcc';
  * @param {($$Collection_map|$$CollectionFilter)=} [opt_params] - additional parameters:
  *   *) [initial] - initial object for adding elements
  *
- * @return {(!Object|!Promise<!Object>)}
+ * @return {(?|!Promise)}
  */
 Collection.prototype.map = function (opt_cb, opt_params) {
 	let p = opt_params || {};

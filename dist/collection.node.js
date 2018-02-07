@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 04 Feb 2018 15:58:48 GMT
+ * Date: 'Wed, 07 Feb 2018 11:14:20 GMT
  */
 
 (function (global, factory) {
@@ -318,12 +318,12 @@ function isStructure(obj) {
 }
 
 /**
- * Returns true if the specified object can be extended
+ * Returns true if a prototype of the specified object can be extended
  *
  * @param {?} obj - source object
  * @return {boolean}
  */
-function canExtended(obj) {
+function canExtendProto(obj) {
 	if (!obj) {
 		return false;
 	}
@@ -1439,11 +1439,8 @@ Collection.prototype.forEach = function (cb, opt_params) {
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
-	} else {
-		if (opt_params && opt_params.hasOwnProperty('filter')) {
-			opt_params.filter = p.filter.concat(opt_params.filter);
-		}
-
+	} else if (opt_params) {
+		opt_params.filter = p.filter.concat(opt_params.filter || []);
 		Object.assign(p, opt_params);
 	}
 
@@ -1752,10 +1749,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 /**
  * Appends a filter to the operation
  *
- * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filter - function filter
+ * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filters - function filter
  * @return {!Collection}
  */
-Collection.prototype.filter = function (filter) {
+Collection.prototype.filter = function (filters) {
 	var args = [];
 	for (var i = 0; i < arguments.length; i++) {
 		var el = arguments[i];
@@ -1773,10 +1770,10 @@ Collection.prototype.filter = function (filter) {
  * Appends a filter to the operation
  *
  * @private
- * @param {...?} filter - function filter
+ * @param {...?} filters - function filter
  * @return {!Collection}
  */
-Collection.prototype._filter = function (filter) {
+Collection.prototype._filter = function (filters) {
 	var args = [];
 	for (var i = 0; i < arguments.length; i++) {
 		var el = arguments[i];
@@ -1915,6 +1912,43 @@ Collection.prototype.iterator = function (opt_async) {
 	return this;
 };
 
+/**
+ * Sets .initial for the operation
+ *
+ * @param {?} value
+ * @return {!Collection}
+ */
+Collection.prototype.to = function (value) {
+	this.p.initial = value;
+	return this;
+};
+
+/**
+ * Sets .initial as a transform stream for the operation
+ *
+ * @param {?boolean=} [opt_readObj] - readableObjectMode
+ * @param {?boolean=} opt_writeObj - writableObjectMode
+ * @return {!Collection}
+ */
+Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
+	opt_readObj = Boolean(opt_readObj != null ? opt_readObj : true);
+
+
+	var _require = require('stream'),
+	    Transform = _require.Transform;
+
+	this.p.initial = new Transform({
+		readableObjectMode: Boolean(opt_readObj),
+		writableObjectMode: Boolean(opt_writeObj != null ? opt_writeObj : opt_readObj),
+		transform: function (data, enc, cb) {
+			cb(null, data);
+		}
+	});
+
+
+	return this;
+};
+
 
 /**
  * Sets .async to true and .parallel for the operation
@@ -2034,6 +2068,7 @@ var simpleType = {
  *   *) [withProto = false] - if true, then properties will be copied with prototypes
  *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
  *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
+ *   *) [extendFilter] - function that will be filtering values for deep extending
  *   *) [traits = false] - if true, then will be copied only new properties, or if -1, only old
  *   *) [deep = false] - if true, then properties will be copied recursively
  *
@@ -2116,7 +2151,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	var dataIsSimple = simpleType[type];
 	p.result = data;
 
-	if (!p.deep && p.withUndef && p.mult && dataIsSimple && OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
+	if (!p.deep && p.withUndef && p.mult && dataIsSimple && OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.extendFilter && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
 		var _args = [];
 
 		for (var _i = 1; _i < arguments.length; _i++) {
@@ -2215,15 +2250,26 @@ Collection.prototype.extend = function (deepOrParams, args) {
 					return;
 				}
 
-				var valIsArray = isArray(val),
-				    struct = valIsArray ? [] : getSameAs(val);
+				var canExtend = Boolean(val);
 
-				if (p.deep && val && (valIsArray || struct)) {
-					var isExt = p.withProto && dataIsSimple && canExtended(src);
+				if (canExtend && p.extendFilter) {
+					canExtend = p.extendFilter(data, val, key);
+				}
+
+				var valIsArray = void 0,
+				    struct = void 0;
+
+				if (canExtend) {
+					valIsArray = isArray(val);
+					struct = valIsArray ? [] : getSameAs(val);
+				}
+
+				if (p.deep && canExtend && (valIsArray || struct)) {
+					var isExtProto = p.withProto && dataIsSimple && canExtendProto(src);
 
 					var srcIsArray = isArray(src);
 
-					if (isExt && !(data.hasOwnProperty ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
+					if (isExtProto && !(data.hasOwnProperty ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 						src = srcIsArray ? src.slice() : create(src);
 						byLink(data, [key], { value: src });
 					}
@@ -2233,7 +2279,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 						var isProto = false,
 						    construct = void 0;
 
-						if (!srcIsArray && isExt && p.concatArray) {
+						if (!srcIsArray && isExtProto && p.concatArray) {
 							construct = getPrototypeOf(src);
 							srcIsArray = isProto = construct && isArray(construct);
 						}
@@ -2320,7 +2366,7 @@ Object.assign($C, { extend: $C.extend, clone: $C.clone });
  * @param {($$Collection_map|$$CollectionFilter)=} [opt_params] - additional parameters:
  *   *) [initial] - initial object for adding elements
  *
- * @return {(!Object|!Promise<!Object>)}
+ * @return {(?|!Promise)}
  */
 Collection.prototype.map = function (opt_cb, opt_params) {
 	var p = opt_params || {};
@@ -2339,13 +2385,16 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	this._filter(p)._isThread(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
-	var type = p.initial ? getType(p.initial) : getType(this.data, p.use),
-	    res = p.initial;
-
-	var source = p.initial || this.data,
+	var data = this.data,
+	    hasInitial = p.initial != null,
+	    source = hasInitial ? p.initial : this.data,
 	    isAsync = p.thread || p.async;
 
-	if (!res) {
+
+	var type = hasInitial ? getType(p.initial) : getType(data, p.use),
+	    res = p.initial;
+
+	if (!hasInitial) {
 		switch (type) {
 			case 'object':
 				res = {};
@@ -2365,17 +2414,51 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 			case 'iterator':
 			case 'asyncIterator':
 			case 'idbRequest':
-			case 'stream':
 				res = [];
 				type = 'array';
 				break;
 
 			default:
-				res = new source.constructor();
+				if (type === 'stream') {
+					if (IS_NODE) {
+
+						var _require = require('stream'),
+						    Transform = _require.Transform;
+
+						var readObj = true,
+						    writeObj = true;
+
+						if (isStream(data)) {
+							if (data._readableState) {
+								readObj = data._readableState.objectMode;
+							}
+
+							if (data._writableState) {
+								writeObj = data._writableState.objectMode;
+							}
+						}
+
+						res = new Transform({
+							readableObjectMode: readObj,
+							writableObjectMode: writeObj,
+							transform: function (data, enc, cb) {
+								cb(null, data);
+							}
+						});
+
+					} else {
+						res = [];
+						type = 'array';
+					}
+				} else {
+					res = new source.constructor();
+				}
 		}
 	}
 
 	var fn = void 0;
+	p.result = res;
+
 	switch (type) {
 		case 'array':
 			fn = function () {
@@ -2385,7 +2468,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				if (isAsync && isPromise(val)) {
 					return val.then(function (val) {
 						return res.push(val);
-					}, fn[ON_ERROR]);
+					});
 				}
 
 
@@ -2403,7 +2486,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				if (isAsync && isPromise(val)) {
 					return val.then(function (val) {
 						return res[key] = val;
-					}, fn[ON_ERROR]);
+					});
 				}
 
 
@@ -2422,7 +2505,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				if (isAsync && isPromise(val)) {
 					return val.then(function (val) {
 						return res.set(key, val);
-					}, fn[ON_ERROR]);
+					});
 				}
 
 
@@ -2441,7 +2524,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				if (isAsync && isPromise(val)) {
 					return val.then(function (val) {
 						return res.add(val);
-					}, fn[ON_ERROR]);
+					});
 				}
 
 
@@ -2455,7 +2538,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 			fn = function () {
 				var _arguments = arguments;
 
-				return new Promise(function (resolve, reject) {
+				return new Promise(function (resolve) {
 					var val = opt_cb.apply(null, _arguments);
 
 					function end() {
@@ -2463,26 +2546,25 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						resolve();
 					}
 
-					function error(err) {
-						clear();
-						reject(err);
-					}
-
 					function clear() {
 						res.removeListener('drain', write);
-						res.removeListener('error', error);
+						res.removeListener('error', end);
 						res.removeListener('close', end);
 					}
 
 					function write() {
 						clear();
 
-						if (res.write(val)) {
-							resolve(val);
-						} else {
-							res.addListener('drain', write);
-							res.addListener('error', error);
-							res.addListener('close', end);
+						try {
+							if (res.write(val)) {
+								resolve(val);
+							} else {
+								res.addListener('drain', write);
+								res.addListener('error', end);
+								res.addListener('close', end);
+							}
+						} catch (_) {
+							end();
 						}
 					}
 
@@ -2491,7 +2573,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						return val.then(function (res) {
 							val = res;
 							write();
-						}, fn[ON_ERROR]);
+						});
 					}
 
 
@@ -2501,11 +2583,30 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 			fn[FN_LENGTH] = opt_cb.length;
 			break;
+
+		default:
+			fn = function () {
+				var val = opt_cb.apply(null, arguments);
+
+
+				if (isAsync && isPromise(val)) {
+					return val.then(function (val) {
+						return res += val;
+					});
+				}
+
+
+				p.result = res += val;
+			};
+
+			fn[FN_LENGTH] = opt_cb.length;
 	}
 
-	p.result = res;
-
 	var returnVal = any(this.forEach(any(fn), p));
+
+	if (type === 'stream') {
+		return p.result;
+	}
 
 	if (returnVal !== this) {
 		return returnVal;
@@ -2564,12 +2665,18 @@ Collection.prototype.get = function (opt_filter, opt_params) {
  *
  * @see Collection.prototype.forEach
  * @param {$$CollectionReduceCb} cb - callback function
- * @param {?=} [opt_initialValue] - initial value
+ * @param {(?|$$CollectionFilter|$$CollectionBase)=} [opt_initialValue] - initial value
  * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
  * @return {(?|!Promise)}
  */
 Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
+	if (this.p.initial != null) {
+		opt_params = any(opt_filter);
+		opt_filter = any(opt_initialValue);
+		opt_initialValue = this.p.initial;
+	}
+
 	var p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
@@ -2600,7 +2707,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 			if (isAsync && isPromise(val)) {
 				return val.then(function (val) {
 					return p.result = val;
-				}, fn[ON_ERROR]);
+				});
 			}
 
 
@@ -2813,7 +2920,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 					} else {
 						res.set(param, [val]);
 					}
-				}, fn[ON_ERROR]);
+				});
 			}
 
 
@@ -2836,7 +2943,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 					} else {
 						res[param] = [val];
 					}
-				}, fn[ON_ERROR]);
+				});
 			}
 
 
@@ -3031,7 +3138,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 						if (isNumber(ln)) {
 							f(ln);
 						} else {
-							return ctx.wait(ln).then(f, fn[ON_ERROR]);
+							return ctx.wait(ln).then(f);
 						}
 					};
 				}
@@ -3143,7 +3250,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[ON_ERROR]);
+						});
 					}
 
 
@@ -3197,7 +3304,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[ON_ERROR]);
+						});
 					}
 
 
@@ -3251,7 +3358,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[ON_ERROR]);
+						});
 					}
 
 

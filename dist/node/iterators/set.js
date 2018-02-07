@@ -96,7 +96,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[_base.ON_ERROR]);
+						});
 					}
 
 					//#endif
@@ -152,7 +152,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[_base.ON_ERROR]);
+						});
 					}
 
 					//#endif
@@ -208,7 +208,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 							} else {
 								p.result = o;
 							}
-						}, fn[_base.ON_ERROR]);
+						});
 					}
 
 					//#endif

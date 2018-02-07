@@ -41,6 +41,7 @@ const simpleType = {
  *   *) [withProto = false] - if true, then properties will be copied with prototypes
  *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
  *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
+ *   *) [extendFilter] - function that will be filtering values for deep extending
  *   *) [traits = false] - if true, then will be copied only new properties, or if -1, only old
  *   *) [deep = false] - if true, then properties will be copied recursively
  *
@@ -117,7 +118,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 	const dataIsSimple = simpleType[type];
 	p.result = data;
 
-	if (!p.deep && p.withUndef && p.mult && dataIsSimple && _hacks.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
+	if (!p.deep && p.withUndef && p.mult && dataIsSimple && _hacks.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.extendFilter && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
 		const args = [];
 
 		for (let i = 1; i < arguments.length; i++) {
@@ -213,15 +214,25 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 				return;
 			}
 
-			const valIsArray = (0, _types.isArray)(val),
-			      struct = valIsArray ? [] : (0, _types.getSameAs)(val);
+			let canExtend = Boolean(val);
 
-			if (p.deep && val && (valIsArray || struct)) {
-				const isExt = p.withProto && dataIsSimple && (0, _types.canExtended)(src);
+			if (canExtend && p.extendFilter) {
+				canExtend = p.extendFilter(data, val, key);
+			}
+
+			let valIsArray, struct;
+
+			if (canExtend) {
+				valIsArray = (0, _types.isArray)(val);
+				struct = valIsArray ? [] : (0, _types.getSameAs)(val);
+			}
+
+			if (p.deep && canExtend && (valIsArray || struct)) {
+				const isExtProto = p.withProto && dataIsSimple && (0, _types.canExtendProto)(src);
 
 				let srcIsArray = (0, _types.isArray)(src);
 
-				if (isExt && !(data.hasOwnProperty ? data.hasOwnProperty(key) : _link.hasOwnProperty.call(data, key))) {
+				if (isExtProto && !(data.hasOwnProperty ? data.hasOwnProperty(key) : _link.hasOwnProperty.call(data, key))) {
 					src = srcIsArray ? src.slice() : create(src);
 					(0, _link.byLink)(data, [key], { value: src });
 				}
@@ -231,7 +242,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 					let isProto = false,
 					    construct;
 
-					if (!srcIsArray && isExt && p.concatArray) {
+					if (!srcIsArray && isExtProto && p.concatArray) {
 						construct = getPrototypeOf(src);
 						srcIsArray = isProto = construct && (0, _types.isArray)(construct);
 					}

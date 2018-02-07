@@ -10,8 +10,6 @@
 
 var _core = require('../core');
 
-var _base = require('../consts/base');
-
 var _types = require('../helpers/types');
 
 var _link = require('../helpers/link');
@@ -188,7 +186,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 						if ((0, _types.isNumber)(ln)) {
 							f(ln);
 						} else {
-							return ctx.wait(ln).then(f, fn[_base.ON_ERROR]);
+							return ctx.wait(ln).then(f);
 						}
 					};
 				}

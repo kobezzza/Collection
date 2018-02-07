@@ -21,12 +21,18 @@ var _gcc = require('../helpers/gcc');
  *
  * @see Collection.prototype.forEach
  * @param {$$CollectionReduceCb} cb - callback function
- * @param {?=} [opt_initialValue] - initial value
+ * @param {(?|$$CollectionFilter|$$CollectionBase)=} [opt_initialValue] - initial value
  * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
  * @return {(?|!Promise)}
  */
 _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
+	if (this.p.initial != null) {
+		opt_params = (0, _gcc.any)(opt_filter);
+		opt_filter = (0, _gcc.any)(opt_initialValue);
+		opt_initialValue = this.p.initial;
+	}
+
 	let p = opt_params || {};
 
 	if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
@@ -56,7 +62,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 			//#if iterators.async
 
 			if (isAsync && (0, _types.isPromise)(val)) {
-				return val.then(val => p.result = val, fn[_base.ON_ERROR]);
+				return val.then(val => p.result = val);
 			}
 
 			//#endif

@@ -91,11 +91,8 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 
 	if ((0, _types.isArray)(opt_params) || (0, _types.isFunction)(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
-	} else {
-		if (opt_params && opt_params.hasOwnProperty('filter')) {
-			opt_params.filter = p.filter.concat(opt_params.filter);
-		}
-
+	} else if (opt_params) {
+		opt_params.filter = p.filter.concat(opt_params.filter || []);
 		Object.assign(p, opt_params);
 	}
 

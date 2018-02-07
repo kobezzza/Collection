@@ -17,10 +17,10 @@ var _gcc = require('../helpers/gcc');
 /**
  * Appends a filter to the operation
  *
- * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filter - function filter
+ * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filters - function filter
  * @return {!Collection}
  */
-_core.Collection.prototype.filter = function (filter) {
+_core.Collection.prototype.filter = function (filters) {
 	let args = [];
 	for (let i = 0; i < arguments.length; i++) {
 		const el = arguments[i];
@@ -38,10 +38,10 @@ _core.Collection.prototype.filter = function (filter) {
  * Appends a filter to the operation
  *
  * @private
- * @param {...?} filter - function filter
+ * @param {...?} filters - function filter
  * @return {!Collection}
  */
-_core.Collection.prototype._filter = function (filter) {
+_core.Collection.prototype._filter = function (filters) {
 	let args = [];
 	for (let i = 0; i < arguments.length; i++) {
 		let el = arguments[i];
@@ -181,6 +181,44 @@ _core.Collection.prototype.object = function (opt_notOwn) {
  */
 _core.Collection.prototype.iterator = function (opt_async) {
 	this.p.use = `${opt_async ? 'async ' : ''}for off`;
+	return this;
+};
+
+/**
+ * Sets .initial for the operation
+ *
+ * @param {?} value
+ * @return {!Collection}
+ */
+_core.Collection.prototype.to = function (value) {
+	this.p.initial = value;
+	return this;
+};
+
+/**
+ * Sets .initial as a transform stream for the operation
+ *
+ * @param {?boolean=} [opt_readObj] - readableObjectMode
+ * @param {?boolean=} [opt_writeObj=opt_readObj] - writableObjectMode
+ * @return {!Collection}
+ */
+_core.Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
+	opt_readObj = Boolean(opt_readObj != null ? opt_readObj : true);
+
+	//#if isNode
+
+	const { Transform } = require('stream');
+
+	this.p.initial = new Transform({
+		readableObjectMode: Boolean(opt_readObj),
+		writableObjectMode: Boolean(opt_writeObj != null ? opt_writeObj : opt_readObj),
+		transform(data, enc, cb) {
+			cb(null, data);
+		}
+	});
+
+	//#endif
+
 	return this;
 };
 

@@ -18,15 +18,15 @@ import { any } from '../helpers/gcc';
  *
  * @see Collection.prototype.forEach
  * @param {$$CollectionReduceCb} cb - callback function
- * @param {?=} [opt_initialValue] - initial value
+ * @param {(?|$$CollectionFilter|$$CollectionBase)=} [opt_initialValue] - initial value
  * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
  * @return {(?|!Promise)}
  */
 Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
 	if (this.p.initial != null) {
-		opt_params = opt_filter;
-		opt_filter = opt_initialValue;
+		opt_params = any(opt_filter);
+		opt_filter = any(opt_initialValue);
 		opt_initialValue = this.p.initial;
 	}
 

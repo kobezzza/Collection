@@ -36,7 +36,7 @@ exports.isIDBRequest = isIDBRequest;
 exports.getType = getType;
 exports.getSameAs = getSameAs;
 exports.isStructure = isStructure;
-exports.canExtended = canExtended;
+exports.canExtendProto = canExtendProto;
 function isFunction(obj) {
 	return typeof obj === 'function';
 }
@@ -324,12 +324,12 @@ function isStructure(obj) {
 }
 
 /**
- * Returns true if the specified object can be extended
+ * Returns true if a prototype of the specified object can be extended
  *
  * @param {?} obj - source object
  * @return {boolean}
  */
-function canExtended(obj) {
+function canExtendProto(obj) {
 	if (!obj) {
 		return false;
 	}

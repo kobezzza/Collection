@@ -63,7 +63,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 					} else {
 						res.set(param, [val]);
 					}
-				}, fn[_base.ON_ERROR]);
+				});
 			}
 
 			//#endif
@@ -88,7 +88,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 					} else {
 						res[param] = [val];
 					}
-				}, fn[_base.ON_ERROR]);
+				});
 			}
 
 			//#endif
