@@ -48,7 +48,7 @@ declare namespace CollectionJS {
 		destroy();
 	}
 
-	type ThreadObj<T> = Promise<T> & {thread: Thread}
+	type ThreadObj<T> = Promise<T> & {thread: Thread};
 	type Single = {mult: false};
 	type Async = {async: true} | {thread: true};
 	type SingleAsync = Async & Single;
