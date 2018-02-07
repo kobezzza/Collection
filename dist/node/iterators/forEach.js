@@ -118,7 +118,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	const isStream = type === 'stream',
 	      isIDBRequest = type === 'idbRequest';
 
-	let cursor = null;
+	let cursor;
 
 	//#if iterators.async
 

@@ -114,7 +114,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		isIDBRequest = type === 'idbRequest';
 
 	let
-		cursor = null;
+		cursor;
 
 	//#if iterators.async
 

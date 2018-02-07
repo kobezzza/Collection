@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 07 Feb 2018 11:14:20 GMT
+ * Date: 'Wed, 07 Feb 2018 11:19:29 GMT
  */
 
 (function (global, factory) {
@@ -1467,7 +1467,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	var isStream$$1 = type === 'stream',
 	    isIDBRequest$$1 = type === 'idbRequest';
 
-	var cursor = null;
+	var cursor = void 0;
 
 
 	if (isStream$$1 || isIDBRequest$$1) {
