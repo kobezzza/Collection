@@ -1157,7 +1157,6 @@ declare namespace CollectionJS {
 		start(value: number): SingleStreamCollection<D, K, V>;
 		end(value: number): SingleStreamCollection<D, K, V>;
 		from(value: number): SingleStreamCollection<D, K, V>;
-		iterator(async?: boolean): SingleStreamCollection<D, K, V>;
 		parallel(max?: boolean | number): SingleStreamCollection<D, K, V>;
 		race(max?: boolean | number): SingleStreamCollection<D, K, V>;
 
@@ -1225,33 +1224,6 @@ declare namespace CollectionJS {
 			params?: BaseParams<D, K, V>
 		): V | undefined;
 
-		set<N>(
-			value: N,
-			filterOrParams?: Filter<D, K, V> | SetParams<D, K, V>,
-			params?: SetParams<D, K, V>
-		): ThreadObj<SetReport<N, K, V>>;
-
-		set<N>(
-			value: N,
-			link?: Link,
-			params?: SetParams<D, K, V>
-		): SetReport<N, K, V>;
-
-		remove(
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<Report<K, V>>;
-
-		remove(
-			link?: Link,
-			params?: BaseParams<D, K, V>
-		): Report<K, V>;
-
-		search(
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<SearchReport<K | V> | null>;
-
 		includes(
 			searchElement: V,
 			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
@@ -1296,7 +1268,6 @@ declare namespace CollectionJS {
 		end(value: number): StreamCollection<D, K, V>;
 		count(value: number): StreamCollection<D, K, V>;
 		from(value: number): StreamCollection<D, K, V>;
-		iterator(async?: boolean): StreamCollection<D, K, V>;
 		parallel(max?: boolean | number): StreamCollection<D, K, V>;
 		race(max?: boolean | number): StreamCollection<D, K, V>;
 
@@ -1372,62 +1343,6 @@ declare namespace CollectionJS {
 			link?: Link,
 			params?: BaseParams<D, K, V>
 		): V | undefined;
-
-		set<N>(
-			value: N,
-			params: SetParams<D, K, V> & Single
-		): ThreadObj<SetReport<N, K, V>>;
-
-		set<N>(
-			value: N,
-			filter: Filter<D, K, V>,
-			params: SetParams<D, K, V> & Single
-		): ThreadObj<SetReport<N, K, V>>;
-
-		set<N>(
-			value: N,
-			filterOrParams?: Filter<D, K, V> | SetParams<D, K, V>,
-			params?: SetParams<D, K, V>
-		): ThreadObj<SetReport<N, K, V>[]>;
-
-		set<N>(
-			value: N,
-			link?: Link,
-			params?: SetParams<D, K, V>
-		): SetReport<N, K, V>;
-
-		remove(
-			params: BaseParams<D, K, V> & Single
-		): ThreadObj<Report<K, V>>;
-
-		remove(
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Single
-		): ThreadObj<Report<K, V>>;
-
-		remove(
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<Report<K, V>[]>;
-
-		remove(
-			link?: Link,
-			params?: BaseParams<D, K, V>
-		): Report<K, V>;
-
-		search(
-			params: BaseParams<D, K, V> & Single
-		): ThreadObj<SearchReport<K | V> | null>;
-
-		search(
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Single
-		): ThreadObj<SearchReport<K | V> | null>;
-
-		search(
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<SearchReport<K | V>[]>;
 
 		includes(
 			searchElement: V,
