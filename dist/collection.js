@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 07 Feb 2018 11:19:29 GMT
+ * Date: 'Wed, 07 Feb 2018 11:31:24 GMT
  */
 
 (function (global, factory) {
@@ -2553,11 +2553,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 	var returnVal = any(this.forEach(any(fn), p));
 
-	if (type === 'stream') {
-		return p.result;
-	}
-
-	if (returnVal !== this) {
+	if (returnVal !== this && type !== 'stream') {
 		return returnVal;
 	}
 
@@ -2666,7 +2662,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 
 	var returnVal = any(this.forEach(fn, p));
 
-	if (returnVal !== this) {
+	if (returnVal !== this && !isStream(p.result)) {
 		return returnVal;
 	}
 

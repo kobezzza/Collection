@@ -73,7 +73,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 
 	const returnVal = (0, _gcc.any)(this.forEach(fn, p));
 
-	if (returnVal !== this) {
+	if (returnVal !== this && !(0, _types.isStream)(p.result)) {
 		return returnVal;
 	}
 
