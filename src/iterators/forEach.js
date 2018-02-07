@@ -401,15 +401,12 @@ Collection.prototype.forEach = function (cb, opt_params) {
 					}
 
 					thread.destroyed = true;
+					err = err || new Error('Thread was destroyed');
+					err.type = 'CollectionThreadDestroy';
+					err.thread = thread;
 
 					if (isStream) {
 						cursor.destroy();
-					}
-
-					if (!err) {
-						err = new Error('Thread was destroyed');
-						err.type = 'CollectionThreadDestroy';
-						err.thread = thread;
 					}
 
 					try {
