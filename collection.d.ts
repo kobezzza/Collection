@@ -221,7 +221,7 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): ThreadObj<D>;
 
-		reduce<I>(
+		reduce<I = V>(
 			cb: ReduceCallback<I, D, K, V>,
 			initialValue?: I,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -353,7 +353,7 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): ThreadObj<D>;
 
-		reduce<I>(
+		reduce<I = V>(
 			cb: ReduceCallback<I, D, K, V>,
 			initialValue?: I,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -553,20 +553,20 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): D;
 
-		reduce<I>(
+		reduce<I = V>(
 			cb: ReduceCallback<I, D, K, V>,
 			initialValue: I,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
-		reduce<I>(
+		reduce<I = V>(
 			cb: ReduceCallback<I, D, K, V>,
 			initialValue: I,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
-		reduce<I>(
+		reduce<I = V>(
 			callback: ReduceCallback<I, D, K, V>,
 			initialValue?: I,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -825,20 +825,20 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): D;
 
-		reduce<I>(
+		reduce<I = V>(
 			cb: ReduceCallback<I, D, K, V>,
 			initialValue: I,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
-		reduce<I>(
+		reduce<I = V>(
 			cb: ReduceCallback<I, D, K, V>,
 			initialValue: I,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
-		reduce<I>(
+		reduce<I = V>(
 			callback: ReduceCallback<I, D, K, V>,
 			initialValue?: I,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
