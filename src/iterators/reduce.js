@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
-import { isArray, isFunction, isPromise } from '../helpers/types';
+import { isArray, isFunction, isPromise, isStream } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
@@ -75,7 +75,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 	const
 		returnVal = any(this.forEach(fn, p));
 
-	if (returnVal !== this) {
+	if (returnVal !== this && !isStream(p.result)) {
 		return returnVal;
 	}
 

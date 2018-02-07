@@ -274,11 +274,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	const
 		returnVal = any(this.forEach(any(fn), p));
 
-	if (type === 'stream') {
-		return p.result;
-	}
-
-	if (returnVal !== this) {
+	if (returnVal !== this && type !== 'stream') {
 		return returnVal;
 	}
 
