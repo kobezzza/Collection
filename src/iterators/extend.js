@@ -11,7 +11,7 @@
  */
 
 import $C, { Collection, P } from '../core';
-import { isArray, isBoolean, isStructure, getSameAs, canExtended, getType } from '../helpers/types';
+import { isArray, isBoolean, isStructure, getSameAs, canExtendProto, getType } from '../helpers/types';
 import { OBJECT_ASSIGN_NATIVE_SUPPORT } from '../consts/hacks';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
@@ -240,12 +240,12 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 			if (p.deep && val && (valIsArray || struct)) {
 				const
-					isExt = p.withProto && dataIsSimple && canExtended(src);
+					isExtProto = p.withProto && dataIsSimple && canExtendProto(src);
 
 				let
 					srcIsArray = isArray(src);
 
-				if (isExt && !(data.hasOwnProperty ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
+				if (isExtProto && !(data.hasOwnProperty ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 					src = srcIsArray ? src.slice() : create(src);
 					byLink(data, [key], {value: src});
 				}
@@ -256,7 +256,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 						isProto = false,
 						construct;
 
-					if (!srcIsArray && isExt && p.concatArray) {
+					if (!srcIsArray && isExtProto && p.concatArray) {
 						construct = getPrototypeOf(src);
 						srcIsArray = isProto = construct && isArray(construct);
 					}

@@ -327,12 +327,12 @@ export function isStructure(obj) {
 }
 
 /**
- * Returns true if the specified object can be extended
+ * Returns true if a prototype of the specified object can be extended
  *
  * @param {?} obj - source object
  * @return {boolean}
  */
-export function canExtended(obj) {
+export function canExtendProto(obj) {
 	if (!obj) {
 		return false;
 	}

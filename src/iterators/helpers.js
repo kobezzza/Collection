@@ -15,10 +15,10 @@ import { any } from '../helpers/gcc';
 /**
  * Appends a filter to the operation
  *
- * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filter - function filter
+ * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filters - function filter
  * @return {!Collection}
  */
-Collection.prototype.filter = function (filter) {
+Collection.prototype.filter = function (filters) {
 	let args = [];
 	for (let i = 0; i < arguments.length; i++) {
 		const
@@ -37,10 +37,10 @@ Collection.prototype.filter = function (filter) {
  * Appends a filter to the operation
  *
  * @private
- * @param {...?} filter - function filter
+ * @param {...?} filters - function filter
  * @return {!Collection}
  */
-Collection.prototype._filter = function (filter) {
+Collection.prototype._filter = function (filters) {
 	let args = [];
 	for (let i = 0; i < arguments.length; i++) {
 		let
