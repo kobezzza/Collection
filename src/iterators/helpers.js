@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import {isFunction, isNumber, isStream} from '../helpers/types';
+import { isFunction, isNumber } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
