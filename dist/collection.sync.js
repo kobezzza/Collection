@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 07 Feb 2018 11:31:25 GMT
+ * Date: 'Thu, 08 Feb 2018 14:51:26 GMT
  */
 
 (function (global, factory) {
@@ -1351,7 +1351,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
 	} else if (opt_params) {
-		opt_params.filter = p.filter.concat(opt_params.filter || []);
+		if (opt_params.filter !== p.filter) {
+			opt_params.filter = p.filter.concat(opt_params.filter || []);
+		}
+
 		Object.assign(p, opt_params);
 	}
 
@@ -2727,6 +2730,14 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	return p.result;
 };
 
+var invalidTypes$2 = {
+	'iterator': true,
+	'asyncIterator': true,
+	'generator': true,
+	'stream': true,
+	'idbRequest': true
+};
+
 /**
  * Sets a new value for collection elements by the specified condition/link
  *
@@ -2761,6 +2772,10 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	var type = getType(data, p.use),
 	    isFunc = isFunction(value),
 	    isAsync = p.thread || p.async;
+
+	if (invalidTypes$2[type]) {
+		throw new TypeError('Incorrect data type');
+	}
 
 	var mult = p.mult !== false,
 	    report = [];
