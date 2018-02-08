@@ -14,6 +14,14 @@ import { getType, isFunction, isArray, isPromise } from '../helpers/types';
 import { byLink } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
+const invalidTypes = {
+	'iterator': true,
+	'asyncIterator': true,
+	'generator': true,
+	'stream': true,
+	'idbRequest': true
+};
+
 /**
  * Sets a new value for collection elements by the specified condition/link
  *
@@ -55,6 +63,10 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		type = getType(data, p.use),
 		isFunc = isFunction(value),
 		isAsync = p.thread || p.async;
+
+	if (invalidTypes[type]) {
+		throw new TypeError('Incorrect data type');
+	}
 
 	const
 		mult = p.mult !== false,

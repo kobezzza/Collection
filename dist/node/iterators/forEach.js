@@ -92,7 +92,10 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	if ((0, _types.isArray)(opt_params) || (0, _types.isFunction)(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
 	} else if (opt_params) {
-		opt_params.filter = p.filter.concat(opt_params.filter || []);
+		if (opt_params.filter !== p.filter) {
+			opt_params.filter = p.filter.concat(opt_params.filter || []);
+		}
+
 		Object.assign(p, opt_params);
 	}
 
@@ -357,6 +360,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 			thread.sleep = null;
 			thread.pause = false;
 			thread.children = [];
+			thread.stream = isStream ? cursor : undefined;
 
 			if (p.thread) {
 				this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
@@ -367,15 +371,12 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 					}
 
 					thread.destroyed = true;
+					err = err || new Error('Thread was destroyed');
+					err.type = 'CollectionThreadDestroy';
+					err.thread = thread;
 
 					if (isStream) {
 						cursor.destroy();
-					}
-
-					if (!err) {
-						err = new Error('Thread was destroyed');
-						err.type = 'CollectionThreadDestroy';
-						err.thread = thread;
 					}
 
 					try {

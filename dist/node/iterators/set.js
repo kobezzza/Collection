@@ -18,6 +18,14 @@ var _link = require('../helpers/link');
 
 var _gcc = require('../helpers/gcc');
 
+const invalidTypes = {
+	'iterator': true,
+	'asyncIterator': true,
+	'generator': true,
+	'stream': true,
+	'idbRequest': true
+};
+
 /**
  * Sets a new value for collection elements by the specified condition/link
  *
@@ -51,6 +59,10 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 	const type = (0, _types.getType)(data, p.use),
 	      isFunc = (0, _types.isFunction)(value),
 	      isAsync = p.thread || p.async;
+
+	if (invalidTypes[type]) {
+		throw new TypeError('Incorrect data type');
+	}
 
 	const mult = p.mult !== false,
 	      report = [];

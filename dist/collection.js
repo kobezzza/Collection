@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 07 Feb 2018 11:31:24 GMT
+ * Date: 'Thu, 08 Feb 2018 14:51:26 GMT
  */
 
 (function (global, factory) {
@@ -1426,7 +1426,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
 	} else if (opt_params) {
-		opt_params.filter = p.filter.concat(opt_params.filter || []);
+		if (opt_params.filter !== p.filter) {
+			opt_params.filter = p.filter.concat(opt_params.filter || []);
+		}
+
 		Object.assign(p, opt_params);
 	}
 
@@ -1690,6 +1693,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			thread.sleep = null;
 			thread.pause = false;
 			thread.children = [];
+			thread.stream = isStream$$1 ? cursor : undefined;
 
 			if (p.thread) {
 				_this._addToStack(thread, p.priority, reject, wrap(p.onChunk));
@@ -1700,15 +1704,12 @@ Collection.prototype.forEach = function (cb, opt_params) {
 					}
 
 					thread.destroyed = true;
+					err = err || new Error('Thread was destroyed');
+					err.type = 'CollectionThreadDestroy';
+					err.thread = thread;
 
 					if (isStream$$1) {
 						cursor.destroy();
-					}
-
-					if (!err) {
-						err = new Error('Thread was destroyed');
-						err.type = 'CollectionThreadDestroy';
-						err.thread = thread;
 					}
 
 					try {
@@ -3117,6 +3118,14 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	return p.result;
 };
 
+var invalidTypes$2 = {
+	'iterator': true,
+	'asyncIterator': true,
+	'generator': true,
+	'stream': true,
+	'idbRequest': true
+};
+
 /**
  * Sets a new value for collection elements by the specified condition/link
  *
@@ -3151,6 +3160,10 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	var type = getType(data, p.use),
 	    isFunc = isFunction(value),
 	    isAsync = p.thread || p.async;
+
+	if (invalidTypes$2[type]) {
+		throw new TypeError('Incorrect data type');
+	}
 
 	var mult = p.mult !== false,
 	    report = [];
@@ -3603,10 +3616,12 @@ Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk
 		exec--;
 		obj.destroyed = true;
 
-		if (!err) {
-			err = new Error('Thread was destroyed');
-			err.type = 'CollectionThreadDestroy';
-			err.thread = obj;
+		err = err || new Error('Thread was destroyed');
+		err.type = 'CollectionThreadDestroy';
+		err.thread = obj;
+
+		if (obj.stream) {
+			obj.stream.destroy();
 		}
 
 		try {

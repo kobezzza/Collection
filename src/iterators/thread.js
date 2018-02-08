@@ -178,10 +178,12 @@ Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk
 		exec--;
 		obj.destroyed = true;
 
-		if (!err) {
-			err = new Error('Thread was destroyed');
-			err.type = 'CollectionThreadDestroy';
-			err.thread = obj;
+		err = err || new Error('Thread was destroyed');
+		err.type = 'CollectionThreadDestroy';
+		err.thread = obj;
+
+		if (obj.stream) {
+			obj.stream.destroy();
 		}
 
 		try {
