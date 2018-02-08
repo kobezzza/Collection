@@ -52,7 +52,7 @@ declare namespace CollectionJS {
 
 	type ThreadObj<T> = Promise<T> & {thread: Thread};
 	type Single = {mult: false};
-	type Async = {async: true} | {thread: true};
+	type Async = {async: true} | {thread: true} | {parallel: true | number} | {race: true | number};
 	type SingleAsync = Async & Single;
 
 	interface Context {
@@ -85,7 +85,7 @@ declare namespace CollectionJS {
 	}
 
 	interface Callback<D, K, V> {
-		(item: V, index: K, collection: D, context: Context): any;
+		(item: V, key: K, collection: D, context: Context): any;
 	}
 
 	interface EventCallback {
@@ -178,6 +178,65 @@ declare namespace CollectionJS {
 		): any;
 	}
 
+	interface To<I, D, K, V> {
+		map(
+			params: MapParams<D, K, V> & Async
+		): ThreadObj<I>;
+
+		map(
+			cb: Callback<D, K, V>,
+			params: MapParams<D, K, V> & Async
+		): ThreadObj<I>;
+
+		map(
+			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
+		): I;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<I>;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<I>;
+
+		reduce(
+			callback: ReduceCallback<V, D, K, V>,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): I;
+	}
+
+	interface ToAsync<I, D, K, V> {
+		map(
+			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
+		): ThreadObj<I>;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<I>;
+	}
+
+	interface ToStream<D, K, V> {
+		map(
+			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
+		): DuplexStream;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): DuplexStream;
+	}
+
 	interface SingleAsyncCollection<D, K, V> {
 		readonly array: SingleAsyncCollection<V[], number, V>;
 		readonly live: SingleAsyncCollection<D, K, V>;
@@ -198,6 +257,9 @@ declare namespace CollectionJS {
 		iterator(async?: boolean): SingleAsyncCollection<D, K, V>;
 		parallel(max?: boolean | number): SingleAsyncCollection<D, K, V>;
 		race(max?: boolean | number): SingleAsyncCollection<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
 			cb: Callback<D, K, V>,
@@ -337,6 +399,9 @@ declare namespace CollectionJS {
 		iterator(async?: boolean): AsyncCollection<D, K, V>;
 		parallel(max?: boolean | number): AsyncCollection<D, K, V>;
 		race(max?: boolean | number): AsyncCollection<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
 			cb: Callback<D, K, V>,
@@ -514,6 +579,9 @@ declare namespace CollectionJS {
 		iterator(async?: boolean): SingleCollection<D, K, V>;
 		parallel(max?: boolean | number): SingleAsyncCollection<D, K, V>;
 		race(max?: boolean | number): SingleAsyncCollection<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
 			cb: Callback<D, K, V>,
@@ -807,6 +875,9 @@ declare namespace CollectionJS {
 		iterator(async?: boolean): Collection<D, K, V>;
 		parallel(max?: boolean | number): AsyncCollection<D, K, V>;
 		race(max?: boolean | number): AsyncCollection<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
 			cb: Callback<D, K, V>,
@@ -1441,6 +1512,9 @@ declare namespace CollectionJS {
 		start(value: number): SingleCollectionStream<D, K, V>;
 		end(value: number): SingleCollectionStream<D, K, V>;
 		from(value: number): SingleCollectionStream<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
 			cb: Callback<D, K, V>,
@@ -1550,6 +1624,9 @@ declare namespace CollectionJS {
 		end(value: number): CollectionStream<D, K, V>;
 		count(value: number): CollectionStream<D, K, V>;
 		from(value: number): CollectionStream<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
 			cb: Callback<D, K, V>,
