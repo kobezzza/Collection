@@ -84,7 +84,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		p.filter = p.filter.concat(opt_params);
 
 	} else if (opt_params) {
-		opt_params.filter = p.filter.concat(opt_params.filter || []);
+		if (opt_params.filter !== p.filter) {
+			opt_params.filter = p.filter.concat(opt_params.filter || []);
+		}
+
 		Object.assign(p, opt_params);
 	}
 
