@@ -390,6 +390,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			thread.sleep = null;
 			thread.pause = false;
 			thread.children = [];
+			thread.stream = isStream ? cursor : undefined;
 
 			if (p.thread) {
 				this._addToStack(thread, p.priority, reject, wrap(p.onChunk));

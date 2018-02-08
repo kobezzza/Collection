@@ -40,17 +40,18 @@ declare namespace CollectionJS {
 	}
 
 	type Thread = Generator & {
-		thread: boolean;
+		readonly thread: true;
+		readonly children: ThreadObj[];
+		readonly stream: ReadStream | undefined;
+		readonly sleep: any;
+		pause: boolean;
 		priority: string;
 		onComplete?: Function;
 		onChunk?: Function;
-		pause: boolean;
-		sleep: any;
-		children: AnyPromise;
 		destroy<E extends Object = Error>(err?: E): E & {type: 'CollectionThreadDestroy'; thread: Thread} | false;
 	};
 
-	type ThreadObj<T> = Promise<T> & {thread: Thread};
+	type ThreadObj<T = any> = Promise<T> & {thread: Thread};
 	type Single = {mult: false};
 	type Async = {async: true} | {thread: true} | {parallel: true | number} | {race: true | number};
 	type SingleAsync = Async & Single;
