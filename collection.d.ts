@@ -3436,7 +3436,7 @@ declare namespace CollectionJS {
 declare const $C: {
 	(collection: string): CollectionJS.Collection<string[], number, string>;
 	<V>(collection: V[]): CollectionJS.Collection<V[], number, V>;
-	<V>(collection: Record<string, V>): CollectionJS.Collection<Record<string, V>, string, V>;
+	<D, V>(collection: D): CollectionJS.Collection<D, string, V>;
 	<K, V>(collection: Map<K, V>): CollectionJS.CollectionMap<Map<K, V>, K, V>;
 	<V>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
 	<V>(collection: CollectionJS.ReadStream): CollectionJS.CollectionStream<CollectionJS.ReadStream, number, V>;
