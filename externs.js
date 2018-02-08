@@ -619,6 +619,9 @@ var call;
 var children;
 
 /** @type {?} */
+var stream;
+
+/** @type {?} */
 var ctx;
 
 /** @type {?} */
@@ -751,6 +754,6 @@ $C.in = function (link, obj) {};
 
 /**
  * @param {(Generator|?)} obj
- * @return {boolean}
+ * @return {(!Error|boolean)}
  */
 $C.destroy = function (obj) {};

@@ -39,6 +39,11 @@ declare namespace CollectionJS {
 		length: boolean;
 	}
 
+	interface DestroyError {
+		type: 'CollectionThreadDestroy';
+		thread: Thread;
+	}
+
 	type Thread = Generator & {
 		readonly thread: true;
 		readonly children: ThreadObj[];
@@ -48,7 +53,7 @@ declare namespace CollectionJS {
 		priority: string;
 		onComplete?: Function;
 		onChunk?: Function;
-		destroy<E extends Object = Error>(err?: E): E & {type: 'CollectionThreadDestroy'; thread: Thread} | false;
+		destroy<E extends Object = Error>(err?: E): E & DestroyError | false;
 	};
 
 	type ThreadObj<T = any> = Promise<T> & {thread: Thread};
@@ -3460,6 +3465,7 @@ declare const $C: {
 
 	clone(source: any): any;
 	in(link: CollectionJS.Link, target: any): boolean;
+	destroy(thread: CollectionJS.ThreadObj): Error & CollectionJS.DestroyError;
 };
 
 declare module 'collection.js' {

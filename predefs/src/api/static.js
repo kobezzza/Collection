@@ -64,6 +64,6 @@ $C.in = function (link, obj) {};
 
 /**
  * @param {(Generator|?)} obj
- * @return {boolean}
+ * @return {(!Error|boolean)}
  */
 $C.destroy = function (obj) {};
