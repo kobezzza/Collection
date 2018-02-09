@@ -298,8 +298,6 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	//#if iterators.thread
 	//#if iterators.async
 
-	console.log(121, p.async);
-
 	if (p.async) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
