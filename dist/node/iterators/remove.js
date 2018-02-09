@@ -36,13 +36,12 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
-	const type = (0, _types.getType)(this.data, p.use),
-	      isRealArray = type === 'array' && (0, _types.isArray)(this.data);
+	const isRealArray = p.type === 'array' && (0, _types.isArray)(this.data);
 
-	if (_types.iterators[type]) {
+	if (_types.iterators[p.type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -61,7 +60,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 	}
 
 	let fn;
-	switch (type) {
+	switch (p.type) {
 		case 'map':
 			fn = (value, key, data) => {
 				data.delete(key);

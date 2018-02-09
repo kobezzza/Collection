@@ -45,13 +45,12 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this._filter(p, filter)._isAsync(p);
+	this._initParams(p, filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
-	const type = (0, _types.getType)(data, p.use),
-	      isFunc = (0, _types.isFunction)(value);
+	const valIsFunc = (0, _types.isFunction)(value);
 
-	if (_types.iterators[type]) {
+	if (_types.iterators[p.type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -70,8 +69,8 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 	}
 
 	let fn;
-	if (isFunc) {
-		switch (type) {
+	if (valIsFunc) {
+		switch (p.type) {
 			case 'map':
 				fn = function (el, key, data) {
 					const res = value.apply(null, arguments);
@@ -240,7 +239,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 		fn[_base.FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
 	} else {
-		switch (type) {
+		switch (p.type) {
 			case 'map':
 				fn = (el, key, data) => {
 					let result = false;
@@ -322,7 +321,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 			}
 
 			const res = (0, _link.byLink)(data, p.key, {
-				value: isFunc ? value(undefined, undefined, data, ctx) : value,
+				value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
 				create: p.create !== false
 			});
 

@@ -14,6 +14,8 @@ var _types = require('../helpers/types');
 
 var _gcc = require('../helpers/gcc');
 
+var _thread = require('../consts/thread');
+
 /**
  * Appends a filter to the operation
  *
@@ -21,63 +23,74 @@ var _gcc = require('../helpers/gcc');
  * @return {!Collection}
  */
 _core.Collection.prototype.filter = function (filters) {
-	let args = [];
+	let newFilters = [];
+
 	for (let i = 0; i < arguments.length; i++) {
 		const el = arguments[i];
 
 		if (el) {
-			args = args.concat(el);
+			newFilters = newFilters.concat(el);
 		}
 	}
 
-	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
-	return this;
-};
-
-/**
- * Appends a filter to the operation
- *
- * @private
- * @param {...?} filters - function filter
- * @return {!Collection}
- */
-_core.Collection.prototype._filter = function (filters) {
-	let args = [];
-	for (let i = 0; i < arguments.length; i++) {
-		let el = arguments[i];
-
-		if (i === 0) {
-			if (!el || !el.filter) {
-				continue;
-			}
-
-			el = [el.filter, delete el.filter][0];
-		}
-
-		if (el) {
-			args = args.concat(el);
-		}
-	}
-
-	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
+	this.p.filter = this.p.filter.concat.apply(this.p.filter, newFilters);
 	return this;
 };
 
 /**
  * @private
  * @param {?} p
+ * @param {...?} filters - function filter
  * @return {!Collection}
  */
-_core.Collection.prototype._isAsync = function (p) {
+_core.Collection.prototype._initParams = function (p, filters) {
 	const threadNodDefined = !p.hasOwnProperty('thread') && p.thread === false,
 	      asyncNotDefined = !p.hasOwnProperty('async') && p.async === false;
+
+	if (!p.use && p.notOwn) {
+		p.use = 'for in';
+	}
 
 	if (threadNodDefined && (p.priority || p.onChunk)) {
 		p.thread = true;
 	}
 
-	if (asyncNotDefined && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || _types.asyncTypes[(0, _types.getType)(this.data)] || p.initial && (0, _types.getType)(p.initial) === 'stream') {
+	if (p.thread && !_thread.PRIORITY[p.priority]) {
+		p.priority = 'normal';
+	}
+
+	if (!p.type) {
+		p.type = (0, _types.getType)(this.data, p.use);
+	}
+
+	if (p.initial != null && !p.initialType) {
+		p.initialType = (0, _types.getType)(p.initial);
+	}
+
+	if (asyncNotDefined && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || _types.asyncTypes[p.type] || p.initialType === 'stream') {
 		p.async = true;
+	}
+
+	if (filters !== false && (p.filter || filters)) {
+		let newFilters = [];
+
+		for (let i = 0; i < arguments.length; i++) {
+			let el = arguments[i];
+
+			if (i === 0) {
+				if (!el || !el.filter) {
+					continue;
+				}
+
+				el = [el.filter, delete el.filter][0];
+			}
+
+			if (el) {
+				newFilters = newFilters.concat(el);
+			}
+		}
+
+		this.p.filter = this.p.filter.concat.apply(this.p.filter, newFilters);
 	}
 
 	return this;

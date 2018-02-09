@@ -40,15 +40,16 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 		p = { filter: p };
 	}
 
-	this._filter(p)._isAsync(p);
+	this._initParams(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
-	const { data } = this,
-	      hasInitial = p.initial != null,
-	      source = hasInitial ? p.initial : this.data;
+	const { data } = this;
 
-	let type = hasInitial ? (0, _types.getType)(p.initial) : (0, _types.getType)(data, p.use),
+	let type = p.initialType || p.type,
 	    res = p.initial;
+
+	const hasInitial = p.initial != null,
+	      source = hasInitial ? p.initial : data;
 
 	if (!hasInitial) {
 		switch (type) {
@@ -261,7 +262,12 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
 	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
 
-	if (returnVal !== this && type !== 'stream') {
+	if (type === 'stream') {
+		returnVal.then(() => res.end(), err => res.destroy(err));
+		return p.result;
+	}
+
+	if (returnVal !== this) {
 		return returnVal;
 	}
 

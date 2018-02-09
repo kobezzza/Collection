@@ -153,7 +153,14 @@ _core.Collection.prototype._addToStack = function (obj, priority, onError, opt_o
 		exec--;
 		obj.destroyed = true;
 
-		err = err || new Error('Thread was destroyed');
+		if (err) {
+			if (typeof err !== 'object') {
+				err = new Error(err);
+			}
+		} else {
+			err = new Error('Thread was destroyed');
+		}
+
 		err.type = 'CollectionThreadDestroy';
 		err.thread = obj;
 

@@ -34,10 +34,12 @@ function notAsync() {
 	return false;
 }
 
+function defaultCb() {}
+
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
- * @param {$$CollectionCb} cb - callback function
+ * @param {($$CollectionCb|$$Collection_forEach|null)=} [opt_cb] - callback function
  * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
  *
  *   *) [filter] - function filter or an array of functions
@@ -75,9 +77,15 @@ function notAsync() {
  *
  * @return {(!Collection|!Promise)}
  */
-_core.Collection.prototype.forEach = function (cb, opt_params) {
-	const p = (0, _gcc.any)(Object.create(this._init())),
-	      sp = opt_params || p;
+_core.Collection.prototype.forEach = function (opt_cb, opt_params) {
+	let cb = opt_cb;
+
+	if (!(0, _types.isFunction)(opt_cb)) {
+		cb = defaultCb;
+		opt_params = (0, _gcc.any)(opt_cb);
+	}
+
+	const p = (0, _gcc.any)(Object.create(this._init()));
 
 	if ((0, _types.isArray)(opt_params) || (0, _types.isFunction)(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
@@ -89,18 +97,10 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		Object.assign(p, opt_params);
 	}
 
-	if (!p.use && p.notOwn) {
-		p.use = 'for in';
-	}
-
-	this._isAsync(p);
-
-	if (p.thread && !_thread.PRIORITY[p.priority]) {
-		p.priority = 'normal';
-	}
+	this._initParams(p, false);
 
 	let { data } = this,
-	    type = p.type = (0, _types.getType)(data, p.use);
+	    { type } = p;
 
 	if (!(0, _types.isObjectInstance)(data) || _types.weakTypes[type]) {
 		throw new TypeError('Incorrect data type');
@@ -341,7 +341,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
-			thread = args.self = fn(args, sp);
+			thread = args.self = fn(args, p);
 			thread.value = undefined;
 			thread.destroyed = false;
 			thread.sleep = null;
@@ -358,7 +358,15 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 					}
 
 					thread.destroyed = true;
-					err = err || new Error('Thread was destroyed');
+
+					if (err) {
+						if (typeof err !== 'object') {
+							err = new Error(err);
+						}
+					} else {
+						err = new Error('Thread was destroyed');
+					}
+
 					err.type = 'CollectionThreadDestroy';
 					err.thread = thread;
 
@@ -385,6 +393,6 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	//#endif
 	//#endif
 
-	fn(args, sp);
+	fn(args, p);
 	return this;
 };

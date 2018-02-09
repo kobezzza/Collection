@@ -33,7 +33,7 @@ _core.Collection.prototype.includes = function (searchElement, opt_filter, opt_p
 
 	const f = Number.isNaN(searchElement) ? el => Number.isNaN(el) : el => el === searchElement;
 
-	this._filter(p, opt_filter, f);
+	this._initParams(p, opt_filter, f);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
 	const returnVal = (0, _gcc.any)(this.forEach(() => p.result = true, p));

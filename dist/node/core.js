@@ -25,8 +25,34 @@ var _types = require('./helpers/types');
  * @param {$$CollectionType} obj
  */
 function Collection(obj) {
-	this.data = (0, _gcc.any)((0, _types.isString)(obj) ? obj.split('') : obj || []);
 	this._init();
+
+	if ((0, _types.isString)(obj)) {
+		this.data = obj.split('');
+	} else if ((0, _types.isNumber)(obj)) {
+		if (isFinite(obj)) {
+			this.data = new Array(obj);
+		} else {
+			let done = false,
+			    value;
+
+			this.p.use = 'for of';
+			this.data = {
+				next: () => ({ done, value }),
+
+				throw(err) {
+					throw err;
+				},
+
+				return: v => {
+					done = true;
+					value = v;
+				}
+			};
+		}
+	} else {
+		this.data = (0, _gcc.any)(obj || []);
+	}
 }
 
 /**

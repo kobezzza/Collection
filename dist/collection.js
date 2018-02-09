@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Fri, 09 Feb 2018 12:24:25 GMT
+ * Date: 'Fri, 09 Feb 2018 16:14:35 GMT
  */
 
 (function (global, factory) {
@@ -366,8 +366,37 @@ function canExtendProto(obj) {
  * @param {$$CollectionType} obj
  */
 function Collection(obj) {
-	this.data = any(isString(obj) ? obj.split('') : obj || []);
 	this._init();
+
+	if (isString(obj)) {
+		this.data = obj.split('');
+	} else if (isNumber(obj)) {
+		if (isFinite(obj)) {
+			this.data = new Array(obj);
+		} else {
+			var done = false,
+			    value = void 0;
+
+			this.p.use = 'for of';
+			this.data = {
+				next: function () {
+					return { done: done, value: value };
+				},
+
+				throw: function (err) {
+					throw err;
+				},
+
+
+				return: function (v) {
+					done = true;
+					value = v;
+				}
+			};
+		}
+	} else {
+		this.data = any(obj || []);
+	}
 }
 
 /**
@@ -746,7 +775,7 @@ function compileCycle(key, p) {
 	var maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
 	    needParallel = p.parallel || p.race,
 	    parallelFn = p.parallel ? 'wait' : 'race',
-	    needCtx = maxArgsLength > 3 || needParallel,
+	    needCtx = maxArgsLength > 3 || needParallel || p.thread,
 	    fLength = p.filter.length;
 
 	for (var i = 0; i < fLength; i++) {
@@ -1357,7 +1386,7 @@ Collection.prototype.length = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p, { result: 0 }));
 
 	var calc = function () {
@@ -1383,10 +1412,12 @@ function notAsync() {
 	return false;
 }
 
+function defaultCb() {}
+
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
- * @param {$$CollectionCb} cb - callback function
+ * @param {($$CollectionCb|$$Collection_forEach|null)=} [opt_cb] - callback function
  * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
  *
  *   *) [filter] - function filter or an array of functions
@@ -1424,11 +1455,17 @@ function notAsync() {
  *
  * @return {(!Collection|!Promise)}
  */
-Collection.prototype.forEach = function (cb, opt_params) {
+Collection.prototype.forEach = function (opt_cb, opt_params) {
 	var _this = this;
 
-	var p = any(Object.create(this._init())),
-	    sp = opt_params || p;
+	var cb = opt_cb;
+
+	if (!isFunction(opt_cb)) {
+		cb = defaultCb;
+		opt_params = any(opt_cb);
+	}
+
+	var p = any(Object.create(this._init()));
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
@@ -1440,18 +1477,10 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		Object.assign(p, opt_params);
 	}
 
-	if (!p.use && p.notOwn) {
-		p.use = 'for in';
-	}
-
-	this._isAsync(p);
-
-	if (p.thread && !PRIORITY[p.priority]) {
-		p.priority = 'normal';
-	}
+	this._initParams(p, false);
 
 	var data = this.data,
-	    type = p.type = getType(data, p.use);
+	    type = p.type;
 
 
 	if (!isObjectInstance(data) || weakTypes[type]) {
@@ -1691,7 +1720,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
-			thread = args.self = fn(args, sp);
+			thread = args.self = fn(args, p);
 			thread.value = undefined;
 			thread.destroyed = false;
 			thread.sleep = null;
@@ -1708,7 +1737,15 @@ Collection.prototype.forEach = function (cb, opt_params) {
 					}
 
 					thread.destroyed = true;
-					err = err || new Error('Thread was destroyed');
+
+					if (err) {
+						if (typeof err !== 'object') {
+							err = new Error(err);
+						}
+					} else {
+						err = new Error('Thread was destroyed');
+					}
+
 					err.type = 'CollectionThreadDestroy';
 					err.thread = thread;
 
@@ -1733,7 +1770,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 
-	fn(args, sp);
+	fn(args, p);
 	return this;
 };
 
@@ -1744,63 +1781,74 @@ Collection.prototype.forEach = function (cb, opt_params) {
  * @return {!Collection}
  */
 Collection.prototype.filter = function (filters) {
-	var args = [];
+	var newFilters = [];
+
 	for (var i = 0; i < arguments.length; i++) {
 		var el = arguments[i];
 
 		if (el) {
-			args = args.concat(el);
+			newFilters = newFilters.concat(el);
 		}
 	}
 
-	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
-	return this;
-};
-
-/**
- * Appends a filter to the operation
- *
- * @private
- * @param {...?} filters - function filter
- * @return {!Collection}
- */
-Collection.prototype._filter = function (filters) {
-	var args = [];
-	for (var i = 0; i < arguments.length; i++) {
-		var el = arguments[i];
-
-		if (i === 0) {
-			if (!el || !el.filter) {
-				continue;
-			}
-
-			el = [el.filter, delete el.filter][0];
-		}
-
-		if (el) {
-			args = args.concat(el);
-		}
-	}
-
-	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
+	this.p.filter = this.p.filter.concat.apply(this.p.filter, newFilters);
 	return this;
 };
 
 /**
  * @private
  * @param {?} p
+ * @param {...?} filters - function filter
  * @return {!Collection}
  */
-Collection.prototype._isAsync = function (p) {
+Collection.prototype._initParams = function (p, filters) {
 	var threadNodDefined = !p.hasOwnProperty('thread') && p.thread === false,
 	    asyncNotDefined = !p.hasOwnProperty('async') && p.async === false;
+
+	if (!p.use && p.notOwn) {
+		p.use = 'for in';
+	}
 
 	if (threadNodDefined && (p.priority || p.onChunk)) {
 		p.thread = true;
 	}
 
-	if (asyncNotDefined && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || asyncTypes[getType(this.data)] || p.initial && getType(p.initial) === 'stream') {
+	if (p.thread && !PRIORITY[p.priority]) {
+		p.priority = 'normal';
+	}
+
+	if (!p.type) {
+		p.type = getType(this.data, p.use);
+	}
+
+	if (p.initial != null && !p.initialType) {
+		p.initialType = getType(p.initial);
+	}
+
+	if (asyncNotDefined && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || asyncTypes[p.type] || p.initialType === 'stream') {
 		p.async = true;
+	}
+
+	if (filters !== false && (p.filter || filters)) {
+		var newFilters = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var el = arguments[i];
+
+			if (i === 0) {
+				if (!el || !el.filter) {
+					continue;
+				}
+
+				el = [el.filter, delete el.filter][0];
+			}
+
+			if (el) {
+				newFilters = newFilters.concat(el);
+			}
+		}
+
+		this.p.filter = this.p.filter.concat.apply(this.p.filter, newFilters);
 	}
 
 	return this;
@@ -2040,6 +2088,11 @@ var simpleType = {
 	'object': true
 };
 
+var create = Object.create;
+var defineProperty$1 = Object.defineProperty;
+var getPrototypeOf = Object.getPrototypeOf;
+var assign = Object.assign;
+
 /**
  * Extends the collection by another objects
  *
@@ -2059,15 +2112,12 @@ var simpleType = {
  * @param {...Object} args - objects for extending
  * @return {(!Object|!Promise)}
  */
+
 Collection.prototype.extend = function (deepOrParams, args) {
 	var _arguments = arguments;
-	var create = Object.create,
-	    defineProperty = Object.defineProperty,
-	    getPrototypeOf = Object.getPrototypeOf,
-	    assign = Object.assign;
-
 
 	var p = any(deepOrParams);
+
 	if (p instanceof P === false) {
 		if (isBoolean(p)) {
 			p = { deep: p };
@@ -2075,7 +2125,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 			p = p || {};
 		}
 
-		this._filter(p)._isAsync(p);
+		this._initParams(p);
 		p = any(assign(Object.create(this.p), p));
 	}
 
@@ -2090,12 +2140,14 @@ Collection.prototype.extend = function (deepOrParams, args) {
 	}
 
 	var data = this.data,
-	    type = getType(data);
+	    _p = p,
+	    type = _p.type;
 
 
 	if (!type) {
 		for (var i = 1; i < arguments.length; i++) {
-			type = getType(data, p.use);
+			type = getType(arguments[i], p.use);
+
 			if (type) {
 				break;
 			}
@@ -2214,12 +2266,12 @@ Collection.prototype.extend = function (deepOrParams, args) {
 					}
 
 					if (p.withAccessors) {
-						defineProperty(data, key, {
+						defineProperty$1(data, key, {
 							get: el.get,
 							set: el.set
 						});
 					} else if ('value' in el === false || el.value !== undefined || p.withUndef) {
-						defineProperty(data, key, el);
+						defineProperty$1(data, key, el);
 					}
 
 					return;
@@ -2365,16 +2417,17 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 		p = { filter: p };
 	}
 
-	this._filter(p)._isAsync(p);
+	this._initParams(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
-	var data = this.data,
-	    hasInitial = p.initial != null,
-	    source = hasInitial ? p.initial : this.data;
+	var data = this.data;
 
 
-	var type = hasInitial ? getType(p.initial) : getType(data, p.use),
+	var type = p.initialType || p.type,
 	    res = p.initial;
+
+	var hasInitial = p.initial != null,
+	    source = hasInitial ? p.initial : data;
 
 	if (!hasInitial) {
 		switch (type) {
@@ -2561,7 +2614,16 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 	var returnVal = any(this.forEach(any(fn), p));
 
-	if (returnVal !== this && type !== 'stream') {
+	if (type === 'stream') {
+		returnVal.then(function () {
+			return res.end();
+		}, function (err) {
+			return res.destroy(err);
+		});
+		return p.result;
+	}
+
+	if (returnVal !== this) {
 		return returnVal;
 	}
 
@@ -2589,7 +2651,7 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	var fn = void 0;
@@ -2637,7 +2699,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter)._isAsync(p);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
 
 	fn[FN_LENGTH] = cb.length - 1;
@@ -2666,9 +2728,18 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 		}
 	}
 
-	var returnVal = any(this.forEach(fn, p));
+	var res = p.result,
+	    returnVal = any(this.forEach(fn, p));
 
-	if (returnVal !== this && !isStream(p.result)) {
+	if (isStream(res)) {
+		returnVal.then(function () {
+			return res.end();
+		}, function (err) {
+			return res.destroy(err);
+		});
+	}
+
+	if (returnVal !== this) {
 		return returnVal;
 	}
 
@@ -2691,7 +2762,7 @@ Collection.prototype.every = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p, { result: true, mult: false }));
 	p.inverseFilter = !p.inverseFilter;
 
@@ -2722,7 +2793,7 @@ Collection.prototype.some = function (opt_filter, opt_params) {
     opt_filter = null;
   }
 
-  this._filter(p, opt_filter);
+  this._initParams(p, opt_filter);
   p = any(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
   var returnVal = any(this.forEach(function () {
@@ -2756,7 +2827,7 @@ Collection.prototype.search = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	var fn = void 0;
@@ -2811,7 +2882,7 @@ Collection.prototype.includes = function (searchElement, opt_filter, opt_params)
 		return el === searchElement;
 	};
 
-	this._filter(p, opt_filter, f);
+	this._initParams(p, opt_filter, f);
 	p = any(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
 
 	var returnVal = any(this.forEach(function () {
@@ -2850,7 +2921,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	var isFunc = isFunction(field),
@@ -2938,13 +3009,12 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p));
 
-	var type = getType(this.data, p.use),
-	    isRealArray = type === 'array' && isArray(this.data);
+	var isRealArray = p.type === 'array' && isArray(this.data);
 
-	if (iterators[type]) {
+	if (iterators[p.type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -2963,7 +3033,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	}
 
 	var fn = void 0;
-	switch (type) {
+	switch (p.type) {
 		case 'map':
 			fn = function (value, key, data) {
 				data.delete(key);
@@ -3142,13 +3212,12 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this._filter(p, filter)._isAsync(p);
+	this._initParams(p, filter);
 	p = any(Object.assign(Object.create(this.p), p));
 
-	var type = getType(data, p.use),
-	    isFunc = isFunction(value);
+	var valIsFunc = isFunction(value);
 
-	if (iterators[type]) {
+	if (iterators[p.type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -3167,8 +3236,8 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	}
 
 	var fn = void 0;
-	if (isFunc) {
-		switch (type) {
+	if (valIsFunc) {
+		switch (p.type) {
 			case 'map':
 				fn = function (el, key, data) {
 					var res = value.apply(null, arguments);
@@ -3331,7 +3400,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 		fn[FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
 	} else {
-		switch (type) {
+		switch (p.type) {
 			case 'map':
 				fn = function (el, key, data) {
 					var result = false;
@@ -3415,7 +3484,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 			}
 
 			var res = byLink(data, p.key, {
-				value: isFunc ? value(undefined, undefined, data, ctx) : value,
+				value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
 				create: p.create !== false
 			});
 
@@ -3603,7 +3672,14 @@ Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk
 		exec--;
 		obj.destroyed = true;
 
-		err = err || new Error('Thread was destroyed');
+		if (err) {
+			if (typeof err !== 'object') {
+				err = new Error(err);
+			}
+		} else {
+			err = new Error('Thread was destroyed');
+		}
+
 		err.type = 'CollectionThreadDestroy';
 		err.thread = obj;
 

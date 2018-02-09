@@ -40,7 +40,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter)._isAsync(p);
+	this._initParams(p, opt_filter);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
 
 	fn[_base.FN_LENGTH] = cb.length - 1;
@@ -69,9 +69,14 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 		}
 	}
 
-	const returnVal = (0, _gcc.any)(this.forEach(fn, p));
+	const res = p.result,
+	      returnVal = (0, _gcc.any)(this.forEach(fn, p));
 
-	if (returnVal !== this && !(0, _types.isStream)(p.result)) {
+	if ((0, _types.isStream)(res)) {
+		returnVal.then(() => res.end(), err => res.destroy(err));
+	}
+
+	if (returnVal !== this) {
 		return returnVal;
 	}
 
