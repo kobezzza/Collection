@@ -10,22 +10,8 @@
 
 const
 	$C = require('../collection'),
-	fs = require('vinyl-fs'),
-	Transform = require('stream').Transform;
+	fs = require('vinyl-fs');
 
-$C(fs.src('./*', {read: false})).async.map(
-	(el) => el,
-
-	{initial: new Transform({
-		readableObjectMode: true,
-		writableObjectMode: true,
-		transform(data, enc, cb) {
-			console.log(data);
-			cb(null, data);
-		}
-	})}
-
-).then(
-	() => console.log('Stream completed!'),
-	(err) => console.error(err)
-);
+$C(fs.src('./*', {read: false})).toStream(true).map()
+	.addListener('data', (data) => console.log(data))
+	.addListener('end', () => console.log('Stream completed!'));

@@ -12,7 +12,7 @@ const
 	$C = require('../collection'),
 	fs = require('vinyl-fs');
 
-$C(fs.src('./*', {read: false})).async.forEach((el, key, data, o) => {
+$C(fs.src('./*', {read: false})).forEach((el, key, data, o) => {
 	console.log(el);
 
 	o.wait(4, 'foo', new Promise((resolve) => {
