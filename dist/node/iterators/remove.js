@@ -16,14 +16,6 @@ var _link = require('../helpers/link');
 
 var _gcc = require('../helpers/gcc');
 
-const invalidTypes = {
-	'iterator': true,
-	'asyncIterator': true,
-	'generator': true,
-	'stream': true,
-	'idbRequest': true
-};
-
 /**
  * Removes elements from the collection by the specified condition/link
  *
@@ -50,7 +42,7 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 	const type = (0, _types.getType)(this.data, p.use),
 	      isRealArray = type === 'array' && (0, _types.isArray)(this.data);
 
-	if (invalidTypes[type]) {
+	if (_types.iterators[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 

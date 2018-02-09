@@ -68,9 +68,13 @@ _core.Collection.prototype._filter = function (filters) {
  * @param {?} p
  * @return {!Collection}
  */
-_core.Collection.prototype._isThread = function (p) {
+_core.Collection.prototype._isAsync = function (p) {
 	if (p.thread == null && (p.priority || p.onChunk)) {
 		p.thread = true;
+	}
+
+	if (p.async == null && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || _types.asyncTypes[(0, _types.getType)(this.data)] || p.initial && (0, _types.getType)(p.initial) === 'stream') {
+		p.async = true;
 	}
 
 	return this;
@@ -231,7 +235,6 @@ _core.Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
  * @return {!Collection}
  */
 _core.Collection.prototype.parallel = function (opt_max) {
-	this.p.async = true;
 	this.p.parallel = (0, _types.isNumber)(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
@@ -243,7 +246,6 @@ _core.Collection.prototype.parallel = function (opt_max) {
  * @return {!Collection}
  */
 _core.Collection.prototype.race = function (opt_max) {
-	this.p.async = true;
 	this.p.race = (0, _types.isNumber)(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };

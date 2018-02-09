@@ -18,14 +18,6 @@ var _link = require('../helpers/link');
 
 var _gcc = require('../helpers/gcc');
 
-const invalidTypes = {
-	'iterator': true,
-	'asyncIterator': true,
-	'generator': true,
-	'stream': true,
-	'idbRequest': true
-};
-
 /**
  * Sets a new value for collection elements by the specified condition/link
  *
@@ -53,14 +45,13 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this._filter(p, filter)._isThread(p);
+	this._filter(p, filter)._isAsync(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
 	const type = (0, _types.getType)(data, p.use),
-	      isFunc = (0, _types.isFunction)(value),
-	      isAsync = p.thread || p.async;
+	      isFunc = (0, _types.isFunction)(value);
 
-	if (invalidTypes[type]) {
+	if (_types.iterators[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -87,7 +78,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 					//#if iterators.async
 
-					if (isAsync && (0, _types.isPromise)(res)) {
+					if (p.async && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
 
@@ -142,7 +133,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 					//#if iterators.async
 
-					if (isAsync && (0, _types.isPromise)(res)) {
+					if (p.async && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
 
@@ -199,7 +190,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 					//#if iterators.async
 
-					if (isAsync && (0, _types.isPromise)(res)) {
+					if (p.async && (0, _types.isPromise)(res)) {
 						return res.then(res => {
 							let status = res === undefined;
 

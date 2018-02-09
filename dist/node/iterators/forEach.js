@@ -34,16 +34,6 @@ function notAsync() {
 	return false;
 }
 
-const invalidTypes = {
-	'weakMap': true,
-	'weakSet': true
-};
-
-const mapSet = {
-	'map': true,
-	'set': true
-};
-
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
@@ -103,7 +93,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 		p.use = 'for in';
 	}
 
-	this._isThread(p);
+	this._isAsync(p);
 	if (p.thread && !_thread.PRIORITY[p.priority]) {
 		p.priority = 'normal';
 	}
@@ -111,29 +101,25 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	let { data } = this,
 	    type = p.type = (0, _types.getType)(data, p.use);
 
-	if (!(0, _types.isObjectInstance)(data) || invalidTypes[type]) {
+	if (!(0, _types.isObjectInstance)(data) || _types.weakTypes[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
 	const filters = p.filter,
 	      fCount = filters.length;
 
-	const isStream = type === 'stream',
-	      isIDBRequest = type === 'idbRequest';
+	const isAsyncType = _types.asyncTypes[type],
+	      isStream = type === 'stream';
 
 	let cursor;
 
 	//#if iterators.async
 
-	if (isStream || isIDBRequest) {
+	if (_types.asyncTypes[type]) {
 		cursor = data;
 
-		if (!p.thread) {
-			p.async = true;
-		}
-
-		const on = `add${isIDBRequest ? 'Event' : ''}Listener`,
-		      off = `remove${isIDBRequest ? 'Event' : ''}Listener`,
+		const on = `add${isStream ? '' : 'Event'}Listener`,
+		      off = `remove${isStream ? '' : 'Event'}Listener`,
 		      dataEvent = isStream ? 'data' : 'success';
 
 		cursor[on]('error', err => {
@@ -223,7 +209,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 			cb[_base.LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? _link.slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
 
 			return this;
-		} else if (mapSet[type] && !p.startIndex && p.endIndex === false) {
+		} else if (_types.mapSet[type] && !p.startIndex && p.endIndex === false) {
 			cb[_base.LENGTH_REQUEST] = data.size;
 			return this;
 		}
@@ -311,7 +297,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 	//#if iterators.thread
 	//#if iterators.async
 
-	if (p.thread || p.async) {
+	if (p.async) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
 			function onError(err) {
@@ -341,7 +327,7 @@ _core.Collection.prototype.forEach = function (cb, opt_params) {
 				filters[i] = wrap(filters[i]);
 			}
 
-			if (isStream || isIDBRequest) {
+			if (isAsyncType) {
 				data.onError = onError;
 			}
 

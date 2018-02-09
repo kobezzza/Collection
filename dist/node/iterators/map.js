@@ -40,13 +40,12 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 		p = { filter: p };
 	}
 
-	this._filter(p)._isThread(p);
+	this._filter(p)._isAsync(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
 
 	const { data } = this,
 	      hasInitial = p.initial != null,
-	      source = hasInitial ? p.initial : this.data,
-	      isAsync = p.thread || p.async;
+	      source = hasInitial ? p.initial : this.data;
 
 	let type = hasInitial ? (0, _types.getType)(p.initial) : (0, _types.getType)(data, p.use),
 	    res = p.initial;
@@ -124,7 +123,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && (0, _types.isPromise)(val)) {
+				if (p.async && (0, _types.isPromise)(val)) {
 					return val.then(val => res.push(val));
 				}
 
@@ -142,7 +141,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && (0, _types.isPromise)(val)) {
+				if (p.async && (0, _types.isPromise)(val)) {
 					return val.then(val => res[key] = val);
 				}
 
@@ -161,7 +160,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && (0, _types.isPromise)(val)) {
+				if (p.async && (0, _types.isPromise)(val)) {
 					return val.then(val => res.set(key, val));
 				}
 
@@ -180,7 +179,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && (0, _types.isPromise)(val)) {
+				if (p.async && (0, _types.isPromise)(val)) {
 					return val.then(val => res.add(val));
 				}
 
@@ -226,7 +225,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
 					//#if iterators.async
 
-					if (isAsync && (0, _types.isPromise)(val)) {
+					if (p.async && (0, _types.isPromise)(val)) {
 						return val.then(res => {
 							val = res;
 							write();
@@ -248,7 +247,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && (0, _types.isPromise)(val)) {
+				if (p.async && (0, _types.isPromise)(val)) {
 					return val.then(val => res += val);
 				}
 

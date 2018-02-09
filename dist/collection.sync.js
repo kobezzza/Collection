@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.0 (sync)
+ * Collection v6.6.1 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 08 Feb 2018 14:51:26 GMT
+ * Date: 'Fri, 09 Feb 2018 11:57:54 GMT
  */
 
 (function (global, factory) {
@@ -24,6 +24,29 @@
 function any(val) {
   return val;
 }
+
+var asyncTypes = {
+	'stream': true,
+	'isIDBRequest': true
+};
+
+var mapSet = {
+	'map': true,
+	'set': true
+};
+
+var weakTypes = {
+	'weakMap': true,
+	'weakSet': true
+};
+
+var iterators = {
+	'iterator': true,
+	'asyncIterator': true,
+	'generator': true,
+	'stream': true,
+	'idbRequest': true
+};
 
 /**
  * Returns true if the specified value is a function
@@ -385,7 +408,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 0];
+Collection.prototype.VERSION = [6, 6, 1];
 
 /**
  * Creates an instance of Collection
@@ -705,11 +728,6 @@ var cbArgsList = ['el', 'key', 'data', 'ctx'];
 
 var filterArgsList = ['el', 'key', 'data', 'fCtx'];
 
-var mapSet = {
-	'map': true,
-	'set': true
-};
-
 /**
  * Compiles a loop by the specified parameters
  *
@@ -718,8 +736,7 @@ var mapSet = {
  * @return {!Function}
  */
 function compileCycle(key, p) {
-	var isMapSet = mapSet[p.type],
-	    isAsync = p.thread || p.async;
+	var isMapSet = mapSet[p.type];
 
 	var cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT);
 
@@ -749,7 +766,7 @@ function compileCycle(key, p) {
 	if (needCtx) {
 		iFn += ws(_templateObject9, p.mult, p.live, p.reverse, p.withDescriptor, p.notOwn, p.inverseFilter, p.type, p.async, p.thread, p.thread, p.priority, p.length, cantModI, cantModI);
 
-		if (isAsync) {
+		if (p.async) {
 		} else {
 			iFn += ws(_templateObject11);
 		}
@@ -775,7 +792,7 @@ function compileCycle(key, p) {
 		indexLimits += ws(_templateObject17, threadEnd);
 	}
 
-	var defArgs = maxArgsLength || isAsync;
+	var defArgs = maxArgsLength || p.async;
 
 	switch (p.type) {
 		case 'array':
@@ -819,7 +836,7 @@ function compileCycle(key, p) {
 			if (p.reverse || OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
 				iFn += 'var tmpArray;';
 
-				if (!p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT && !isAsync) {
+				if (!p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
 					iFn += 'tmpArray = Object.keys(data);';
 				} else {
 					iFn += 'tmpArray = [];';
@@ -934,7 +951,7 @@ function compileCycle(key, p) {
 
 	var tmp = '';
 
-	if (!isAsync) {
+	if (!p.async) {
 		if (fLength) {
 			if (fLength < 5) {
 				for (var _i2 = 0; _i2 < fLength; _i2++) {
@@ -959,13 +976,13 @@ function compileCycle(key, p) {
 	}
 
 
-	if (!isAsync && p.from) {
+	if (!p.async && p.from) {
 		iFn += ws(_templateObject42, tmp);
 	} else {
 		iFn += tmp;
 	}
 
-	if (!isAsync && fLength) {
+	if (!p.async && fLength) {
 		iFn += '}';
 	}
 
@@ -974,11 +991,11 @@ function compileCycle(key, p) {
 		iFn += ws(_templateObject43, threadEnd);
 	}
 
-	iFn += ws(_templateObject44, threadEnd, isAsync ? '|| done' : '', needCtx ? 'ctx' : '');
+	iFn += ws(_templateObject44, threadEnd, p.async ? '|| done' : '', needCtx ? 'ctx' : '');
 
-	iFn += ws(_templateObject45, yielder, asyncWait, isAsync ? 'done = true;' : '');
+	iFn += ws(_templateObject45, yielder, asyncWait, p.async ? 'done = true;' : '');
 
-	if (isAsync) {
+	if (p.async) {
 	} else {
 		tmpCycle[key] = new Function('o', 'p', iFn);
 	}
@@ -1291,16 +1308,6 @@ function notAsync() {
 	return false;
 }
 
-var invalidTypes = {
-	'weakMap': true,
-	'weakSet': true
-};
-
-var mapSet$1 = {
-	'map': true,
-	'set': true
-};
-
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
@@ -1362,7 +1369,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		p.use = 'for in';
 	}
 
-	this._isThread(p);
+	this._isAsync(p);
 	if (p.thread && !PRIORITY[p.priority]) {
 		p.priority = 'normal';
 	}
@@ -1371,15 +1378,15 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	    type = p.type = getType(data, p.use);
 
 
-	if (!isObjectInstance(data) || invalidTypes[type]) {
+	if (!isObjectInstance(data) || weakTypes[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
 	var filters = p.filter,
 	    fCount = filters.length;
 
-	var isStream$$1 = type === 'stream',
-	    isIDBRequest$$1 = type === 'idbRequest';
+	var isAsyncType = asyncTypes[type],
+	    isStream$$1 = type === 'stream';
 
 	var cursor = void 0;
 
@@ -1390,7 +1397,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			cb[LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
 
 			return this;
-		} else if (mapSet$1[type] && !p.startIndex && p.endIndex === false) {
+		} else if (mapSet[type] && !p.startIndex && p.endIndex === false) {
 			cb[LENGTH_REQUEST] = data.size;
 			return this;
 		}
@@ -1534,9 +1541,13 @@ Collection.prototype._filter = function (filters) {
  * @param {?} p
  * @return {!Collection}
  */
-Collection.prototype._isThread = function (p) {
+Collection.prototype._isAsync = function (p) {
 	if (p.thread == null && (p.priority || p.onChunk)) {
 		p.thread = true;
+	}
+
+	if (p.async == null && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || asyncTypes[getType(this.data)] || p.initial && getType(p.initial) === 'stream') {
+		p.async = true;
 	}
 
 	return this;
@@ -1750,12 +1761,11 @@ Collection.prototype.extend = function (deepOrParams, args) {
 			p = p || {};
 		}
 
-		this._filter(p)._isThread(p);
+		this._filter(p)._isAsync(p);
 		p = any(assign(Object.create(this.p), p));
 	}
 
-	var withDescriptor = p.withDescriptor && !p.withAccessors,
-	    isAsync = p.thread || p.async;
+	var withDescriptor = p.withDescriptor && !p.withAccessors;
 
 	if (p.withAccessors) {
 		p.withDescriptor = true;
@@ -1865,7 +1875,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		}
 	};
 
-	if (isAsync) {
+	if (p.async) {
 		promise = Promise.resolve();
 	}
 
@@ -1960,7 +1970,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 					var childExt = $C(clone).extend(p, val);
 
-					if (isAsync) {
+					if (p.async) {
 						return childExt.then(function (value) {
 							return byLink(data, [key], { value: value });
 						});
@@ -1980,7 +1990,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		if (_ret === 'continue') continue;
 	}
 
-	return isAsync ? promise.then(function () {
+	return p.async ? promise.then(function () {
 		return data;
 	}) : data;
 };
@@ -2041,13 +2051,12 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 		p = { filter: p };
 	}
 
-	this._filter(p)._isThread(p);
+	this._filter(p)._isAsync(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	var data = this.data,
 	    hasInitial = p.initial != null,
-	    source = hasInitial ? p.initial : this.data,
-	    isAsync = p.thread || p.async;
+	    source = hasInitial ? p.initial : this.data;
 
 
 	var type = hasInitial ? getType(p.initial) : getType(data, p.use),
@@ -2271,10 +2280,8 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter)._isThread(p);
+	this._filter(p, opt_filter)._isAsync(p);
 	p = any(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
-
-	var isAsync = p.thread || p.async;
 
 	fn[FN_LENGTH] = cb.length - 1;
 	function fn(el) {
@@ -2483,7 +2490,6 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	var isFunc = isFunction(field),
-	    isAsync = p.thread || p.async,
 	    res = p.result = p.useMap ? new Map() : Object.create(null);
 
 	var fn = void 0;
@@ -2526,14 +2532,6 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	return p.result;
 };
 
-var invalidTypes$1 = {
-	'iterator': true,
-	'asyncIterator': true,
-	'generator': true,
-	'stream': true,
-	'idbRequest': true
-};
-
 /**
  * Removes elements from the collection by the specified condition/link
  *
@@ -2560,7 +2558,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	var type = getType(this.data, p.use),
 	    isRealArray = type === 'array' && isArray(this.data);
 
-	if (invalidTypes$1[type]) {
+	if (iterators[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -2730,14 +2728,6 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	return p.result;
 };
 
-var invalidTypes$2 = {
-	'iterator': true,
-	'asyncIterator': true,
-	'generator': true,
-	'stream': true,
-	'idbRequest': true
-};
-
 /**
  * Sets a new value for collection elements by the specified condition/link
  *
@@ -2766,14 +2756,13 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this._filter(p, filter)._isThread(p);
+	this._filter(p, filter)._isAsync(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	var type = getType(data, p.use),
-	    isFunc = isFunction(value),
-	    isAsync = p.thread || p.async;
+	    isFunc = isFunction(value);
 
-	if (invalidTypes$2[type]) {
+	if (iterators[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 

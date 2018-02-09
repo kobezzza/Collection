@@ -40,10 +40,8 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter)._isThread(p);
+	this._filter(p, opt_filter)._isAsync(p);
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { result: opt_initialValue }));
-
-	const isAsync = p.thread || p.async;
 
 	fn[_base.FN_LENGTH] = cb.length - 1;
 	function fn(el) {
@@ -61,7 +59,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 
 			//#if iterators.async
 
-			if (isAsync && (0, _types.isPromise)(val)) {
+			if (p.async && (0, _types.isPromise)(val)) {
 				return val.then(val => p.result = val);
 			}
 

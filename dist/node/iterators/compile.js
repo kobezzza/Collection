@@ -20,6 +20,8 @@ var _cache = require('../consts/cache');
 
 var _string = require('../helpers/string');
 
+var _types = require('../helpers/types');
+
 var _hacks = require('../consts/hacks');
 
 var _base = require('../consts/base');
@@ -53,11 +55,6 @@ const cbArgsList = ['el', 'key', 'data', 'ctx'];
 
 const filterArgsList = ['el', 'key', 'data', 'fCtx'];
 
-const mapSet = {
-	'map': true,
-	'set': true
-};
-
 /**
  * Compiles a loop by the specified parameters
  *
@@ -66,8 +63,7 @@ const mapSet = {
  * @return {!Function}
  */
 function compileCycle(key, p) {
-	const isMapSet = mapSet[p.type],
-	      isAsync = p.thread || p.async;
+	const isMapSet = _types.mapSet[p.type];
 
 	const cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT);
 
@@ -143,7 +139,7 @@ function compileCycle(key, p) {
 
 	//#if iterators.async
 
-	if (isAsync) {
+	if (p.async) {
 		iFn += _string.ws`
 			var
 				priority = o.priority,
@@ -426,7 +422,7 @@ function compileCycle(key, p) {
 			fCtx.length = o.fLength;
 		`;
 
-		if (isAsync) {
+		if (p.async) {
 			//#if iterators.async
 
 			iFn += _string.ws`
@@ -659,7 +655,7 @@ function compileCycle(key, p) {
 
 	//#if iterators.async
 
-	if (isAsync) {
+	if (p.async) {
 		iFn += 'done = false;';
 		yielder = _string.ws`
 			if (yielder) {
@@ -708,7 +704,7 @@ function compileCycle(key, p) {
 		`;
 	}
 
-	const defArgs = maxArgsLength || isAsync;
+	const defArgs = maxArgsLength || p.async;
 
 	switch (p.type) {
 		case 'array':
@@ -773,7 +769,7 @@ function compileCycle(key, p) {
 			if (p.reverse || _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
 				iFn += 'var tmpArray;';
 
-				if (!p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !isAsync) {
+				if (!p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
 					iFn += 'tmpArray = Object.keys(data);';
 				} else {
 					iFn += 'tmpArray = [];';
@@ -1025,7 +1021,7 @@ function compileCycle(key, p) {
 
 	let tmp = '';
 
-	if (!isAsync) {
+	if (!p.async) {
 		if (fLength) {
 			if (fLength < 5) {
 				for (let i = 0; i < fLength; i++) {
@@ -1065,7 +1061,7 @@ function compileCycle(key, p) {
 
 	//#if iterators.async
 
-	if (isAsync) {
+	if (p.async) {
 		tmp += _string.ws`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
@@ -1081,7 +1077,7 @@ function compileCycle(key, p) {
 
 	//#endif
 
-	if (!isAsync && p.from) {
+	if (!p.async && p.from) {
 		iFn += _string.ws`
 			if (from !== 0) {
 				from--;
@@ -1094,7 +1090,7 @@ function compileCycle(key, p) {
 		iFn += tmp;
 	}
 
-	if (!isAsync && fLength) {
+	if (!p.async && fLength) {
 		iFn += '}';
 	}
 
@@ -1113,7 +1109,7 @@ function compileCycle(key, p) {
 	iFn += _string.ws`
 			${threadEnd}
 
-			if (breaker${isAsync ? '|| done' : ''}) {
+			if (breaker${p.async ? '|| done' : ''}) {
 				break;
 			}
 		}
@@ -1133,14 +1129,14 @@ function compileCycle(key, p) {
 		${asyncWait}
 
 		if (onComplete) {
-			${isAsync ? 'done = true;' : ''}
+			${p.async ? 'done = true;' : ''}
 			onComplete(p.result);
 		}
 
 		return p.result;
 	`;
 
-	if (isAsync) {
+	if (p.async) {
 		//#if iterators.async
 		_cache.tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
 		//#endif

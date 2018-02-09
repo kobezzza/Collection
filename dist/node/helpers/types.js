@@ -8,13 +8,6 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-/**
- * Returns true if the specified value is a function
- *
- * @param {?} obj - source value
- * @return {boolean}
- */
-
 exports.__esModule = true;
 exports.isFunction = isFunction;
 exports.isNumber = isNumber;
@@ -37,6 +30,35 @@ exports.getType = getType;
 exports.getSameAs = getSameAs;
 exports.isStructure = isStructure;
 exports.canExtendProto = canExtendProto;
+const asyncTypes = exports.asyncTypes = {
+	'stream': true,
+	'isIDBRequest': true
+};
+
+const mapSet = exports.mapSet = {
+	'map': true,
+	'set': true
+};
+
+const weakTypes = exports.weakTypes = {
+	'weakMap': true,
+	'weakSet': true
+};
+
+const iterators = exports.iterators = {
+	'iterator': true,
+	'asyncIterator': true,
+	'generator': true,
+	'stream': true,
+	'idbRequest': true
+};
+
+/**
+ * Returns true if the specified value is a function
+ *
+ * @param {?} obj - source value
+ * @return {boolean}
+ */
 function isFunction(obj) {
 	return typeof obj === 'function';
 }

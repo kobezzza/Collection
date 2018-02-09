@@ -59,12 +59,11 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 			p = p || {};
 		}
 
-		this._filter(p)._isThread(p);
+		this._filter(p)._isAsync(p);
 		p = (0, _gcc.any)(assign(Object.create(this.p), p));
 	}
 
-	const withDescriptor = p.withDescriptor && !p.withAccessors,
-	      isAsync = p.thread || p.async;
+	const withDescriptor = p.withDescriptor && !p.withAccessors;
 
 	if (p.withAccessors) {
 		p.withDescriptor = true;
@@ -171,7 +170,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 			return this;
 		} };
 
-	if (isAsync) {
+	if (p.async) {
 		promise = Promise.resolve();
 	}
 
@@ -264,7 +263,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 
 				const childExt = (0, _core2.default)(clone).extend(p, val);
 
-				if (isAsync) {
+				if (p.async) {
 					return childExt.then(value => (0, _link.byLink)(data, [key], { value }));
 				}
 
@@ -275,7 +274,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 		}, p));
 	}
 
-	return isAsync ? promise.then(() => data) : data;
+	return p.async ? promise.then(() => data) : data;
 };
 
 /**
