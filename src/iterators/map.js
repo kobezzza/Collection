@@ -42,13 +42,13 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	const
 		{data} = this;
 
-	const
-		hasInitial = p.initial != null,
-		source = hasInitial ? p.initial : data;
-
 	let
 		type = p.initialType || p.type,
 		res = p.initial;
+
+	const
+		hasInitial = p.initial != null,
+		source = hasInitial ? p.initial : data;
 
 	if (!hasInitial) {
 		switch (type) {
@@ -275,7 +275,12 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	const
 		returnVal = any(this.forEach(any(fn), p));
 
-	if (returnVal !== this && type !== 'stream') {
+	if (type === 'stream') {
+		returnVal.then(() => res.end(), (err) => res.destroy(err));
+		return p.result;
+	}
+
+	if (returnVal !== this) {
 		return returnVal;
 	}
 

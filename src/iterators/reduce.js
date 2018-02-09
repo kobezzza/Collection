@@ -70,9 +70,14 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 	}
 
 	const
+		res = p.result,
 		returnVal = any(this.forEach(fn, p));
 
-	if (returnVal !== this && !isStream(p.result)) {
+	if (isStream(res)) {
+		returnVal.then(() => res.end(), (err) => res.destroy(err));
+	}
+
+	if (returnVal !== this) {
 		return returnVal;
 	}
 
