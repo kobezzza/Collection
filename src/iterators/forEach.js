@@ -24,10 +24,12 @@ function notAsync() {
 	return false;
 }
 
+function defaultCb() {}
+
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
  *
- * @param {$$CollectionCb} cb - callback function
+ * @param {($$CollectionCb|$$Collection_forEach|null)=} [opt_cb] - callback function
  * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
  *
  *   *) [filter] - function filter or an array of functions
@@ -65,7 +67,14 @@ function notAsync() {
  *
  * @return {(!Collection|!Promise)}
  */
-Collection.prototype.forEach = function (cb, opt_params) {
+Collection.prototype.forEach = function (opt_cb, opt_params) {
+	let cb = opt_cb;
+
+	if (!isFunction(opt_cb)) {
+		cb = defaultCb;
+		opt_params = any(opt_cb);
+	}
+
 	const
 		p = any(Object.create(this._init()));
 

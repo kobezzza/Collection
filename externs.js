@@ -7,7 +7,7 @@
  */
 
 
-/** @typedef {(Object|string|undefined)} */
+/** @typedef {(Object|string|number|undefined)} */
 var $$CollectionType;
 
 /**
@@ -138,11 +138,11 @@ var result;
 var parallel;
 
 /**
- * @param {$$CollectionCb} cb
+ * @param {?$$CollectionCb=} [opt_cb]
  * @param {?$$Collection_forEach=} [opt_params]
  * @return {(!$$Collection|!Promise)}
  */
-$$Collection.prototype.forEach = function (cb, opt_params) {};
+$$Collection.prototype.forEach = function (opt_cb, opt_params) {};
 
 /**
  * @typedef {{
@@ -617,9 +617,6 @@ var call;
 
 /** @type {?} */
 var children;
-
-/** @type {?} */
-var stream;
 
 /** @type {?} */
 var ctx;
