@@ -20,17 +20,19 @@ import { PRIORITY } from '../consts/thread';
  * @return {!Collection}
  */
 Collection.prototype.filter = function (filters) {
-	let args = [];
+	let
+		newFilters = [];
+
 	for (let i = 0; i < arguments.length; i++) {
 		const
 			el = arguments[i];
 
 		if (el) {
-			args = args.concat(el);
+			newFilters = newFilters.concat(el);
 		}
 	}
 
-	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
+	this.p.filter = this.p.filter.concat.apply(this.p.filter, newFilters);
 	return this;
 };
 
@@ -80,27 +82,30 @@ Collection.prototype._initParams = function (p, filters) {
 		p.async = true;
 	}
 
-	const
-		newFilters = [];
-
-	for (let i = 0; i < arguments.length; i++) {
+	if (filters !== false && (p.filter || filters)) {
 		let
-			el = i ? newFilters : arguments[i];
+			newFilters = [];
 
-		if (i === 0) {
-			if (!el || !el.filter) {
-				continue;
+		for (let i = 0; i < arguments.length; i++) {
+			let
+				el = arguments[i];
+
+			if (i === 0) {
+				if (!el || !el.filter) {
+					continue;
+				}
+
+				el = [el.filter, delete el.filter][0];
 			}
 
-			el = [el.filter, delete el.filter][0];
+			if (el) {
+				newFilters = newFilters.concat(el);
+			}
 		}
 
-		if (el) {
-			newFilters.push(el);
-		}
+		this.p.filter = this.p.filter.concat.apply(this.p.filter, newFilters);
 	}
 
-	p.filter = p.filter.concat.apply(p.filter, newFilters);
 	return this;
 };
 

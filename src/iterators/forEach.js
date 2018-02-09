@@ -80,7 +80,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		Object.assign(p, opt_params);
 	}
 
-	this._initParams(p);
+	this._initParams(p, false);
 
 	let
 		{data} = this,

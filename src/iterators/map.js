@@ -40,9 +40,11 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
-		{data} = this,
+		{data} = this;
+
+	const
 		hasInitial = p.initial != null,
-		source = hasInitial ? p.initial : this.data;
+		source = hasInitial ? p.initial : data;
 
 	let
 		type = p.initialType || p.type,

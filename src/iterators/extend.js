@@ -21,6 +21,15 @@ const simpleType = {
 	'object': true
 };
 
+const {
+
+	create,
+	defineProperty,
+	getPrototypeOf,
+	assign
+
+} = Object;
+
 /**
  * Extends the collection by another objects
  *
@@ -41,10 +50,8 @@ const simpleType = {
  * @return {(!Object|!Promise)}
  */
 Collection.prototype.extend = function (deepOrParams, args) {
-	const
-		{create, defineProperty, getPrototypeOf, assign} = Object;
-
 	let p = any(deepOrParams);
+
 	if (p instanceof P === false) {
 		if (isBoolean(p)) {
 			p = {deep: p};
@@ -70,11 +77,11 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 	let
 		{data} = this,
-		type = getType(data);
+		{type} = p;
 
 	if (!type) {
 		for (let i = 1; i < arguments.length; i++) {
-			type = getType(arguments[i]);
+			type = getType(arguments[i], p.use);
 
 			if (type) {
 				break;

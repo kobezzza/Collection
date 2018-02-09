@@ -52,7 +52,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
-		isFunc = isFunction(value);
+		valIsFunc = isFunction(value);
 
 	if (iterators[p.type]) {
 		throw new TypeError('Incorrect data type');
@@ -75,7 +75,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 	}
 
 	let fn;
-	if (isFunc) {
+	if (valIsFunc) {
 		switch (p.type) {
 			case 'map':
 				fn = function (el, key, data) {
@@ -346,7 +346,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 			}
 
 			const res = byLink(data, p.key, {
-				value: isFunc ? value(undefined, undefined, data, ctx) : value,
+				value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
 				create: p.create !== false
 			});
 
