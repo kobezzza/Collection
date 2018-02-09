@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Fri, 09 Feb 2018 11:57:54 GMT
+ * Date: 'Fri, 09 Feb 2018 12:19:45 GMT
  */
 
 (function (global, factory) {
@@ -1370,6 +1370,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	}
 
 	this._isAsync(p);
+
 	if (p.thread && !PRIORITY[p.priority]) {
 		p.priority = 'normal';
 	}
@@ -1542,11 +1543,14 @@ Collection.prototype._filter = function (filters) {
  * @return {!Collection}
  */
 Collection.prototype._isAsync = function (p) {
-	if (p.thread == null && (p.priority || p.onChunk)) {
+	var threadNodDefined = !p.hasOwnProperty('thread') && p.thread === false,
+	    asyncNotDefined = !p.hasOwnProperty('async') && p.async === false;
+
+	if (threadNodDefined && (p.priority || p.onChunk)) {
 		p.thread = true;
 	}
 
-	if (p.async == null && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || asyncTypes[getType(this.data)] || p.initial && getType(p.initial) === 'stream') {
+	if (asyncNotDefined && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || asyncTypes[getType(this.data)] || p.initial && getType(p.initial) === 'stream') {
 		p.async = true;
 	}
 

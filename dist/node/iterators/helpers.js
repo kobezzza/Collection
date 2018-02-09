@@ -69,11 +69,14 @@ _core.Collection.prototype._filter = function (filters) {
  * @return {!Collection}
  */
 _core.Collection.prototype._isAsync = function (p) {
-	if (p.thread == null && (p.priority || p.onChunk)) {
+	const threadNodDefined = !p.hasOwnProperty('thread') && p.thread === false,
+	      asyncNotDefined = !p.hasOwnProperty('async') && p.async === false;
+
+	if (threadNodDefined && (p.priority || p.onChunk)) {
 		p.thread = true;
 	}
 
-	if (p.async == null && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || _types.asyncTypes[(0, _types.getType)(this.data)] || p.initial && (0, _types.getType)(p.initial) === 'stream') {
+	if (asyncNotDefined && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || _types.asyncTypes[(0, _types.getType)(this.data)] || p.initial && (0, _types.getType)(p.initial) === 'stream') {
 		p.async = true;
 	}
 
