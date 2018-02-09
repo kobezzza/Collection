@@ -23,7 +23,7 @@ export const weakTypes = {
 	'weakSet': true
 };
 
-const iterators = {
+export const iterators = {
 	'iterator': true,
 	'asyncIterator': true,
 	'generator': true,
