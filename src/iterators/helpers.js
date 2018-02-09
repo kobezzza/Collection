@@ -85,7 +85,7 @@ Collection.prototype._isAsync = function (p) {
 		p.initial && getType(p.initial) === 'stream'
 
 	) {
-		this.async = true;
+		p.async = true;
 	}
 
 	return this;
