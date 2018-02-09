@@ -37,7 +37,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter)._isAsync(p);
+	this._filter(p, opt_filter)._initParams(p);
 	p = any(Object.assign(Object.create(this.p), p, {result: opt_initialValue}));
 
 	fn[FN_LENGTH] = cb.length - 1;

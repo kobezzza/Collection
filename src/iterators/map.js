@@ -36,7 +36,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 		p = {filter: p};
 	}
 
-	this._filter(p)._isAsync(p);
+	this._filter(p)._initParams(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
@@ -45,7 +45,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 		source = hasInitial ? p.initial : this.data;
 
 	let
-		type = hasInitial ? getType(p.initial) : getType(data, p.use),
+		type = p.initialType || p.type,
 		res = p.initial;
 
 	if (!hasInitial) {

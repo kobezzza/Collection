@@ -43,10 +43,9 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
-		type = getType(this.data, p.use),
-		isRealArray = type === 'array' && isArray(this.data);
+		isRealArray = p.type === 'array' && isArray(this.data);
 
-	if (iterators[type]) {
+	if (iterators[p.type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -67,7 +66,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 	}
 
 	let fn;
-	switch (type) {
+	switch (p.type) {
 		case 'map':
 			fn = (value, key, data) => {
 				data.delete(key);

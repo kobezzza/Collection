@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
-import { getType, isFunction, isArray, isPromise, iterators } from '../helpers/types';
+import { isFunction, isArray, isPromise, iterators } from '../helpers/types';
 import { byLink } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
@@ -48,14 +48,13 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this._filter(p, filter)._isAsync(p);
+	this._filter(p, filter)._initParams(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
-		type = getType(data, p.use),
 		isFunc = isFunction(value);
 
-	if (iterators[type]) {
+	if (iterators[p.type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -77,7 +76,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 	let fn;
 	if (isFunc) {
-		switch (type) {
+		switch (p.type) {
 			case 'map':
 				fn = function (el, key, data) {
 					const
@@ -262,7 +261,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		fn[FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
 
 	} else {
-		switch (type) {
+		switch (p.type) {
 			case 'map':
 				fn = (el, key, data) => {
 					let result = false;

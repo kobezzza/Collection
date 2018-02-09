@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
-import { getType, isObjectInstance, isArray, isFunction, mapSet, asyncTypes, weakTypes } from '../helpers/types';
+import { isObjectInstance, isArray, isFunction, mapSet, asyncTypes, weakTypes } from '../helpers/types';
 import { slice } from '../helpers/link';
 import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
 import { TRUE, FALSE, IGNORE } from '../consts/links';
@@ -67,8 +67,7 @@ function notAsync() {
  */
 Collection.prototype.forEach = function (cb, opt_params) {
 	const
-		p = any(Object.create(this._init())),
-		sp = opt_params || p;
+		p = any(Object.create(this._init()));
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
@@ -81,19 +80,11 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		Object.assign(p, opt_params);
 	}
 
-	if (!p.use && p.notOwn) {
-		p.use = 'for in';
-	}
-
-	this._isAsync(p);
-
-	if (p.thread && !PRIORITY[p.priority]) {
-		p.priority = 'normal';
-	}
+	this._initParams(p);
 
 	let
 		{data} = this,
-		type = p.type = getType(data, p.use);
+		{type} = p;
 
 	if (!isObjectInstance(data) || weakTypes[type]) {
 		throw new TypeError('Incorrect data type');
@@ -374,7 +365,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
-			thread = args.self = fn(args, sp);
+			thread = args.self = fn(args, p);
 			thread.value = undefined;
 			thread.destroyed = false;
 			thread.sleep = null;
@@ -420,6 +411,6 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	//#endif
 	//#endif
 
-	fn(args, sp);
+	fn(args, p);
 	return this;
 };

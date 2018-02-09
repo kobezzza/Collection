@@ -11,6 +11,7 @@
 import { Collection } from '../core';
 import { isFunction, isNumber, getType, asyncTypes } from '../helpers/types';
 import { any } from '../helpers/gcc';
+import { PRIORITY } from '../consts/thread';
 
 /**
  * Appends a filter to the operation
@@ -68,13 +69,29 @@ Collection.prototype._filter = function (filters) {
  * @param {?} p
  * @return {!Collection}
  */
-Collection.prototype._isAsync = function (p) {
+Collection.prototype._initParams = function (p) {
 	const
 		threadNodDefined = !p.hasOwnProperty('thread') && p.thread === false,
 		asyncNotDefined = !p.hasOwnProperty('async') && p.async === false;
 
+	if (!p.use && p.notOwn) {
+		p.use = 'for in';
+	}
+
 	if (threadNodDefined && (p.priority || p.onChunk)) {
 		p.thread = true;
+	}
+
+	if (p.thread && !PRIORITY[p.priority]) {
+		p.priority = 'normal';
+	}
+
+	if (!p.type) {
+		p.type = getType(this.data, p.use);
+	}
+
+	if (p.initial != null && !p.initialType) {
+		p.initialType = getType(p.initial);
 	}
 
 	if (
@@ -85,8 +102,8 @@ Collection.prototype._isAsync = function (p) {
 			p.race != null && p.race !== false
 		) ||
 
-		asyncTypes[getType(this.data)] ||
-		p.initial && getType(p.initial) === 'stream'
+		asyncTypes[p.type] ||
+		p.initialType === 'stream'
 
 	) {
 		p.async = true;
