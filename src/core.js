@@ -9,7 +9,7 @@
  */
 
 import { any } from './helpers/gcc';
-import { isString } from './helpers/types';
+import { isString, isNumber } from './helpers/types';
 
 /**
  * Collection constructor
@@ -19,8 +19,38 @@ import { isString } from './helpers/types';
  * @param {$$CollectionType} obj
  */
 export function Collection(obj) {
-	this.data = any(isString(obj) ? obj.split('') : obj || []);
 	this._init();
+
+	if (isString(obj)) {
+		this.data = obj.split('');
+
+	} else if (isNumber(obj)) {
+		if (isFinite(obj)) {
+			this.data = new Array(obj);
+
+		} else {
+			let
+				done = false,
+				value;
+
+			this.p.use = 'for of';
+			this.data = {
+				next: () => ({done, value}),
+
+				throw(err) {
+					throw err;
+				},
+
+				return: (v) => {
+					done = true;
+					value = v;
+				}
+			};
+		}
+
+	} else {
+		this.data = any(obj || []);
+	}
 }
 
 /**
