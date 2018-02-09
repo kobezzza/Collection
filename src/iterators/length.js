@@ -29,7 +29,7 @@ Collection.prototype.length = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p, {result: 0}));
 
 	const calc = () => p.result++;

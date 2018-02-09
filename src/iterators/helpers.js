@@ -35,41 +35,12 @@ Collection.prototype.filter = function (filters) {
 };
 
 /**
- * Appends a filter to the operation
- *
  * @private
+ * @param {?} p
  * @param {...?} filters - function filter
  * @return {!Collection}
  */
-Collection.prototype._filter = function (filters) {
-	let args = [];
-	for (let i = 0; i < arguments.length; i++) {
-		let
-			el = arguments[i];
-
-		if (i === 0) {
-			if (!el || !el.filter) {
-				continue;
-			}
-
-			el = [el.filter, delete el.filter][0];
-		}
-
-		if (el) {
-			args = args.concat(el);
-		}
-	}
-
-	this.p.filter = this.p.filter.concat.apply(this.p.filter, args);
-	return this;
-};
-
-/**
- * @private
- * @param {?} p
- * @return {!Collection}
- */
-Collection.prototype._initParams = function (p) {
+Collection.prototype._initParams = function (p, filters) {
 	const
 		threadNodDefined = !p.hasOwnProperty('thread') && p.thread === false,
 		asyncNotDefined = !p.hasOwnProperty('async') && p.async === false;
@@ -109,6 +80,27 @@ Collection.prototype._initParams = function (p) {
 		p.async = true;
 	}
 
+	const
+		newFilters = [];
+
+	for (let i = 0; i < arguments.length; i++) {
+		let
+			el = i ? newFilters : arguments[i];
+
+		if (i === 0) {
+			if (!el || !el.filter) {
+				continue;
+			}
+
+			el = [el.filter, delete el.filter][0];
+		}
+
+		if (el) {
+			newFilters.push(el);
+		}
+	}
+
+	p.filter = p.filter.concat.apply(p.filter, newFilters);
 	return this;
 };
 

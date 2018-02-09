@@ -53,7 +53,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 			p = p || {};
 		}
 
-		this._filter(p)._isAsync(p);
+		this._initParams(p);
 		p = any(assign(Object.create(this.p), p));
 	}
 
@@ -74,7 +74,8 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 	if (!type) {
 		for (let i = 1; i < arguments.length; i++) {
-			type = getType(data, p.use);
+			type = getType(arguments[i]);
+
 			if (type) {
 				break;
 			}

@@ -48,7 +48,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this._filter(p, filter)._initParams(p);
+	this._initParams(p, filter);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const

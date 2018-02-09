@@ -36,7 +36,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 		p = {filter: p};
 	}
 
-	this._filter(p)._initParams(p);
+	this._initParams(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const

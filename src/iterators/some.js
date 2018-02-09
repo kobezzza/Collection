@@ -28,7 +28,7 @@ Collection.prototype.some = function (opt_filter, opt_params) {
 		opt_filter = null;
 	}
 
-	this._filter(p, opt_filter);
+	this._initParams(p, opt_filter);
 	p = any(Object.assign(Object.create(this.p), p, {mult: true, result: false}));
 
 	const
