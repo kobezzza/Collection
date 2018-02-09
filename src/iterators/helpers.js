@@ -69,12 +69,16 @@ Collection.prototype._filter = function (filters) {
  * @return {!Collection}
  */
 Collection.prototype._isAsync = function (p) {
-	if (p.thread == null && (p.priority || p.onChunk)) {
+	const
+		threadNodDefined = !p.hasOwnProperty('thread') && p.thread === false,
+		asyncNotDefined = !p.hasOwnProperty('async') && p.async === false;
+
+	if (threadNodDefined && (p.priority || p.onChunk)) {
 		p.thread = true;
 	}
 
 	if (
-		p.async == null && (
+		asyncNotDefined && (
 			p.thread ||
 			p.use === 'async for of' ||
 			p.parallel != null && p.parallel !== false ||

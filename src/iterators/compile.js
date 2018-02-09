@@ -638,7 +638,7 @@ export function compileCycle(key, p) {
 	//#if iterators.async
 	//#if iterators.thread
 
-	if (p.thread) {
+	if (p.async && p.thread) {
 		threadStart = ws`
 			if (timeStart == null) {
 				timeStart = new Date().valueOf();
