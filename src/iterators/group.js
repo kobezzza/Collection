@@ -44,7 +44,6 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 	const
 		isFunc = isFunction(field),
-		isAsync = p.thread || p.async,
 		res = p.result = p.useMap ? new Map() : Object.create(null);
 
 	let fn;
@@ -56,7 +55,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 			//#if iterators.async
 
-			if (isAsync && isPromise(param)) {
+			if (p.async && isPromise(param)) {
 				return param.then((param) => {
 					if (res.has(param)) {
 						res.get(param).push(val);
@@ -85,7 +84,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 			//#if iterators.async
 
-			if (isAsync && isPromise(param)) {
+			if (p.async && isPromise(param)) {
 				return param.then((param) => {
 					if (res.hasOwnProperty ? res.hasOwnProperty(param) : hasOwnProperty.call(res, param)) {
 						res[param].push(val);

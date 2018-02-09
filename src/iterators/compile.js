@@ -11,6 +11,7 @@
 import $C from '../core';
 import { tmpCycle } from '../consts/cache';
 import { ws } from '../helpers/string';
+import { mapSet } from '../helpers/types';
 import { OBJECT_KEYS_NATIVE_SUPPORT } from '../consts/hacks';
 import { NAMESPACE, CACHE_VERSION, CACHE_KEY, CACHE_VERSION_KEY } from '../consts/base';
 import { IS_NODE, IS_BROWSER, BLOB_SUPPORT, LOCAL_STORAGE_SUPPORT } from '../consts/hacks';
@@ -53,11 +54,6 @@ const filterArgsList = [
 	'fCtx'
 ];
 
-const mapSet = {
-	'map': true,
-	'set': true
-};
-
 /**
  * Compiles a loop by the specified parameters
  *
@@ -67,8 +63,7 @@ const mapSet = {
  */
 export function compileCycle(key, p) {
 	const
-		isMapSet = mapSet[p.type],
-		isAsync = p.thread || p.async;
+		isMapSet = mapSet[p.type];
 
 	const cantModI = !(
 		p.type === 'array' ||
@@ -151,7 +146,7 @@ export function compileCycle(key, p) {
 
 	//#if iterators.async
 
-	if (isAsync) {
+	if (p.async) {
 		iFn += ws`
 			var
 				priority = o.priority,
@@ -438,7 +433,7 @@ export function compileCycle(key, p) {
 			fCtx.length = o.fLength;
 		`;
 
-		if (isAsync) {
+		if (p.async) {
 			//#if iterators.async
 
 			iFn += ws`
@@ -674,7 +669,7 @@ export function compileCycle(key, p) {
 
 	//#if iterators.async
 
-	if (isAsync) {
+	if (p.async) {
 		iFn += 'done = false;';
 		yielder = ws`
 			if (yielder) {
@@ -725,7 +720,7 @@ export function compileCycle(key, p) {
 	}
 
 	const
-		defArgs = maxArgsLength || isAsync;
+		defArgs = maxArgsLength || p.async;
 
 	switch (p.type) {
 		case 'array':
@@ -793,7 +788,7 @@ export function compileCycle(key, p) {
 			if (p.reverse || (OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn)) {
 				iFn += 'var tmpArray;';
 
-				if (!p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT && !isAsync) {
+				if (!p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
 					iFn += 'tmpArray = Object.keys(data);';
 
 				} else {
@@ -1060,7 +1055,7 @@ export function compileCycle(key, p) {
 	let
 		tmp = '';
 
-	if (!isAsync) {
+	if (!p.async) {
 		if (fLength) {
 			if (fLength < 5) {
 				for (let i = 0; i < fLength; i++) {
@@ -1101,7 +1096,7 @@ export function compileCycle(key, p) {
 
 	//#if iterators.async
 
-	if (isAsync) {
+	if (p.async) {
 		tmp += ws`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
@@ -1117,7 +1112,7 @@ export function compileCycle(key, p) {
 
 	//#endif
 
-	if (!isAsync && p.from) {
+	if (!p.async && p.from) {
 		iFn += ws`
 			if (from !== 0) {
 				from--;
@@ -1131,7 +1126,7 @@ export function compileCycle(key, p) {
 		iFn += tmp;
 	}
 
-	if (!isAsync && fLength) {
+	if (!p.async && fLength) {
 		iFn += '}';
 	}
 
@@ -1150,7 +1145,7 @@ export function compileCycle(key, p) {
 	iFn += ws`
 			${threadEnd}
 
-			if (breaker${isAsync ? '|| done' : ''}) {
+			if (breaker${p.async ? '|| done' : ''}) {
 				break;
 			}
 		}
@@ -1170,14 +1165,14 @@ export function compileCycle(key, p) {
 		${asyncWait}
 
 		if (onComplete) {
-			${isAsync ? 'done = true;' : ''}
+			${p.async ? 'done = true;' : ''}
 			onComplete(p.result);
 		}
 
 		return p.result;
 	`;
 
-	if (isAsync) {
+	if (p.async) {
 		//#if iterators.async
 		tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
 		//#endif

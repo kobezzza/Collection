@@ -10,17 +10,9 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
-import { getType, isFunction, isArray, isPromise } from '../helpers/types';
+import { getType, isFunction, isArray, isPromise, iterators } from '../helpers/types';
 import { byLink } from '../helpers/link';
 import { any } from '../helpers/gcc';
-
-const invalidTypes = {
-	'iterator': true,
-	'asyncIterator': true,
-	'generator': true,
-	'stream': true,
-	'idbRequest': true
-};
 
 /**
  * Sets a new value for collection elements by the specified condition/link
@@ -56,15 +48,14 @@ Collection.prototype.set = function (value, filter, opt_params) {
 		filter = null;
 	}
 
-	this._filter(p, filter)._isThread(p);
+	this._filter(p, filter)._isAsync(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
 		type = getType(data, p.use),
-		isFunc = isFunction(value),
-		isAsync = p.thread || p.async;
+		isFunc = isFunction(value);
 
-	if (invalidTypes[type]) {
+	if (iterators[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -94,7 +85,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 					//#if iterators.async
 
-					if (isAsync && isPromise(res)) {
+					if (p.async && isPromise(res)) {
 						return res.then((res) => {
 							let
 								status = res === undefined;
@@ -154,7 +145,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 					//#if iterators.async
 
-					if (isAsync && isPromise(res)) {
+					if (p.async && isPromise(res)) {
 						return res.then((res) => {
 							let
 								status = res === undefined;
@@ -216,7 +207,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 					//#if iterators.async
 
-					if (isAsync && isPromise(res)) {
+					if (p.async && isPromise(res)) {
 						return res.then((res) => {
 							let
 								status = res === undefined;

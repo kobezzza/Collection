@@ -9,17 +9,9 @@
  */
 
 import { Collection } from '../core';
-import { getType, isFunction, isArray, isNumber } from '../helpers/types';
+import { getType, isFunction, isArray, isNumber, iterators } from '../helpers/types';
 import { byLink, splice } from '../helpers/link';
 import { any } from '../helpers/gcc';
-
-const invalidTypes = {
-	'iterator': true,
-	'asyncIterator': true,
-	'generator': true,
-	'stream': true,
-	'idbRequest': true
-};
 
 /**
  * Removes elements from the collection by the specified condition/link
@@ -54,7 +46,7 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 		type = getType(this.data, p.use),
 		isRealArray = type === 'array' && isArray(this.data);
 
-	if (invalidTypes[type]) {
+	if (iterators[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 

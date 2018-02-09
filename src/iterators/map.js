@@ -36,14 +36,13 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 		p = {filter: p};
 	}
 
-	this._filter(p)._isThread(p);
+	this._filter(p)._isAsync(p);
 	p = any(Object.assign(Object.create(this.p), p));
 
 	const
 		{data} = this,
 		hasInitial = p.initial != null,
-		source = hasInitial ? p.initial : this.data,
-		isAsync = p.thread || p.async;
+		source = hasInitial ? p.initial : this.data;
 
 	let
 		type = hasInitial ? getType(p.initial) : getType(data, p.use),
@@ -128,7 +127,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && isPromise(val)) {
+				if (p.async && isPromise(val)) {
 					return val.then((val) => res.push(val));
 				}
 
@@ -147,7 +146,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && isPromise(val)) {
+				if (p.async && isPromise(val)) {
 					return val.then((val) => res[key] = val);
 				}
 
@@ -167,7 +166,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && isPromise(val)) {
+				if (p.async && isPromise(val)) {
 					return val.then((val) => res.set(key, val));
 				}
 
@@ -187,7 +186,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && isPromise(val)) {
+				if (p.async && isPromise(val)) {
 					return val.then((val) => res.add(val));
 				}
 
@@ -236,7 +235,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 					//#if iterators.async
 
-					if (isAsync && isPromise(val)) {
+					if (p.async && isPromise(val)) {
 						return val.then((res) => {
 							val = res;
 							write();
@@ -259,7 +258,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 				//#if iterators.async
 
-				if (isAsync && isPromise(val)) {
+				if (p.async && isPromise(val)) {
 					return val.then((val) => res += val);
 				}
 

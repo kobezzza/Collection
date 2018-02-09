@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
-import { getType, isObjectInstance, isArray, isFunction } from '../helpers/types';
+import { getType, isObjectInstance, isArray, isFunction, mapSet, asyncTypes, weakTypes } from '../helpers/types';
 import { slice } from '../helpers/link';
 import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
 import { TRUE, FALSE, IGNORE } from '../consts/links';
@@ -23,16 +23,6 @@ import './length';
 function notAsync() {
 	return false;
 }
-
-const invalidTypes = {
-	'weakMap': true,
-	'weakSet': true
-};
-
-const mapSet = {
-	'map': true,
-	'set': true
-};
 
 /**
  * Iterates the collection and calls a callback function for each element that matches for the specified condition
@@ -95,7 +85,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		p.use = 'for in';
 	}
 
-	this._isThread(p);
+	this._isAsync(p);
 	if (p.thread && !PRIORITY[p.priority]) {
 		p.priority = 'normal';
 	}
@@ -104,7 +94,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		{data} = this,
 		type = p.type = getType(data, p.use);
 
-	if (!isObjectInstance(data) || invalidTypes[type]) {
+	if (!isObjectInstance(data) || weakTypes[type]) {
 		throw new TypeError('Incorrect data type');
 	}
 
@@ -113,24 +103,20 @@ Collection.prototype.forEach = function (cb, opt_params) {
 		fCount = filters.length;
 
 	const
-		isStream = type === 'stream',
-		isIDBRequest = type === 'idbRequest';
+		isAsyncType = asyncTypes[type],
+		isStream = type === 'stream';
 
 	let
 		cursor;
 
 	//#if iterators.async
 
-	if (isStream || isIDBRequest) {
+	if (asyncTypes[type]) {
 		cursor = data;
 
-		if (!p.thread) {
-			p.async = true;
-		}
-
 		const
-			on = `add${isIDBRequest ? 'Event' : ''}Listener`,
-			off = `remove${isIDBRequest ? 'Event' : ''}Listener`,
+			on = `add${isStream ? '' : 'Event'}Listener`,
+			off = `remove${isStream ? '' : 'Event'}Listener`,
 			dataEvent = isStream ? 'data' : 'success';
 
 		cursor[on]('error', (err) => {
@@ -342,7 +328,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 	//#if iterators.thread
 	//#if iterators.async
 
-	if (p.thread || p.async) {
+	if (p.async) {
 		let thread;
 		const promise = new Promise((resolve, reject) => {
 			function onError(err) {
@@ -374,7 +360,7 @@ Collection.prototype.forEach = function (cb, opt_params) {
 				filters[i] = wrap(filters[i]);
 			}
 
-			if (isStream || isIDBRequest) {
+			if (isAsyncType) {
 				data.onError = onError;
 			}
 

@@ -8,6 +8,29 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+export const asyncTypes = {
+	'stream': true,
+	'isIDBRequest': true
+};
+
+export const mapSet = {
+	'map': true,
+	'set': true
+};
+
+export const weakTypes = {
+	'weakMap': true,
+	'weakSet': true
+};
+
+const iterators = {
+	'iterator': true,
+	'asyncIterator': true,
+	'generator': true,
+	'stream': true,
+	'idbRequest': true
+};
+
 /**
  * Returns true if the specified value is a function
  *

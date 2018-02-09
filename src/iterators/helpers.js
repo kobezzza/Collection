@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { isFunction, isNumber } from '../helpers/types';
+import { isFunction, isNumber, getType, asyncTypes } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
@@ -68,9 +68,24 @@ Collection.prototype._filter = function (filters) {
  * @param {?} p
  * @return {!Collection}
  */
-Collection.prototype._isThread = function (p) {
+Collection.prototype._isAsync = function (p) {
 	if (p.thread == null && (p.priority || p.onChunk)) {
 		p.thread = true;
+	}
+
+	if (
+		p.async == null && (
+			p.thread ||
+			p.use === 'async for of' ||
+			p.parallel != null && p.parallel !== false ||
+			p.race != null && p.race !== false
+		) ||
+
+		asyncTypes[getType(this.data)] ||
+		p.initial && getType(p.initial) === 'stream'
+
+	) {
+		this.async = true;
 	}
 
 	return this;
@@ -232,7 +247,6 @@ Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
  * @return {!Collection}
  */
 Collection.prototype.parallel = function (opt_max) {
-	this.p.async = true;
 	this.p.parallel = isNumber(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
@@ -244,7 +258,6 @@ Collection.prototype.parallel = function (opt_max) {
  * @return {!Collection}
  */
 Collection.prototype.race = function (opt_max) {
-	this.p.async = true;
 	this.p.race = isNumber(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
