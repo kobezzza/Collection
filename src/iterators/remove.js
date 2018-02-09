@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { getType, isFunction, isArray, isNumber, iterators } from '../helpers/types';
+import { isFunction, isArray, isNumber, iterators } from '../helpers/types';
 import { byLink, splice } from '../helpers/link';
 import { any } from '../helpers/gcc';
 

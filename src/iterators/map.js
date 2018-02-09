@@ -11,7 +11,7 @@
 import { Collection } from '../core';
 import { IS_NODE } from '../consts/hacks';
 import { FN_LENGTH } from '../consts/base';
-import { getType, isArray, isFunction, isPromise, isStream } from '../helpers/types';
+import { isArray, isFunction, isPromise, isStream } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
