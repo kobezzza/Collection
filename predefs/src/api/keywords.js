@@ -34,9 +34,6 @@ var call;
 var children;
 
 /** @type {?} */
-var stream;
-
-/** @type {?} */
 var ctx;
 
 /** @type {?} */

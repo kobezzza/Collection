@@ -79,7 +79,7 @@ export function compileCycle(key, p) {
 		maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
 		needParallel = p.parallel || p.race,
 		parallelFn = p.parallel ? 'wait' : 'race',
-		needCtx = maxArgsLength > 3 || needParallel,
+		needCtx = maxArgsLength > 3 || needParallel || p.thread,
 		fLength = p.filter.length;
 
 	for (let i = 0; i < fLength; i++) {
