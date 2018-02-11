@@ -195,12 +195,12 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		map(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		map(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): I;
 
@@ -286,26 +286,26 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): ThreadObj<number>;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
 
 		map<I = D>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): ThreadObj<I>;
 
@@ -448,26 +448,26 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): ThreadObj<number>;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
 
 		map<I = D>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): ThreadObj<I>;
 
@@ -666,21 +666,12 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): number;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
@@ -689,21 +680,30 @@ declare namespace CollectionJS {
 		): I;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
 
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
 		map<I = D>(
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		map<I = D>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		map<I = D>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): I;
 
@@ -986,21 +986,12 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): number;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
@@ -1009,21 +1000,30 @@ declare namespace CollectionJS {
 		): I;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
 
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
 		map<I = D>(
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		map<I = D>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		map<I = D>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): I;
 
@@ -1360,15 +1360,6 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): ThreadObj<number>;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
@@ -1378,7 +1369,16 @@ declare namespace CollectionJS {
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
-		map<I = V, R = I>(
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<R = V>(
 			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): ThreadObj<R[]>;
@@ -1522,15 +1522,6 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): ThreadObj<number>;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
@@ -1540,7 +1531,16 @@ declare namespace CollectionJS {
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
-		map<I = V, R = I>(
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<R = V>(
 			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): ThreadObj<R[]>;
@@ -1740,15 +1740,6 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): number;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
@@ -1766,17 +1757,26 @@ declare namespace CollectionJS {
 			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
 
 		map<I = V>(
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I[]>;
 
-		map<I = V, R = I>(
+		map<R = V>(
 			cb: MapCallback<D, K, V, R>,
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<R[]>;
 
-		map<I = V, R = I>(
+		map<R = V>(
 			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): R[];
@@ -2060,15 +2060,6 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): number;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
@@ -2086,17 +2077,26 @@ declare namespace CollectionJS {
 			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
 
 		map<I = V>(
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I[]>;
 
-		map<I = V, R = I>(
+		map<R = V>(
 			cb: MapCallback<D, K, V, R>,
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<R[]>;
 
-		map<I = V, R = I>(
+		map<R = V>(
 			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): R[];
@@ -2434,23 +2434,23 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): ThreadObj<number>;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
 
 		map<R = V>(
 			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
@@ -2596,23 +2596,23 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): ThreadObj<number>;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
 
 		map<R = V>(
 			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
@@ -2814,21 +2814,12 @@ declare namespace CollectionJS {
 			params?: SingleBaseParams<D, K, V>
 		): number;
 
-		map<I extends ReadStream>(
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
-		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
-			params: MapParamsWithInitial<I, D, K, V>
-		): DuplexStream;
-
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
@@ -2837,9 +2828,18 @@ declare namespace CollectionJS {
 		): I;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: MapCallback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
 
 		map<I = D>(
 			params: MapParams<D, K, V> & Async
@@ -3139,7 +3139,7 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
@@ -3148,7 +3148,7 @@ declare namespace CollectionJS {
 		): I;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
 
@@ -3157,7 +3157,7 @@ declare namespace CollectionJS {
 		): DuplexStream;
 
 		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): DuplexStream;
 
@@ -3684,7 +3684,7 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
@@ -3693,7 +3693,7 @@ declare namespace CollectionJS {
 		): DuplexStream;
 
 		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): DuplexStream;
 
@@ -3902,7 +3902,7 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
@@ -3911,7 +3911,7 @@ declare namespace CollectionJS {
 		): I;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
 
@@ -3920,7 +3920,7 @@ declare namespace CollectionJS {
 		): DuplexStream;
 
 		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): DuplexStream;
 
@@ -4222,7 +4222,7 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
@@ -4231,7 +4231,7 @@ declare namespace CollectionJS {
 		): I;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
 
@@ -4240,7 +4240,7 @@ declare namespace CollectionJS {
 		): DuplexStream;
 
 		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): DuplexStream;
 
@@ -4584,7 +4584,7 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
@@ -4593,12 +4593,12 @@ declare namespace CollectionJS {
 		): DuplexStream;
 
 		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): DuplexStream;
 
 		map<I = DuplexStream>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): I;
 
@@ -4700,7 +4700,7 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		map<I>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
@@ -4709,12 +4709,12 @@ declare namespace CollectionJS {
 		): DuplexStream;
 
 		map<I extends ReadStream>(
-			cb: Callback<D, K, V>,
+			cb: MapCallback<D, K, V>,
 			params: MapParamsWithInitial<I, D, K, V>
 		): DuplexStream;
 
 		map<I = DuplexStream>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): DuplexStream;
 
