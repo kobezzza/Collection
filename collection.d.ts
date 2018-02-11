@@ -1324,7 +1324,7 @@ declare namespace CollectionJS {
 
 	interface SingleAsyncCollectionIterator<D, K, V> {
 		readonly array: SingleAsyncCollectionIterator<V[], number, V>;
-		readonly live: SingleAsyncCollection<D, K, V>;
+		readonly live: SingleAsyncCollectionIterator<D, K, V>;
 		readonly descriptor: SingleAsyncCollectionIterator<D, K, PropertyDescriptor>;
 		readonly inverse: SingleAsyncCollectionIterator<D, K, V>;
 		readonly reverse: SingleAsyncCollectionIterator<D, K, V>;
@@ -1484,7 +1484,7 @@ declare namespace CollectionJS {
 
 	interface AsyncCollectionIterator<D, K, V> {
 		readonly array: AsyncCollectionIterator<V[], number, V>;
-		readonly live: AsyncCollection<D, K, V>;
+		readonly live: AsyncCollectionIterator<D, K, V>;
 		readonly one: SingleAsyncCollectionIterator<D, K, V>;
 		readonly descriptor: AsyncCollectionIterator<D, K, PropertyDescriptor>;
 		readonly inverse: AsyncCollectionIterator<D, K, V>;
@@ -1684,7 +1684,7 @@ declare namespace CollectionJS {
 
 	interface SingleCollectionIterator<D, K, V> {
 		readonly array: SingleCollectionIterator<V[], number, V>;
-		readonly live: SingleCollection<D, K, V>;
+		readonly live: SingleCollectionIterator<D, K, V>;
 		readonly descriptor: SingleCollectionIterator<D, K, PropertyDescriptor>;
 		readonly inverse: SingleCollectionIterator<D, K, V>;
 		readonly reverse: SingleCollectionIterator<D, K, V>;
@@ -2002,7 +2002,7 @@ declare namespace CollectionJS {
 
 	interface CollectionIterator<D, K, V> {
 		readonly array: CollectionIterator<V[], number, V>;
-		readonly live: Collection<D, K, V>;
+		readonly live: CollectionIterator<D, K, V>;
 		readonly one: SingleCollectionIterator<D, K, V>;
 		readonly descriptor: CollectionIterator<D, K, PropertyDescriptor>;
 		readonly inverse: CollectionIterator<D, K, V>;
@@ -2398,7 +2398,7 @@ declare namespace CollectionJS {
 
 	interface SingleAsyncCollectionRecord<D, K, V> {
 		readonly array: SingleAsyncCollectionIterator<V[], number, V>;
-		readonly live: SingleAsyncCollection<D, K, V>;
+		readonly live: SingleAsyncCollectionRecord<D, K, V>;
 		readonly descriptor: SingleAsyncCollectionRecord<D, K, PropertyDescriptor>;
 		readonly inverse: SingleAsyncCollectionRecord<D, K, V>;
 		readonly reverse: SingleAsyncCollectionRecord<D, K, V>;
@@ -2558,7 +2558,7 @@ declare namespace CollectionJS {
 
 	interface AsyncCollectionRecord<D, K, V> {
 		readonly array: AsyncCollectionIterator<V[], number, V>;
-		readonly live: AsyncCollection<D, K, V>;
+		readonly live: AsyncCollectionRecord<D, K, V>;
 		readonly one: SingleAsyncCollectionRecord<D, K, V>;
 		readonly descriptor: AsyncCollectionRecord<D, K, PropertyDescriptor>;
 		readonly inverse: AsyncCollectionRecord<D, K, V>;
@@ -2758,7 +2758,7 @@ declare namespace CollectionJS {
 
 	interface SingleCollectionRecord<D, K, V> {
 		readonly array: SingleCollectionIterator<V[], number, V>;
-		readonly live: SingleCollection<D, K, V>;
+		readonly live: SingleCollectionRecord<D, K, V>;
 		readonly descriptor: SingleCollectionRecord<D, K, PropertyDescriptor>;
 		readonly inverse: SingleCollectionRecord<D, K, V>;
 		readonly reverse: SingleCollectionRecord<D, K, V>;
@@ -3076,7 +3076,7 @@ declare namespace CollectionJS {
 
 	interface CollectionRecord<D, K, V> {
 		readonly array: CollectionIterator<V[], number, V>;
-		readonly live: Collection<D, K, V>;
+		readonly live: CollectionRecord<D, K, V>;
 		readonly one: SingleCollectionRecord<D, K, V>;
 		readonly descriptor: CollectionRecord<D, K, PropertyDescriptor>;
 		readonly inverse: CollectionRecord<D, K, V>;
@@ -3472,7 +3472,7 @@ declare namespace CollectionJS {
 
 	interface SingleAsyncCollectionMap<D, K, V> {
 		readonly array: SingleAsyncCollectionIterator<V[], number, V>;
-		readonly live: SingleAsyncCollection<D, K, V>;
+		readonly live: SingleAsyncCollectionMap<D, K, V>;
 		readonly descriptor: SingleAsyncCollectionMap<D, K, PropertyDescriptor>;
 		readonly inverse: SingleAsyncCollectionMap<D, K, V>;
 		readonly reverse: SingleAsyncCollectionMap<D, K, V>;
@@ -3632,7 +3632,7 @@ declare namespace CollectionJS {
 
 	interface AsyncCollectionMap<D, K, V> {
 		readonly array: AsyncCollectionIterator<V[], number, V>;
-		readonly live: AsyncCollection<D, K, V>;
+		readonly live: AsyncCollectionMap<D, K, V>;
 		readonly one: SingleAsyncCollectionMap<D, K, V>;
 		readonly descriptor: AsyncCollectionMap<D, K, PropertyDescriptor>;
 		readonly inverse: AsyncCollectionMap<D, K, V>;
@@ -3832,7 +3832,7 @@ declare namespace CollectionJS {
 
 	interface SingleCollectionMap<D, K, V> {
 		readonly array: SingleCollectionIterator<V[], number, V>;
-		readonly live: SingleCollection<D, K, V>;
+		readonly live: SingleCollectionMap<D, K, V>;
 		readonly descriptor: SingleCollectionMap<D, K, PropertyDescriptor>;
 		readonly inverse: SingleCollectionMap<D, K, V>;
 		readonly reverse: SingleCollectionMap<D, K, V>;
@@ -4150,7 +4150,7 @@ declare namespace CollectionJS {
 
 	interface CollectionMap<D, K, V> {
 		readonly array: CollectionIterator<V[], number, V>;
-		readonly live: Collection<D, K, V>;
+		readonly live: CollectionMap<D, K, V>;
 		readonly one: SingleCollectionMap<D, K, V>;
 		readonly descriptor: CollectionMap<D, K, PropertyDescriptor>;
 		readonly inverse: CollectionMap<D, K, V>;
@@ -4546,7 +4546,7 @@ declare namespace CollectionJS {
 
 	interface SingleAsyncCollectionSet<D, K, V> {
 		readonly array: SingleAsyncCollectionIterator<V[], number, V>;
-		readonly live: SingleAsyncCollection<D, K, V>;
+		readonly live: SingleAsyncCollectionSet<D, K, V>;
 		readonly descriptor: SingleAsyncCollectionSet<D, K, PropertyDescriptor>;
 		readonly inverse: SingleAsyncCollectionSet<D, K, V>;
 		readonly reverse: SingleAsyncCollectionSet<D, K, V>;
@@ -4715,7 +4715,7 @@ declare namespace CollectionJS {
 
 	interface AsyncCollectionSet<D, K, V> {
 		readonly array: AsyncCollectionIterator<V[], number, V>;
-		readonly live: AsyncCollection<D, K, V>;
+		readonly live: AsyncCollectionSet<D, K, V>;
 		readonly one: SingleAsyncCollectionSet<D, K, V>;
 		readonly descriptor: AsyncCollectionSet<D, K, PropertyDescriptor>;
 		readonly inverse: AsyncCollectionSet<D, K, V>;
@@ -4915,7 +4915,7 @@ declare namespace CollectionJS {
 
 	interface SingleCollectionSet<D, K, V> {
 		readonly array: SingleCollectionIterator<V[], number, V>;
-		readonly live: SingleCollection<D, K, V>;
+		readonly live: SingleCollectionSet<D, K, V>;
 		readonly descriptor: SingleCollectionSet<D, K, PropertyDescriptor>;
 		readonly inverse: SingleCollectionSet<D, K, V>;
 		readonly reverse: SingleCollectionSet<D, K, V>;
@@ -5233,7 +5233,7 @@ declare namespace CollectionJS {
 
 	interface CollectionSet<D, K, V> {
 		readonly array: CollectionIterator<V[], number, V>;
-		readonly live: Collection<D, K, V>;
+		readonly live: CollectionSet<D, K, V>;
 		readonly one: SingleCollectionSet<D, K, V>;
 		readonly descriptor: CollectionSet<D, K, PropertyDescriptor>;
 		readonly inverse: CollectionSet<D, K, V>;
