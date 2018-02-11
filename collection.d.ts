@@ -92,11 +92,11 @@ declare namespace CollectionJS {
 	}
 
 	interface Callback<D, K, V> {
-		(item: V, key: K, collection: D, context: Context): any;
+		(el: V, key: K, collection: D, ctx: Context): any;
 	}
 
 	interface EventCallback {
-		(context: Context): any;
+		(ctx: Context): any;
 	}
 
 	type Filter<D, K, V> = Callback<D, K, V>[] | Callback<D, K, V>;
@@ -176,16 +176,16 @@ declare namespace CollectionJS {
 	}
 
 	interface MapCallback<D, K, V, R = any> {
-		(item: V, key: K, collection: D, context: Context): R;
+		(el: V, key: K, collection: D, ctx: Context): R;
 	}
 
 	interface ReduceCallback<A, D, K, V, R = any> {
 		(
 			acc: A,
-			item: V,
+			el: V,
 			key: K,
 			collection: D,
-			context: Context
+			ctx: Context
 		): R;
 	}
 
@@ -316,19 +316,19 @@ declare namespace CollectionJS {
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
 
-		reduce<I extends ReadStream>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): DuplexStream;
-
 		reduce<I, R = I>(
 			cb: ReduceCallback<I, D, K, V, R>,
 			initialValue?: I,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<R>;
+
+		reduce<I extends ReadStream>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): DuplexStream;
 
 		get(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -1373,15 +1373,15 @@ declare namespace CollectionJS {
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
-		map<I>(
-			cb: Callback<D, K, V>,
+		map<I, R = I>(
+			cb: MapCallback<D, K, V, R>,
 			params: MapParamsWithInitial<I, D, K, V>
-		): ThreadObj<I>;
+		): ThreadObj<R>;
 
-		map<I = V>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+		map<I = V, R = I>(
+			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
-		): ThreadObj<I[]>;
+		): ThreadObj<R[]>;
 
 		reduce<I = V>(
 			cb: ReduceCallback<V, D, K, V, I>,
@@ -1535,15 +1535,15 @@ declare namespace CollectionJS {
 			params: MapParamsWithInitial<I, D, K, V>
 		): ThreadObj<I>;
 
-		map<I>(
-			cb: Callback<D, K, V>,
+		map<I, R = I>(
+			cb: MapCallback<D, K, V, R>,
 			params: MapParamsWithInitial<I, D, K, V>
-		): ThreadObj<I>;
+		): ThreadObj<R>;
 
-		map<I = V>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+		map<I = V, R = I>(
+			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
-		): ThreadObj<I[]>;
+		): ThreadObj<R[]>;
 
 		reduce<I = V>(
 			cb: ReduceCallback<V, D, K, V, I>,
@@ -1753,33 +1753,33 @@ declare namespace CollectionJS {
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
-		map<I>(
-			cb: Callback<D, K, V>,
+		map<I, R = I>(
+			cb: MapCallback<D, K, V, R>,
 			params: MapParamsWithInitial<I, D, K, V> & Async
-		): ThreadObj<I>;
+		): ThreadObj<R>;
 
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
 
-		map<I>(
-			cb: Callback<D, K, V>,
+		map<I, R = I>(
+			cb: MapCallback<D, K, V, R>,
 			params: MapParamsWithInitial<I, D, K, V>
-		): I;
+		): R;
 
 		map<I = V>(
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I[]>;
 
-		map<I = V>(
-			cb: Callback<D, K, V>,
+		map<I = V, R = I>(
+			cb: MapCallback<D, K, V, R>,
 			params: MapParams<D, K, V> & Async
-		): ThreadObj<I[]>;
+		): ThreadObj<R[]>;
 
-		map<I = V>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+		map<I = V, R = I>(
+			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
-		): I[];
+		): R[];
 
 		reduce<I = V>(
 			cb: ReduceCallback<V, D, K, V, I>,
@@ -2073,33 +2073,33 @@ declare namespace CollectionJS {
 			params: MapParamsWithInitial<I, D, K, V> & Async
 		): ThreadObj<I>;
 
-		map<I>(
-			cb: Callback<D, K, V>,
+		map<I, R = I>(
+			cb: MapCallback<D, K, V, R>,
 			params: MapParamsWithInitial<I, D, K, V> & Async
-		): ThreadObj<I>;
+		): ThreadObj<R>;
 
 		map<I>(
 			params: MapParamsWithInitial<I, D, K, V>
 		): I;
 
-		map<I>(
-			cb: Callback<D, K, V>,
+		map<I, R = I>(
+			cb: MapCallback<D, K, V, R>,
 			params: MapParamsWithInitial<I, D, K, V>
-		): I;
+		): R;
 
 		map<I = V>(
 			params: MapParams<D, K, V> & Async
 		): ThreadObj<I[]>;
 
-		map<I = V>(
-			cb: Callback<D, K, V>,
+		map<I = V, R = I>(
+			cb: MapCallback<D, K, V, R>,
 			params: MapParams<D, K, V> & Async
-		): ThreadObj<I[]>;
+		): ThreadObj<R[]>;
 
-		map<I = V>(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+		map<I = V, R = I>(
+			cb?: MapCallback<D, K, V, R> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
-		): I[];
+		): R[];
 
 		reduce<I = V>(
 			cb: ReduceCallback<V, D, K, V, I>,
