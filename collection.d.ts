@@ -175,14 +175,18 @@ declare namespace CollectionJS {
 		extendFilter?(a: V, b: any, key: K): any;
 	}
 
-	interface ReduceCallback<R, D, K, V> {
+	interface MapCallback<D, K, V, R = any> {
+		(item: V, key: K, collection: D, context: Context): R;
+	}
+
+	interface ReduceCallback<A, D, K, V, R = any> {
 		(
-			result: R,
+			acc: A,
 			item: V,
 			key: K,
 			collection: D,
 			context: Context
-		): any;
+		): R;
 	}
 
 	interface To<I, D, K, V> {
@@ -200,40 +204,40 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): I;
 
-		reduce(
-			cb: ReduceCallback<V, D, K, V>,
+		reduce<R = I>(
+			cb: ReduceCallback<V, D, K, V, R>,
 			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
+		): ThreadObj<R>;
 
-		reduce(
-			cb: ReduceCallback<V, D, K, V>,
+		reduce<R = I>(
+			cb: ReduceCallback<V, D, K, V, R>,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
+		): ThreadObj<R>;
 
-		reduce(
-			callback: ReduceCallback<V, D, K, V>,
+		reduce<R = I>(
+			callback: ReduceCallback<V, D, K, V, R>,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
-		): I;
+		): R;
 	}
 
 	interface ToAsync<I, D, K, V> {
 		map(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): ThreadObj<I>;
 
-		reduce(
-			cb: ReduceCallback<V, D, K, V>,
+		reduce<R = I>(
+			cb: ReduceCallback<V, D, K, V, R>,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
+		): ThreadObj<R>;
 	}
 
 	interface ToStream<D, K, V> {
 		map(
-			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			cb?: MapCallback<D, K, V> | MapParams<D, K, V>,
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): DuplexStream;
 
@@ -306,7 +310,7 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
@@ -319,12 +323,12 @@ declare namespace CollectionJS {
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
 
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
 			initialValue?: I,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
+		): ThreadObj<R>;
 
 		get(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -468,11 +472,18 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -480,13 +491,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			params: BaseParams<D, K, V> & Single
@@ -704,24 +708,44 @@ declare namespace CollectionJS {
 		): I;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			callback: ReduceCallback<V, D, K, V>,
+			callback: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): I;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			callback: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): R;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -729,26 +753,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			callback: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): I;
 
 		get(
 			params: BaseParams<D, K, V> & Async
@@ -1024,24 +1028,44 @@ declare namespace CollectionJS {
 		): I;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			callback: ReduceCallback<V, D, K, V>,
+			callback: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): I;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			callback: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): R;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -1049,26 +1073,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			callback: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): I;
 
 		get(
 			params: BaseParams<D, K, V> & SingleAsync
@@ -1380,11 +1384,18 @@ declare namespace CollectionJS {
 		): ThreadObj<I[]>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -1392,13 +1403,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -1542,11 +1546,18 @@ declare namespace CollectionJS {
 		): ThreadObj<I[]>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -1554,13 +1565,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			params: BaseParams<D, K, V> & Single
@@ -1778,24 +1782,44 @@ declare namespace CollectionJS {
 		): I[];
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			callback: ReduceCallback<V, D, K, V>,
+			callback: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): I;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			callback: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): R;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -1803,26 +1827,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			callback: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): I;
 
 		get(
 			params: BaseParams<D, K, V> & Async
@@ -2098,24 +2102,44 @@ declare namespace CollectionJS {
 		): I[];
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			callback: ReduceCallback<V, D, K, V>,
+			callback: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): I;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			callback: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): R;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -2123,26 +2147,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			callback: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): I;
 
 		get(
 			params: BaseParams<D, K, V> & SingleAsync
@@ -2453,26 +2457,26 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
 		): ThreadObj<I>;
 
+		reduce<I = V>(
+			cb: ReduceCallback<V, D, K, V, I>,
+			initialValue?: void,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
+
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
 			initialValue?: I,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
-			initialValue?: void,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -2616,11 +2620,18 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -2628,13 +2639,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			params: BaseParams<D, K, V> & Single
@@ -2852,24 +2856,44 @@ declare namespace CollectionJS {
 		): I;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			callback: ReduceCallback<V, D, K, V>,
+			callback: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): I;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			callback: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): R;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -2877,26 +2901,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			callback: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): I;
 
 		get(
 			params: BaseParams<D, K, V> & Async
@@ -3172,24 +3176,44 @@ declare namespace CollectionJS {
 		): I;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			callback: ReduceCallback<V, D, K, V>,
+			callback: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): I;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			callback: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): R;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -3197,26 +3221,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			callback: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): I;
 
 		get(
 			params: BaseParams<D, K, V> & SingleAsync
@@ -3537,11 +3541,18 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -3549,13 +3560,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -3699,11 +3703,18 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -3711,13 +3722,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			params: BaseParams<D, K, V> & Single
@@ -3935,24 +3939,44 @@ declare namespace CollectionJS {
 		): I;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			callback: ReduceCallback<V, D, K, V>,
+			callback: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): I;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			callback: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): R;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -3960,26 +3984,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			callback: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): I;
 
 		get(
 			params: BaseParams<D, K, V> & Async
@@ -4255,24 +4259,44 @@ declare namespace CollectionJS {
 		): I;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue: void,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<I>;
 
 		reduce<I = V>(
-			callback: ReduceCallback<V, D, K, V>,
+			callback: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): I;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<R>;
+
+		reduce<I, R = I>(
+			callback: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): R;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -4280,26 +4304,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue: I,
-			filter: Filter<D, K, V>,
-			params: BaseParams<D, K, V> & Async
-		): ThreadObj<I>;
-
-		reduce<I>(
-			callback: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): I;
 
 		get(
 			params: BaseParams<D, K, V> & SingleAsync
@@ -4599,11 +4603,18 @@ declare namespace CollectionJS {
 		): I;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -4611,13 +4622,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -4715,11 +4719,18 @@ declare namespace CollectionJS {
 		): DuplexStream;
 
 		reduce<I = V>(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<V, D, K, V, I>,
 			initialValue?: void,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<I>;
+
+		reduce<I, R = I>(
+			cb: ReduceCallback<I, D, K, V, R>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<R>;
 
 		reduce<I extends ReadStream>(
 			cb: ReduceCallback<I, D, K, V>,
@@ -4727,13 +4738,6 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
-
-		reduce<I>(
-			cb: ReduceCallback<I, D, K, V>,
-			initialValue?: I,
-			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
-			params?: BaseParams<D, K, V>
-		): ThreadObj<I>;
 
 		get(
 			params: BaseParams<D, K, V> & Single
