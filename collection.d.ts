@@ -1318,6 +1318,1080 @@ declare namespace CollectionJS {
 		link(link: Link): boolean;
 	}
 
+	interface SingleAsyncCollectionIterator<D, K, V> {
+		readonly array: SingleAsyncCollection<V[], number, V>;
+		readonly live: SingleAsyncCollection<D, K, V>;
+		readonly descriptor: SingleAsyncCollectionIterator<D, K, PropertyDescriptor>;
+		readonly inverse: SingleAsyncCollectionIterator<D, K, V>;
+		readonly reverse: SingleAsyncCollectionIterator<D, K, V>;
+
+		thread(
+			priority?: string | EventCallback,
+			onChunk?: EventCallback
+		): SingleAsyncCollectionIterator<D, K, V>;
+
+		filter(...filters: Filter<D, K, V>[]): SingleAsyncCollectionIterator<D, K, V>;
+		start(value: number): SingleAsyncCollectionIterator<D, K, V>;
+		end(value: number): SingleAsyncCollectionIterator<D, K, V>;
+		from(value: number): SingleAsyncCollectionIterator<D, K, V>;
+		object(notOwn?: boolean | -1): SingleAsyncCollection<Record<string, V>, string, V>;
+		iterator(async?: boolean): SingleAsyncCollectionIterator<D, K, V>;
+		parallel(max?: boolean | number): SingleAsyncCollectionIterator<D, K, V>;
+		race(max?: boolean | number): SingleAsyncCollectionIterator<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
+
+		forEach(
+			params?: ForEachParams<D, K, V>
+		): ThreadObj<SingleAsyncCollectionIterator<D, K, V>>
+
+		forEach(
+			cb: Callback<D, K, V>,
+			params?: ForEachParams<D, K, V>
+		): ThreadObj<SingleAsyncCollectionIterator<D, K, V>>;
+
+		length(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): ThreadObj<number>;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): ThreadObj<I>;
+
+		map<I>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): ThreadObj<I>;
+
+		map(
+			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
+		): ThreadObj<V[]>;
+
+		reduce<I extends ReadStream>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): DuplexStream;
+
+		reduce<I>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<I>;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			initialValue?: void,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<V>;
+
+		get(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<V | undefined>;
+
+		get(
+			link?: Link,
+			params?: BaseParams<D, K, V>
+		): V | undefined;
+
+		set<N>(
+			value: N,
+			filterOrParams?: Filter<D, K, V> | SetParams<D, K, V>,
+			params?: SetParams<D, K, V>
+		): ThreadObj<SetReport<N, K, V>>;
+
+		set<N>(
+			value: N,
+			link?: Link,
+			params?: SetParams<D, K, V>
+		): SetReport<N, K, V>;
+
+		remove(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<Report<K, V>>;
+
+		remove(
+			link?: Link,
+			params?: BaseParams<D, K, V>
+		): Report<K, V>;
+
+		search(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<SearchReport<K> | null>;
+
+		includes(
+			searchElement: V,
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): ThreadObj<boolean>;
+
+		every(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): ThreadObj<boolean>;
+
+		some(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): ThreadObj<boolean>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: GroupParamsMap<D, K, V>
+		): ThreadObj<AnyMap>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsMap<D, K, V>
+		): ThreadObj<AnyMap>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsRecord<D, K, V> & Async
+		): ThreadObj<AnyRecord>;
+
+		extend(
+			deepOrParams: boolean | ExtendParams<D, K, V>,
+			...source: any[]
+		): ThreadObj<D & AnyRecord>;
+
+		link(link: Link): boolean;
+	}
+
+	interface AsyncCollectionIterator<D, K, V> {
+		readonly array: AsyncCollection<V[], number, V>;
+		readonly live: AsyncCollection<D, K, V>;
+		readonly one: SingleAsyncCollectionIterator<D, K, V>;
+		readonly descriptor: AsyncCollectionIterator<D, K, PropertyDescriptor>;
+		readonly inverse: AsyncCollectionIterator<D, K, V>;
+		readonly reverse: AsyncCollectionIterator<D, K, V>;
+
+		thread(
+			priority?: string | EventCallback,
+			onChunk?: EventCallback
+		): AsyncCollectionIterator<D, K, V>;
+
+		filter(...filters: Filter<D, K, V>[]): AsyncCollectionIterator<D, K, V>;
+		start(value: number): AsyncCollectionIterator<D, K, V>;
+		end(value: number): AsyncCollectionIterator<D, K, V>;
+		count(value: number): AsyncCollectionIterator<D, K, V>;
+		from(value: number): AsyncCollectionIterator<D, K, V>;
+		object(notOwn?: boolean | -1): AsyncCollection<Record<string, V>, string, V>;
+		iterator(async?: boolean): AsyncCollectionIterator<D, K, V>;
+		parallel(max?: boolean | number): AsyncCollectionIterator<D, K, V>;
+		race(max?: boolean | number): AsyncCollectionIterator<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
+
+		forEach(
+			params?: ForEachParams<D, K, V>
+		): ThreadObj<AsyncCollectionIterator<D, K, V>>;
+
+		forEach(
+			cb: Callback<D, K, V>,
+			params?: ForEachParams<D, K, V>
+		): ThreadObj<AsyncCollectionIterator<D, K, V>>;
+
+		length(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): ThreadObj<number>;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): ThreadObj<I>;
+
+		map<I>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): ThreadObj<I>;
+
+		map(
+			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
+		): ThreadObj<V[]>;
+
+		reduce<I extends ReadStream>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): DuplexStream;
+
+		reduce<I>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<I>;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			initialValue?: void,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<V>;
+
+		get(
+			params: BaseParams<D, K, V> & Single
+		): ThreadObj<V | undefined>;
+
+		get(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Single
+		): ThreadObj<V | undefined>;
+
+		get(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<V[]>;
+
+		get(
+			link?: Link,
+			params?: BaseParams<D, K, V>
+		): V | undefined;
+
+		set<N>(
+			value: N,
+			params: SetParams<D, K, V> & Single
+		): ThreadObj<SetReport<N, K, V>>;
+
+		set<N>(
+			value: N,
+			filter: Filter<D, K, V>,
+			params: SetParams<D, K, V> & Single
+		): ThreadObj<SetReport<N, K, V>>;
+
+		set<N>(
+			value: N,
+			filterOrParams?: Filter<D, K, V> | SetParams<D, K, V>,
+			params?: SetParams<D, K, V>
+		): ThreadObj<SetReport<N, K, V>[]>;
+
+		set<N>(
+			value: N,
+			link?: Link,
+			params?: SetParams<D, K, V>
+		): SetReport<N, K, V>;
+
+		remove(
+			params: BaseParams<D, K, V> & Single
+		): ThreadObj<Report<K, V>>;
+
+		remove(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Single
+		): ThreadObj<Report<K, V>>;
+
+		remove(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<Report<K, V>[]>;
+
+		remove(
+			link?: Link,
+			params?: BaseParams<D, K, V>
+		): Report<K, V>;
+
+		search(
+			params: BaseParams<D, K, V> & Single
+		): ThreadObj<SearchReport<K> | null>;
+
+		search(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Single
+		): ThreadObj<SearchReport<K> | null>;
+
+		search(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<K[]>;
+
+		includes(
+			searchElement: V,
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): ThreadObj<boolean>;
+
+		every(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): ThreadObj<boolean>;
+
+		some(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): ThreadObj<boolean>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: GroupParamsMap<D, K, V>
+		): ThreadObj<AnyMap>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsMap<D, K, V>
+		): ThreadObj<AnyMap>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsRecord<D, K, V> & Async
+		): ThreadObj<AnyRecord>;
+
+		extend(
+			deepOrParams: boolean | ExtendParams<D, K, V>,
+			...source: any[]
+		): ThreadObj<D & AnyRecord>;
+
+		link(link: Link): boolean;
+	}
+
+	interface SingleCollectionIterator<D, K, V> {
+		readonly array: SingleCollection<V[], number, V>;
+		readonly live: SingleCollection<D, K, V>;
+		readonly descriptor: SingleCollectionIterator<D, K, PropertyDescriptor>;
+		readonly inverse: SingleCollectionIterator<D, K, V>;
+		readonly reverse: SingleCollectionIterator<D, K, V>;
+		readonly async: SingleAsyncCollectionIterator<D, K, V>;
+
+		thread(
+			priority?: string | EventCallback,
+			onChunk?: EventCallback
+		): SingleAsyncCollectionIterator<D, K, V>;
+
+		filter(...filters: Filter<D, K, V>[]): SingleCollectionIterator<D, K, V>;
+		start(value: number): SingleCollectionIterator<D, K, V>;
+		end(value: number): SingleCollectionIterator<D, K, V>;
+		from(value: number): SingleCollectionIterator<D, K, V>;
+		object(notOwn?: boolean | -1): SingleCollection<Record<string, V>, string, V>;
+		iterator(async: true): SingleAsyncCollectionIterator<D, K, V>;
+		iterator(async?: boolean): SingleCollectionIterator<D, K, V>;
+		parallel(max?: boolean | number): SingleAsyncCollectionIterator<D, K, V>;
+		race(max?: boolean | number): SingleAsyncCollectionIterator<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
+
+		forEach(
+			params?: ForEachParams<D, K, V> & Async
+		): ThreadObj<SingleCollectionIterator<D, K, V>>;
+
+		forEach(
+			params?: ForEachParams<D, K, V>
+		): SingleCollectionIterator<D, K, V>;
+
+		forEach(
+			cb: Callback<D, K, V>,
+			params?: ForEachParams<D, K, V> & Async
+		): ThreadObj<SingleCollectionIterator<D, K, V>>;
+
+		forEach(
+			cb: Callback<D, K, V>,
+			params?: ForEachParams<D, K, V>
+		): SingleCollectionIterator<D, K, V>;
+
+		length(
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<number>;
+
+		length(
+			filter: Filter<D, K, V>,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<number>;
+
+		length(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): number;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I>(
+			params: MapParamsWithInitial<I, D, K, V> & Async
+		): ThreadObj<I>;
+
+		map<I>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V> & Async
+		): ThreadObj<I>;
+
+		map<I>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): I;
+
+		map<I>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): I;
+
+		map(
+			params: MapParams<D, K, V> & Async
+		): ThreadObj<V[]>;
+
+		map(
+			cb: Callback<D, K, V>,
+			params: MapParams<D, K, V> & Async
+		): ThreadObj<V[]>;
+
+		map(
+			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
+		): V[];
+
+		reduce<I extends ReadStream>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): DuplexStream;
+
+		reduce<I>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<I>;
+
+		reduce<I>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<I>;
+
+		reduce<I>(
+			callback: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): I;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			initialValue: void,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<V>;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			initialValue: void,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<V>;
+
+		reduce(
+			callback: ReduceCallback<V, D, K, V>,
+			initialValue?: void,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): V;
+
+		get(
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<V | undefined>;
+
+		get(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<V>;
+
+		get(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): V | undefined;
+
+		get(
+			link?: Link,
+			params?: BaseParams<D, K, V>
+		): any;
+
+		set<N>(
+			value: N,
+			params: SetParams<D, K, V> & Async
+		): ThreadObj<SetReport<N, K, V>>;
+
+		set<N>(
+			value: N,
+			filter: Filter<D, K, V>,
+			params: SetParams<D, K, V> & Async
+		): ThreadObj<SetReport<N, K, V>>;
+
+		set<N>(
+			value: N,
+			filterOrParams?: Filter<D, K, V> | SetParams<D, K, V>,
+			params?: SetParams<D, K, V>
+		): SetReport<N, K, V>;
+
+		set<N>(
+			value: N,
+			link?: Link,
+			params?: SetParams<D, K, V>
+		): SetReport<N, K, V>;
+
+		remove(
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<Report<K, V>>;
+
+		remove(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<Report<K, V>>;
+
+		remove(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): Report<K, V>;
+
+		remove(
+			link?: Link,
+			params?: BaseParams<D, K, V>
+		): Report<K, V>;
+
+		search(
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<SearchReport<K> | null>;
+
+		search(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<SearchReport<K> | null>;
+
+		search(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): SearchReport<K> | null;
+
+		includes(
+			searchElement: V,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		includes(
+			searchElement: V,
+			filter: Filter<D, K, V>,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		includes(
+			searchElement: V,
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): boolean;
+
+		every(
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		every(
+			filter: Filter<D, K, V>,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		every(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): boolean;
+
+		some(
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		some(
+			filter: Filter<D, K, V>,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		some(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): boolean;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: GroupParamsMap<D, K, V> & Async
+		): ThreadObj<AnyMap>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsMap<D, K, V> & Async
+		): ThreadObj<AnyMap>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: GroupParamsRecord<D, K, V> & Async
+		): ThreadObj<AnyRecord>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsRecord<D, K, V> & Async
+		): ThreadObj<AnyRecord>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: GroupParamsMap<D, K, V>
+		): AnyMap;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsMap<D, K, V>
+		): AnyMap;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): AnyRecord;
+
+		extend(
+			params: ExtendParams<D, K, V> & Async,
+			...source: any[]
+		): ThreadObj<D & AnyRecord>;
+
+		extend(
+			deepOrParams: boolean | ExtendParams<D, K, V>,
+			...source: any[]
+		): D & AnyRecord;
+
+		link(link: Link): boolean;
+	}
+
+	interface CollectionIterator<D, K, V> {
+		readonly array: Collection<V[], number, V>;
+		readonly live: Collection<D, K, V>;
+		readonly one: SingleCollectionIterator<D, K, V>;
+		readonly descriptor: CollectionIterator<D, K, PropertyDescriptor>;
+		readonly inverse: CollectionIterator<D, K, V>;
+		readonly reverse: CollectionIterator<D, K, V>;
+		readonly async: AsyncCollectionIterator<D, K, V>;
+
+		thread(
+			priority?: string | EventCallback,
+			onChunk?: EventCallback
+		): AsyncCollectionIterator<D, K, V>;
+
+		filter(...filters: Filter<D, K, V>[]): CollectionIterator<D, K, V>;
+		start(value: number): CollectionIterator<D, K, V>;
+		end(value: number): CollectionIterator<D, K, V>;
+		count(value: number): CollectionIterator<D, K, V>;
+		from(value: number): CollectionIterator<D, K, V>;
+		object(notOwn?: boolean | -1): Collection<Record<string, V>, string, V>;
+		iterator(async: true): AsyncCollectionIterator<D, K, V>;
+		iterator(async?: boolean): CollectionIterator<D, K, V>;
+		parallel(max?: boolean | number): AsyncCollectionIterator<D, K, V>;
+		race(max?: boolean | number): AsyncCollectionIterator<D, K, V>;
+		to<I>(value: I): To<I, D, K, V>;
+		toStream(obj?: boolean): ToStream<D, K, V>;
+		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
+
+		forEach(
+			params?: ForEachParams<D, K, V> & Async
+		): ThreadObj<CollectionIterator<D, K, V>>;
+
+		forEach(
+			params?: ForEachParams<D, K, V>
+		): CollectionIterator<D, K, V>;
+
+		forEach(
+			cb: Callback<D, K, V>,
+			params?: ForEachParams<D, K, V> & Async
+		): ThreadObj<CollectionIterator<D, K, V>>;
+
+		forEach(
+			cb: Callback<D, K, V>,
+			params?: ForEachParams<D, K, V>
+		): CollectionIterator<D, K, V>;
+
+		length(
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<number>;
+
+		length(
+			filter: Filter<D, K, V>,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<number>;
+
+		length(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): number;
+
+		map<I extends ReadStream>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I extends ReadStream>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): DuplexStream;
+
+		map<I>(
+			params: MapParamsWithInitial<I, D, K, V> & Async
+		): ThreadObj<I>;
+
+		map<I>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V> & Async
+		): ThreadObj<I>;
+
+		map<I>(
+			params: MapParamsWithInitial<I, D, K, V>
+		): I;
+
+		map<I>(
+			cb: Callback<D, K, V>,
+			params: MapParamsWithInitial<I, D, K, V>
+		): I;
+
+		map(
+			params: MapParams<D, K, V> & Async
+		): ThreadObj<V[]>;
+
+		map(
+			cb: Callback<D, K, V>,
+			params: MapParams<D, K, V> & Async
+		): ThreadObj<V[]>;
+
+		map(
+			cb?: Callback<D, K, V> | MapParams<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | MapParams<D, K, V>
+		): V[];
+
+		reduce<I extends ReadStream>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): DuplexStream;
+
+		reduce<I>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue: I,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<I>;
+
+		reduce<I>(
+			cb: ReduceCallback<I, D, K, V>,
+			initialValue: I,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<I>;
+
+		reduce<I>(
+			callback: ReduceCallback<I, D, K, V>,
+			initialValue?: I,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): I;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			initialValue: void,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<V>;
+
+		reduce(
+			cb: ReduceCallback<V, D, K, V>,
+			initialValue: void,
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<V>;
+
+		reduce(
+			callback: ReduceCallback<V, D, K, V>,
+			initialValue?: void,
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): V;
+
+		get(
+			params: BaseParams<D, K, V> & SingleAsync
+		): ThreadObj<V | undefined>;
+
+		get(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & SingleAsync
+		): ThreadObj<V | undefined>;
+
+		get(
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<V[]>;
+
+		get(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<V[]>;
+
+		get(
+			params: BaseParams<D, K, V> & Single
+		): V | undefined;
+
+		get(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Single
+		): V | undefined;
+
+		get(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): V[];
+
+		get(
+			link?: Link,
+			params?: BaseParams<D, K, V>
+		): V | undefined;
+
+		set<N>(
+			value: N,
+			params: SetParams<D, K, V> & SingleAsync
+		): ThreadObj<SetReport<N, K, V>>;
+
+		set<N>(
+			value: N,
+			filter: Filter<D, K, V>,
+			params: SetParams<D, K, V> & SingleAsync
+		): ThreadObj<SetReport<N, K, V>>;
+
+		set<N>(
+			value: N,
+			params: SetParams<D, K, V> & Async
+		): ThreadObj<SetReport<N, K, V>>;
+
+		set<N>(
+			value: N,
+			filter: Filter<D, K, V>,
+			params: SetParams<D, K, V> & Async
+		): ThreadObj<SetReport<N, K, V>[]>;
+
+		set<N>(
+			value: N,
+			params: SetParams<D, K, V> & Single
+		): SetReport<N, K, V>;
+
+		set<N>(
+			value: N,
+			filter: Filter<D, K, V>,
+			params: SetParams<D, K, V> & Single
+		): SetReport<N, K, V>;
+
+		set<N>(
+			value: N,
+			filterOrParams?: Filter<D, K, V> | SetParams<D, K, V>,
+			params?: SetParams<D, K, V>
+		): SetReport<N, K, V>[];
+
+		set<N>(
+			value: N,
+			link?: Link,
+			params?: SetParams<D, K, V>
+		): SetReport<N, K, V>;
+
+		remove(
+			params: BaseParams<D, K, V> & SingleAsync
+		): ThreadObj<Report<K, V>>;
+
+		remove(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & SingleAsync
+		): ThreadObj<Report<K, V>>;
+
+		remove(
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<Report<K, V>[]>;
+
+		remove(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<Report<K, V>[]>;
+
+		remove(
+			params: BaseParams<D, K, V> & Single
+		): Report<K, V>;
+
+		remove(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Single
+		): Report<K, V>;
+
+		remove(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): Report<K, V>[];
+
+		remove(
+			link?: Link,
+			params?: BaseParams<D, K, V>
+		): Report<K, V>;
+
+		search(
+			params: BaseParams<D, K, V> & SingleAsync
+		): ThreadObj<K | null>;
+
+		search(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & SingleAsync
+		): ThreadObj<K | null>;
+
+		search(
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<K[]>;
+
+		search(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Async
+		): ThreadObj<K[]>;
+
+		search(
+			params: BaseParams<D, K, V> & Single
+		): SearchReport<K> | null;
+
+		search(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Single
+		): SearchReport<K> | null;
+
+		search(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): K[];
+
+		includes(
+			searchElement: V,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		includes(
+			searchElement: V,
+			filter: Filter<D, K, V>,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		includes(
+			searchElement: V,
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): boolean;
+
+		every(
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		every(
+			filter: Filter<D, K, V>,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		every(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): boolean;
+
+		some(
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		some(
+			filter: Filter<D, K, V>,
+			params: SingleBaseParams<D, K, V> & Async
+		): ThreadObj<boolean>;
+
+		some(
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
+		): boolean;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: GroupParamsMap<D, K, V> & Async
+		): ThreadObj<AnyMap>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsMap<D, K, V> & Async
+		): ThreadObj<AnyMap>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: GroupParamsRecord<D, K, V> & Async
+		): ThreadObj<AnyRecord>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsRecord<D, K, V> & Async
+		): ThreadObj<AnyRecord>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: GroupParamsMap<D, K, V>
+		): AnyMap;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filter: Filter<D, K, V>,
+			params: GroupParamsMap<D, K, V>
+		): AnyMap;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
+			params?: GroupParamsRecord<D, K, V>
+		): AnyRecord;
+
+		extend(
+			params: ExtendParams<D, K, V> & Async,
+			...source: any[]
+		): ThreadObj<D & AnyRecord>;
+
+		extend(
+			deepOrParams: boolean | ExtendParams<D, K, V>,
+			...source: any[]
+		): D & AnyRecord;
+
+		link(link: Link): boolean;
+	}
+
 	interface SingleAsyncCollectionMap<D, K, V> {
 		readonly array: SingleAsyncCollection<V[], number, V>;
 		readonly live: SingleAsyncCollection<D, K, V>;
@@ -3718,14 +4792,15 @@ declare namespace CollectionJS {
 declare const $C: {
 	(collection: string): CollectionJS.Collection<string[], number, string>;
 	(collection: number): CollectionJS.Collection<Iterator<void>, number, void>;
+	<V = any>(collection: Iterator<V>): CollectionJS.CollectionIterator<Iterator<V>, number, V>;
+	<V = any>(collection: Iterable<V>): CollectionJS.CollectionIterator<Iterable<V>, number, V>;
 	<V = any>(collection: V[]): CollectionJS.Collection<V[], number, V>;
 	<V = any, D extends Record<string, V> = any>(collection: D): CollectionJS.Collection<D, string, V>;
 	<K = any, V = any>(collection: Map<K, V>): CollectionJS.CollectionMap<Map<K, V>, K, V>;
 	<V = any>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
 	<V = any>(collection: CollectionJS.ReadStream): CollectionJS.CollectionStream<CollectionJS.ReadStream, number, V>;
-	<V = any>(collection: IDBCursor): CollectionJS.Collection<IDBCursor, number, V>;
-	<V = any>(collection: GeneratorFunction): CollectionJS.Collection<GeneratorFunction, number, V>;
-	<V = any>(collection: Iterator<V>): CollectionJS.Collection<Iterator<V>, number, V>;
+	<V = any>(collection: IDBCursor): CollectionJS.CollectionIterator<IDBCursor, number, V>;
+	<V = any>(collection: GeneratorFunction): CollectionJS.CollectionIterator<GeneratorFunction, number, V>;
 	<K = any, V = any, D = any>(collection: D): CollectionJS.Collection<D, K, V>;
 
 	extend<D, K, V>(
