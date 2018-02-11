@@ -7,6 +7,7 @@
  */
 
 /// <reference types="node"/>
+/// <reference types="typescript/lib/lib"/>
 
 declare namespace CollectionJS {
 	type Link = any | any[];
@@ -3717,15 +3718,15 @@ declare namespace CollectionJS {
 declare const $C: {
 	(collection: string): CollectionJS.Collection<string[], number, string>;
 	(collection: number): CollectionJS.Collection<Iterator<void>, number, void>;
-	<V>(collection: V[]): CollectionJS.Collection<V[], number, V>;
-	<D, V>(collection: D): CollectionJS.Collection<D, string, V>;
-	<K, V>(collection: Map<K, V>): CollectionJS.CollectionMap<Map<K, V>, K, V>;
-	<V>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
-	<V>(collection: CollectionJS.ReadStream): CollectionJS.CollectionStream<CollectionJS.ReadStream, number, V>;
-	<V>(collection: IDBCursor): CollectionJS.Collection<IDBCursor, number, V>;
-	<V>(collection: GeneratorFunction): CollectionJS.Collection<GeneratorFunction, number, V>;
-	<V>(collection: Iterator<V>): CollectionJS.Collection<Iterator<V>, number, V>;
-	<D, K, V>(collection: D): CollectionJS.Collection<D, K, V>;
+	<V = any>(collection: V[]): CollectionJS.Collection<V[], number, V>;
+	<V = any, D extends Record<string, V> = any>(collection: D): CollectionJS.Collection<D, string, V>;
+	<K = any, V = any>(collection: Map<K, V>): CollectionJS.CollectionMap<Map<K, V>, K, V>;
+	<V = any>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
+	<V = any>(collection: CollectionJS.ReadStream): CollectionJS.CollectionStream<CollectionJS.ReadStream, number, V>;
+	<V = any>(collection: IDBCursor): CollectionJS.Collection<IDBCursor, number, V>;
+	<V = any>(collection: GeneratorFunction): CollectionJS.Collection<GeneratorFunction, number, V>;
+	<V = any>(collection: Iterator<V>): CollectionJS.Collection<Iterator<V>, number, V>;
+	<K = any, V = any, D = any>(collection: D): CollectionJS.Collection<D, K, V>;
 
 	extend<D, K, V>(
 		params: CollectionJS.ExtendParams<D, K, V> & CollectionJS.Async,
