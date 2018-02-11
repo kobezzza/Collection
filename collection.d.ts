@@ -5866,6 +5866,7 @@ declare namespace CollectionJS {
 declare const $C: {
 	(collection: string): CollectionJS.Collection<string[], number, string>;
 	(collection: number): CollectionJS.Collection<Iterator<void>, number, void>;
+	<V = any>(collection: V[]): CollectionJS.CollectionIterator<V[], number, V>;
 	<K = any, V = any>(collection: Map<K, V>): CollectionJS.CollectionMap<Map<K, V>, K, V>;
 	<V = any>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
 	<V = any>(collection: Iterator<V>): CollectionJS.CollectionIterator<Iterator<V>, number, V>;
