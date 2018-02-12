@@ -5883,11 +5883,13 @@ declare namespace CollectionJS {
 }
 
 declare const $C: {
-	(collection: string): CollectionJS.Collection<string[], number, string>;
-	(collection: number): CollectionJS.Collection<Iterator<void>, number, void>;
-	<V = Element>(collection: HTMLCollectionOf<V>): CollectionJS.Collection<HTMLCollectionOf<V>, number, V>;
-	<V = Node>(collection: NodeListOf<V>): CollectionJS.Collection<NodeListOf<V>, number, V>;
-	<V = any>(collection: IArguments): CollectionJS.Collection<IArguments, number, V>;
+	(collection: string): CollectionJS.CollectionIterator<string[], number, string>;
+	(collection: number): CollectionJS.CollectionIterator<Iterator<void>, number, void>;
+	<V = Element>(collection: HTMLCollectionOf<V>): CollectionJS.CollectionIterator<HTMLCollectionOf<V>, number, V>;
+	<V = Element>(collection: HTMLCollectionBase): CollectionJS.CollectionIterator<HTMLCollectionBase, number, V>;
+	<V = Node>(collection: NodeListOf<V>): CollectionJS.CollectionIterator<NodeListOf<V>, number, V>;
+	<V = Node>(collection: NodeList): CollectionJS.CollectionIterator<NodeList, number, V>;
+	<V = any>(collection: IArguments): CollectionJS.CollectionIterator<IArguments, number, V>;
 	<V = any>(collection: V[]): CollectionJS.CollectionIterator<V[], number, V>;
 	<K = any, V = any>(collection: Map<K, V>): CollectionJS.CollectionMap<Map<K, V>, K, V>;
 	<V = any>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
