@@ -1439,7 +1439,7 @@ declare namespace CollectionJS {
 		search(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		includes(
 			searchElement: V,
@@ -1629,12 +1629,12 @@ declare namespace CollectionJS {
 
 		search(
 			params: BaseParams<D, K, V> & Single
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		search(
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Single
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		search(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -1891,17 +1891,17 @@ declare namespace CollectionJS {
 
 		search(
 			params: BaseParams<D, K, V> & Async
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		search(
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		search(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
-		): SearchReport<K> | null;
+		): K | null;
 
 		includes(
 			searchElement: V,
@@ -2287,12 +2287,12 @@ declare namespace CollectionJS {
 
 		search(
 			params: BaseParams<D, K, V> & Single
-		): SearchReport<K> | null;
+		): K | null;
 
 		search(
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Single
-		): SearchReport<K> | null;
+		): K | null;
 
 		search(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -2701,12 +2701,12 @@ declare namespace CollectionJS {
 
 		search(
 			params: BaseParams<D, K, V> & Single
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		search(
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Single
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		search(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -2962,17 +2962,17 @@ declare namespace CollectionJS {
 
 		search(
 			params: BaseParams<D, K, V> & Async
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		search(
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
-		): ThreadObj<SearchReport<K> | null>;
+		): ThreadObj<K | null>;
 
 		search(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
-		): SearchReport<K> | null;
+		): K | null;
 
 		includes(
 			searchElement: V,
@@ -3357,12 +3357,12 @@ declare namespace CollectionJS {
 
 		search(
 			params: BaseParams<D, K, V> & Single
-		): SearchReport<K> | null;
+		): K | null;
 
 		search(
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Single
-		): SearchReport<K> | null;
+		): K | null;
 
 		search(
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
@@ -5703,6 +5703,11 @@ declare namespace CollectionJS {
 			params?: BaseParams<D, K, V>
 		): V | undefined;
 
+		search(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<K | null>;
+
 		includes(
 			searchElement: V,
 			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
@@ -5828,6 +5833,20 @@ declare namespace CollectionJS {
 			params?: BaseParams<D, K, V>
 		): V | undefined;
 
+		search(
+			params: BaseParams<D, K, V> & Single
+		): ThreadObj<K | null>;
+
+		search(
+			filter: Filter<D, K, V>,
+			params: BaseParams<D, K, V> & Single
+		): ThreadObj<K | null>;
+
+		search(
+			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
+			params?: BaseParams<D, K, V>
+		): ThreadObj<K[]>;
+
 		includes(
 			searchElement: V,
 			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
@@ -5866,6 +5885,9 @@ declare namespace CollectionJS {
 declare const $C: {
 	(collection: string): CollectionJS.Collection<string[], number, string>;
 	(collection: number): CollectionJS.Collection<Iterator<void>, number, void>;
+	<V = Element>(collection: HTMLCollectionOf<V>): CollectionJS.Collection<HTMLCollectionOf<V>, number, V>;
+	<V = Node>(collection: NodeListOf<V>): CollectionJS.Collection<NodeListOf<V>, number, V>;
+	<V = any>(collection: IArguments): CollectionJS.Collection<IArguments, number, V>;
 	<V = any>(collection: V[]): CollectionJS.CollectionIterator<V[], number, V>;
 	<K = any, V = any>(collection: Map<K, V>): CollectionJS.CollectionMap<Map<K, V>, K, V>;
 	<V = any>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
