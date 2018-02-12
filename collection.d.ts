@@ -161,7 +161,11 @@ declare namespace CollectionJS {
 	}
 
 	interface GroupParamsSmart<D, K, V> extends SingleBaseParams<D, K, V> {
-		useMap?: void;
+		useMap?: true | void;
+	}
+
+	interface GroupParamsRecordStrict<D, K, V> extends SingleBaseParams<D, K, V> {
+		useMap: false;
 	}
 
 	interface GroupParamsRecord<D, K, V> extends SingleBaseParams<D, K, V> {
@@ -3606,20 +3610,20 @@ declare namespace CollectionJS {
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): ThreadObj<AnyMap>;
+			params: GroupParamsRecordStrict<D, K, V>
+		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): ThreadObj<AnyMap>;
+			params: GroupParamsRecordStrict<D, K, V>
+		): ThreadObj<AnyRecord>;
 
 		group(
 			field?: Link | Callback<D, K, V>,
-			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
-			params?: GroupParamsRecord<D, K, V>
-		): ThreadObj<AnyRecord>;
+			filterOrParams?: Filter<D, K, V> | GroupParamsSmart<D, K, V>,
+			params?: GroupParamsSmart<D, K, V>
+		): ThreadObj<AnyMap>;
 
 		extend(
 			deepOrParams: boolean | ExtendParams<D, K, V>,
@@ -3806,20 +3810,20 @@ declare namespace CollectionJS {
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): ThreadObj<AnyMap>;
+			params: GroupParamsRecordStrict<D, K, V>
+		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): ThreadObj<AnyMap>;
+			params: GroupParamsRecordStrict<D, K, V>
+		): ThreadObj<AnyRecord>;
 
 		group(
 			field?: Link | Callback<D, K, V>,
-			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
-			params?: GroupParamsRecord<D, K, V>
-		): ThreadObj<AnyRecord>;
+			filterOrParams?: Filter<D, K, V> | GroupParamsSmart<D, K, V>,
+			params?: GroupParamsSmart<D, K, V>
+		): ThreadObj<AnyMap>;
 
 		extend(
 			deepOrParams: boolean | ExtendParams<D, K, V>,
@@ -4097,42 +4101,42 @@ declare namespace CollectionJS {
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V> & Async
+			params: GroupParamsSmart<D, K, V> & Async
 		): ThreadObj<AnyMap>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V> & Async
+			params: GroupParamsSmart<D, K, V> & Async
 		): ThreadObj<AnyMap>;
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsRecord<D, K, V> & Async
+			params: GroupParamsRecordStrict<D, K, V> & Async
 		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsRecord<D, K, V> & Async
+			params: GroupParamsRecordStrict<D, K, V> & Async
 		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): AnyMap;
+			params: GroupParamsRecordStrict<D, K, V>
+		): AnyRecord;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): AnyMap;
+			params: GroupParamsRecordStrict<D, K, V>
+		): AnyRecord;
 
 		group(
 			field?: Link | Callback<D, K, V>,
-			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
-			params?: SingleBaseParams<D, K, V>
-		): AnyRecord;
+			filterOrParams?: Filter<D, K, V> | GroupParamsSmart<D, K, V>,
+			params?: GroupParamsSmart<D, K, V>
+		): AnyMap;
 
 		extend(
 			params: ExtendParams<D, K, V> & Async,
@@ -4493,42 +4497,42 @@ declare namespace CollectionJS {
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V> & Async
+			params: GroupParamsSmart<D, K, V> & Async
 		): ThreadObj<AnyMap>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V> & Async
+			params: GroupParamsSmart<D, K, V> & Async
 		): ThreadObj<AnyMap>;
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsRecord<D, K, V> & Async
+			params: GroupParamsRecordStrict<D, K, V> & Async
 		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsRecord<D, K, V> & Async
+			params: GroupParamsRecordStrict<D, K, V> & Async
 		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): AnyMap;
+			params: GroupParamsRecordStrict<D, K, V>
+		): AnyRecord;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): AnyMap;
+			params: GroupParamsRecordStrict<D, K, V>
+		): AnyRecord;
 
 		group(
 			field?: Link | Callback<D, K, V>,
-			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
-			params?: GroupParamsRecord<D, K, V>
-		): AnyRecord;
+			filterOrParams?: Filter<D, K, V> | GroupParamsSmart<D, K, V>,
+			params?: GroupParamsSmart<D, K, V>
+		): AnyMap;
 
 		extend(
 			params: ExtendParams<D, K, V> & Async,
@@ -4689,20 +4693,20 @@ declare namespace CollectionJS {
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): ThreadObj<AnyMap>;
+			params: GroupParamsRecordStrict<D, K, V>
+		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): ThreadObj<AnyMap>;
+			params: GroupParamsRecordStrict<D, K, V>
+		): ThreadObj<AnyRecord>;
 
 		group(
 			field?: Link | Callback<D, K, V>,
-			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
-			params?: GroupParamsRecord<D, K, V>
-		): ThreadObj<AnyRecord>;
+			filterOrParams?: Filter<D, K, V> | GroupParamsSmart<D, K, V>,
+			params?: GroupParamsSmart<D, K, V>
+		): ThreadObj<AnyMap>;
 
 		extend(
 			deepOrParams: boolean | ExtendParams<D, K, V>,
@@ -4889,20 +4893,20 @@ declare namespace CollectionJS {
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): ThreadObj<AnyMap>;
+			params: GroupParamsRecordStrict<D, K, V>
+		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): ThreadObj<AnyMap>;
+			params: GroupParamsRecordStrict<D, K, V>
+		): ThreadObj<AnyRecord>;
 
 		group(
 			field?: Link | Callback<D, K, V>,
-			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
-			params?: GroupParamsRecord<D, K, V>
-		): ThreadObj<AnyRecord>;
+			filterOrParams?: Filter<D, K, V> | GroupParamsSmart<D, K, V>,
+			params?: GroupParamsSmart<D, K, V>
+		): ThreadObj<AnyMap>;
 
 		extend(
 			deepOrParams: boolean | ExtendParams<D, K, V>,
@@ -5180,42 +5184,42 @@ declare namespace CollectionJS {
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V> & Async
+			params: GroupParamsSmart<D, K, V> & Async
 		): ThreadObj<AnyMap>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V> & Async
+			params: GroupParamsSmart<D, K, V> & Async
 		): ThreadObj<AnyMap>;
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsRecord<D, K, V> & Async
+			params: GroupParamsRecordStrict<D, K, V> & Async
 		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsRecord<D, K, V> & Async
+			params: GroupParamsRecordStrict<D, K, V> & Async
 		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): AnyMap;
+			params: GroupParamsRecordStrict<D, K, V>
+		): AnyRecord;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): AnyMap;
+			params: GroupParamsRecordStrict<D, K, V>
+		): AnyRecord;
 
 		group(
 			field?: Link | Callback<D, K, V>,
-			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
-			params?: SingleBaseParams<D, K, V>
-		): AnyRecord;
+			filterOrParams?: Filter<D, K, V> | GroupParamsSmart<D, K, V>,
+			params?: GroupParamsSmart<D, K, V>
+		): AnyMap;
 
 		extend(
 			params: ExtendParams<D, K, V> & Async,
@@ -5576,42 +5580,42 @@ declare namespace CollectionJS {
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V> & Async
+			params: GroupParamsSmart<D, K, V> & Async
 		): ThreadObj<AnyMap>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V> & Async
+			params: GroupParamsSmart<D, K, V> & Async
 		): ThreadObj<AnyMap>;
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsRecord<D, K, V> & Async
+			params: GroupParamsRecordStrict<D, K, V> & Async
 		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsRecord<D, K, V> & Async
+			params: GroupParamsRecordStrict<D, K, V> & Async
 		): ThreadObj<AnyRecord>;
 
 		group(
 			field: Link | Callback<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): AnyMap;
+			params: GroupParamsRecordStrict<D, K, V>
+		): AnyRecord;
 
 		group(
 			field: Link | Callback<D, K, V>,
 			filter: Filter<D, K, V>,
-			params: GroupParamsMap<D, K, V>
-		): AnyMap;
+			params: GroupParamsRecordStrict<D, K, V>
+		): AnyRecord;
 
 		group(
 			field?: Link | Callback<D, K, V>,
-			filterOrParams?: Filter<D, K, V> | GroupParamsRecord<D, K, V>,
-			params?: GroupParamsRecord<D, K, V>
-		): AnyRecord;
+			filterOrParams?: Filter<D, K, V> | GroupParamsSmart<D, K, V>,
+			params?: GroupParamsSmart<D, K, V>
+		): AnyMap;
 
 		extend(
 			params: ExtendParams<D, K, V> & Async,
@@ -5888,9 +5892,9 @@ declare namespace CollectionJS {
 declare const $C: {
 	(collection: string): CollectionJS.CollectionIterator<string[], number, string>;
 	(collection: number): CollectionJS.CollectionIterator<Iterator<void>, number, void>;
-	<V = Element>(collection: HTMLCollectionOf<V>): CollectionJS.CollectionIterator<HTMLCollectionOf<V>, number, V>;
+	<V extends Element = Element>(collection: HTMLCollectionOf<V>): CollectionJS.CollectionIterator<HTMLCollectionOf<V>, number, V>;
 	<V = Element>(collection: HTMLCollectionBase): CollectionJS.CollectionIterator<HTMLCollectionBase, number, V>;
-	<V = Node>(collection: NodeListOf<V>): CollectionJS.CollectionIterator<NodeListOf<V>, number, V>;
+	<V extends Node = Node>(collection: NodeListOf<V>): CollectionJS.CollectionIterator<NodeListOf<V>, number, V>;
 	<V = Node>(collection: NodeList): CollectionJS.CollectionIterator<NodeList, number, V>;
 	<V = any>(collection: IArguments): CollectionJS.CollectionIterator<IArguments, number, V>;
 	<V = any>(collection: V[]): CollectionJS.CollectionIterator<V[], number, V>;
