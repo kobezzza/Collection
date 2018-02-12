@@ -45,10 +45,11 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
 	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	const isFunc = (0, _types.isFunction)(field),
-	      res = p.result = p.useMap ? new Map() : Object.create(null);
+	      useMap = p.useMap || p.useMap == null && _types.mapSet[p.type],
+	      res = p.result = useMap ? new Map() : Object.create(null);
 
 	let fn;
-	if (p.useMap) {
+	if (useMap) {
 		fn = function (el, key) {
 			const param = isFunc ? field.apply(null, arguments) : (0, _link.byLink)(el, field),
 			      val = p.saveKeys ? key : el;

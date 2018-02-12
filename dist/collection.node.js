@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.9 (node)
+ * Collection v6.6.10 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 12 Feb 2018 15:22:45 GMT
+ * Date: 'Mon, 12 Feb 2018 18:24:08 GMT
  */
 
 (function (global, factory) {
@@ -371,31 +371,29 @@ function Collection(obj) {
 	if (isString(obj)) {
 		this.data = obj.split('');
 	} else if (isNumber(obj)) {
-		if (isFinite(obj)) {
-			this.data = new Array(obj);
-		} else {
-			var done = false,
-			    value = void 0;
+		var i = isFinite(obj) ? Math.abs(obj) : false,
+		    done = false,
+		    value = void 0;
 
-			this.p.use = 'for of';
-			this.data = {
-				next: function () {
-					return { done: done, value: value };
-				},
+		this.p.use = 'for of';
+		this.data = {
+			next: function () {
+				done = i === false ? done : done || !i--;
+				return { done: done, value: value };
+			},
 
-				throw: function (err) {
-					throw err;
-				},
+			throw: function (err) {
+				throw err;
+			},
 
 
-				return: function (v) {
-					done = true;
-					value = v;
-				}
-			};
-		}
+			return: function (v) {
+				done = true;
+				value = v;
+			}
+		};
 	} else {
-		this.data = any(obj || []);
+		this.data = isObjectInstance(obj) ? any(obj) : [];
 	}
 }
 
@@ -437,7 +435,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 9];
+Collection.prototype.VERSION = [6, 6, 10];
 
 /**
  * Creates an instance of Collection
@@ -1832,8 +1830,9 @@ Collection.prototype._initParams = function (p, filters) {
 		p.priority = 'normal';
 	}
 
-	if (!p.type) {
-		p.type = getType(this.data, p.use);
+	if (p.data !== this.data) {
+		p.data = this.data;
+		p.type = getType(this.data, p.use || this.p.use);
 	}
 
 	if (p.initial != null && !p.initialType) {
@@ -2997,10 +2996,11 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	var isFunc = isFunction(field),
-	    res = p.result = p.useMap ? new Map() : Object.create(null);
+	    useMap = p.useMap || p.useMap == null && mapSet[p.type],
+	    res = p.result = useMap ? new Map() : Object.create(null);
 
 	var fn = void 0;
-	if (p.useMap) {
+	if (useMap) {
 		fn = function (el, key) {
 			var param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 			    val = p.saveKeys ? key : el;

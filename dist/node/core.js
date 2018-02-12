@@ -30,28 +30,28 @@ function Collection(obj) {
 	if ((0, _types.isString)(obj)) {
 		this.data = obj.split('');
 	} else if ((0, _types.isNumber)(obj)) {
-		if (isFinite(obj)) {
-			this.data = new Array(obj);
-		} else {
-			let done = false,
-			    value;
+		let i = isFinite(obj) ? Math.abs(obj) : false,
+		    done = false,
+		    value;
 
-			this.p.use = 'for of';
-			this.data = {
-				next: () => ({ done, value }),
+		this.p.use = 'for of';
+		this.data = {
+			next: () => {
+				done = i === false ? done : done || !i--;
+				return { done, value };
+			},
 
-				throw(err) {
-					throw err;
-				},
+			throw(err) {
+				throw err;
+			},
 
-				return: v => {
-					done = true;
-					value = v;
-				}
-			};
-		}
+			return: v => {
+				done = true;
+				value = v;
+			}
+		};
 	} else {
-		this.data = (0, _gcc.any)(obj || []);
+		this.data = (0, _types.isObjectInstance)(obj) ? (0, _gcc.any)(obj) : [];
 	}
 }
 
@@ -93,7 +93,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 9];
+Collection.prototype.VERSION = [6, 6, 10];
 
 /**
  * Creates an instance of Collection
