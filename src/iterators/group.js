@@ -44,10 +44,11 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 	const
 		isFunc = isFunction(field),
-		res = p.result = p.useMap ? new Map() : Object.create(null);
+		useMap = p.useMap || p.useMap == null && mapSet[p.type],
+		res = p.result = useMap ? new Map() : Object.create(null);
 
 	let fn;
-	if (p.useMap) {
+	if (useMap) {
 		fn = function (el, key) {
 			const
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
