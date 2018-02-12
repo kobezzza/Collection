@@ -9,7 +9,7 @@
  */
 
 import { any } from './helpers/gcc';
-import { isString, isNumber } from './helpers/types';
+import { isString, isNumber, isObjectInstance } from './helpers/types';
 
 /**
  * Collection constructor
@@ -25,31 +25,30 @@ export function Collection(obj) {
 		this.data = obj.split('');
 
 	} else if (isNumber(obj)) {
-		if (isFinite(obj)) {
-			this.data = new Array(obj);
+		let
+			i = isFinite(obj) ? Math.abs(obj) : false,
+			done = false,
+			value;
 
-		} else {
-			let
-				done = false,
-				value;
+		this.p.use = 'for of';
+		this.data = {
+			next: () => {
+				done = i === false ? done : done || !i--;
+				return {done, value};
+			},
 
-			this.p.use = 'for of';
-			this.data = {
-				next: () => ({done, value}),
+			throw(err) {
+				throw err;
+			},
 
-				throw(err) {
-					throw err;
-				},
-
-				return: (v) => {
-					done = true;
-					value = v;
-				}
-			};
-		}
+			return: (v) => {
+				done = true;
+				value = v;
+			}
+		};
 
 	} else {
-		this.data = any(obj || []);
+		this.data = isObjectInstance(obj) ? any(obj) : [];
 	}
 }
 

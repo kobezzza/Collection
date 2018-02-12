@@ -59,8 +59,9 @@ Collection.prototype._initParams = function (p, filters) {
 		p.priority = 'normal';
 	}
 
-	if (!p.type) {
-		p.type = getType(this.data, p.use);
+	if (p.data !== this.data) {
+		p.data = this.data;
+		p.type = getType(this.data, p.use || this.p.use);
 	}
 
 	if (p.initial != null && !p.initialType) {

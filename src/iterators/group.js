@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
-import { isArray, isFunction, isPromise } from '../helpers/types';
+import { isArray, isFunction, isPromise, mapSet } from '../helpers/types';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
