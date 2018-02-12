@@ -85,7 +85,8 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
 		opt_params = (0, _gcc.any)(opt_cb);
 	}
 
-	const p = (0, _gcc.any)(Object.create(this._init()));
+	const p = (0, _gcc.any)(Object.create(this._init())),
+	      sp = opt_params || p;
 
 	if ((0, _types.isArray)(opt_params) || (0, _types.isFunction)(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
@@ -341,7 +342,7 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
-			thread = args.self = fn(args, p);
+			thread = args.self = fn(args, sp);
 			thread.value = undefined;
 			thread.destroyed = false;
 			thread.sleep = null;
@@ -393,6 +394,6 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
 	//#endif
 	//#endif
 
-	fn(args, p);
+	fn(args, sp);
 	return this;
 };

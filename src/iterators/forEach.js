@@ -76,7 +76,8 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 	}
 
 	const
-		p = any(Object.create(this._init()));
+		p = any(Object.create(this._init())),
+		sp = opt_params || p;
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
@@ -374,7 +375,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
-			thread = args.self = fn(args, p);
+			thread = args.self = fn(args, sp);
 			thread.value = undefined;
 			thread.destroyed = false;
 			thread.sleep = null;
@@ -429,6 +430,6 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 	//#endif
 	//#endif
 
-	fn(args, p);
+	fn(args, sp);
 	return this;
 };

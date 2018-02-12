@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.6
+ * Collection v6.6.7
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 12 Feb 2018 11:42:06 GMT
+ * Date: 'Mon, 12 Feb 2018 13:13:29 GMT
  */
 
 (function (global, factory) {
@@ -437,7 +437,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 6];
+Collection.prototype.VERSION = [6, 6, 7];
 
 /**
  * Creates an instance of Collection
@@ -1465,7 +1465,8 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 		opt_params = any(opt_cb);
 	}
 
-	var p = any(Object.create(this._init()));
+	var p = any(Object.create(this._init())),
+	    sp = opt_params || p;
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
@@ -1720,7 +1721,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 			args.onIterationEnd = wrap(p.onIterationEnd);
 			args.onError = onError;
 
-			thread = args.self = fn(args, p);
+			thread = args.self = fn(args, sp);
 			thread.value = undefined;
 			thread.destroyed = false;
 			thread.sleep = null;
@@ -1770,7 +1771,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 	}
 
 
-	fn(args, p);
+	fn(args, sp);
 	return this;
 };
 
