@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.5 (node)
+ * Collection v6.6.6 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 11 Feb 2018 18:20:32 GMT
+ * Date: 'Mon, 12 Feb 2018 11:42:07 GMT
  */
 
 (function (global, factory) {
@@ -437,7 +437,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 5];
+Collection.prototype.VERSION = [6, 6, 6];
 
 /**
  * Creates an instance of Collection
@@ -1882,14 +1882,22 @@ Collection.prototype.thread = function (opt_priority, opt_onChunk) {
 		opt_priority = null;
 	}
 
-	this.p.thread = true;
+	var p = this.p;
+
+
+	p.async = true;
+	p.thread = true;
 
 	if (opt_priority) {
-		this.p.priority = opt_priority;
+		p.priority = opt_priority;
+	}
+
+	if (!PRIORITY[p.priority]) {
+		p.priority = 'normal';
 	}
 
 	if (opt_onChunk) {
-		this.p.onChunk = opt_onChunk;
+		p.onChunk = opt_onChunk;
 	}
 
 	return this;
@@ -1969,6 +1977,11 @@ Collection.prototype.object = function (opt_notOwn) {
  */
 Collection.prototype.iterator = function (opt_async) {
 	this.p.use = (opt_async ? 'async ' : '') + 'for off';
+
+	if (opt_async) {
+		this.p.async = true;
+	}
+
 	return this;
 };
 
@@ -1979,6 +1992,7 @@ Collection.prototype.iterator = function (opt_async) {
  * @return {!Collection}
  */
 Collection.prototype.to = function (value) {
+	this.p.initialType = getType(value);
 	this.p.initial = value;
 	return this;
 };
@@ -1994,10 +2008,14 @@ Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
 	opt_readObj = Boolean(opt_readObj != null ? opt_readObj : true);
 
 
-	var _require = require('stream'),
+	var p = this.p,
+	    _require = require('stream'),
 	    Transform = _require.Transform;
 
-	this.p.initial = new Transform({
+
+	p.async = true;
+	p.initialType = 'stream';
+	p.initial = new Transform({
 		readableObjectMode: Boolean(opt_readObj),
 		writableObjectMode: Boolean(opt_writeObj != null ? opt_writeObj : opt_readObj),
 		transform: function (data, enc, cb) {
@@ -2017,6 +2035,7 @@ Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
  * @return {!Collection}
  */
 Collection.prototype.parallel = function (opt_max) {
+	this.p.async = true;
 	this.p.parallel = isNumber(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
@@ -2028,6 +2047,7 @@ Collection.prototype.parallel = function (opt_max) {
  * @return {!Collection}
  */
 Collection.prototype.race = function (opt_max) {
+	this.p.async = true;
 	this.p.race = isNumber(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };

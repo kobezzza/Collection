@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.5 (sync)
+ * Collection v6.6.6 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 11 Feb 2018 18:20:32 GMT
+ * Date: 'Mon, 12 Feb 2018 11:42:07 GMT
  */
 
 (function (global, factory) {
@@ -437,7 +437,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 5];
+Collection.prototype.VERSION = [6, 6, 6];
 
 /**
  * Creates an instance of Collection
@@ -1671,6 +1671,11 @@ Collection.prototype.object = function (opt_notOwn) {
  */
 Collection.prototype.iterator = function (opt_async) {
 	this.p.use = (opt_async ? 'async ' : '') + 'for off';
+
+	if (opt_async) {
+		this.p.async = true;
+	}
+
 	return this;
 };
 
@@ -1681,6 +1686,7 @@ Collection.prototype.iterator = function (opt_async) {
  * @return {!Collection}
  */
 Collection.prototype.to = function (value) {
+	this.p.initialType = getType(value);
 	this.p.initial = value;
 	return this;
 };

@@ -112,14 +112,21 @@ _core.Collection.prototype.thread = function (opt_priority, opt_onChunk) {
 		opt_priority = null;
 	}
 
-	this.p.thread = true;
+	const { p } = this;
+
+	p.async = true;
+	p.thread = true;
 
 	if (opt_priority) {
-		this.p.priority = opt_priority;
+		p.priority = opt_priority;
+	}
+
+	if (!_thread.PRIORITY[p.priority]) {
+		p.priority = 'normal';
 	}
 
 	if (opt_onChunk) {
-		this.p.onChunk = opt_onChunk;
+		p.onChunk = opt_onChunk;
 	}
 
 	return this;
@@ -201,6 +208,11 @@ _core.Collection.prototype.object = function (opt_notOwn) {
  */
 _core.Collection.prototype.iterator = function (opt_async) {
 	this.p.use = `${opt_async ? 'async ' : ''}for off`;
+
+	if (opt_async) {
+		this.p.async = true;
+	}
+
 	return this;
 };
 
@@ -211,6 +223,7 @@ _core.Collection.prototype.iterator = function (opt_async) {
  * @return {!Collection}
  */
 _core.Collection.prototype.to = function (value) {
+	this.p.initialType = (0, _types.getType)(value);
 	this.p.initial = value;
 	return this;
 };
@@ -227,9 +240,12 @@ _core.Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
 
 	//#if isNode
 
-	const { Transform } = require('stream');
+	const { p } = this,
+	      { Transform } = require('stream');
 
-	this.p.initial = new Transform({
+	p.async = true;
+	p.initialType = 'stream';
+	p.initial = new Transform({
 		readableObjectMode: Boolean(opt_readObj),
 		writableObjectMode: Boolean(opt_writeObj != null ? opt_writeObj : opt_readObj),
 		transform(data, enc, cb) {
@@ -251,6 +267,7 @@ _core.Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
  * @return {!Collection}
  */
 _core.Collection.prototype.parallel = function (opt_max) {
+	this.p.async = true;
 	this.p.parallel = (0, _types.isNumber)(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
@@ -262,6 +279,7 @@ _core.Collection.prototype.parallel = function (opt_max) {
  * @return {!Collection}
  */
 _core.Collection.prototype.race = function (opt_max) {
+	this.p.async = true;
 	this.p.race = (0, _types.isNumber)(opt_max) ? opt_max || true : opt_max !== false;
 	return this;
 };
