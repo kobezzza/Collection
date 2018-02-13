@@ -7,7 +7,6 @@
  */
 
 /// <reference types="node"/>
-/// <reference types="typescript/lib/lib"/>
 
 declare namespace CollectionJS {
 	type Link = any | any[];
@@ -281,11 +280,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<SingleAsyncCollection<D, K, V>>;
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<SingleAsyncCollection<D, K, V>>;
 
@@ -443,11 +438,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<AsyncCollection<D, K, V>>;
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<AsyncCollection<D, K, V>>;
 
@@ -646,16 +637,12 @@ declare namespace CollectionJS {
 		): ThreadObj<SingleCollection<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): SingleCollection<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<SingleCollection<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): SingleCollection<D, K, V>;
 
@@ -966,16 +953,12 @@ declare namespace CollectionJS {
 		): ThreadObj<Collection<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): Collection<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<Collection<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): Collection<D, K, V>;
 
@@ -1354,13 +1337,9 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<SingleAsyncCollectionIterator<D, K, V>>
-
-		forEach(
-			cb: Callback<D, K, V>,
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<SingleAsyncCollectionIterator<D, K, V>>;
 
 		length(
 			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
@@ -1516,11 +1495,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<AsyncCollectionIterator<D, K, V>>;
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<AsyncCollectionIterator<D, K, V>>;
 
@@ -1720,16 +1695,12 @@ declare namespace CollectionJS {
 		): ThreadObj<SingleCollectionIterator<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): SingleCollectionIterator<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<SingleCollectionIterator<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): SingleCollectionIterator<D, K, V>;
 
@@ -2040,16 +2011,12 @@ declare namespace CollectionJS {
 		): ThreadObj<CollectionIterator<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): CollectionIterator<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<CollectionIterator<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): CollectionIterator<D, K, V>;
 
@@ -2427,11 +2394,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<SingleAsyncCollectionRecord<D, K, V>>
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<SingleAsyncCollectionRecord<D, K, V>>;
 
@@ -2588,11 +2551,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<AsyncCollectionRecord<D, K, V>>;
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<AsyncCollectionRecord<D, K, V>>;
 
@@ -2791,16 +2750,12 @@ declare namespace CollectionJS {
 		): ThreadObj<SingleCollectionRecord<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): SingleCollectionRecord<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<SingleCollectionRecord<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): SingleCollectionRecord<D, K, V>;
 
@@ -3110,16 +3065,12 @@ declare namespace CollectionJS {
 		): ThreadObj<CollectionRecord<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): CollectionRecord<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<CollectionRecord<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): CollectionRecord<D, K, V>;
 
@@ -3498,11 +3449,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<SingleAsyncCollectionMap<D, K, V>>
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<SingleAsyncCollectionMap<D, K, V>>;
 
@@ -3660,11 +3607,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<AsyncCollectionMap<D, K, V>>;
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<AsyncCollectionMap<D, K, V>>;
 
@@ -3864,16 +3807,12 @@ declare namespace CollectionJS {
 		): ThreadObj<SingleCollectionMap<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): SingleCollectionMap<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<SingleCollectionMap<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): SingleCollectionMap<D, K, V>;
 
@@ -4184,16 +4123,12 @@ declare namespace CollectionJS {
 		): ThreadObj<CollectionMap<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): CollectionMap<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<CollectionMap<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): CollectionMap<D, K, V>;
 
@@ -4576,16 +4511,12 @@ declare namespace CollectionJS {
 		): ThreadObj<SingleAsyncCollectionSet<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): SingleAsyncCollectionSet<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<SingleAsyncCollectionSet<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): SingleAsyncCollectionSet<D, K, V>;
 
@@ -4743,11 +4674,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<AsyncCollectionSet<D, K, V>>;
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<AsyncCollectionSet<D, K, V>>;
 
@@ -4947,16 +4874,12 @@ declare namespace CollectionJS {
 		): ThreadObj<SingleCollectionSet<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): SingleCollectionSet<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<SingleCollectionSet<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): SingleCollectionSet<D, K, V>;
 
@@ -5267,16 +5190,12 @@ declare namespace CollectionJS {
 		): ThreadObj<CollectionSet<D, K, V>>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): CollectionSet<D, K, V>;
-
-		forEach(
 			cb: Callback<D, K, V>,
 			params: ForEachParams<D, K, V> & Async
 		): ThreadObj<CollectionSet<D, K, V>>;
 
 		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): CollectionSet<D, K, V>;
 
@@ -5643,11 +5562,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<SingleCollectionStream<D, K, V>>;
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<SingleCollectionStream<D, K, V>>;
 
@@ -5764,11 +5679,7 @@ declare namespace CollectionJS {
 		toStream(readObj?: boolean, writeObj?: boolean): ToStream<D, K, V>;
 
 		forEach(
-			params?: ForEachParams<D, K, V>
-		): ThreadObj<CollectionStream<D, K, V>>;
-
-		forEach(
-			cb: Callback<D, K, V>,
+			cbOrParams?: Callback<D, K, V> | ForEachParams<D, K, V>,
 			params?: ForEachParams<D, K, V>
 		): ThreadObj<CollectionStream<D, K, V>>;
 
