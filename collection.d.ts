@@ -16,6 +16,7 @@ declare namespace CollectionJS {
 	type AsyncOperation = AnyPromise | (() => AnyPromise);
 	type DuplexStream = NodeJS.ReadableStream & NodeJS.WritableStream;
 	type ReadStream =  NodeJS.ReadableStream | DuplexStream;
+	type ArrayLike<T> = {[index: number]: T, length: number};
 
 	interface TRUE {}
 	interface FALSE {}
@@ -227,6 +228,11 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): R;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: SingleBaseParams<D, K, V>
+		): I;
 	}
 
 	interface ToAsync<I, D, K, V> {
@@ -240,6 +246,11 @@ declare namespace CollectionJS {
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<R>;
+
+		group(
+			field: Link | Callback<D, K, V>,
+			params: SingleBaseParams<D, K, V>
+		): ThreadObj<I>;
 	}
 
 	interface ToStream<D, K, V> {
@@ -5803,12 +5814,45 @@ declare namespace CollectionJS {
 declare const $C: {
 	(collection: string): CollectionJS.CollectionIterator<string[], number, string>;
 	(collection: number): CollectionJS.CollectionIterator<Iterator<void>, number, void>;
+	(collection: Int8Array): CollectionJS.CollectionIterator<Int8Array, number, number>;
+	(collection: Uint8Array): CollectionJS.CollectionIterator<Uint8Array, number, number>;
+	(collection: Uint8ClampedArray): CollectionJS.CollectionIterator<Uint8ClampedArray, number, number>;
+	(collection: Int16Array): CollectionJS.CollectionIterator<Int16Array, number, number>;
+	(collection: Uint16Array): CollectionJS.CollectionIterator<Uint16Array, number, number>;
+	(collection: Int32Array): CollectionJS.CollectionIterator<Int32Array, number, number>;
+	(collection: Uint32Array): CollectionJS.CollectionIterator<Uint32Array, number, number>;
+	(collection: Float32Array): CollectionJS.CollectionIterator<Float32Array, number, number>;
+	(collection: Float64Array): CollectionJS.CollectionIterator<Float64Array, number, number>;
+	(collection: CSSRuleList): CollectionJS.CollectionIterator<CSSRuleList, number, CSSRule>;
+	(collection: CSSStyleDeclaration): CollectionJS.CollectionIterator<CSSStyleDeclaration, number, string>;
+	(collection: StyleSheetList): CollectionJS.CollectionIterator<StyleSheetList, number, StyleSheet>;
+	(collection: StyleSheetPageList): CollectionJS.CollectionIterator<StyleSheetPageList, number, CSSPageRule>;
+	(collection: TextTrackCueList): CollectionJS.CollectionIterator<TextTrackCueList, number, TextTrackCue>;
+	(collection: TextTrackList): CollectionJS.CollectionIterator<TextTrackList, number, TextTrack>;
+	(collection: TouchList): CollectionJS.CollectionIterator<TouchList, number, Touch>;
+	(collection: VideoTrackList): CollectionJS.CollectionIterator<VideoTrackList, number, VideoTrack>;
+	(collection: AudioTrackList): CollectionJS.CollectionIterator<AudioTrackList, number, AudioTrack>;
+	(collection: ClientRectList): CollectionJS.CollectionIterator<ClientRectList, number, ClientRect>;
+	(collection: DataTransferItemList): CollectionJS.CollectionIterator<DataTransferItemList, number, DataTransferItem>;
+	(collection: DOMStringList): CollectionJS.CollectionIterator<DOMStringList, number, string>;
+	(collection: DOMTokenList): CollectionJS.CollectionIterator<DOMTokenList, number, string>;
+	(collection: FileList): CollectionJS.CollectionIterator<FileList, number, File>;
+	(collection: MediaList): CollectionJS.CollectionIterator<MediaList, number, string>;
+	(collection: MimeTypeArray): CollectionJS.CollectionIterator<MimeTypeArray, number, Plugin>;
+	(collection: Plugin): CollectionJS.CollectionIterator<Plugin, number, MimeType>;
+	(collection: PluginArray): CollectionJS.CollectionIterator<PluginArray, number, Plugin>;
+	(collection: MSRangeCollection): CollectionJS.CollectionIterator<MSRangeCollection, number, Range>;
+	(collection: NamedNodeMap): CollectionJS.CollectionIterator<NamedNodeMap, number, Attr>;
+	(collection: SourceBufferList): CollectionJS.CollectionIterator<SourceBufferList, number, SourceBuffer>;
+	(collection: Storage): CollectionJS.CollectionIterator<Storage, number, string>;
+	(collection: HTMLAllCollection): CollectionJS.CollectionIterator<HTMLAllCollection, number, Element>;
 	<V extends Element = Element>(collection: HTMLCollectionOf<V>): CollectionJS.CollectionIterator<HTMLCollectionOf<V>, number, V>;
 	<V = Element>(collection: HTMLCollectionBase): CollectionJS.CollectionIterator<HTMLCollectionBase, number, V>;
 	<V extends Node = Node>(collection: NodeListOf<V>): CollectionJS.CollectionIterator<NodeListOf<V>, number, V>;
 	<V = Node>(collection: NodeList): CollectionJS.CollectionIterator<NodeList, number, V>;
 	<V = any>(collection: IArguments): CollectionJS.CollectionIterator<IArguments, number, V>;
 	<V = any>(collection: V[]): CollectionJS.CollectionIterator<V[], number, V>;
+	<V = any>(collection: CollectionJS.ArrayLike<V>): CollectionJS.CollectionIterator<CollectionJS.ArrayLike<V>, number, V>;
 	<K = any, V = any>(collection: Map<K, V>): CollectionJS.CollectionMap<Map<K, V>, K, V>;
 	<V = any>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
 	<V = any>(collection: Iterator<V>): CollectionJS.CollectionIterator<Iterator<V>, number, V>;
