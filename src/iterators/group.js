@@ -10,7 +10,7 @@
 
 import { Collection } from '../core';
 import { FN_LENGTH } from '../consts/base';
-import { isArray, isFunction, isPromise, mapSet } from '../helpers/types';
+import { isArray, isFunction, isPromise, isMap, isWeakMap, mapSet } from '../helpers/types';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
@@ -44,8 +44,8 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 
 	const
 		isFunc = isFunction(field),
-		useMap = p.useMap || p.useMap == null && mapSet[p.type],
-		res = p.result = useMap ? new Map() : Object.create(null);
+		useMap = p.initial && (isMap(p.initial) || isWeakMap(p.initial)) || p.useMap || p.useMap == null && mapSet[p.type],
+		res = p.result = p.initial || (useMap ? new Map() : Object.create(null));
 
 	let fn;
 	if (useMap) {
