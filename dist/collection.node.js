@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.10 (node)
+ * Collection v6.6.11 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 12 Feb 2018 18:24:08 GMT
+ * Date: 'Fri, 16 Feb 2018 16:31:57 GMT
  */
 
 (function (global, factory) {
@@ -435,7 +435,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 10];
+Collection.prototype.VERSION = [6, 6, 11];
 
 /**
  * Creates an instance of Collection
@@ -2996,8 +2996,8 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 	p = any(Object.assign(Object.create(this.p), p, { mult: true }));
 
 	var isFunc = isFunction(field),
-	    useMap = p.useMap || p.useMap == null && mapSet[p.type],
-	    res = p.result = useMap ? new Map() : Object.create(null);
+	    useMap = p.initial && (isMap(p.initial) || isWeakMap(p.initial)) || p.useMap || p.useMap == null && mapSet[p.type],
+	    res = p.result = p.initial || (useMap ? new Map() : Object.create(null));
 
 	var fn = void 0;
 	if (useMap) {
