@@ -12,7 +12,7 @@ import { Collection } from '../core';
 import { tmpCycle } from '../consts/cache';
 import { isObjectInstance, isArray, isFunction, mapSet, asyncTypes, weakTypes } from '../helpers/types';
 import { slice } from '../helpers/link';
-import { FN_LENGTH, LENGTH_REQUEST, ON_ERROR } from '../consts/base';
+import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
 import { TRUE, FALSE, IGNORE } from '../consts/links';
 import { SYMBOL_NATIVE_SUPPORT } from '../consts/hacks';
 import { PRIORITY } from '../consts/thread';
@@ -349,7 +349,6 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 
 				return (el, key, data, o) => {
 					try {
-						fn[ON_ERROR] = onError;
 						return fn(el, key, data, o);
 
 					} catch (err) {
@@ -401,9 +400,9 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 
 					} else {
 						err = new Error('Thread was destroyed');
+						err.type = 'CollectionThreadDestroy';
 					}
 
-					err.type = 'CollectionThreadDestroy';
 					err.thread = thread;
 
 					if (isStream) {
