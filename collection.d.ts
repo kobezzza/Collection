@@ -230,8 +230,9 @@ declare namespace CollectionJS {
 		): R;
 
 		group(
-			field: Link | Callback<D, K, V>,
-			params: SingleBaseParams<D, K, V>
+			field?: Link | Callback<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
 		): I;
 	}
 
@@ -248,8 +249,9 @@ declare namespace CollectionJS {
 		): ThreadObj<R>;
 
 		group(
-			field: Link | Callback<D, K, V>,
-			params: SingleBaseParams<D, K, V>
+			field?: Link | Callback<D, K, V>,
+			filterOrParams?: Filter<D, K, V> | SingleBaseParams<D, K, V>,
+			params?: SingleBaseParams<D, K, V>
 		): ThreadObj<I>;
 	}
 
