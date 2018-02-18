@@ -317,7 +317,6 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
 
 				return (el, key, data, o) => {
 					try {
-						fn[_base.ON_ERROR] = onError;
 						return fn(el, key, data, o);
 					} catch (err) {
 						onError(err);
@@ -366,9 +365,9 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
 						}
 					} else {
 						err = new Error('Thread was destroyed');
+						err.type = 'CollectionThreadDestroy';
 					}
 
-					err.type = 'CollectionThreadDestroy';
 					err.thread = thread;
 
 					if (isStream) {

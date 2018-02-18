@@ -159,9 +159,9 @@ _core.Collection.prototype._addToStack = function (obj, priority, onError, opt_o
 			}
 		} else {
 			err = new Error('Thread was destroyed');
+			err.type = 'CollectionThreadDestroy';
 		}
 
-		err.type = 'CollectionThreadDestroy';
 		err.thread = obj;
 
 		if (obj.stream) {

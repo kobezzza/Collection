@@ -9,7 +9,7 @@
  */
 
 exports.__esModule = true;
-exports.CACHE_VERSION_KEY = exports.CACHE_KEY = exports.CACHE_VERSION = exports.ON_ERROR = exports.FN_LENGTH = exports.LENGTH_REQUEST = exports.NAMESPACE = undefined;
+exports.CACHE_VERSION_KEY = exports.CACHE_KEY = exports.CACHE_VERSION = exports.FN_LENGTH = exports.LENGTH_REQUEST = exports.NAMESPACE = undefined;
 
 var _core = require('../core');
 
@@ -25,8 +25,7 @@ const NAMESPACE = exports.NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_
 _links.GLOBAL[NAMESPACE] = _core2.default;
 
 const LENGTH_REQUEST = exports.LENGTH_REQUEST = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Data length query') : '__COLLECTION_TMP__lengthQuery',
-      FN_LENGTH = exports.FN_LENGTH = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length',
-      ON_ERROR = exports.ON_ERROR = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Error handler') : '__COLLECTION_TMP__onError';
+      FN_LENGTH = exports.FN_LENGTH = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 
 const CACHE_VERSION = exports.CACHE_VERSION = 56,
       CACHE_KEY = exports.CACHE_KEY = '__COLLECTION_CACHE__',
