@@ -65,7 +65,8 @@ Collection.prototype._initParams = function (p, filters) {
 	}
 
 	if (p.initial != null && !p.initialType) {
-		p.initialType = getType(p.initial);
+		const type = typeof p.initial;
+		p.initialType = type !== 'object' ? type : getType(p.initial);
 	}
 
 	if (
@@ -238,7 +239,8 @@ Collection.prototype.iterator = function (opt_async) {
  * @return {!Collection}
  */
 Collection.prototype.to = function (value) {
-	this.p.initialType = getType(value);
+	const type = typeof value;
+	this.p.initialType = value != null && value !== 'object' ? type : getType(value);
 	this.p.initial = value;
 	return this;
 };
