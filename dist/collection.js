@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.13
+ * Collection v6.6.14
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 18 Feb 2018 16:02:25 GMT
+ * Date: 'Tue, 20 Feb 2018 12:27:04 GMT
  */
 
 (function (global, factory) {
@@ -435,7 +435,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 13];
+Collection.prototype.VERSION = [6, 6, 14];
 
 /**
  * Creates an instance of Collection
@@ -1820,7 +1820,8 @@ Collection.prototype._initParams = function (p, filters) {
 	}
 
 	if (p.initial != null && !p.initialType) {
-		p.initialType = getType(p.initial);
+		var type = typeof p.initial;
+		p.initialType = type !== 'object' ? type : getType(p.initial);
 	}
 
 	if (asyncNotDefined && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || asyncTypes[p.type] || p.initialType === 'stream') {
@@ -1976,7 +1977,8 @@ Collection.prototype.iterator = function (opt_async) {
  * @return {!Collection}
  */
 Collection.prototype.to = function (value) {
-	this.p.initialType = getType(value);
+	var type = typeof value;
+	this.p.initialType = value != null && value !== 'object' ? type : getType(value);
 	this.p.initial = value;
 	return this;
 };

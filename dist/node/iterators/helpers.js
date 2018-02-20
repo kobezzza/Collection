@@ -65,7 +65,8 @@ _core.Collection.prototype._initParams = function (p, filters) {
 	}
 
 	if (p.initial != null && !p.initialType) {
-		p.initialType = (0, _types.getType)(p.initial);
+		const type = typeof p.initial;
+		p.initialType = type !== 'object' ? type : (0, _types.getType)(p.initial);
 	}
 
 	if (asyncNotDefined && (p.thread || p.use === 'async for of' || p.parallel != null && p.parallel !== false || p.race != null && p.race !== false) || _types.asyncTypes[p.type] || p.initialType === 'stream') {
@@ -224,7 +225,8 @@ _core.Collection.prototype.iterator = function (opt_async) {
  * @return {!Collection}
  */
 _core.Collection.prototype.to = function (value) {
-	this.p.initialType = (0, _types.getType)(value);
+	const type = typeof value;
+	this.p.initialType = value != null && value !== 'object' ? type : (0, _types.getType)(value);
 	this.p.initial = value;
 	return this;
 };
