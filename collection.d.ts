@@ -5846,7 +5846,7 @@ declare const $C: {
 	(collection: MSRangeCollection): CollectionJS.CollectionIterator<MSRangeCollection, number, Range>;
 	(collection: NamedNodeMap): CollectionJS.CollectionIterator<NamedNodeMap, number, Attr>;
 	(collection: SourceBufferList): CollectionJS.CollectionIterator<SourceBufferList, number, SourceBuffer>;
-	(collection: Storage): CollectionJS.CollectionIterator<Storage, number, string>;
+	(collection: Storage): CollectionJS.CollectionIterator<Storage, string, string>;
 	(collection: HTMLAllCollection): CollectionJS.CollectionIterator<HTMLAllCollection, number, Element>;
 	<V extends Element = Element>(collection: HTMLCollectionOf<V>): CollectionJS.CollectionIterator<HTMLCollectionOf<V>, number, V>;
 	<V = Element>(collection: HTMLCollectionBase): CollectionJS.CollectionIterator<HTMLCollectionBase, number, V>;
