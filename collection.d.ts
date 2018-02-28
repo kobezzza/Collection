@@ -213,18 +213,18 @@ declare namespace CollectionJS {
 		): I;
 
 		reduce<R = I>(
-			cb: ReduceCallback<V, D, K, V, R>,
+			cb: ReduceCallback<R, D, K, V, R>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<R>;
 
 		reduce<R = I>(
-			cb: ReduceCallback<V, D, K, V, R>,
+			cb: ReduceCallback<R, D, K, V, R>,
 			filter: Filter<D, K, V>,
 			params: BaseParams<D, K, V> & Async
 		): ThreadObj<R>;
 
 		reduce<R = I>(
-			callback: ReduceCallback<V, D, K, V, R>,
+			callback: ReduceCallback<R, D, K, V, R>,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): R;
@@ -243,7 +243,7 @@ declare namespace CollectionJS {
 		): ThreadObj<I>;
 
 		reduce<R = I>(
-			cb: ReduceCallback<V, D, K, V, R>,
+			cb: ReduceCallback<R, D, K, V, R>,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): ThreadObj<R>;
@@ -262,7 +262,7 @@ declare namespace CollectionJS {
 		): DuplexStream;
 
 		reduce(
-			cb: ReduceCallback<V, D, K, V>,
+			cb: ReduceCallback<DuplexStream, D, K, V>,
 			filterOrParams?: Filter<D, K, V> | BaseParams<D, K, V>,
 			params?: BaseParams<D, K, V>
 		): DuplexStream;
