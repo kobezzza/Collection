@@ -29,7 +29,7 @@ Collection.prototype.every = function (opt_filter, opt_params) {
 	}
 
 	this._initParams(p, opt_filter);
-	p = any(Object.assign(Object.create(this.p), p, {result: true, mult: false}));
+	p = any(Object.assign(Object.create(this.p), p, {mult: false, result: true}));
 	p.inverseFilter = !p.inverseFilter;
 
 	const
