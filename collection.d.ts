@@ -15,8 +15,9 @@ declare namespace CollectionJS {
 	type AnyPromise = Promise<any>;
 	type AsyncOperation = AnyPromise | (() => AnyPromise);
 	type DuplexStream = NodeJS.ReadableStream & NodeJS.WritableStream;
-	type ReadStream =  NodeJS.ReadableStream | DuplexStream;
-	type ArrayLike<T> = {[index: number]: T, length: number};
+	type ReadStream = NodeJS.ReadableStream | DuplexStream;
+	type ArrayLike<T> = {[index: number]: T; length: number};
+	type Dictionary<T> = {[key: string]: T};
 
 	interface TRUE {}
 	interface FALSE {}
@@ -5828,7 +5829,7 @@ declare const $C: {
 	(collection: CSSRuleList): CollectionJS.CollectionIterator<CSSRuleList, number, CSSRule>;
 	(collection: CSSStyleDeclaration): CollectionJS.CollectionIterator<CSSStyleDeclaration, number, string>;
 	(collection: StyleSheetList): CollectionJS.CollectionIterator<StyleSheetList, number, StyleSheet>;
-	(collection: StyleSheetPageList): CollectionJS.CollectionIterator<StyleSheetPageList, number, CSSPageRule>;
+	// (collection: StyleSheetPageList): CollectionJS.CollectionIterator<StyleSheetPageList, number, CSSPageRule>;
 	(collection: TextTrackCueList): CollectionJS.CollectionIterator<TextTrackCueList, number, TextTrackCue>;
 	(collection: TextTrackList): CollectionJS.CollectionIterator<TextTrackList, number, TextTrack>;
 	(collection: TouchList): CollectionJS.CollectionIterator<TouchList, number, Touch>;
@@ -5843,7 +5844,6 @@ declare const $C: {
 	(collection: MimeTypeArray): CollectionJS.CollectionIterator<MimeTypeArray, number, Plugin>;
 	(collection: Plugin): CollectionJS.CollectionIterator<Plugin, number, MimeType>;
 	(collection: PluginArray): CollectionJS.CollectionIterator<PluginArray, number, Plugin>;
-	(collection: MSRangeCollection): CollectionJS.CollectionIterator<MSRangeCollection, number, Range>;
 	(collection: NamedNodeMap): CollectionJS.CollectionIterator<NamedNodeMap, number, Attr>;
 	(collection: SourceBufferList): CollectionJS.CollectionIterator<SourceBufferList, number, SourceBuffer>;
 	(collection: Storage): CollectionJS.CollectionIterator<Storage, string, string>;
@@ -5859,10 +5859,11 @@ declare const $C: {
 	<V = any>(collection: Set<V>): CollectionJS.CollectionSet<Set<V>, null, V>;
 	<V = any>(collection: Iterator<V>): CollectionJS.CollectionIterator<Iterator<V>, number, V>;
 	<V = any>(collection: Iterable<V>): CollectionJS.CollectionIterator<Iterable<V>, number, V>;
-	<V = any, D extends Record<string, V> = any>(collection: D): CollectionJS.CollectionRecord<D, string, V>;
 	<V = any>(collection: CollectionJS.ReadStream): CollectionJS.CollectionStream<CollectionJS.ReadStream, number, V>;
 	<V = any>(collection: IDBCursor): CollectionJS.CollectionIterator<IDBCursor, number, V>;
 	<V = any>(collection: GeneratorFunction): CollectionJS.CollectionIterator<GeneratorFunction, number, V>;
+	<V = any>(collection: CollectionJS.Dictionary<V>): CollectionJS.CollectionRecord<CollectionJS.Dictionary<V>, string, V>;
+	<V = any, K extends string = string>(collection: Record<K, V>): CollectionJS.CollectionRecord<Record<K, V>, K, V>;
 	<K = any, V = any, D = any>(collection: D): CollectionJS.Collection<D, K, V>;
 
 	extend<D, K, V>(
