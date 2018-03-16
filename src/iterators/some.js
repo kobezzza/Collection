@@ -29,7 +29,7 @@ Collection.prototype.some = function (opt_filter, opt_params) {
 	}
 
 	this._initParams(p, opt_filter);
-	p = any(Object.assign(Object.create(this.p), p, {mult: true, result: false}));
+	p = any(Object.assign(Object.create(this.p), p, {mult: false, result: false}));
 
 	const
 		returnVal = any(this.forEach(() => p.result = true, p));
