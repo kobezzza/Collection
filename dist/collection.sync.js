@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.16 (sync)
+ * Collection v6.6.17 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 28 Feb 2018 14:51:22 GMT
+ * Date: 'Fri, 16 Mar 2018 14:13:14 GMT
  */
 
 (function (global, factory) {
@@ -435,7 +435,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 16];
+Collection.prototype.VERSION = [6, 6, 17];
 
 /**
  * Creates an instance of Collection
@@ -2402,7 +2402,7 @@ Collection.prototype.every = function (opt_filter, opt_params) {
 	}
 
 	this._initParams(p, opt_filter);
-	p = any(Object.assign(Object.create(this.p), p, { result: true, mult: false }));
+	p = any(Object.assign(Object.create(this.p), p, { mult: false, result: true }));
 	p.inverseFilter = !p.inverseFilter;
 
 	var returnVal = any(this.forEach(function () {
@@ -2433,7 +2433,7 @@ Collection.prototype.some = function (opt_filter, opt_params) {
   }
 
   this._initParams(p, opt_filter);
-  p = any(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
+  p = any(Object.assign(Object.create(this.p), p, { mult: false, result: false }));
 
   var returnVal = any(this.forEach(function () {
     return p.result = true;
