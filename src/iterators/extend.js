@@ -62,6 +62,10 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 		this._initParams(p);
 		p = any(assign(Object.create(this.p), p));
+
+	} else {
+		p = any(Object.create(p));
+		this._initParams(p, false);
 	}
 
 	const
