@@ -69,6 +69,9 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 
 		this._initParams(p);
 		p = (0, _gcc.any)(assign(Object.create(this.p), p));
+	} else {
+		p = (0, _gcc.any)(Object.create(p));
+		this._initParams(p, false);
 	}
 
 	const withDescriptor = p.withDescriptor && !p.withAccessors;

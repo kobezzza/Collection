@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.17 (sync)
+ * Collection v6.6.18 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Fri, 16 Mar 2018 14:13:14 GMT
+ * Date: 'Tue, 27 Mar 2018 12:53:24 GMT
  */
 
 (function (global, factory) {
@@ -435,7 +435,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 17];
+Collection.prototype.VERSION = [6, 6, 18];
 
 /**
  * Creates an instance of Collection
@@ -1816,6 +1816,9 @@ Collection.prototype.extend = function (deepOrParams, args) {
 
 		this._initParams(p);
 		p = any(assign(Object.create(this.p), p));
+	} else {
+		p = any(Object.create(p));
+		this._initParams(p, false);
 	}
 
 	var withDescriptor = p.withDescriptor && !p.withAccessors;
