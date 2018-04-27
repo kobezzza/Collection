@@ -151,7 +151,7 @@ function compileCycle(key, p) {
 
 						obj = _getProto(obj);
 					}
-				};
+				}
 			`;
 		} else {
 			iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';

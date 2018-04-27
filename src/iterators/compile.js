@@ -158,7 +158,7 @@ export function compileCycle(key, p) {
 
 						obj = _getProto(obj);
 					}
-				};
+				}
 			`;
 
 		} else {
