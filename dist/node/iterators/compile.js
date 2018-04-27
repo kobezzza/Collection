@@ -134,7 +134,28 @@ function compileCycle(key, p) {
 	`;
 
 	if (p.withDescriptor) {
-		iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
+		if (p.withProto) {
+			iFn += _string.ws`
+				var 
+					_getProto = Object.getPrototypeOf,
+					_getDescriptor = Object.getOwnPropertyDescriptor;
+
+				function getDescriptor(obj, key) {
+					while (obj) {
+						var 
+							desc = _getDescriptor(obj, key);
+
+						if (desc) {
+							return desc;
+						}
+
+						obj = _getProto(obj);
+					}
+				};
+			`;
+		} else {
+			iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
+		}
 	}
 
 	//#if iterators.async
