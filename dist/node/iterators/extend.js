@@ -315,7 +315,7 @@ _core2.default.extend = function (deepOrParams, target, args) {
 		args.push(arguments[i]);
 	}
 
-	const obj = (0, _core2.default)(target);
+	const obj = (0, _core2.default)(target == null ? _types.Empty : target);
 	return obj.extend.apply(obj, args);
 };
 
