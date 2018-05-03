@@ -31,6 +31,9 @@ export const iterators = {
 	'idbRequest': true
 };
 
+export const
+	Empty = {};
+
 /**
  * Returns true if the specified value is a function
  *
@@ -247,55 +250,62 @@ export function getType(obj, opt_use) {
 		return null;
 	}
 
-	let type = 'object';
 	switch (opt_use) {
 		case 'for':
-			type = 'array';
-			break;
+			return 'array';
 
 		case 'for in':
-			type = 'object';
-			break;
+			return 'object';
 
 		case 'for of':
-			type = 'iterator';
-			break;
+			return 'iterator';
 
 		case 'async for of':
-			type = 'asyncIterator';
-			break;
+			return 'asyncIterator';
 
 		default:
+			if (obj === Empty) {
+				return null;
+			}
+
 			if (isMap(obj)) {
-				type = 'map';
+				return 'map';
+			}
 
-			} else if (isWeakMap(obj)) {
-				type = 'weakMap';
+			if (isWeakMap(obj)) {
+				return 'weakMap';
+			}
 
-			} else if (isSet(obj)) {
-				type = 'set';
+			if (isSet(obj)) {
+				return 'set';
+			}
 
-			} else if (isWeakSet(obj)) {
-				type = 'weakSet';
+			if (isWeakSet(obj)) {
+				return 'weakSet';
+			}
 
-			} else if (isGenerator(obj)) {
-				type = 'generator';
+			if (isGenerator(obj)) {
+				return 'generator';
+			}
 
-			} else if (isLikeArray(obj)) {
-				type = 'array';
+			if (isLikeArray(obj)) {
+				return 'array';
+			}
 
-			} else if (isIterator(obj)) {
-				type = 'iterator';
+			if (isIterator(obj)) {
+				return 'iterator';
+			}
 
-			} else if (isIDBRequest(obj)) {
-				type = 'idbRequest';
+			if (isIDBRequest(obj)) {
+				return 'idbRequest';
+			}
 
-			} else if (isStream(obj)) {
-				type = 'stream';
+			if (isStream(obj)) {
+				return 'stream';
 			}
 	}
 
-	return type;
+	return 'object';
 }
 
 export const

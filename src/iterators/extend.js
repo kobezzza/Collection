@@ -11,7 +11,7 @@
  */
 
 import $C, { Collection, P } from '../core';
-import { isArray, isBoolean, isStructure, getSameAs, canExtendProto, getType } from '../helpers/types';
+import { Empty, isArray, isBoolean, isStructure, getSameAs, canExtendProto, getType } from '../helpers/types';
 import { OBJECT_ASSIGN_NATIVE_SUPPORT } from '../consts/hacks';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
@@ -348,7 +348,7 @@ $C.extend = function (deepOrParams, target, args) {
 		args.push(arguments[i]);
 	}
 
-	const obj = $C(target);
+	const obj = $C(target == null ? Empty : target);
 	return obj.extend.apply(obj, args);
 };
 
