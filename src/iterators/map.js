@@ -11,7 +11,7 @@
 import { Collection } from '../core';
 import { IS_NODE } from '../consts/hacks';
 import { FN_LENGTH } from '../consts/base';
-import { isArray, isFunction, isPromise, isStream } from '../helpers/types';
+import { isArray, isFunction, isPromise, isStream, isPositive } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
@@ -130,12 +130,12 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && isPromise(val)) {
-					return val.then((val) => res.push(val));
+					return val.then((val) => isPositive(val) && res.push(val));
 				}
 
 				//#endif
 
-				res.push(val);
+				isPositive(val) && res.push(val);
 			};
 
 			fn[FN_LENGTH] = opt_cb.length;
@@ -149,12 +149,18 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && isPromise(val)) {
-					return val.then((val) => res[key] = val);
+					return val.then((val) => {
+						if (isPositive(val)) {
+							res[key] = val;
+						}
+					});
 				}
 
 				//#endif
 
-				res[key] = val;
+				if (isPositive(val)) {
+					res[key] = val;
+				}
 			};
 
 			fn[FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
@@ -169,12 +175,12 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && isPromise(val)) {
-					return val.then((val) => res.set(key, val));
+					return val.then((val) => isPositive(val) && res.set(key, val));
 				}
 
 				//#endif
 
-				res.set(key, val);
+				isPositive(val) && res.set(key, val);
 			};
 
 			fn[FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
@@ -189,12 +195,12 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && isPromise(val)) {
-					return val.then((val) => res.add(val));
+					return val.then((val) => isPositive(val) && res.add(val));
 				}
 
 				//#endif
 
-				res.add(val);
+				isPositive(val) && res.add(val);
 			};
 
 			fn[FN_LENGTH] = opt_cb.length;
@@ -221,6 +227,11 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						clear();
 
 						try {
+							if (!isPositive(val)) {
+								resolve();
+								return;
+							}
+
 							if (res.write(val)) {
 								resolve(val);
 
@@ -261,12 +272,18 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && isPromise(val)) {
-					return val.then((val) => res += val);
+					return val.then((val) => {
+						if (isPositive(val)) {
+							p.result = res += val;
+						}
+					});
 				}
 
 				//#endif
 
-				p.result = res += val;
+				if (isPositive(val)) {
+					p.result = res += val;
+				}
 			};
 
 			fn[FN_LENGTH] = opt_cb.length;

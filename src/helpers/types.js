@@ -8,6 +8,8 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
+import { IGNORE, FALSE } from '../consts/links';
+
 export const asyncTypes = {
 	'stream': true,
 	'isIDBRequest': true
@@ -375,4 +377,14 @@ export function canExtendProto(obj) {
 	}
 
 	return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
+}
+
+/**
+ * Returns true if the specified object is positive (not equals FALSE and IGNORE)
+ *
+ * @param {?} obj - source object
+ * @return {boolean}
+ */
+export function isPositive(obj) {
+	return obj !== FALSE && obj !== IGNORE;
 }
