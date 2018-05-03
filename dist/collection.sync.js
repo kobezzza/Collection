@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.20 (sync)
+ * Collection v6.6.21 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 03 May 2018 12:40:10 GMT
+ * Date: 'Thu, 03 May 2018 14:24:00 GMT
  */
 
 (function (global, factory) {
@@ -24,6 +24,11 @@
 function any(val) {
   return val;
 }
+
+var GLOBAL = new Function('return this')();
+var TRUE = [];
+var FALSE = [];
+var IGNORE = [];
 
 var asyncTypes = {
 	'stream': true,
@@ -376,6 +381,16 @@ function canExtendProto(obj) {
 }
 
 /**
+ * Returns true if the specified object is positive (not equals FALSE and IGNORE)
+ *
+ * @param {?} obj - source object
+ * @return {boolean}
+ */
+function isPositive(obj) {
+	return obj !== FALSE && obj !== IGNORE;
+}
+
+/**
  * Collection constructor
  *
  * @constructor
@@ -452,7 +467,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 20];
+Collection.prototype.VERSION = [6, 6, 21];
 
 /**
  * Creates an instance of Collection
@@ -523,11 +538,6 @@ var LOCAL_STORAGE_SUPPORT = !IS_NODE && function () {
 		return false;
 	}
 }();
-
-var GLOBAL = new Function('return this')();
-var TRUE = [];
-var FALSE = [];
-var IGNORE = [];
 
 var NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_kobezzza_Collection';
 GLOBAL[NAMESPACE] = $C;
@@ -2189,7 +2199,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				var val = opt_cb.apply(null, arguments);
 
 
-				res.push(val);
+				isPositive(val) && res.push(val);
 			};
 
 			fn[FN_LENGTH] = opt_cb.length;
@@ -2200,7 +2210,9 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				var val = opt_cb.apply(null, arguments);
 
 
-				res[key] = val;
+				if (isPositive(val)) {
+					res[key] = val;
+				}
 			};
 
 			fn[FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
@@ -2212,7 +2224,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				var val = opt_cb.apply(null, arguments);
 
 
-				res.set(key, val);
+				isPositive(val) && res.set(key, val);
 			};
 
 			fn[FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
@@ -2224,7 +2236,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				var val = opt_cb.apply(null, arguments);
 
 
-				res.add(val);
+				isPositive(val) && res.add(val);
 			};
 
 			fn[FN_LENGTH] = opt_cb.length;
@@ -2252,6 +2264,11 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						clear();
 
 						try {
+							if (!isPositive(val)) {
+								resolve();
+								return;
+							}
+
 							if (res.write(val)) {
 								resolve(val);
 							} else {
@@ -2277,7 +2294,9 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				var val = opt_cb.apply(null, arguments);
 
 
-				p.result = res += val;
+				if (isPositive(val)) {
+					p.result = res += val;
+				}
 			};
 
 			fn[FN_LENGTH] = opt_cb.length;
@@ -2388,7 +2407,9 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 			var val = cb.apply(null, args);
 
 
-			p.result = val;
+			if (isPositive(val)) {
+				p.result = val;
+			}
 		}
 	}
 

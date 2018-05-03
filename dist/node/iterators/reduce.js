@@ -60,12 +60,18 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
 			//#if iterators.async
 
 			if (p.async && (0, _types.isPromise)(val)) {
-				return val.then(val => p.result = val);
+				return val.then(val => {
+					if ((0, _types.isPositive)(val)) {
+						p.result = val;
+					}
+				});
 			}
 
 			//#endif
 
-			p.result = val;
+			if ((0, _types.isPositive)(val)) {
+				p.result = val;
+			}
 		}
 	}
 

@@ -9,6 +9,7 @@
  */
 
 exports.__esModule = true;
+exports.isNative = exports.Empty = exports.iterators = exports.weakTypes = exports.mapSet = exports.asyncTypes = undefined;
 exports.isFunction = isFunction;
 exports.isNumber = isNumber;
 exports.isString = isString;
@@ -30,12 +31,14 @@ exports.getType = getType;
 exports.getSameAs = getSameAs;
 exports.isStructure = isStructure;
 exports.canExtendProto = canExtendProto;
+exports.isPositive = isPositive;
+
+var _links = require('../consts/links');
+
 const asyncTypes = exports.asyncTypes = {
 	'stream': true,
 	'isIDBRequest': true
-};
-
-const mapSet = exports.mapSet = {
+};const mapSet = exports.mapSet = {
 	'map': true,
 	'set': true
 };
@@ -378,4 +381,14 @@ function canExtendProto(obj) {
 	}
 
 	return isFunction(obj.constructor) && !isNative.test(obj.constructor.toString());
+}
+
+/**
+ * Returns true if the specified object is positive (not equals FALSE and IGNORE)
+ *
+ * @param {?} obj - source object
+ * @return {boolean}
+ */
+function isPositive(obj) {
+	return obj !== _links.FALSE && obj !== _links.IGNORE;
 }

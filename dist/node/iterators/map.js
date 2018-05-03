@@ -125,12 +125,12 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => res.push(val));
+					return val.then(val => (0, _types.isPositive)(val) && res.push(val));
 				}
 
 				//#endif
 
-				res.push(val);
+				(0, _types.isPositive)(val) && res.push(val);
 			};
 
 			fn[_base.FN_LENGTH] = opt_cb.length;
@@ -143,12 +143,18 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => res[key] = val);
+					return val.then(val => {
+						if ((0, _types.isPositive)(val)) {
+							res[key] = val;
+						}
+					});
 				}
 
 				//#endif
 
-				res[key] = val;
+				if ((0, _types.isPositive)(val)) {
+					res[key] = val;
+				}
 			};
 
 			fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
@@ -162,12 +168,12 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => res.set(key, val));
+					return val.then(val => (0, _types.isPositive)(val) && res.set(key, val));
 				}
 
 				//#endif
 
-				res.set(key, val);
+				(0, _types.isPositive)(val) && res.set(key, val);
 			};
 
 			fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
@@ -181,12 +187,12 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => res.add(val));
+					return val.then(val => (0, _types.isPositive)(val) && res.add(val));
 				}
 
 				//#endif
 
-				res.add(val);
+				(0, _types.isPositive)(val) && res.add(val);
 			};
 
 			fn[_base.FN_LENGTH] = opt_cb.length;
@@ -212,6 +218,11 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 						clear();
 
 						try {
+							if (!(0, _types.isPositive)(val)) {
+								resolve();
+								return;
+							}
+
 							if (res.write(val)) {
 								resolve(val);
 							} else {
@@ -249,12 +260,18 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 				//#if iterators.async
 
 				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => res += val);
+					return val.then(val => {
+						if ((0, _types.isPositive)(val)) {
+							p.result = res += val;
+						}
+					});
 				}
 
 				//#endif
 
-				p.result = res += val;
+				if ((0, _types.isPositive)(val)) {
+					p.result = res += val;
+				}
 			};
 
 			fn[_base.FN_LENGTH] = opt_cb.length;
