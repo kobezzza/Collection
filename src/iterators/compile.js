@@ -188,7 +188,7 @@ export function compileCycle(key, p) {
 				yieldVal;
 
 			function isPromise(obj) {
-				return typeof Promise === 'function' && obj instanceof Promise;
+				return obj && typeof obj.then === 'function' && typeof obj.catch === 'function';
 			}
 
 			var
