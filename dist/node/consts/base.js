@@ -27,6 +27,6 @@ _links.GLOBAL[NAMESPACE] = _core2.default;
 const LENGTH_REQUEST = exports.LENGTH_REQUEST = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Data length query') : '__COLLECTION_TMP__lengthQuery',
       FN_LENGTH = exports.FN_LENGTH = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 
-const CACHE_VERSION = exports.CACHE_VERSION = 57,
+const CACHE_VERSION = exports.CACHE_VERSION = 58,
       CACHE_KEY = exports.CACHE_KEY = '__COLLECTION_CACHE__',
       CACHE_VERSION_KEY = exports.CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';

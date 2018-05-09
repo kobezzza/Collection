@@ -20,6 +20,6 @@ export const
 	FN_LENGTH = SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 
 export const
-	CACHE_VERSION = 57,
+	CACHE_VERSION = 58,
 	CACHE_KEY = '__COLLECTION_CACHE__',
 	CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
