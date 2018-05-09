@@ -155,7 +155,7 @@ function isWeakSet(obj) {
  * @return {boolean}
  */
 function isPromise(obj) {
-	return typeof Promise === 'function' && obj instanceof Promise;
+	return Boolean(obj && isFunction(obj.then) && isFunction(obj.catch));
 }
 
 /**

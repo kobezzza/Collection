@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.21 (node)
+ * Collection v6.6.22 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 03 May 2018 14:24:00 GMT
+ * Date: 'Wed, 09 May 2018 10:14:49 GMT
  */
 
 (function (global, factory) {
@@ -152,7 +152,7 @@ function isWeakSet(obj) {
  * @return {boolean}
  */
 function isPromise(obj) {
-	return typeof Promise === 'function' && obj instanceof Promise;
+	return Boolean(obj && isFunction(obj.then) && isFunction(obj.catch));
 }
 
 /**
@@ -467,7 +467,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 21];
+Collection.prototype.VERSION = [6, 6, 22];
 
 /**
  * Creates an instance of Collection
