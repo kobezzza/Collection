@@ -146,11 +146,8 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 				} else {
 					fn = (value, key, data, ctx) => {
 						const ln = ctx.length();
-						const f = length => {
-							if (rm === length) {
-								return false;
-							}
 
+						const f = length => {
 							if (isRealArray) {
 								data.splice(key, 1);
 							} else {
@@ -171,7 +168,9 @@ _core.Collection.prototype.remove = function (opt_filter, opt_params) {
 								p.result = o;
 							}
 
-							rm++;
+							if (++rm === length) {
+								return ctx.break;
+							}
 						};
 
 						if ((0, _types.isNumber)(ln)) {

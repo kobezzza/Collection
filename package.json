@@ -4,7 +4,7 @@
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "collection.js",
   "typings": "collection.d.ts",
-  "version": "6.6.22",
+  "version": "6.6.23",
   "license": "MIT",
   "author": {
     "name": "kobezzza",
@@ -52,21 +52,21 @@
     "gulp-load-plugins": "^1.5.0",
     "gulp-monic": "^2.0.13",
     "gulp-plumber": "^1.2.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-replace": "^0.6.0",
+    "gulp-rename": "^1.2.3",
+    "gulp-replace": "^1.0.0",
     "gulp-rollup": "2.15.0",
     "gulp-run": "^1.6.7",
     "gulp-wrap": "^0.13.0",
     "istanbul": "^0.4.2",
     "jasmine": "^3.1.0",
-    "merge2": "^1.2.1",
+    "merge2": "^1.2.2",
     "monic": "^2.5.1",
     "rollup-plugin-babel": "^3.0.4",
     "sugar": "^2.0.0",
-    "vinyl-fs": "^3.0.2",
+    "vinyl-fs": "^3.0.3",
     "yaspeller": "^4.0.3"
   },
   "dependencies": {
-    "@types/node": "^9.6.9"
+    "@types/node": "^10.1.2"
   }
 }

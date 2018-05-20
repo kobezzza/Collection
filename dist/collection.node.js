@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.22 (node)
+ * Collection v6.6.23 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 09 May 2018 10:18:12 GMT
+ * Date: 'Sun, 20 May 2018 11:08:32 GMT
  */
 
 (function (global, factory) {
@@ -467,7 +467,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 22];
+Collection.prototype.VERSION = [6, 6, 23];
 
 /**
  * Creates an instance of Collection
@@ -3243,11 +3243,8 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 				} else {
 					fn = function (value, key, data, ctx) {
 						var ln = ctx.length();
-						var f = function (length) {
-							if (rm === length) {
-								return false;
-							}
 
+						var f = function (length) {
 							if (isRealArray) {
 								data.splice(key, 1);
 							} else {
@@ -3268,7 +3265,9 @@ Collection.prototype.remove = function (opt_filter, opt_params) {
 								p.result = o;
 							}
 
-							rm++;
+							if (++rm === length) {
+								return ctx.break;
+							}
 						};
 
 						if (isNumber(ln)) {
