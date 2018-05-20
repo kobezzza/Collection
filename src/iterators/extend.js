@@ -92,10 +92,6 @@ Collection.prototype.extend = function (deepOrParams, args) {
 			}
 		}
 
-		if (!type) {
-			return {};
-		}
-
 		switch (type) {
 			case 'object':
 				data = {};
