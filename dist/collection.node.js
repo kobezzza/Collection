@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.24 (node)
+ * Collection v6.6.25 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sun, 20 May 2018 20:44:35 GMT
+ * Date: 'Tue, 12 Jun 2018 19:34:27 GMT
  */
 
 (function (global, factory) {
@@ -467,7 +467,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 24];
+Collection.prototype.VERSION = [6, 6, 25];
 
 /**
  * Creates an instance of Collection
@@ -3001,8 +3001,8 @@ Collection.prototype.includes = function (searchElement, opt_filter, opt_params)
 		return el === searchElement;
 	};
 
-	this._initParams(p, opt_filter, f);
-	p = any(Object.assign(Object.create(this.p), p, { mult: true, result: false }));
+	this._initParams(p, [].concat(opt_filter || [], f));
+	p = any(Object.assign(Object.create(this.p), p, { mult: false, result: false }));
 
 	var returnVal = any(this.forEach(function () {
 		return p.result = true;
