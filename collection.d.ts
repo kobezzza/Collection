@@ -176,6 +176,7 @@ declare namespace CollectionJS {
 	interface ExtendParams<D, K, V> extends SingleBaseParams<D, K, V> {
 		deep?: boolean;
 		traits?: boolean;
+		withUndef?: boolean;
 		withDescriptor?: boolean;
 		withAccessors?: boolean;
 		withProto?: boolean;
