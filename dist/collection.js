@@ -1,11 +1,11 @@
 /*!
- * Collection v6.6.26
+ * Collection v6.6.27
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 13 Jun 2018 12:52:46 GMT
+ * Date: 'Tue, 19 Jun 2018 15:15:38 GMT
  */
 
 (function (global, factory) {
@@ -467,7 +467,7 @@ Object.assign($C, { config: {} });
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 6, 26];
+Collection.prototype.VERSION = [6, 6, 27];
 
 /**
  * Creates an instance of Collection
@@ -1171,7 +1171,9 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 
 				if (cache && version == CACHE_VERSION) {
 					$C.cache.str = JSON.parse(cache);
-					document.write('<script type="text/javascript">' + returnCache($C.cache.str) + (NAMESPACE + '.ready = true;') + '</script>');
+					document.write('<script type="text/javascript">' + returnCache($C.cache.str) + (NAMESPACE + '.ready = true;') +
+					/* eslint-disable-next-line */
+					'<\/script>');
 				} else {
 					localStorage.removeItem(CACHE_KEY);
 					localStorage.removeItem(CACHE_VERSION_KEY);
@@ -1654,7 +1656,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 		}));
 
 		cbLength = function (opt_reset) {
-			if (lengthKey in cbLength === false || opt_reset) {
+			if (cbLength[lengthKey] == null || opt_reset) {
 				return cbLength[lengthKey] = _this.length(filters, _p);
 			}
 
@@ -1673,7 +1675,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 		}));
 
 		fLength = function (opt_reset) {
-			if (lengthKey in fLength === false || opt_reset) {
+			if (fLength[lengthKey] == null || opt_reset) {
 				return fLength[lengthKey] = _this.length(null, _p2);
 			}
 

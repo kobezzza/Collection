@@ -4,7 +4,7 @@
   "homepage": "https://github.com/kobezzza/Collection",
   "main": "collection.js",
   "typings": "collection.d.ts",
-  "version": "6.6.26",
+  "version": "6.6.27",
   "license": "MIT",
   "author": {
     "name": "kobezzza",
@@ -67,6 +67,6 @@
     "yaspeller": "^4.0.3"
   },
   "dependencies": {
-    "@types/node": "^10.3.2"
+    "@types/node": "^10.3.4"
   }
 }
