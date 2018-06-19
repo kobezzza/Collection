@@ -31,7 +31,8 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 						'<script type="text/javascript">' +
 						returnCache($C.cache.str) +
 						`${NAMESPACE}.ready = true;` +
-						'</script>'
+						/* eslint-disable-next-line */
+						'<\/script>'
 					);
 
 				} else {
