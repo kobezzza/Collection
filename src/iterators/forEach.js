@@ -254,7 +254,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 		}));
 
 		cbLength = (opt_reset) => {
-			if (lengthKey in cbLength === false || opt_reset) {
+			if (cbLength[lengthKey] == null || opt_reset) {
 				return cbLength[lengthKey] = this.length(filters, p);
 			}
 
@@ -273,7 +273,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 		}));
 
 		fLength = (opt_reset) => {
-			if (lengthKey in fLength === false || opt_reset) {
+			if (fLength[lengthKey] == null || opt_reset) {
 				return fLength[lengthKey] = this.length(null, p);
 			}
 
