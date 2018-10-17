@@ -7,6 +7,7 @@
  */
 
 /// <reference types="node"/>
+/// <reference lib="es2015"/>
 
 declare namespace CollectionJS {
 	type Link = any | any[];
