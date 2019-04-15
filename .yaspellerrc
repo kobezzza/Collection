@@ -1,6 +1,9 @@
 {
   "lang": "en,ru",
 
+  "ignoreUppercase": true,
+  "ignoreUrls": true,
+
   "fileExtensions": [
     ".md",
     ".html"
@@ -11,9 +14,8 @@
     "node_modules",
     "bower_components",
     "coverage",
-    "predefs",
     "dist",
-    "spec"
+    "predefs"
   ],
 
   "dictionary": [

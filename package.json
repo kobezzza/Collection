@@ -63,7 +63,7 @@
     "rollup-plugin-babel": "^3.0.7",
     "sugar": "^2.0.6",
     "vinyl-fs": "^3.0.3",
-    "yaspeller": "^4.2.1"
+    "yaspeller": "^5.0.1"
   },
   "dependencies": {
     "@types/node": "^11.13.4"
