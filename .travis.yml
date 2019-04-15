@@ -2,9 +2,9 @@ language: node_js
 
 node_js:
   - "6"
-  - "7"
   - "8"
-  - "9"
+  - "10"
+  - "11"
 
 script: "npm run-script test"
 after_script: "npm install coveralls@2 && cat ./coverage/lcov.info | coveralls"
