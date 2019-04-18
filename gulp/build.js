@@ -29,6 +29,7 @@ gulp.task('build:client', () => {
 	const
 		del = require('del'),
 		merge = require('merge2'),
+		rollup = require('rollup-stream'),
 		helpers = require('./helpers');
 
 	const
@@ -50,28 +51,32 @@ gulp.task('build:client', () => {
 				.pipe($.rename(name))
 				.pipe(gulp.dest('./src'))
 
-				.pipe($.rollup({
+				.on('end', () => rollup({
+					rollup: require('rollup'),
 					input: `./src/${name}`,
-					allowRealFiles: true,
+
 					output: {
 						name: '$C',
 						format: 'umd',
 						exports: 'named'
 					},
+
 					amd: {id: 'Collection'},
 					plugins: [require('rollup-plugin-babel')()]
-				}))
+				})
 
-				.pipe($.monic({flags: builds[key]}))
-				.pipe($.replace(/(\\t)+/g, ''))
-				.pipe($.replace(/(\\n){2,}/g, '\\n'))
-				.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
-				.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
-				.pipe($.header(fullHead))
-				.pipe($.eol('\n'))
-				.pipe($.rename({extname: '.js'}))
-				.pipe(gulp.dest('./dist'))
-				.on('end', () => del(`./src/${name}`))
+					.pipe($.plumber())
+					.pipe($.monic({flags: builds[key]}))
+					.pipe($.replace(/(\\t)+/g, ''))
+					.pipe($.replace(/(\\n){2,}/g, '\\n'))
+					.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
+					.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
+					.pipe($.header(fullHead))
+					.pipe($.eol('\n'))
+					.pipe($.rename({extname: '.js'}))
+					.pipe(gulp.dest('./dist'))
+					.on('end', () => del(`./src/${name}`))
+				)
 		);
 	});
 
