@@ -49,12 +49,16 @@ gulp.task('build:client', () => {
 				.pipe($.monic({flags: builds[key]}))
 				.pipe($.rename(name))
 				.pipe(gulp.dest('./src'))
+
 				.pipe($.rollup({
-					allowRealFiles: true,
 					input: `./src/${name}`,
-					format: 'umd',
+					allowRealFiles: true,
+					output: {
+						name: '$C',
+						format: 'umd',
+						exports: 'named'
+					},
 					amd: {id: 'Collection'},
-					name: '$C',
 					plugins: [require('rollup-plugin-babel')()]
 				}))
 
