@@ -19,7 +19,7 @@ gulp.task('build:node', () =>
 		.pipe($.plumber())
 		.pipe($.babel({
 			babelrc: false,
-			plugins: [['transform-es2015-modules-commonjs', {loose: true}]]
+			plugins: [['@babel/plugin-transform-modules-commonjs', {loose: true}]]
 		}))
 
 		.pipe(gulp.dest('./dist/node'))
