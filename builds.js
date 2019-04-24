@@ -1,11 +1,11 @@
 'use strict';
 
 /*!
- * Snakeskin
- * https://github/com/SnakeskinTpl/Snakeskin
+ * Collection
+ * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
- * https://github/com/SnakeskinTpl/Snakeskin/blob/master/LICENSE
+ * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
 module.exports = {
