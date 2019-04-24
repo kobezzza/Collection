@@ -71,7 +71,7 @@ gulp.task('build:browser', () => {
 						.then((bundle) => bundle.generate({
 							name: '$C',
 							format: 'umd',
-							exports: 'named',
+							exports: 'default',
 							amd: {id: 'Collection'}
 						}))
 
