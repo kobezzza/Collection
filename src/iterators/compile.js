@@ -166,7 +166,7 @@ export function compileCycle(key, p) {
 		}
 	}
 
-	//#if iterators.async
+	//#if iterators/async
 
 	if (p.async) {
 		iFn += ws`
@@ -343,7 +343,7 @@ export function compileCycle(key, p) {
 		`;
 
 		if (needParallel) {
-			//#if iterators.async
+			//#if iterators/async
 
 			iFn += ws`
 				if (maxParallelIsNumber) {
@@ -456,7 +456,7 @@ export function compileCycle(key, p) {
 		`;
 
 		if (p.async) {
-			//#if iterators.async
+			//#if iterators/async
 
 			iFn += ws`
 				ctx.thread = thread;
@@ -657,8 +657,8 @@ export function compileCycle(key, p) {
 		threadStart = '',
 		threadEnd = '';
 
-	//#if iterators.async
-	//#if iterators.thread
+	//#if iterators/async
+	//#if iterators/thread
 
 	if (p.async && p.thread) {
 		threadStart = ws`
@@ -689,7 +689,7 @@ export function compileCycle(key, p) {
 		yielder = '',
 		asyncWait = '';
 
-	//#if iterators.async
+	//#if iterators/async
 
 	if (p.async) {
 		iFn += 'done = false;';
@@ -961,7 +961,7 @@ export function compileCycle(key, p) {
 
 			let asyncIterator = '';
 
-			//#if iterators.async
+			//#if iterators/async
 
 			if (p.type === 'asyncIterator') {
 				asyncIterator = ws`
@@ -982,7 +982,7 @@ export function compileCycle(key, p) {
 			if (p.reverse) {
 				iFn += `el = 'value' in key ? key.value : key; ${asyncIterator}`;
 
-				//#if iterators.async
+				//#if iterators/async
 
 				if (needParallel) {
 					iFn += ws`
@@ -1116,7 +1116,7 @@ export function compileCycle(key, p) {
 		tmp += 'breaker = true;';
 	}
 
-	//#if iterators.async
+	//#if iterators/async
 
 	if (p.async) {
 		tmp += ws`
@@ -1195,7 +1195,7 @@ export function compileCycle(key, p) {
 	`;
 
 	if (p.async) {
-		//#if iterators.async
+		//#if iterators/async
 		tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
 		//#endif
 

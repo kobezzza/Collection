@@ -57,7 +57,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 			const
 				val = cb.apply(null, args);
 
-			//#if iterators.async
+			//#if iterators/async
 
 			if (p.async && isPromise(val)) {
 				return val.then((val) => {

@@ -127,7 +127,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
-				//#if iterators.async
+				//#if iterators/async
 
 				if (p.async && isPromise(val)) {
 					return val.then((val) => isPositive(val) && res.push(val));
@@ -146,7 +146,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
-				//#if iterators.async
+				//#if iterators/async
 
 				if (p.async && isPromise(val)) {
 					return val.then((val) => {
@@ -172,7 +172,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
-				//#if iterators.async
+				//#if iterators/async
 
 				if (p.async && isPromise(val)) {
 					return val.then((val) => isPositive(val) && res.set(key, val));
@@ -192,7 +192,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
-				//#if iterators.async
+				//#if iterators/async
 
 				if (p.async && isPromise(val)) {
 					return val.then((val) => isPositive(val) && res.add(val));
@@ -246,7 +246,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						}
 					}
 
-					//#if iterators.async
+					//#if iterators/async
 
 					if (p.async && isPromise(val)) {
 						return val.then((res) => {
@@ -269,7 +269,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 				const
 					val = opt_cb.apply(null, arguments);
 
-				//#if iterators.async
+				//#if iterators/async
 
 				if (p.async && isPromise(val)) {
 					return val.then((val) => {

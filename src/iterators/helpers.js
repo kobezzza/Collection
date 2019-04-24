@@ -111,8 +111,8 @@ Collection.prototype._initParams = function (p, filters) {
 	return this;
 };
 
-//#if iterators.async
-//#if iterators.thread
+//#if iterators/async
+//#if iterators/thread
 
 /**
  * Marks the operation as thread
@@ -276,7 +276,7 @@ Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
 	return this;
 };
 
-//#if iterators.async
+//#if iterators/async
 
 /**
  * Sets .async to true and .parallel for the operation
@@ -305,7 +305,7 @@ Collection.prototype.race = function (opt_max) {
 //#endif
 
 Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} */ {
-	//#if iterators.async
+	//#if iterators/async
 
 	async: {
 		/**

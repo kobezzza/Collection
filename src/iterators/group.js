@@ -54,7 +54,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
-			//#if iterators.async
+			//#if iterators/async
 
 			if (p.async && isPromise(param)) {
 				return param.then((param) => {
@@ -83,7 +83,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 				param = isFunc ? field.apply(null, arguments) : byLink(el, field),
 				val = p.saveKeys ? key : el;
 
-			//#if iterators.async
+			//#if iterators/async
 
 			if (p.async && isPromise(param)) {
 				return param.then((param) => {

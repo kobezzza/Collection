@@ -82,7 +82,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					//#if iterators.async
+					//#if iterators/async
 
 					if (p.async && isPromise(res)) {
 						return res.then((res) => {
@@ -142,7 +142,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					//#if iterators.async
+					//#if iterators/async
 
 					if (p.async && isPromise(res)) {
 						return res.then((res) => {
@@ -204,7 +204,7 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					const
 						res = value.apply(null, arguments);
 
-					//#if iterators.async
+					//#if iterators/async
 
 					if (p.async && isPromise(res)) {
 						return res.then((res) => {

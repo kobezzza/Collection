@@ -111,7 +111,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 	let
 		cursor;
 
-	//#if iterators.async
+	//#if iterators/async
 
 	if (asyncTypes[type]) {
 		cursor = data;
@@ -327,8 +327,8 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 		maxParallel: p.parallel || p.race
 	};
 
-	//#if iterators.thread
-	//#if iterators.async
+	//#if iterators/thread
+	//#if iterators/async
 
 	if (p.async) {
 		let thread;

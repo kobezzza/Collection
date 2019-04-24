@@ -2,60 +2,60 @@
 
 /*!
  * Snakeskin
- * https://github.com/SnakeskinTpl/Snakeskin
+ * https://github/com/SnakeskinTpl/Snakeskin
  *
  * Released under the MIT license
- * https://github.com/SnakeskinTpl/Snakeskin/blob/master/LICENSE
+ * https://github/com/SnakeskinTpl/Snakeskin/blob/master/LICENSE
  */
 
 module.exports = {
 	'collection': {
-		'iterators.extend': true,
-		'iterators.map': true,
-		'iterators.get': true,
-		'iterators.reduce': true,
-		'iterators.every': true,
-		'iterators.some': true,
-		'iterators.search': true,
-		'iterators.includes': true,
-		'iterators.group': true,
-		'iterators.remove': true,
-		'iterators.set': true,
-		'iterators.async': true,
-		'iterators.thread': true,
+		'iterators/extend': true,
+		'iterators/map': true,
+		'iterators/get': true,
+		'iterators/reduce': true,
+		'iterators/every': true,
+		'iterators/some': true,
+		'iterators/search': true,
+		'iterators/includes': true,
+		'iterators/group': true,
+		'iterators/remove': true,
+		'iterators/set': true,
+		'iterators/async': true,
+		'iterators/thread': true,
 		'link': true
 	},
 
 	'collection.sync': {
-		'iterators.extend': true,
-		'iterators.map': true,
-		'iterators.get': true,
-		'iterators.reduce': true,
-		'iterators.every': true,
-		'iterators.some': true,
-		'iterators.search': true,
-		'iterators.includes': true,
-		'iterators.group': true,
-		'iterators.remove': true,
-		'iterators.set': true,
+		'iterators/extend': true,
+		'iterators/map': true,
+		'iterators/get': true,
+		'iterators/reduce': true,
+		'iterators/every': true,
+		'iterators/some': true,
+		'iterators/search': true,
+		'iterators/includes': true,
+		'iterators/group': true,
+		'iterators/remove': true,
+		'iterators/set': true,
 		'link': true
 	},
 
 	'collection.node': {
 		'isNode': true,
-		'iterators.extend': true,
-		'iterators.map': true,
-		'iterators.get': true,
-		'iterators.reduce': true,
-		'iterators.every': true,
-		'iterators.some': true,
-		'iterators.search': true,
-		'iterators.includes': true,
-		'iterators.group': true,
-		'iterators.remove': true,
-		'iterators.set': true,
-		'iterators.async': true,
-		'iterators.thread': true,
+		'iterators/extend': true,
+		'iterators/map': true,
+		'iterators/get': true,
+		'iterators/reduce': true,
+		'iterators/every': true,
+		'iterators/some': true,
+		'iterators/search': true,
+		'iterators/includes': true,
+		'iterators/group': true,
+		'iterators/remove': true,
+		'iterators/set': true,
+		'iterators/async': true,
+		'iterators/thread': true,
 		'link': true
 	}
 };

@@ -16,52 +16,52 @@ import './iterators/cache';
 import './iterators/forEach';
 import './iterators/helpers';
 
-//#if iterators.extend
+//#if iterators/extend
 import './iterators/extend';
 //#endif
 
-//#if iterators.map
+//#if iterators/map
 import './iterators/map';
 //#endif
 
-//#if iterators.get
+//#if iterators/get
 import './iterators/get';
 //#endif
 
-//#if iterators.reduce
+//#if iterators/reduce
 import './iterators/reduce';
 //#endif
 
-//#if iterators.every
+//#if iterators/every
 import './iterators/every';
 //#endif
 
-//#if iterators.some
+//#if iterators/some
 import './iterators/some';
 //#endif
 
-//#if iterators.search
+//#if iterators/search
 import './iterators/search';
 //#endif
 
-//#if iterators.includes
+//#if iterators/includes
 import './iterators/includes';
 //#endif
 
-//#if iterators.group
+//#if iterators/group
 import './iterators/group';
 //#endif
 
-//#if iterators.remove
+//#if iterators/remove
 import './iterators/remove';
 //#endif
 
-//#if iterators.set
+//#if iterators/set
 import './iterators/set';
 //#endif
 
-//#if iterators.async
-//#if iterators.thread
+//#if iterators/async
+//#if iterators/thread
 import './iterators/thread';
 //#endif
 //#endif
