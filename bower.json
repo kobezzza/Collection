@@ -39,6 +39,7 @@
     "/.npmignore"
   ],
   "devDependencies": {
-    "closure-compiler": "http://dl.google.com/closure-compiler/compiler-latest.zip"
+    "closure-compiler": "http://dl.google.com/closure-compiler/compiler-latest.zip",
+    "jasmine": "^3.4.0"
   }
 }
