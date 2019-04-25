@@ -19,7 +19,9 @@
     "url": "https://github.com/kobezzza/Collection/issues"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "bower install && jasmine",
+    "test-coverage": "bower install && gulp test",
+    "full-test": "npm run test-coverage && yaspeller ./"
   },
   "keywords": [
     "javascript",
