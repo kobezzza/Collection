@@ -10,33 +10,11 @@
 
 const
 	gulp = require('gulp'),
-	$ = require('gulp-load-plugins')();
+	$ = require('gulp-load-plugins')(),
+	{test} = require('./helpers');
 
-function test() {
-	const
-		dev = arguments[0] === true;
-
-	function exec() {
-		return gulp.src(`./dist/collection${!dev ? '.min' : ''}.js`)
-			.pipe($.istanbul())
-			.pipe($.istanbul.hookRequire())
-			.on('finish', runTests);
-
-		function runTests() {
-			return gulp.src(`./spec/${dev ? 'dev' : 'index'}_spec.js`)
-				.pipe($.plumber())
-				.pipe($.jasmine())
-				.pipe($.istanbul.writeReports());
-		}
-	}
-
-	if (dev) {
-		return exec;
-	}
-
-	return exec();
-}
-
-gulp.task('test', test);
-gulp.task('test:dev', gulp.series(['build:browser', test(true)]));
+gulp.task('test', gulp.parallel([test('node'), test('browser')]));
+gulp.task('test:node', gulp.series(['build:node', test('node')]));
+gulp.task('test:browser', gulp.series(['build:compile:fast', test('browser')]));
+gulp.task('test:browser:dev', gulp.series(['build:browser', test('browser', true)]));
 gulp.task('yaspeller', () => $.run('yaspeller ./').exec().on('error', console.error));

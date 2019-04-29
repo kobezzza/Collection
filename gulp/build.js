@@ -12,7 +12,8 @@
 
 const
 	gulp = require('gulp'),
-	$ = require('gulp-load-plugins')();
+	$ = require('gulp-load-plugins')(),
+	{test} = require('./helpers');
 
 const
 	path = require('path'),
@@ -155,7 +156,7 @@ function compile() {
 		tasks.push(
 			gulp.src(`./dist/${key}.js`)
 				.pipe($.plumber())
-				.pipe($.closureCompiler(Object.assign(gccFlags, {compilerPath: glob.sync(gccFlags.compilerPath)})))
+				.pipe($.closureCompiler(Object.assign(gccFlags, {compilerPath: glob.sync(gccFlags.compilerPath)[0]})))
 				.pipe($.replace(/^\/\*[\s\S]*?\*\//, ''))
 				.pipe($.wrap('(function(){\'use strict\';<%= contents %>}).call(this);'))
 				.pipe($.header(head))
@@ -167,4 +168,7 @@ function compile() {
 	return merge(tasks);
 }
 
-gulp.task('build', gulp.parallel(['build:compile', 'build:node']));
+gulp.task('build', gulp.parallel([
+	gulp.series(['build:compile', test('browser')]),
+	gulp.series(['build:node', test('node')])
+]));

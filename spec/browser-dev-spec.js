@@ -6,6 +6,5 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-describe('Collection', () => {
-
-});
+global.$C = require('../dist/collection');
+require('./test')();
