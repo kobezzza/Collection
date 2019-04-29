@@ -13,7 +13,7 @@
 export { default as default } from './core';
 
 import './iterators/cache';
-import './iterators/forEach';
+import './iterators/for-each';
 import './iterators/helpers';
 
 //#if iterators/extend
