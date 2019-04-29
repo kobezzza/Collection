@@ -10,7 +10,14 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-export { default as default } from './core';
+import $C from './core';
+export default $C;
+
+import { IS_NODE } from './consts/hacks';
+
+if (IS_NODE) {
+	module.exports = exports = $C;
+}
 
 import './iterators/cache';
 import './iterators/for-each';
