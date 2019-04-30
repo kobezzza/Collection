@@ -118,6 +118,8 @@ export function byLink(obj, link, opt_params) {
 
 					} else {
 						if (isLikeArray(obj) && !isNaN(Number(el))) {
+							cache.key = Number(cache.key);
+
 							if (isArray(obj)) {
 								obj.splice(el, 1);
 
@@ -126,6 +128,7 @@ export function byLink(obj, link, opt_params) {
 							}
 
 						} else {
+							cache.key = String(cache.key);
 							delete obj[el];
 						}
 
