@@ -225,4 +225,21 @@ describe('Collection methods with streams', () => {
 				done();
 			});
 	});
+
+	it('race map with a stream', (done) => {
+		const
+			dataHandler = jasmine.createSpy();
+
+		$C(generateStream(5))
+			.race(2)
+			.map()
+
+			.addListener('data', dataHandler)
+			.addListener('end', () => {
+				expect(dataHandler).toHaveBeenCalledTimes(2);
+				expect(dataHandler).toHaveBeenCalledWith(0);
+				expect(dataHandler).toHaveBeenCalledWith(1);
+				done();
+			});
+	});
 });
