@@ -81,6 +81,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 
 	if (isStream(res)) {
 		returnVal.then(() => res.end(), (err) => res.destroy(err));
+		return p.result;
 	}
 
 	if (returnVal !== this) {
