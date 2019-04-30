@@ -305,11 +305,10 @@ export function compileCycle(key, p) {
 
 		if (p.from) {
 			fnCountHelper += ws`
-				if (from === 0) {
+				if (from !== 0) {
+					from--;
 					return;
 				}
-
-				from--;
 			`;
 		}
 
