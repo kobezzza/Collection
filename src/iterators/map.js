@@ -11,7 +11,7 @@
 import { Collection } from '../core';
 import { IS_NODE } from '../consts/hacks';
 import { FN_LENGTH } from '../consts/base';
-import { isArray, isFunction, isPromise, isStream, isPositive } from '../helpers/types';
+import { isArray, isFunction, isPromise, isPositive } from '../helpers/types';
 import { any } from '../helpers/gcc';
 
 /**
@@ -83,23 +83,9 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						const
 							{Transform} = require('stream');
 
-						let
-							readObj = true,
-							writeObj = true;
-
-						if (isStream(data)) {
-							if (data._readableState) {
-								readObj = data._readableState.objectMode;
-							}
-
-							if (data._writableState) {
-								writeObj = data._writableState.objectMode;
-							}
-						}
-
 						res = new Transform({
-							readableObjectMode: readObj,
-							writableObjectMode: writeObj,
+							readableObjectMode: true,
+							writableObjectMode: true,
 							transform(data, enc, cb) {
 								cb(null, data);
 							}
