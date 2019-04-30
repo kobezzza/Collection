@@ -17,6 +17,7 @@ import { IS_NODE } from './consts/hacks';
 
 if (IS_NODE) {
 	module.exports = exports = $C;
+	exports.default = $C;
 }
 
 import './iterators/cache';
