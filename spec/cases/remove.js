@@ -6,7 +6,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-describe('Collection.get', () => {
+describe('Collection.remove', () => {
 	it('remove from an object by a string link', () => {
 		const obj = {
 			a: {
