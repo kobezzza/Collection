@@ -30,7 +30,7 @@ describe('Collection.remove', () => {
 		};
 
 		expect($C(obj).remove('a.1')).toEqual({
-			key: '1',
+			key: 1,
 			result: true,
 			value: 2
 		});
