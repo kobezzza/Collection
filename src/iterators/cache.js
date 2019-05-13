@@ -28,7 +28,7 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 				if (cache && version == CACHE_VERSION) {
 					$C.cache.str = JSON.parse(cache);
 					document.write(
-						'<script type="text/javascript">' +
+						'<script type="text/javascript" ' + [].concat(GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || []).join(' ') + '>' +
 						returnCache($C.cache.str) +
 						`${NAMESPACE}.ready = true;` +
 						/* eslint-disable-next-line */
