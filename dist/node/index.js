@@ -1,5 +1,4 @@
 'use strict';
-
 /* eslint-disable no-useless-rename */
 
 /*!
@@ -11,94 +10,40 @@
  */
 
 exports.__esModule = true;
-exports.default = undefined;
+exports.default = void 0;
 
-var _core = require('./core');
+var _core = _interopRequireDefault(require("./core"));
 
-Object.defineProperty(exports, 'default', {
-  enumerable: true,
-  get: function () {
-    return _interopRequireDefault(_core).default;
-  }
-});
+exports.default = _core.default;
 
-require('./iterators/cache');
+require("./iterators/cache");
 
-require('./iterators/forEach');
+require("./iterators/for-each");
 
-require('./iterators/helpers');
+require("./iterators/helpers");
 
-require('./iterators/extend');
+require("./iterators/extend");
 
-require('./iterators/map');
+require("./iterators/map");
 
-require('./iterators/get');
+require("./iterators/get");
 
-require('./iterators/reduce');
+require("./iterators/reduce");
 
-require('./iterators/every');
+require("./iterators/every");
 
-require('./iterators/some');
+require("./iterators/some");
 
-require('./iterators/search');
+require("./iterators/search");
 
-require('./iterators/includes');
+require("./iterators/includes");
 
-require('./iterators/group');
+require("./iterators/group");
 
-require('./iterators/remove');
+require("./iterators/remove");
 
-require('./iterators/set');
+require("./iterators/set");
 
-require('./iterators/thread');
+require("./iterators/thread");
 
-//#endif
-//#endif
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-//#if iterators.extend
-
-//#endif
-
-//#if iterators.map
-
-//#endif
-
-//#if iterators.get
-
-//#endif
-
-//#if iterators.reduce
-
-//#endif
-
-//#if iterators.every
-
-//#endif
-
-//#if iterators.some
-
-//#endif
-
-//#if iterators.search
-
-//#endif
-
-//#if iterators.includes
-
-//#endif
-
-//#if iterators.group
-
-//#endif
-
-//#if iterators.remove
-
-//#endif
-
-//#if iterators.set
-
-//#endif
-
-//#if iterators.async
-//#if iterators.thread

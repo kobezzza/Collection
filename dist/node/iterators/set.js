@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -8,15 +7,15 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-var _core = require('../core');
+var _core = require("../core");
 
-var _base = require('../consts/base');
+var _base = require("../consts/base");
 
-var _types = require('../helpers/types');
+var _types = require("../helpers/types");
 
-var _link = require('../helpers/link');
+var _link = require("../helpers/link");
 
-var _gcc = require('../helpers/gcc');
+var _gcc = require("../helpers/gcc");
 
 /**
  * Sets a new value for collection elements by the specified condition/link
@@ -32,314 +31,319 @@ var _gcc = require('../helpers/gcc');
  * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */
 _core.Collection.prototype.set = function (value, filter, opt_params) {
-	let p = opt_params || {};
+  let p = opt_params || {};
+  const {
+    data
+  } = this;
 
-	const { data } = this;
+  if (!(0, _types.isFunction)(filter) && ((0, _types.isArray)(filter) && !(0, _types.isFunction)(filter[1]) || filter != null && typeof filter !== 'object')) {
+    return (0, _link.byLink)(data, filter, {
+      value,
+      create: p.create !== false,
+      error: true
+    });
+  }
 
-	if (!(0, _types.isFunction)(filter) && ((0, _types.isArray)(filter) && !(0, _types.isFunction)(filter[1]) || filter != null && typeof filter !== 'object')) {
-		return (0, _link.byLink)(data, filter, { value, create: p.create !== false, error: true });
-	}
+  if (!(0, _types.isArray)(filter) && !(0, _types.isFunction)(filter)) {
+    p = filter || p;
+    filter = null;
+  }
 
-	if (!(0, _types.isArray)(filter) && !(0, _types.isFunction)(filter)) {
-		p = filter || p;
-		filter = null;
-	}
+  this._initParams(p, filter);
 
-	this._initParams(p, filter);
-	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+  p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+  const valIsFunc = (0, _types.isFunction)(value);
 
-	const valIsFunc = (0, _types.isFunction)(value);
+  if (_types.iterators[p.type]) {
+    throw new TypeError('Incorrect data type');
+  }
 
-	if (_types.iterators[p.type]) {
-		throw new TypeError('Incorrect data type');
-	}
+  const mult = p.mult !== false,
+        report = [];
 
-	const mult = p.mult !== false,
-	      report = [];
+  if (mult) {
+    p.result = report;
+  } else {
+    p.result = {
+      notFound: true,
+      result: false,
+      key: undefined,
+      value: undefined
+    };
+  }
 
-	if (mult) {
-		p.result = report;
-	} else {
-		p.result = {
-			notFound: true,
-			result: false,
-			key: undefined,
-			value: undefined
-		};
-	}
+  let fn;
 
-	let fn;
-	if (valIsFunc) {
-		switch (p.type) {
-			case 'map':
-				fn = function (el, key, data) {
-					const res = value.apply(null, arguments);
+  if (valIsFunc) {
+    switch (p.type) {
+      case 'map':
+        fn = function (el, key, data) {
+          const res = value.apply(null, arguments); //#if iterators/async
 
-					//#if iterators.async
+          if (p.async && (0, _types.isPromise)(res)) {
+            return res.then(res => {
+              let status = res === undefined;
 
-					if (p.async && (0, _types.isPromise)(res)) {
-						return res.then(res => {
-							let status = res === undefined;
+              if (res !== undefined && data.get(key) !== res) {
+                data.set(key, res);
+                status = data.get(key) === res;
+              }
 
-							if (res !== undefined && data.get(key) !== res) {
-								data.set(key, res);
-								status = data.get(key) === res;
-							}
+              const o = {
+                key,
+                value: el,
+                newValue: res,
+                result: status
+              };
 
-							const o = {
-								key,
-								value: el,
-								newValue: res,
-								result: status
-							};
+              if (mult) {
+                report.push(o);
+              } else {
+                p.result = o;
+              }
+            });
+          } //#endif
 
-							if (mult) {
-								report.push(o);
-							} else {
-								p.result = o;
-							}
-						});
-					}
 
-					//#endif
+          let status = res === undefined;
 
-					let status = res === undefined;
+          if (res !== undefined && data.get(key) !== res) {
+            data.set(key, res);
+            status = data.get(key) === res;
+          }
 
-					if (res !== undefined && data.get(key) !== res) {
-						data.set(key, res);
-						status = data.get(key) === res;
-					}
+          const o = {
+            key,
+            value: el,
+            newValue: res,
+            result: status
+          };
 
-					const o = {
-						key,
-						value: el,
-						newValue: res,
-						result: status
-					};
+          if (mult) {
+            report.push(o);
+          } else {
+            p.result = o;
+          }
+        };
 
-					if (mult) {
-						report.push(o);
-					} else {
-						p.result = o;
-					}
-				};
+        break;
 
-				break;
+      case 'set':
+        fn = function (el, key, data) {
+          const res = value.apply(null, arguments); //#if iterators/async
 
-			case 'set':
-				fn = function (el, key, data) {
-					const res = value.apply(null, arguments);
+          if (p.async && (0, _types.isPromise)(res)) {
+            return res.then(res => {
+              let status = res === undefined;
 
-					//#if iterators.async
+              if (res !== undefined && !data.has(res)) {
+                data.delete(el);
+                data.add(res);
+                status = data.has(res);
+              }
 
-					if (p.async && (0, _types.isPromise)(res)) {
-						return res.then(res => {
-							let status = res === undefined;
+              const o = {
+                key: null,
+                value: el,
+                newValue: res,
+                result: status
+              };
 
-							if (res !== undefined && !data.has(res)) {
-								data.delete(el);
-								data.add(res);
-								status = data.has(res);
-							}
+              if (mult) {
+                report.push(o);
+              } else {
+                p.result = o;
+              }
+            });
+          } //#endif
 
-							const o = {
-								key: null,
-								value: el,
-								newValue: res,
-								result: status
-							};
 
-							if (mult) {
-								report.push(o);
-							} else {
-								p.result = o;
-							}
-						});
-					}
+          let status = res === undefined;
 
-					//#endif
+          if (res !== undefined && !data.has(res)) {
+            data.delete(el);
+            data.add(res);
+            status = data.has(res);
+          }
 
-					let status = res === undefined;
+          const o = {
+            key: null,
+            value: el,
+            newValue: res,
+            result: status
+          };
 
-					if (res !== undefined && !data.has(res)) {
-						data.delete(el);
-						data.add(res);
-						status = data.has(res);
-					}
+          if (mult) {
+            report.push(o);
+          } else {
+            p.result = o;
+          }
+        };
 
-					const o = {
-						key: null,
-						value: el,
-						newValue: res,
-						result: status
-					};
+        break;
 
-					if (mult) {
-						report.push(o);
-					} else {
-						p.result = o;
-					}
-				};
+      default:
+        fn = function (el, key, data) {
+          const res = value.apply(null, arguments); //#if iterators/async
 
-				break;
+          if (p.async && (0, _types.isPromise)(res)) {
+            return res.then(res => {
+              let status = res === undefined;
 
-			default:
-				fn = function (el, key, data) {
-					const res = value.apply(null, arguments);
+              if (res !== undefined && data[key] !== res) {
+                data[key] = res;
+                status = data[key] === res;
+              }
 
-					//#if iterators.async
+              const o = {
+                key,
+                value: el,
+                newValue: res,
+                result: status
+              };
 
-					if (p.async && (0, _types.isPromise)(res)) {
-						return res.then(res => {
-							let status = res === undefined;
+              if (mult) {
+                report.push(o);
+              } else {
+                p.result = o;
+              }
+            });
+          } //#endif
 
-							if (res !== undefined && data[key] !== res) {
-								data[key] = res;
-								status = data[key] === res;
-							}
 
-							const o = {
-								key,
-								value: el,
-								newValue: res,
-								result: status
-							};
+          let status = res === undefined;
 
-							if (mult) {
-								report.push(o);
-							} else {
-								p.result = o;
-							}
-						});
-					}
+          if (res !== undefined && data[key] !== res) {
+            data[key] = res;
+            status = data[key] === res;
+          }
 
-					//#endif
+          const o = {
+            key,
+            value: el,
+            newValue: res,
+            result: status
+          };
 
-					let status = res === undefined;
+          if (mult) {
+            report.push(o);
+          } else {
+            p.result = o;
+          }
+        };
 
-					if (res !== undefined && data[key] !== res) {
-						data[key] = res;
-						status = data[key] === res;
-					}
+    }
 
-					const o = {
-						key,
-						value: el,
-						newValue: res,
-						result: status
-					};
+    fn[_base.FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
+  } else {
+    switch (p.type) {
+      case 'map':
+        fn = (el, key, data) => {
+          let result = false;
 
-					if (mult) {
-						report.push(o);
-					} else {
-						p.result = o;
-					}
-				};
-		}
+          if (data.get(key) !== value) {
+            data.set(key, value);
+            result = data.get(key) === value;
+          }
 
-		fn[_base.FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
-	} else {
-		switch (p.type) {
-			case 'map':
-				fn = (el, key, data) => {
-					let result = false;
-					if (data.get(key) !== value) {
-						data.set(key, value);
-						result = data.get(key) === value;
-					}
+          const o = {
+            key,
+            value: el,
+            newValue: value,
+            result
+          };
 
-					const o = {
-						key,
-						value: el,
-						newValue: value,
-						result
-					};
+          if (mult) {
+            report.push(o);
+          } else {
+            p.result = o;
+          }
+        };
 
-					if (mult) {
-						report.push(o);
-					} else {
-						p.result = o;
-					}
-				};
+        break;
 
-				break;
+      case 'set':
+        fn = (el, key, data) => {
+          let result = false;
 
-			case 'set':
-				fn = (el, key, data) => {
-					let result = false;
-					if (!data.has(value)) {
-						data.delete(el);
-						data.add(value);
-						result = data.has(value);
-					}
+          if (!data.has(value)) {
+            data.delete(el);
+            data.add(value);
+            result = data.has(value);
+          }
 
-					const o = {
-						key: null,
-						value: el,
-						newValue: value,
-						result
-					};
+          const o = {
+            key: null,
+            value: el,
+            newValue: value,
+            result
+          };
 
-					if (mult) {
-						report.push(o);
-					} else {
-						p.result = o;
-					}
-				};
+          if (mult) {
+            report.push(o);
+          } else {
+            p.result = o;
+          }
+        };
 
-				break;
+        break;
 
-			default:
-				fn = (el, key, data) => {
-					let result = false;
-					if (data[key] !== value) {
-						data[key] = value;
-						result = data[key] === value;
-					}
+      default:
+        fn = (el, key, data) => {
+          let result = false;
 
-					const o = {
-						key,
-						value: el,
-						newValue: value,
-						result
-					};
+          if (data[key] !== value) {
+            data[key] = value;
+            result = data[key] === value;
+          }
 
-					if (mult) {
-						report.push(o);
-					} else {
-						p.result = o;
-					}
-				};
-		}
-	}
+          const o = {
+            key,
+            value: el,
+            newValue: value,
+            result
+          };
 
-	const { onIterationEnd } = p;
-	p.onIterationEnd = ctx => {
-		if ((mult ? p.result.notFound : !p.result.length) && 'key' in p) {
-			if (p.key == null && (0, _types.isArray)(data)) {
-				p.key = data.length;
-			}
+          if (mult) {
+            report.push(o);
+          } else {
+            p.result = o;
+          }
+        };
 
-			const res = (0, _link.byLink)(data, p.key, {
-				value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
-				create: p.create !== false
-			});
+    }
+  }
 
-			if (mult) {
-				p.result.push(res);
-			} else {
-				p.result = res;
-			}
-		}
+  const {
+    onIterationEnd
+  } = p;
 
-		onIterationEnd && onIterationEnd(ctx);
-	};
+  p.onIterationEnd = ctx => {
+    if ((mult ? p.result.notFound : !p.result.length) && 'key' in p) {
+      if (p.key == null && (0, _types.isArray)(data)) {
+        p.key = data.length;
+      }
 
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
+      const res = (0, _link.byLink)(data, p.key, {
+        value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
+        create: p.create !== false
+      });
 
-	if (returnVal !== this) {
-		return returnVal;
-	}
+      if (mult) {
+        p.result.push(res);
+      } else {
+        p.result = res;
+      }
+    }
 
-	return p.result;
+    onIterationEnd && onIterationEnd(ctx);
+  };
+
+  const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
+
+  if (returnVal !== this) {
+    return returnVal;
+  }
+
+  return p.result;
 };

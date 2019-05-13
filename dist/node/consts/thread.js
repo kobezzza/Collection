@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -9,11 +8,13 @@
  */
 
 exports.__esModule = true;
-const MAX_PRIORITY = exports.MAX_PRIORITY = 40;
-
-const PRIORITY = exports.PRIORITY = {
+exports.PRIORITY = exports.MAX_PRIORITY = void 0;
+const MAX_PRIORITY = 40;
+exports.MAX_PRIORITY = MAX_PRIORITY;
+const PRIORITY = {
   'low': MAX_PRIORITY / 8,
   'normal': MAX_PRIORITY / 4,
   'hight': MAX_PRIORITY / 2,
   'critical': MAX_PRIORITY
 };
+exports.PRIORITY = PRIORITY;

@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -9,7 +8,12 @@
  */
 
 exports.__esModule = true;
-const GLOBAL = exports.GLOBAL = new Function('return this')(),
-      TRUE = exports.TRUE = [],
-      FALSE = exports.FALSE = [],
-      IGNORE = exports.IGNORE = [];
+exports.IGNORE = exports.FALSE = exports.TRUE = exports.GLOBAL = void 0;
+const GLOBAL = new Function('return this')(),
+      TRUE = [],
+      FALSE = [],
+      IGNORE = [];
+exports.IGNORE = IGNORE;
+exports.FALSE = FALSE;
+exports.TRUE = TRUE;
+exports.GLOBAL = GLOBAL;

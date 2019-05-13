@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -8,13 +7,13 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-var _core = require('../core');
+var _core = require("../core");
 
-var _types = require('../helpers/types');
+var _types = require("../helpers/types");
 
-var _link = require('../helpers/link');
+var _link = require("../helpers/link");
 
-var _gcc = require('../helpers/gcc');
+var _gcc = require("../helpers/gcc");
 
 /**
  * Removes elements from the collection by the specified condition/link
@@ -25,187 +24,191 @@ var _gcc = require('../helpers/gcc');
  * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
  */
 _core.Collection.prototype.remove = function (opt_filter, opt_params) {
-	let p = opt_params || {};
+  let p = opt_params || {};
 
-	if (!(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
-		return (0, _link.byLink)(this.data, opt_filter, { delete: true });
-	}
+  if (!(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
+    return (0, _link.byLink)(this.data, opt_filter, {
+      delete: true
+    });
+  }
 
-	if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
-		p = opt_filter || p;
-		opt_filter = null;
-	}
+  if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
+    p = opt_filter || p;
+    opt_filter = null;
+  }
 
-	this._initParams(p, opt_filter);
-	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+  this._initParams(p, opt_filter);
 
-	const isRealArray = p.type === 'array' && (0, _types.isArray)(this.data);
+  p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+  const isRealArray = p.type === 'array' && (0, _types.isArray)(this.data);
 
-	if (_types.iterators[p.type]) {
-		throw new TypeError('Incorrect data type');
-	}
+  if (_types.iterators[p.type]) {
+    throw new TypeError('Incorrect data type');
+  }
 
-	const mult = p.mult !== false,
-	      res = [];
+  const mult = p.mult !== false,
+        res = [];
 
-	if (mult) {
-		p.result = res;
-	} else {
-		p.result = {
-			notFound: true,
-			result: false,
-			key: undefined,
-			value: undefined
-		};
-	}
+  if (mult) {
+    p.result = res;
+  } else {
+    p.result = {
+      notFound: true,
+      result: false,
+      key: undefined,
+      value: undefined
+    };
+  }
 
-	let fn;
-	switch (p.type) {
-		case 'map':
-			fn = (value, key, data) => {
-				data.delete(key);
-				const o = {
-					result: !data.has(key),
-					key,
-					value
-				};
+  let fn;
 
-				if (mult) {
-					res.push(o);
-				} else {
-					p.result = o;
-				}
-			};
+  switch (p.type) {
+    case 'map':
+      fn = (value, key, data) => {
+        data.delete(key);
+        const o = {
+          result: !data.has(key),
+          key,
+          value
+        };
 
-			break;
+        if (mult) {
+          res.push(o);
+        } else {
+          p.result = o;
+        }
+      };
 
-		case 'set':
-			fn = (value, key, data) => {
-				data.delete(value);
-				const o = {
-					result: !data.has(value),
-					key: null,
-					value
-				};
+      break;
 
-				if (mult) {
-					res.push(o);
-				} else {
-					p.result = o;
-				}
-			};
+    case 'set':
+      fn = (value, key, data) => {
+        data.delete(value);
+        const o = {
+          result: !data.has(value),
+          key: null,
+          value
+        };
 
-			break;
+        if (mult) {
+          res.push(o);
+        } else {
+          p.result = o;
+        }
+      };
 
-		case 'array':
-			if (p.reverse) {
-				fn = (value, key, data) => {
-					if (isRealArray) {
-						data.splice(key, 1);
-					} else {
-						_link.splice.call(data, key, 1);
-					}
+      break;
 
-					const o = {
-						result: data[key] !== value,
-						key,
-						value
-					};
+    case 'array':
+      if (p.reverse) {
+        fn = (value, key, data) => {
+          if (isRealArray) {
+            data.splice(key, 1);
+          } else {
+            _link.splice.call(data, key, 1);
+          }
 
-					if (mult) {
-						res.push(o);
-					} else {
-						p.result = o;
-					}
-				};
-			} else {
-				let rm = 0;
-				if (p.live) {
-					fn = (value, key, data, ctx) => {
-						if (isRealArray) {
-							data.splice(key, 1);
-						} else {
-							_link.splice.call(data, key, 1);
-						}
+          const o = {
+            result: data[key] !== value,
+            key,
+            value
+          };
 
-						ctx.i(-1);
-						const o = {
-							result: data[key] !== value,
-							key: key + rm,
-							value
-						};
+          if (mult) {
+            res.push(o);
+          } else {
+            p.result = o;
+          }
+        };
+      } else {
+        let rm = 0;
 
-						if (mult) {
-							res.push(o);
-						} else {
-							p.result = o;
-						}
+        if (p.live) {
+          fn = (value, key, data, ctx) => {
+            if (isRealArray) {
+              data.splice(key, 1);
+            } else {
+              _link.splice.call(data, key, 1);
+            }
 
-						rm++;
-					};
-				} else {
-					fn = (value, key, data, ctx) => {
-						const ln = ctx.length();
+            ctx.i(-1);
+            const o = {
+              result: data[key] !== value,
+              key: key + rm,
+              value
+            };
 
-						const f = length => {
-							if (isRealArray) {
-								data.splice(key, 1);
-							} else {
-								_link.splice.call(data, key, 1);
-							}
+            if (mult) {
+              res.push(o);
+            } else {
+              p.result = o;
+            }
 
-							ctx.i(-1);
+            rm++;
+          };
+        } else {
+          fn = (value, key, data, ctx) => {
+            const ln = ctx.length();
 
-							const o = {
-								result: data[key] !== value,
-								key: key + rm,
-								value
-							};
+            const f = length => {
+              if (isRealArray) {
+                data.splice(key, 1);
+              } else {
+                _link.splice.call(data, key, 1);
+              }
 
-							if (mult) {
-								res.push(o);
-							} else {
-								p.result = o;
-							}
+              ctx.i(-1);
+              const o = {
+                result: data[key] !== value,
+                key: key + rm,
+                value
+              };
 
-							if (++rm === length) {
-								return ctx.break;
-							}
-						};
+              if (mult) {
+                res.push(o);
+              } else {
+                p.result = o;
+              }
 
-						if ((0, _types.isNumber)(ln)) {
-							f(ln);
-						} else {
-							return ctx.wait(ln).then(f);
-						}
-					};
-				}
-			}
+              if (++rm === length) {
+                return ctx.break;
+              }
+            };
 
-			break;
+            if ((0, _types.isNumber)(ln)) {
+              f(ln);
+            } else {
+              return ctx.wait(ln).then(f);
+            }
+          };
+        }
+      }
 
-		default:
-			fn = (value, key, data) => {
-				delete data[key];
-				const o = {
-					result: key in data === false,
-					key,
-					value
-				};
+      break;
 
-				if (mult) {
-					res.push(o);
-				} else {
-					p.result = o;
-				}
-			};
-	}
+    default:
+      fn = (value, key, data) => {
+        delete data[key];
+        const o = {
+          result: key in data === false,
+          key,
+          value
+        };
 
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
+        if (mult) {
+          res.push(o);
+        } else {
+          p.result = o;
+        }
+      };
 
-	if (returnVal !== this) {
-		return returnVal;
-	}
+  }
 
-	return p.result;
+  const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
+
+  if (returnVal !== this) {
+    return returnVal;
+  }
+
+  return p.result;
 };

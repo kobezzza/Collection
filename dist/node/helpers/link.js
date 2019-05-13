@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -9,23 +8,20 @@
  */
 
 exports.__esModule = true;
-exports.hasOwnProperty = exports.splice = exports.slice = undefined;
 exports.byLink = byLink;
+exports.hasOwnProperty = exports.splice = exports.slice = void 0;
 
-var _core = require('../core');
+var _core = _interopRequireWildcard(require("../core"));
 
-var _core2 = _interopRequireDefault(_core);
+var _types = require("./types");
 
-var _types = require('./types');
+var _gcc = require("./gcc");
 
-var _gcc = require('./gcc');
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const slice = exports.slice = [].slice,
-      splice = exports.splice = [].splice,
-      hasOwnProperty = exports.hasOwnProperty = {}.hasOwnProperty;
-
+const slice = [].slice,
+      splice = [].splice,
+      hasOwnProperty = {}.hasOwnProperty;
 /**
  * Sets a value to an object property by a link or returns/deletes the property.
  * At changing or deleting the property returns an object:
@@ -53,152 +49,154 @@ const slice = exports.slice = [].slice,
  *
  * @return {({result: boolean, key, value, notFound: (boolean|undefined)}|?)}
  */
+
+exports.hasOwnProperty = hasOwnProperty;
+exports.splice = splice;
+exports.slice = slice;
+
 function byLink(obj, link, opt_params) {
-	const p = opt_params || {};
+  const p = opt_params || {};
+  const linkList = (0, _types.isString)(link) ? (0, _gcc.any)(link).split('.') : [].concat(link),
+        length = linkList.length,
+        last = length - 1;
+  let pre, preKey;
 
-	const linkList = (0, _types.isString)(link) ? (0, _gcc.any)(link).split('.') : [].concat(link),
-	      length = linkList.length,
-	      last = length - 1;
+  for (let i = -1; ++i < length;) {
+    const el = linkList[i];
 
-	let pre, preKey;
+    if (obj == null) {
+      if (p.test) {
+        return false;
+      }
 
-	for (let i = -1; ++i < length;) {
-		const el = linkList[i];
+      if (p.error) {
+        throw new ReferenceError(`${el} is not defined!`);
+      }
 
-		if (obj == null) {
-			if (p.test) {
-				return false;
-			}
+      if (p.delete) {
+        return {
+          notFound: true,
+          result: false,
+          key: undefined,
+          value: undefined
+        };
+      }
 
-			if (p.error) {
-				throw new ReferenceError(`${el} is not defined!`);
-			}
+      return undefined;
+    }
 
-			if (p.delete) {
-				return {
-					notFound: true,
-					result: false,
-					key: undefined,
-					value: undefined
-				};
-			}
+    const isTest = i === last && p.test;
 
-			return undefined;
-		}
+    if (isTest) {
+      pre = obj;
+      preKey = el;
+    }
 
-		const isTest = i === last && p.test;
+    const objIsMap = (0, _types.isMap)(obj),
+          objIsSet = (0, _types.isSet)(obj);
+    const isAMap = objIsMap || (0, _types.isWeakMap)(obj),
+          isASet = objIsSet || (0, _types.isWeakSet)(obj); // Set or delete
 
-		if (isTest) {
-			pre = obj;
-			preKey = el;
-		}
+    if (!isTest && i === last && (p.delete || 'value' in p)) {
+      const cache = {
+        key: isASet ? null : el,
+        result: isAMap || isASet ? obj.has(el) : el in obj,
+        value: isAMap ? obj.get(el) : isASet ? el : obj[el]
+      };
 
-		const objIsMap = (0, _types.isMap)(obj),
-		      objIsSet = (0, _types.isSet)(obj);
+      if ('value' in p) {
+        cache.newValue = p.value;
+      }
 
-		const isAMap = objIsMap || (0, _types.isWeakMap)(obj),
-		      isASet = objIsSet || (0, _types.isWeakSet)(obj);
+      if (p.delete) {
+        if (cache.result) {
+          if (isAMap || isASet) {
+            obj.delete(el);
+            cache.result = !obj.has(el);
+          } else {
+            if ((0, _types.isLikeArray)(obj) && !isNaN(Number(el))) {
+              cache.key = Number(cache.key);
 
-		// Set or delete
-		if (!isTest && i === last && (p.delete || 'value' in p)) {
-			const cache = {
-				key: isASet ? null : el,
-				result: isAMap || isASet ? obj.has(el) : el in obj,
-				value: isAMap ? obj.get(el) : isASet ? el : obj[el]
-			};
+              if ((0, _types.isArray)(obj)) {
+                obj.splice(el, 1);
+              } else {
+                splice.call(obj, el, 1);
+              }
+            } else {
+              cache.key = String(cache.key);
+              delete obj[el];
+            }
 
-			if ('value' in p) {
-				cache.newValue = p.value;
-			}
+            cache.result = el in obj === false || obj[el] !== cache.value;
+          }
+        }
+      } else {
+        if (isAMap) {
+          if (obj.get(el) !== p.value) {
+            obj.set(el, p.value);
+            cache.result = obj.get(el) === p.value;
+          } else {
+            cache.result = false;
+          }
+        } else if (isASet) {
+          const has = obj.has(el);
+          cache.result = false;
+          cache.value = has ? el : undefined;
 
-			if (p.delete) {
-				if (cache.result) {
-					if (isAMap || isASet) {
-						obj.delete(el);
-						cache.result = !obj.has(el);
-					} else {
-						if ((0, _types.isLikeArray)(obj) && !isNaN(Number(el))) {
-							if ((0, _types.isArray)(obj)) {
-								obj.splice(el, 1);
-							} else {
-								splice.call(obj, el, 1);
-							}
-						} else {
-							delete obj[el];
-						}
+          if (!obj.has(p.value)) {
+            if (has) {
+              obj.delete(el);
+            }
 
-						cache.result = el in obj === false || obj[el] !== cache.value;
-					}
-				}
-			} else {
-				if (isAMap) {
-					if (obj.get(el) !== p.value) {
-						obj.set(el, p.value);
-						cache.result = obj.get(el) === p.value;
-					} else {
-						cache.result = false;
-					}
-				} else if (isASet) {
-					const has = obj.has(el);
+            obj.add(p.value);
+            cache.result = obj.has(p.value);
+          }
+        } else {
+          if ((0, _types.isLikeArray)(obj) && !isNaN(Number(cache.key))) {
+            cache.key = Number(cache.key);
+          } else {
+            cache.key = String(cache.key);
+          }
 
-					cache.result = false;
-					cache.value = has ? el : undefined;
+          if (obj[el] !== p.value) {
+            obj[el] = p.value;
+            cache.result = obj[el] === p.value;
+          } else {
+            cache.result = false;
+          }
+        }
+      }
 
-					if (!obj.has(p.value)) {
-						if (has) {
-							obj.delete(el);
-						}
+      return cache;
+    }
 
-						obj.add(p.value);
-						cache.result = obj.has(p.value);
-					}
-				} else {
-					if ((0, _types.isLikeArray)(obj) && !isNaN(Number(cache.key))) {
-						cache.key = Number(cache.key);
-					} else {
-						cache.key = String(cache.key);
-					}
+    if (isAMap) {
+      obj = obj.get(el);
+    } else if (isASet) {
+      if (obj.has(el)) {
+        obj = el;
+      } else {
+        obj = undefined;
+      }
+    } else {
+      if (p.create && obj[el] === undefined) {
+        obj[el] = {};
+      }
 
-					if (obj[el] !== p.value) {
-						obj[el] = p.value;
-						cache.result = obj[el] === p.value;
-					} else {
-						cache.result = false;
-					}
-				}
-			}
+      obj = obj[el];
+    }
+  }
 
-			return cache;
-		}
+  if (p.test) {
+    if ((0, _types.isMap)(pre) || (0, _types.isWeakMap)(pre) || (0, _types.isSet)(pre) || (0, _types.isWeakSet)(pre)) {
+      return pre.has(preKey);
+    }
 
-		if (isAMap) {
-			obj = obj.get(el);
-		} else if (isASet) {
-			if (obj.has(el)) {
-				obj = el;
-			} else {
-				obj = undefined;
-			}
-		} else {
-			if (p.create && obj[el] === undefined) {
-				obj[el] = {};
-			}
+    return preKey in pre;
+  }
 
-			obj = obj[el];
-		}
-	}
-
-	if (p.test) {
-		if ((0, _types.isMap)(pre) || (0, _types.isWeakMap)(pre) || (0, _types.isSet)(pre) || (0, _types.isWeakSet)(pre)) {
-			return pre.has(preKey);
-		}
-
-		return preKey in pre;
-	}
-
-	return obj;
+  return obj;
 }
-
 /**
  * Returns true if an object contains a property by a link
  *
@@ -207,12 +205,17 @@ function byLink(obj, link, opt_params) {
  * @param {!Object} obj - source object
  * @return {boolean}
  */
-_core2.default.in = function (link, obj) {
-	return byLink(obj, link, { test: true });
+
+
+_core.default.in = function (link, obj) {
+  return byLink(obj, link, {
+    test: true
+  });
 };
 
-Object.assign(_core2.default, { in: _core2.default.in });
-
+Object.assign(_core.default, {
+  in: _core.default.in
+});
 /**
  * Returns true if the collection contains a property by a link
  *
@@ -220,6 +223,9 @@ Object.assign(_core2.default, { in: _core2.default.in });
  * @param {$$CollectionLink} link - source link
  * @return {boolean}
  */
+
 _core.Collection.prototype.in = function (link) {
-	return byLink(this.data, link, { test: true });
+  return byLink(this.data, link, {
+    test: true
+  });
 };

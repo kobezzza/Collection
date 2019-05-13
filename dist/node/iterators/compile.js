@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -12,49 +11,45 @@ exports.__esModule = true;
 exports.returnCache = returnCache;
 exports.compileCycle = compileCycle;
 
-var _core = require('../core');
+var _core = _interopRequireDefault(require("../core"));
 
-var _core2 = _interopRequireDefault(_core);
+var _cache = require("../consts/cache");
 
-var _cache = require('../consts/cache');
+var _string = require("../helpers/string");
 
-var _string = require('../helpers/string');
+var _types = require("../helpers/types");
 
-var _types = require('../helpers/types');
+var _hacks = require("../consts/hacks");
 
-var _hacks = require('../consts/hacks');
-
-var _base = require('../consts/base');
+var _base = require("../consts/base");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 let timeout;
-const cache = _core2.default.cache.str;
-
+const cache = _core.default.cache.str;
 /**
  * Returns a cache string by an object
  *
  * @param {?} cache - cache object
  * @return {string}
  */
+
 function returnCache(cache) {
-	let text = '';
+  let text = '';
 
-	for (const key in cache) {
-		if (!cache.hasOwnProperty(key)) {
-			continue;
-		}
+  for (const key in cache) {
+    if (!cache.hasOwnProperty(key)) {
+      continue;
+    }
 
-		text += cache[key];
-	}
+    text += cache[key];
+  }
 
-	return text;
+  return text;
 }
 
 const cbArgsList = ['el', 'key', 'data', 'ctx'];
-
 const filterArgsList = ['el', 'key', 'data', 'fCtx'];
-
 /**
  * Compiles a loop by the specified parameters
  *
@@ -62,28 +57,25 @@ const filterArgsList = ['el', 'key', 'data', 'fCtx'];
  * @param {!Object} p - compile parameters
  * @return {!Function}
  */
+
 function compileCycle(key, p) {
-	const isMapSet = _types.mapSet[p.type];
+  const isMapSet = _types.mapSet[p.type];
+  const cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT);
+  const cbArgs = cbArgsList.slice(0, p.length ? p.cbArgs : cbArgsList.length),
+        filterArgs = [];
+  const maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
+        needParallel = p.parallel || p.race,
+        parallelFn = p.parallel ? 'wait' : 'race',
+        needCtx = maxArgsLength > 3 || needParallel || p.thread,
+        fLength = p.filter.length;
 
-	const cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT);
+  for (let i = 0; i < fLength; i++) {
+    filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
+  }
 
-	const cbArgs = cbArgsList.slice(0, p.length ? p.cbArgs : cbArgsList.length),
-	      filterArgs = [];
-
-	const maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
-	      needParallel = p.parallel || p.race,
-	      parallelFn = p.parallel ? 'wait' : 'race',
-	      needCtx = maxArgsLength > 3 || needParallel || p.thread,
-	      fLength = p.filter.length;
-
-	for (let i = 0; i < fLength; i++) {
-		filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
-	}
-
-	const resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`,
-	      callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
-
-	let iFn = _string.ws`
+  const resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`,
+        callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
+  let iFn = _string.ws`
 		var
 			data = o.data,
 			cb = o.cb,
@@ -133,9 +125,9 @@ function compileCycle(key, p) {
 			key;
 	`;
 
-	if (p.withDescriptor) {
-		if (p.withProto) {
-			iFn += _string.ws`
+  if (p.withDescriptor) {
+    if (p.withProto) {
+      iFn += _string.ws`
 				var 
 					_getProto = Object.getPrototypeOf,
 					_getDescriptor = Object.getOwnPropertyDescriptor;
@@ -153,15 +145,14 @@ function compileCycle(key, p) {
 					}
 				}
 			`;
-		} else {
-			iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
-		}
-	}
+    } else {
+      iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
+    }
+  } //#if iterators/async
 
-	//#if iterators.async
 
-	if (p.async) {
-		iFn += _string.ws`
+  if (p.async) {
+    iFn += _string.ws`
 			var
 				priority = o.priority,
 				maxParallel = o.maxParallel,
@@ -227,12 +218,11 @@ function compileCycle(key, p) {
 				}
 		`;
 
-		if (fLength) {
-			if (fLength < 5) {
-				for (let i = 0; i < fLength; i++) {
-					const callFilter = `filters[${i}](${filterArgs[i]})`;
-
-					iFn += _string.ws`
+    if (fLength) {
+      if (fLength < 5) {
+        for (let i = 0; i < fLength; i++) {
+          const callFilter = `filters[${i}](${filterArgs[i]})`;
+          iFn += _string.ws`
 						if (${i ? 'f' : 'f === undefined || f'}) {
 							if (fIsPromise) {
 								f = f.then(function (f) {
@@ -255,9 +245,9 @@ function compileCycle(key, p) {
 							}
 						}
 					`;
-				}
-			} else {
-				iFn += _string.ws`
+        }
+      } else {
+        iFn += _string.ws`
 					for (fI = -1; ++fI < fLength;) {
 						if (fIsPromise) {
 							f = f.then((function (fI) {
@@ -287,32 +277,31 @@ function compileCycle(key, p) {
 						}
 					}
 				`;
-			}
-		}
+      }
+    }
 
-		let fnCountHelper = '';
+    let fnCountHelper = '';
 
-		if (p.from) {
-			fnCountHelper += _string.ws`
-				if (from === 0) {
+    if (p.from) {
+      fnCountHelper += _string.ws`
+				if (from !== 0) {
+					from--;
 					return;
 				}
-
-				from--;
 			`;
-		}
+    }
 
-		if (p.count) {
-			fnCountHelper += _string.ws`
+    if (p.count) {
+      fnCountHelper += _string.ws`
 				if (j === count) {
 					return;
 				}
 
 				j++;
 			`;
-		}
+    }
 
-		iFn += _string.ws`
+    iFn += _string.ws`
 			if (fIsPromise) {
 				f = f.then(function (f) {
 					${resolveFilterVal}
@@ -331,30 +320,26 @@ function compileCycle(key, p) {
 			}
 		`;
 
-		if (needParallel) {
-			//#if iterators.async
-
-			iFn += _string.ws`
+    if (needParallel) {
+      //#if iterators/async
+      iFn += _string.ws`
 				if (maxParallelIsNumber) {
 					ctx['${parallelFn}'](maxParallel, null, new Promise(function (r) { r(res); }));
 
 				} else {
 					ctx['${parallelFn}'](new Promise((r) => r(res)));
 				}
-			`;
+			`; //#endif
+    } else {
+      iFn += 'return res;';
+    }
 
-			//#endif
-		} else {
-			iFn += 'return res;';
-		}
+    iFn += '};';
+  } //#endif
 
-		iFn += '};';
-	}
 
-	//#endif
-
-	if (needCtx) {
-		iFn += _string.ws`
+  if (needCtx) {
+    iFn += _string.ws`
 			var ctx = {
 				$: {},
 				info: {
@@ -443,10 +428,9 @@ function compileCycle(key, p) {
 			fCtx.length = o.fLength;
 		`;
 
-		if (p.async) {
-			//#if iterators.async
-
-			iFn += _string.ws`
+    if (p.async) {
+      //#if iterators/async
+      iFn += _string.ws`
 				ctx.thread = thread;
 				thread.ctx = ctx;
 
@@ -630,30 +614,25 @@ function compileCycle(key, p) {
 						};
 					});
 				};
-			`;
-
-			//#endif
-		} else {
-			iFn += _string.ws`
+			`; //#endif
+    } else {
+      iFn += _string.ws`
 				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = o.notAsync;
 			`;
-		}
-	}
+    }
+  }
 
-	let threadStart = '',
-	    threadEnd = '';
+  let threadStart = '',
+      threadEnd = ''; //#if iterators/async
+  //#if iterators/thread
 
-	//#if iterators.async
-	//#if iterators.thread
-
-	if (p.async && p.thread) {
-		threadStart = _string.ws`
+  if (p.async && p.thread) {
+    threadStart = _string.ws`
 			if (timeStart == null) {
 				timeStart = new Date().valueOf();
 			}
 		`;
-
-		threadEnd = _string.ws`
+    threadEnd = _string.ws`
 			timeEnd = new Date().valueOf();
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
@@ -664,21 +643,17 @@ function compileCycle(key, p) {
 				timeStart = null;
 			}
 		`;
-	}
+  } //#endif
+  //#endif
 
-	//#endif
-	//#endif
 
-	iFn += 'while (limit !== looper) {';
+  iFn += 'while (limit !== looper) {';
+  let yielder = '',
+      asyncWait = ''; //#if iterators/async
 
-	let yielder = '',
-	    asyncWait = '';
-
-	//#if iterators.async
-
-	if (p.async) {
-		iFn += 'done = false;';
-		yielder = _string.ws`
+  if (p.async) {
+    iFn += 'done = false;';
+    yielder = _string.ws`
 			if (yielder) {
 				yielder = false;
 				thread.pause = true;
@@ -686,8 +661,8 @@ function compileCycle(key, p) {
 			}
 		`;
 
-		if (needCtx) {
-			asyncWait = _string.ws`
+    if (needCtx) {
+      asyncWait = _string.ws`
 				waiting = true;
 
 				while (waitStore.size) {
@@ -700,104 +675,103 @@ function compileCycle(key, p) {
 					yield;
 				}
 			`;
-		}
-	}
+    }
+  } //#endif
 
-	//#endif
 
-	let indexLimits = '';
+  let indexLimits = '';
 
-	if (p.startIndex) {
-		indexLimits = _string.ws`
+  if (p.startIndex) {
+    indexLimits = _string.ws`
 			if (n < startIndex) {
 				${threadEnd}
 				continue;
 			}
 		`;
-	}
+  }
 
-	if (p.endIndex) {
-		indexLimits += _string.ws`
+  if (p.endIndex) {
+    indexLimits += _string.ws`
 			if (n > endIndex) {
 				${threadEnd}
 				break;
 			};
 		`;
-	}
+  }
 
-	const defArgs = maxArgsLength || p.async;
+  const defArgs = maxArgsLength || p.async;
 
-	switch (p.type) {
-		case 'array':
-			iFn += _string.ws`
+  switch (p.type) {
+    case 'array':
+      iFn += _string.ws`
 				var
 					clone = data,
 					dLength = data.length - 1,
 					slice = IGNORE.slice;
 			`;
 
-			if (p.reverse) {
-				iFn += 'clone = slice.call(clone).reverse();';
-			}
+      if (p.reverse) {
+        iFn += 'clone = slice.call(clone).reverse();';
+      }
 
-			if ((p.reverse || !p.live) && (p.startIndex || p.endIndex)) {
-				iFn += _string.ws`
+      if ((p.reverse || !p.live) && (p.startIndex || p.endIndex)) {
+        iFn += _string.ws`
 					clone = slice.call(clone, startIndex, endIndex || data.length);
 				`;
-			}
+      }
 
-			if (!p.reverse && p.live) {
-				iFn += _string.ws`
+      if (!p.reverse && p.live) {
+        iFn += _string.ws`
 					for (n = startIndex - 1; ++n < clone.length;) {
 						${threadStart}
 						i = n;
 						${indexLimits}
 				`;
-			} else {
-				iFn += _string.ws`
+      } else {
+        iFn += _string.ws`
 					length = clone.length;
 					for (n = -1; ++n < length;) {
 						${threadStart}
 						i = n + startIndex;
 				`;
-			}
+      }
 
-			if (defArgs) {
-				if (maxArgsLength > 1) {
-					if (p.startIndex) {
-						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + startIndex ${p.reverse ? ')' : ''};`;
-					} else {
-						iFn += `key = ${p.reverse ? 'dLength - ' : ''} n;`;
-					}
-				}
+      if (defArgs) {
+        if (maxArgsLength > 1) {
+          if (p.startIndex) {
+            iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + startIndex ${p.reverse ? ')' : ''};`;
+          } else {
+            iFn += `key = ${p.reverse ? 'dLength - ' : ''} n;`;
+          }
+        }
 
-				if (p.withDescriptor) {
-					iFn += 'el = getDescriptor(clone, n);';
-				} else {
-					iFn += 'el = clone[n];';
-				}
-			}
+        if (p.withDescriptor) {
+          iFn += 'el = getDescriptor(clone, n);';
+        } else {
+          iFn += 'el = clone[n];';
+        }
+      }
 
-			break;
+      break;
 
-		case 'object':
-			iFn += _string.ws`
+    case 'object':
+      iFn += _string.ws`
 				var
 					selfHasOwn = data.hasOwnProperty,
 					hasOwnProperty = IGNORE.hasOwnProperty;
 			`;
 
-			if (p.reverse || _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
-				iFn += 'var tmpArray;';
+      if (p.reverse || _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
+        iFn += 'var tmpArray;';
 
-				if (!p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
-					iFn += 'tmpArray = Object.keys(data);';
-				} else {
-					iFn += 'tmpArray = [];';
+        if (!p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
+          iFn += 'tmpArray = Object.keys(data);';
+        } else {
+          iFn += 'tmpArray = [];';
 
-					if (p.notOwn) {
-						if (p.notOwn === -1) {
-							iFn += _string.ws`
+          if (p.notOwn) {
+            if (p.notOwn === -1) {
+              iFn += _string.ws`
 								for (key in data) {
 									${threadStart}
 									if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
@@ -808,17 +782,17 @@ function compileCycle(key, p) {
 									${threadEnd}
 								}
 							`;
-						} else {
-							iFn += _string.ws`
+            } else {
+              iFn += _string.ws`
 								for (key in data) {
 									${threadStart}
 									tmpArray.push(key);
 									${threadEnd}
 								}
 							`;
-						}
-					} else {
-						iFn += _string.ws`
+            }
+          } else {
+            iFn += _string.ws`
 							for (key in data) {
 								${threadStart}
 								if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
@@ -829,18 +803,18 @@ function compileCycle(key, p) {
 								${threadEnd}
 							}
 						`;
-					}
-				}
+          }
+        }
 
-				if (p.reverse) {
-					iFn += 'tmpArray.reverse();';
-				}
+        if (p.reverse) {
+          iFn += 'tmpArray.reverse();';
+        }
 
-				if (p.startIndex || p.endIndex) {
-					iFn += `tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);`;
-				}
+        if (p.startIndex || p.endIndex) {
+          iFn += `tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);`;
+        }
 
-				iFn += _string.ws`
+        iFn += _string.ws`
 					length = tmpArray.length;
 					for (n = -1; ++n < length;) {
 						${threadStart}
@@ -853,58 +827,58 @@ function compileCycle(key, p) {
 
 						i = n + startIndex;
 				`;
-			} else {
-				iFn += _string.ws`
+      } else {
+        iFn += _string.ws`
 					for (key in data) {
 						${threadStart}
 				`;
 
-				if (p.notOwn === false) {
-					iFn += _string.ws`
+        if (p.notOwn === false) {
+          iFn += _string.ws`
 						if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 							${threadEnd}
 							break;
 						}`;
-				} else if (p.notOwn === -1) {
-					iFn += _string.ws`
+        } else if (p.notOwn === -1) {
+          iFn += _string.ws`
 						if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
 							${threadEnd}
 							continue;
 						}`;
-				}
+        }
 
-				iFn += _string.ws`
+        iFn += _string.ws`
 					n++;
 					i = n;
 					${indexLimits}
 				`;
-			}
+      }
 
-			if (defArgs) {
-				if (p.withDescriptor) {
-					iFn += 'el = getDescriptor(data, key);';
-				} else {
-					iFn += 'el = data[key];';
-				}
-			}
+      if (defArgs) {
+        if (p.withDescriptor) {
+          iFn += 'el = getDescriptor(data, key);';
+        } else {
+          iFn += 'el = data[key];';
+        }
+      }
 
-			break;
+      break;
 
-		case 'map':
-		case 'set':
-		case 'generator':
-		case 'iterator':
-		case 'asyncIterator':
-			if (isMapSet) {
-				iFn += 'var cursor = data.keys();';
+    case 'map':
+    case 'set':
+    case 'generator':
+    case 'iterator':
+    case 'asyncIterator':
+      if (isMapSet) {
+        iFn += 'var cursor = data.keys();';
 
-				if (!p.live && !p.reverse) {
-					iFn += 'var size = data.size;';
-				}
-			} else if (p.type === 'generator') {
-				iFn += 'var cursor = data();';
-			} else {
-				iFn += _string.ws`
+        if (!p.live && !p.reverse) {
+          iFn += 'var size = data.size;';
+        }
+      } else if (p.type === 'generator') {
+        iFn += 'var cursor = data();';
+      } else {
+        iFn += _string.ws`
 					var
 						iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
 						cursor;
@@ -916,9 +890,9 @@ function compileCycle(key, p) {
 						cursor = (iteratorKey ? data[iteratorKey]() : data['@@iterator'] && data['@@iterator']()) || data;
 					}
 				`;
-			}
+      }
 
-			iFn += _string.ws`
+      iFn += _string.ws`
 				${p.reverse ? 'var tmpArray = [];' : ''}
 
 				for (
@@ -928,13 +902,10 @@ function compileCycle(key, p) {
 				) {
 					${threadStart}
 			`;
+      let asyncIterator = ''; //#if iterators/async
 
-			let asyncIterator = '';
-
-			//#if iterators.async
-
-			if (p.type === 'asyncIterator') {
-				asyncIterator = _string.ws`
+      if (p.type === 'asyncIterator') {
+        asyncIterator = _string.ws`
 					while (isPromise(el)) {
 						if (!rElSet.has(el)) {
 							rElSet.add(el);
@@ -945,17 +916,14 @@ function compileCycle(key, p) {
 						yield;
 					}
 				`;
-			}
+      } //#endif
 
-			//#endif
 
-			if (p.reverse) {
-				iFn += `el = 'value' in key ? key.value : key; ${asyncIterator}`;
+      if (p.reverse) {
+        iFn += `el = 'value' in key ? key.value : key; ${asyncIterator}`; //#if iterators/async
 
-				//#if iterators.async
-
-				if (needParallel) {
-					iFn += _string.ws`
+        if (needParallel) {
+          iFn += _string.ws`
 						if (maxParallelIsNumber) {
 							if (isPromise(el)) {
 								ctx['${parallelFn}'](maxParallel, null, el);
@@ -964,11 +932,10 @@ function compileCycle(key, p) {
 							${yielder}
 						}
 					`;
-				}
+        } //#endif
 
-				//#endif
 
-				iFn += _string.ws`
+        iFn += _string.ws`
 						if (el !== IGNORE) {
 							if (brkIf && el === null) {
 								${threadEnd}
@@ -986,75 +953,75 @@ function compileCycle(key, p) {
 					var size = tmpArray.length;
 				`;
 
-				if (p.startIndex || p.endIndex) {
-					iFn += `tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);`;
-				}
+        if (p.startIndex || p.endIndex) {
+          iFn += `tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);`;
+        }
 
-				iFn += _string.ws`
+        iFn += _string.ws`
 					length = size;
 					for (n = -1; ++n < length;) {
 						${threadStart}
 						${defArgs ? 'key = tmpArray[n];' : ''}
 						i = n + startIndex;
 				`;
-			} else {
-				iFn += _string.ws`
+      } else {
+        iFn += _string.ws`
 					${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
 					n++;
 					i = n;
 					${indexLimits}
 				`;
-			}
+      }
 
-			if (defArgs) {
-				if (p.type === 'map') {
-					iFn += 'el = data.get(key);';
-				} else {
-					iFn += `el = key; ${asyncIterator}`;
+      if (defArgs) {
+        if (p.type === 'map') {
+          iFn += 'el = data.get(key);';
+        } else {
+          iFn += `el = key; ${asyncIterator}`;
 
-					if (maxArgsLength > 1) {
-						if (p.type === 'set') {
-							iFn += 'key = null;';
-						} else if (p.reverse) {
-							iFn += 'key = size - i - 1;';
-						} else {
-							iFn += 'key = i;';
-						}
-					}
-				}
-			}
+          if (maxArgsLength > 1) {
+            if (p.type === 'set') {
+              iFn += 'key = null;';
+            } else if (p.reverse) {
+              iFn += 'key = size - i - 1;';
+            } else {
+              iFn += 'key = i;';
+            }
+          }
+        }
+      }
 
-			break;
-	}
+      break;
+  }
 
-	if (needCtx) {
-		iFn += 'id++;';
-	}
+  if (needCtx) {
+    iFn += 'id++;';
+  }
 
-	if (p.count) {
-		iFn += _string.ws`
+  if (p.count) {
+    iFn += _string.ws`
 			if (j === count) {
 				${threadEnd}
 				break;
 			}
 		`;
-	}
+  }
 
-	let tmp = '';
+  let tmp = '';
 
-	if (!p.async) {
-		if (fLength) {
-			if (fLength < 5) {
-				for (let i = 0; i < fLength; i++) {
-					iFn += _string.ws`
+  if (!p.async) {
+    if (fLength) {
+      if (fLength < 5) {
+        for (let i = 0; i < fLength; i++) {
+          iFn += _string.ws`
 						if (${i ? 'f' : 'true'}) {
 							f = filters[${i}](${filterArgs[i]});
 							${resolveFilterVal}
 						}
 					`;
-				}
-			} else {
-				iFn += _string.ws`
+        }
+      } else {
+        iFn += _string.ws`
 					for (fI = -1; ++fI < fLength;) {
 						f = ${callCycleFilter};
 						${resolveFilterVal}
@@ -1064,26 +1031,25 @@ function compileCycle(key, p) {
 						}
 					}
 				`;
-			}
+      }
 
-			iFn += 'if (f) {';
-		}
+      iFn += 'if (f) {';
+    }
 
-		if (p.count) {
-			tmp += 'j++;';
-		}
-	}
+    if (p.count) {
+      tmp += 'j++;';
+    }
+  }
 
-	tmp += `r = cb(${cbArgs});`;
+  tmp += `r = cb(${cbArgs});`;
 
-	if (!p.mult) {
-		tmp += 'breaker = true;';
-	}
+  if (!p.mult) {
+    tmp += 'breaker = true;';
+  } //#if iterators/async
 
-	//#if iterators.async
 
-	if (p.async) {
-		tmp += _string.ws`
+  if (p.async) {
+    tmp += _string.ws`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
 					rCbSet.add(r);
@@ -1094,12 +1060,11 @@ function compileCycle(key, p) {
 				yield;
 			}
 		`;
-	}
+  } //#endif
 
-	//#endif
 
-	if (!p.async && p.from) {
-		iFn += _string.ws`
+  if (!p.async && p.from) {
+    iFn += _string.ws`
 			if (from !== 0) {
 				from--;
 
@@ -1107,17 +1072,18 @@ function compileCycle(key, p) {
 				${tmp}
 			}
 		`;
-	} else {
-		iFn += tmp;
-	}
+  } else {
+    iFn += tmp;
+  }
 
-	if (!p.async && fLength) {
-		iFn += '}';
-	}
+  if (!p.async && fLength) {
+    iFn += '}';
+  }
 
-	iFn += yielder;
-	if (!p.live && !p.reverse && isMapSet) {
-		iFn += _string.ws`
+  iFn += yielder;
+
+  if (!p.live && !p.reverse && isMapSet) {
+    iFn += _string.ws`
 			size--;
 
 			if (!size) {
@@ -1125,9 +1091,9 @@ function compileCycle(key, p) {
 				break;
 			}
 		`;
-	}
+  }
 
-	iFn += _string.ws`
+  iFn += _string.ws`
 			${threadEnd}
 
 			if (breaker${p.async ? '|| done' : ''}) {
@@ -1142,8 +1108,7 @@ function compileCycle(key, p) {
 			onIterationEnd(${needCtx ? 'ctx' : ''});
 		}
 	`;
-
-	iFn += _string.ws`
+  iFn += _string.ws`
 			${yielder}
 		}
 
@@ -1157,49 +1122,47 @@ function compileCycle(key, p) {
 		return p.result;
 	`;
 
-	if (p.async) {
-		//#if iterators.async
-		_cache.tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
-		//#endif
-	} else {
-		_cache.tmpCycle[key] = new Function('o', 'p', iFn);
-	}
+  if (p.async) {
+    //#if iterators/async
+    _cache.tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)(); //#endif
+  } else {
+    _cache.tmpCycle[key] = new Function('o', 'p', iFn);
+  }
 
-	if (_core2.default.ready) {
-		const delay = 5e3;
+  if (_core.default.ready) {
+    const delay = 5e3;
+    const text = `${_base.NAMESPACE}.cache.cycle["${key}"] = ${_cache.tmpCycle[key].toString()};`;
+    cache[key] = text;
 
-		const text = `${_base.NAMESPACE}.cache.cycle["${key}"] = ${_cache.tmpCycle[key].toString()};`;
-		cache[key] = text;
+    if (_hacks.IS_BROWSER && _hacks.LOCAL_STORAGE_SUPPORT) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        try {
+          localStorage.setItem(_base.CACHE_KEY, JSON.stringify(cache));
+          localStorage.setItem(_base.CACHE_VERSION_KEY, _base.CACHE_VERSION);
 
-		if (_hacks.IS_BROWSER && _hacks.LOCAL_STORAGE_SUPPORT) {
-			clearTimeout(timeout);
-			timeout = setTimeout(() => {
-				try {
-					localStorage.setItem(_base.CACHE_KEY, JSON.stringify(cache));
-					localStorage.setItem(_base.CACHE_VERSION_KEY, _base.CACHE_VERSION);
-
-					if (_hacks.BLOB_SUPPORT) {
-						const script = document.createElement('script');
-						script.src = URL.createObjectURL(new Blob([text], { type: 'application/javascript' }));
-						document.head.appendChild(script);
-					}
-				} catch (_) {}
-			}, delay);
-		} else if (_hacks.IS_NODE) {
-			//#if isNode
-			clearTimeout(timeout);
-			timeout = setTimeout(() => {
-				require('fs').writeFile(require('path').join(__dirname, 'collection.tmp.js'), `
+          if (_hacks.BLOB_SUPPORT) {
+            const script = document.createElement('script');
+            script.src = URL.createObjectURL(new Blob([text], {
+              type: 'application/javascript'
+            }));
+            document.head.appendChild(script);
+          }
+        } catch (_) {}
+      }, delay);
+    } else if (_hacks.IS_NODE) {
+      //#if isNode
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        require('fs').writeFile(require('path').join(__dirname, 'collection.tmp.js'), `
 						exports.version = ${_base.CACHE_VERSION};
 						exports.cache = ${JSON.stringify(cache)};
 						exports.exec = function () { ${returnCache(cache)} };
 					`, () => {});
-			}, delay);
+      }, delay);
+      timeout['unref'](); //#endif
+    }
+  }
 
-			timeout['unref']();
-			//#endif
-		}
-	}
-
-	return _cache.tmpCycle[key];
+  return _cache.tmpCycle[key];
 }

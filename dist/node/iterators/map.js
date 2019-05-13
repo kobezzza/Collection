@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -8,15 +7,15 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-var _core = require('../core');
+var _core = require("../core");
 
-var _hacks = require('../consts/hacks');
+var _hacks = require("../consts/hacks");
 
-var _base = require('../consts/base');
+var _base = require("../consts/base");
 
-var _types = require('../helpers/types');
+var _types = require("../helpers/types");
 
-var _gcc = require('../helpers/gcc');
+var _gcc = require("../helpers/gcc");
 
 /**
  * Creates a new collection based on the current by the specified parameters
@@ -29,264 +28,239 @@ var _gcc = require('../helpers/gcc');
  * @return {(?|!Promise)}
  */
 _core.Collection.prototype.map = function (opt_cb, opt_params) {
-	let p = opt_params || {};
+  let p = opt_params || {};
 
-	if (!(0, _types.isFunction)(opt_cb)) {
-		p = opt_cb || p;
-		opt_cb = el => el;
-	}
+  if (!(0, _types.isFunction)(opt_cb)) {
+    p = opt_cb || p;
 
-	if ((0, _types.isArray)(p) || (0, _types.isFunction)(p)) {
-		p = { filter: p };
-	}
+    opt_cb = el => el;
+  }
 
-	this._initParams(p);
-	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+  if ((0, _types.isArray)(p) || (0, _types.isFunction)(p)) {
+    p = {
+      filter: p
+    };
+  }
 
-	const { data } = this;
+  this._initParams(p);
 
-	let type = p.initialType || p.type,
-	    res = p.initial;
+  p = (0, _gcc.any)(Object.assign(Object.create(this.p), p));
+  const {
+    data
+  } = this;
+  let type = p.initialType || p.type,
+      res = p.initial;
+  const hasInitial = p.initial != null,
+        source = hasInitial ? p.initial : data;
 
-	const hasInitial = p.initial != null,
-	      source = hasInitial ? p.initial : data;
+  if (!hasInitial) {
+    switch (type) {
+      case 'object':
+        res = {};
+        break;
 
-	if (!hasInitial) {
-		switch (type) {
-			case 'object':
-				res = {};
-				break;
+      case 'array':
+        if ((0, _types.isArray)(source)) {
+          res = [];
+        } else {
+          res = {};
+          type = 'object';
+        }
 
-			case 'array':
-				if ((0, _types.isArray)(source)) {
-					res = [];
-				} else {
-					res = {};
-					type = 'object';
-				}
+        break;
 
-				break;
+      case 'generator':
+      case 'iterator':
+      case 'asyncIterator':
+      case 'idbRequest':
+        res = [];
+        type = 'array';
+        break;
 
-			case 'generator':
-			case 'iterator':
-			case 'asyncIterator':
-			case 'idbRequest':
-				res = [];
-				type = 'array';
-				break;
+      default:
+        if (type === 'stream') {
+          if (_hacks.IS_NODE) {
+            //#if isNode
+            const {
+              Transform
+            } = require('stream');
 
-			default:
-				if (type === 'stream') {
-					if (_hacks.IS_NODE) {
-						//#if isNode
+            res = new Transform({
+              readableObjectMode: true,
+              writableObjectMode: true,
 
-						const { Transform } = require('stream');
+              transform(data, enc, cb) {
+                cb(null, data);
+              }
 
-						let readObj = true,
-						    writeObj = true;
+            }); //#endif
+          } else {
+            res = [];
+            type = 'array';
+          }
+        } else {
+          res = new source.constructor();
+        }
 
-						if ((0, _types.isStream)(data)) {
-							if (data._readableState) {
-								readObj = data._readableState.objectMode;
-							}
+    }
+  }
 
-							if (data._writableState) {
-								writeObj = data._writableState.objectMode;
-							}
-						}
+  let fn;
+  p.result = res;
 
-						res = new Transform({
-							readableObjectMode: readObj,
-							writableObjectMode: writeObj,
-							transform(data, enc, cb) {
-								cb(null, data);
-							}
-						});
+  switch (type) {
+    case 'array':
+      fn = function () {
+        const val = opt_cb.apply(null, arguments); //#if iterators/async
 
-						//#endif
-					} else {
-						res = [];
-						type = 'array';
-					}
-				} else {
-					res = new source.constructor();
-				}
-		}
-	}
+        if (p.async && (0, _types.isPromise)(val)) {
+          return val.then(val => (0, _types.isPositive)(val) && res.push(val));
+        } //#endif
 
-	let fn;
-	p.result = res;
 
-	switch (type) {
-		case 'array':
-			fn = function () {
-				const val = opt_cb.apply(null, arguments);
+        (0, _types.isPositive)(val) && res.push(val);
+      };
 
-				//#if iterators.async
+      fn[_base.FN_LENGTH] = opt_cb.length;
+      break;
 
-				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => (0, _types.isPositive)(val) && res.push(val));
-				}
+    case 'object':
+      fn = function (el, key) {
+        const val = opt_cb.apply(null, arguments); //#if iterators/async
 
-				//#endif
+        if (p.async && (0, _types.isPromise)(val)) {
+          return val.then(val => {
+            if ((0, _types.isPositive)(val)) {
+              res[key] = val;
+            }
+          });
+        } //#endif
 
-				(0, _types.isPositive)(val) && res.push(val);
-			};
 
-			fn[_base.FN_LENGTH] = opt_cb.length;
-			break;
+        if ((0, _types.isPositive)(val)) {
+          res[key] = val;
+        }
+      };
 
-		case 'object':
-			fn = function (el, key) {
-				const val = opt_cb.apply(null, arguments);
+      fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
+      break;
 
-				//#if iterators.async
+    case 'map':
+    case 'weakMap':
+      fn = function (el, key) {
+        const val = opt_cb.apply(null, arguments); //#if iterators/async
 
-				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => {
-						if ((0, _types.isPositive)(val)) {
-							res[key] = val;
-						}
-					});
-				}
+        if (p.async && (0, _types.isPromise)(val)) {
+          return val.then(val => (0, _types.isPositive)(val) && res.set(key, val));
+        } //#endif
 
-				//#endif
 
-				if ((0, _types.isPositive)(val)) {
-					res[key] = val;
-				}
-			};
+        (0, _types.isPositive)(val) && res.set(key, val);
+      };
 
-			fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
-			break;
+      fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
+      break;
 
-		case 'map':
-		case 'weakMap':
-			fn = function (el, key) {
-				const val = opt_cb.apply(null, arguments);
+    case 'set':
+    case 'weakSet':
+      fn = function () {
+        const val = opt_cb.apply(null, arguments); //#if iterators/async
 
-				//#if iterators.async
+        if (p.async && (0, _types.isPromise)(val)) {
+          return val.then(val => (0, _types.isPositive)(val) && res.add(val));
+        } //#endif
 
-				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => (0, _types.isPositive)(val) && res.set(key, val));
-				}
 
-				//#endif
+        (0, _types.isPositive)(val) && res.add(val);
+      };
 
-				(0, _types.isPositive)(val) && res.set(key, val);
-			};
+      fn[_base.FN_LENGTH] = opt_cb.length;
+      break;
 
-			fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
-			break;
+    case 'stream':
+      fn = function () {
+        return new Promise(resolve => {
+          let val = opt_cb.apply(null, arguments);
 
-		case 'set':
-		case 'weakSet':
-			fn = function () {
-				const val = opt_cb.apply(null, arguments);
+          function end() {
+            clear();
+            resolve();
+          }
 
-				//#if iterators.async
+          function clear() {
+            res.removeListener('drain', write);
+            res.removeListener('error', end);
+            res.removeListener('close', end);
+          }
 
-				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => (0, _types.isPositive)(val) && res.add(val));
-				}
+          function write() {
+            clear();
 
-				//#endif
+            try {
+              if (!(0, _types.isPositive)(val)) {
+                resolve();
+                return;
+              }
 
-				(0, _types.isPositive)(val) && res.add(val);
-			};
+              if (res.write(val)) {
+                resolve(val);
+              } else {
+                res.addListener('drain', write);
+                res.addListener('error', end);
+                res.addListener('close', end);
+              }
+            } catch (_) {
+              end();
+            }
+          } //#if iterators/async
 
-			fn[_base.FN_LENGTH] = opt_cb.length;
-			break;
 
-		case 'stream':
-			fn = function () {
-				return new Promise(resolve => {
-					let val = opt_cb.apply(null, arguments);
+          if (p.async && (0, _types.isPromise)(val)) {
+            return val.then(res => {
+              val = res;
+              write();
+            });
+          } //#endif
 
-					function end() {
-						clear();
-						resolve();
-					}
 
-					function clear() {
-						res.removeListener('drain', write);
-						res.removeListener('error', end);
-						res.removeListener('close', end);
-					}
+          return write();
+        });
+      };
 
-					function write() {
-						clear();
+      fn[_base.FN_LENGTH] = opt_cb.length;
+      break;
 
-						try {
-							if (!(0, _types.isPositive)(val)) {
-								resolve();
-								return;
-							}
+    default:
+      fn = function () {
+        const val = opt_cb.apply(null, arguments); //#if iterators/async
 
-							if (res.write(val)) {
-								resolve(val);
-							} else {
-								res.addListener('drain', write);
-								res.addListener('error', end);
-								res.addListener('close', end);
-							}
-						} catch (_) {
-							end();
-						}
-					}
+        if (p.async && (0, _types.isPromise)(val)) {
+          return val.then(val => {
+            if ((0, _types.isPositive)(val)) {
+              p.result = res += val;
+            }
+          });
+        } //#endif
 
-					//#if iterators.async
 
-					if (p.async && (0, _types.isPromise)(val)) {
-						return val.then(res => {
-							val = res;
-							write();
-						});
-					}
+        if ((0, _types.isPositive)(val)) {
+          p.result = res += val;
+        }
+      };
 
-					//#endif
+      fn[_base.FN_LENGTH] = opt_cb.length;
+  }
 
-					return write();
-				});
-			};
+  const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
 
-			fn[_base.FN_LENGTH] = opt_cb.length;
-			break;
+  if (type === 'stream') {
+    returnVal.then(() => res.end(), err => res.destroy(err));
+    return p.result;
+  }
 
-		default:
-			fn = function () {
-				const val = opt_cb.apply(null, arguments);
+  if (returnVal !== this) {
+    return returnVal;
+  }
 
-				//#if iterators.async
-
-				if (p.async && (0, _types.isPromise)(val)) {
-					return val.then(val => {
-						if ((0, _types.isPositive)(val)) {
-							p.result = res += val;
-						}
-					});
-				}
-
-				//#endif
-
-				if ((0, _types.isPositive)(val)) {
-					p.result = res += val;
-				}
-			};
-
-			fn[_base.FN_LENGTH] = opt_cb.length;
-	}
-
-	const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));
-
-	if (type === 'stream') {
-		returnVal.then(() => res.end(), err => res.destroy(err));
-		return p.result;
-	}
-
-	if (returnVal !== this) {
-		return returnVal;
-	}
-
-	return p.result;
+  return p.result;
 };
