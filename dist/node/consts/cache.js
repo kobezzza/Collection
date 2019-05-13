@@ -1,5 +1,4 @@
 'use strict';
-
 /* eslint-disable prefer-const */
 
 /*!
@@ -11,18 +10,18 @@
  */
 
 exports.__esModule = true;
-exports.tmpCycle = undefined;
+exports.tmpCycle = void 0;
 
-var _core = require('../core');
-
-var _core2 = _interopRequireDefault(_core);
+var _core = _interopRequireDefault(require("../core"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-Object.assign(_core2.default, {
+Object.assign(_core.default, {
   ready: false,
   cache: {
     str: {},
     cycle: {}
   }
-});const tmpCycle = exports.tmpCycle = _core2.default.cache.cycle;
+});
+const tmpCycle = _core.default.cache.cycle;
+exports.tmpCycle = tmpCycle;

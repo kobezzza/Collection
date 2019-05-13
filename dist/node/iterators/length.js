@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -8,13 +7,13 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-var _core = require('../core');
+var _core = require("../core");
 
-var _base = require('../consts/base');
+var _base = require("../consts/base");
 
-var _types = require('../helpers/types');
+var _types = require("../helpers/types");
 
-var _gcc = require('../helpers/gcc');
+var _gcc = require("../helpers/gcc");
 
 /**
  * Returns the number of elements in the collection by the specified parameters
@@ -25,29 +24,32 @@ var _gcc = require('../helpers/gcc');
  * @return {(number|!Promise<number>)}
  */
 _core.Collection.prototype.length = function (opt_filter, opt_params) {
-	let p = opt_params || {};
+  let p = opt_params || {};
 
-	if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
-		p = opt_filter || p;
-		opt_filter = null;
-	}
+  if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
+    p = opt_filter || p;
+    opt_filter = null;
+  }
 
-	this._initParams(p, opt_filter);
-	p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { result: 0 }));
+  this._initParams(p, opt_filter);
 
-	const calc = () => p.result++;
-	calc[_base.LENGTH_REQUEST] = true;
+  p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, {
+    result: 0
+  }));
 
-	const returnVal = (0, _gcc.any)(this.forEach(calc, p));
+  const calc = () => p.result++;
 
-	if (calc[_base.LENGTH_REQUEST] !== true) {
-		p.result = calc[_base.LENGTH_REQUEST];
-		p.onComplete && p.onComplete(p.result);
-	}
+  calc[_base.LENGTH_REQUEST] = true;
+  const returnVal = (0, _gcc.any)(this.forEach(calc, p));
 
-	if (returnVal !== this) {
-		return returnVal;
-	}
+  if (calc[_base.LENGTH_REQUEST] !== true) {
+    p.result = calc[_base.LENGTH_REQUEST];
+    p.onComplete && p.onComplete(p.result);
+  }
 
-	return p.result;
+  if (returnVal !== this) {
+    return returnVal;
+  }
+
+  return p.result;
 };

@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -8,11 +7,11 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-var _core = require('../core');
+var _core = require("../core");
 
-var _types = require('../helpers/types');
+var _types = require("../helpers/types");
 
-var _gcc = require('../helpers/gcc');
+var _gcc = require("../helpers/gcc");
 
 /**
  * Returns true if in the collection exists at least one element which matches by the specified condition
@@ -31,8 +30,11 @@ _core.Collection.prototype.some = function (opt_filter, opt_params) {
   }
 
   this._initParams(p, opt_filter);
-  p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, { mult: false, result: false }));
 
+  p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, {
+    mult: false,
+    result: false
+  }));
   const returnVal = (0, _gcc.any)(this.forEach(() => p.result = true, p));
 
   if (returnVal !== this) {

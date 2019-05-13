@@ -1,5 +1,4 @@
 'use strict';
-
 /* eslint-disable no-loop-func */
 
 /*!
@@ -10,34 +9,28 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-var _core = require('../core');
+var _core = _interopRequireWildcard(require("../core"));
 
-var _core2 = _interopRequireDefault(_core);
+var _types = require("../helpers/types");
 
-var _types = require('../helpers/types');
+var _hacks = require("../consts/hacks");
 
-var _hacks = require('../consts/hacks');
+var _link = require("../helpers/link");
 
-var _link = require('../helpers/link');
+var _gcc = require("../helpers/gcc");
 
-var _gcc = require('../helpers/gcc');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 const simpleType = {
-	'array': true,
-	'object': true
+  'array': true,
+  'object': true
 };
-
 const {
-
-	create,
-	defineProperty,
-	getPrototypeOf,
-	assign
-
+  create,
+  defineProperty,
+  getPrototypeOf,
+  assign
 } = Object;
-
 /**
  * Extends the collection by another objects
  *
@@ -57,244 +50,262 @@ const {
  * @param {...Object} args - objects for extending
  * @return {(!Object|!Promise)}
  */
+
 _core.Collection.prototype.extend = function (deepOrParams, args) {
-	let p = (0, _gcc.any)(deepOrParams);
+  let p = (0, _gcc.any)(deepOrParams);
 
-	if (p instanceof _core.P === false) {
-		if ((0, _types.isBoolean)(p)) {
-			p = { deep: p };
-		} else {
-			p = p || {};
-		}
+  if (p instanceof _core.P === false) {
+    if ((0, _types.isBoolean)(p)) {
+      p = {
+        deep: p
+      };
+    } else {
+      p = p || {};
+    }
 
-		this._initParams(p);
-		p = (0, _gcc.any)(assign(Object.create(this.p), p));
-	} else {
-		p = (0, _gcc.any)(Object.create(p));
-		this._initParams(p, false);
-	}
+    this._initParams(p);
 
-	const withDescriptor = p.withDescriptor && !p.withAccessors;
+    p = (0, _gcc.any)(assign(Object.create(this.p), p));
+  } else {
+    p = (0, _gcc.any)(Object.create(p));
 
-	if (p.withAccessors) {
-		p.withDescriptor = true;
-	}
+    this._initParams(p, false);
+  }
 
-	if (p.withProto) {
-		p.notOwn = true;
-	}
+  const withDescriptor = p.withDescriptor && !p.withAccessors;
 
-	let { data } = this,
-	    { type } = p;
+  if (p.withAccessors) {
+    p.withDescriptor = true;
+  }
 
-	if (!type) {
-		for (let i = 1; i < arguments.length; i++) {
-			type = (0, _types.getType)(arguments[i], p.use);
+  if (p.withProto) {
+    p.notOwn = true;
+  }
 
-			if (type) {
-				break;
-			}
-		}
+  let {
+    data
+  } = this,
+      {
+    type
+  } = p;
 
-		switch (type) {
-			case 'object':
-				data = {};
-				break;
+  if (!type) {
+    for (let i = 1; i < arguments.length; i++) {
+      type = (0, _types.getType)(arguments[i], p.use);
 
-			case 'weakMap':
-				data = new WeakMap();
-				break;
+      if (type) {
+        break;
+      }
+    }
 
-			case 'weakSet':
-				data = new WeakSet();
-				break;
+    switch (type) {
+      case 'object':
+        data = {};
+        break;
 
-			case 'map':
-				data = new Map();
-				break;
+      case 'weakMap':
+        data = new WeakMap();
+        break;
 
-			case 'set':
-				data = new Set();
-				break;
+      case 'weakSet':
+        data = new WeakSet();
+        break;
 
-			default:
-				data = [];
-		}
-	}
+      case 'map':
+        data = new Map();
+        break;
 
-	const dataIsSimple = simpleType[type];
-	p.result = data;
+      case 'set':
+        data = new Set();
+        break;
 
-	if (!p.deep && p.withUndef && p.mult && dataIsSimple && _hacks.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.extendFilter && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
-		const args = [];
+      default:
+        data = [];
+    }
+  }
 
-		for (let i = 1; i < arguments.length; i++) {
-			args.push(arguments[i]);
-		}
+  const dataIsSimple = simpleType[type];
+  p.result = data;
 
-		return assign(data, ...args);
-	}
+  if (!p.deep && p.withUndef && p.mult && dataIsSimple && _hacks.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.extendFilter && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
+    const args = [];
 
-	let setVal;
-	switch (type) {
-		case 'weakMap':
-		case 'map':
-			setVal = (data, key, val) => {
-				if (p.traits && data.has(key) !== (p.traits === -1)) {
-					return;
-				}
+    for (let i = 1; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
 
-				data.set(key, val);
-			};
+    return assign(data, ...args);
+  }
 
-			break;
+  let setVal;
 
-		case 'weakSet':
-		case 'set':
-			setVal = (data, key, val) => {
-				if (p.traits && data.has(val) !== (p.traits === -1)) {
-					return;
-				}
+  switch (type) {
+    case 'weakMap':
+    case 'map':
+      setVal = (data, key, val) => {
+        if (p.traits && data.has(key) !== (p.traits === -1)) {
+          return;
+        }
 
-				data.add(val);
-			};
+        data.set(key, val);
+      };
 
-			break;
+      break;
 
-		default:
-			setVal = (data, key, val) => {
-				if (p.traits && key in data !== (p.traits === -1)) {
-					return;
-				}
+    case 'weakSet':
+    case 'set':
+      setVal = (data, key, val) => {
+        if (p.traits && data.has(val) !== (p.traits === -1)) {
+          return;
+        }
 
-				if (p.withUndef || val !== undefined) {
-					data[key] = val;
-				}
-			};
-	}
+        data.add(val);
+      };
 
-	let promise = { then(cb) {
-			cb();
-			return this;
-		} };
+      break;
 
-	if (p.async) {
-		promise = Promise.resolve();
-	}
+    default:
+      setVal = (data, key, val) => {
+        if (p.traits && key in data !== (p.traits === -1)) {
+          return;
+        }
 
-	if (p.notOwn && !dataIsSimple) {
-		p.notOwn = false;
-	}
+        if (p.withUndef || val !== undefined) {
+          data[key] = val;
+        }
+      };
 
-	for (let i = 1; i < arguments.length; i++) {
-		const arg = arguments[i];
+  }
 
-		if (!arg) {
-			continue;
-		}
+  let promise = {
+    then(cb) {
+      cb();
+      return this;
+    }
 
-		const isSimple = simpleType[(0, _types.getType)(arg)];
+  };
 
-		promise = promise.then(() => (0, _core2.default)(arg).forEach((el, key) => {
-			if (dataIsSimple && isSimple && (withDescriptor || p.withAccessors && (el.get || el.set))) {
-				if (p.traits && key in data !== (p.traits === -1)) {
-					return;
-				}
+  if (p.async) {
+    promise = Promise.resolve();
+  }
 
-				if (p.withAccessors) {
-					defineProperty(data, key, {
-						get: el.get,
-						set: el.set
-					});
-				} else if ('value' in el === false || el.value !== undefined || p.withUndef) {
-					defineProperty(data, key, el);
-				}
+  if (p.notOwn && !dataIsSimple) {
+    p.notOwn = false;
+  }
 
-				return;
-			}
+  for (let i = 1; i < arguments.length; i++) {
+    const arg = arguments[i];
 
-			let src = (0, _link.byLink)(data, [key]);
+    if (!arg) {
+      continue;
+    }
 
-			const val = isSimple ? arg[key] : el;
+    const isSimple = simpleType[(0, _types.getType)(arg)];
+    promise = promise.then(() => (0, _core.default)(arg).forEach((el, key) => {
+      if (dataIsSimple && isSimple && (withDescriptor || p.withAccessors && (el.get || el.set))) {
+        if (p.traits && key in data !== (p.traits === -1)) {
+          return;
+        }
 
-			if (data === val || val === arg) {
-				return;
-			}
+        if (p.withAccessors) {
+          defineProperty(data, key, {
+            get: el.get,
+            set: el.set
+          });
+        } else if ('value' in el === false || el.value !== undefined || p.withUndef) {
+          defineProperty(data, key, el);
+        }
 
-			let canExtend = Boolean(val);
+        return;
+      }
 
-			if (canExtend && p.extendFilter) {
-				canExtend = p.extendFilter(data, val, key);
-			}
+      let src = (0, _link.byLink)(data, [key]);
+      const val = isSimple ? arg[key] : el;
 
-			let valIsArray, struct;
+      if (data === val || val === arg) {
+        return;
+      }
 
-			if (canExtend) {
-				valIsArray = (0, _types.isArray)(val);
-				struct = valIsArray ? [] : (0, _types.getSameAs)(val);
-			}
+      let canExtend = Boolean(val);
 
-			if (p.deep && canExtend && (valIsArray || struct)) {
-				const isExtProto = p.withProto && dataIsSimple && (0, _types.canExtendProto)(src);
+      if (canExtend && p.extendFilter) {
+        canExtend = p.extendFilter(data, val, key);
+      }
 
-				let srcIsArray = (0, _types.isArray)(src);
+      let valIsArray, struct;
 
-				if (isExtProto && !(data.hasOwnProperty ? data.hasOwnProperty(key) : _link.hasOwnProperty.call(data, key))) {
-					src = srcIsArray ? src.slice() : create(src);
-					(0, _link.byLink)(data, [key], { value: src });
-				}
+      if (canExtend) {
+        valIsArray = (0, _types.isArray)(val);
+        struct = valIsArray ? [] : (0, _types.getSameAs)(val);
+      }
 
-				let clone;
-				if (valIsArray) {
-					let isProto = false,
-					    construct;
+      if (p.deep && canExtend && (valIsArray || struct)) {
+        const isExtProto = p.withProto && dataIsSimple && (0, _types.canExtendProto)(src);
+        let srcIsArray = (0, _types.isArray)(src);
 
-					if (!srcIsArray && isExtProto && p.concatArray) {
-						construct = getPrototypeOf(src);
-						srcIsArray = isProto = construct && (0, _types.isArray)(construct);
-					}
+        if (isExtProto && !(data.hasOwnProperty ? data.hasOwnProperty(key) : _link.hasOwnProperty.call(data, key))) {
+          src = srcIsArray ? src.slice() : create(src);
+          (0, _link.byLink)(data, [key], {
+            value: src
+          });
+        }
 
-					if (srcIsArray) {
-						if (p.concatArray) {
-							const o = isProto ? construct : src;
-							data[key] = p.concatFn ? p.concatFn(o, val, key) : o.concat(val);
-							return;
-						}
+        let clone;
 
-						clone = src;
-					} else {
-						clone = [];
-					}
-				} else {
-					clone = (0, _types.isStructure)(src) ? src : struct || {};
-				}
+        if (valIsArray) {
+          let isProto = false,
+              construct;
 
-				const childExt = (0, _core2.default)(clone).extend(p, val);
+          if (!srcIsArray && isExtProto && p.concatArray) {
+            construct = getPrototypeOf(src);
+            srcIsArray = isProto = construct && (0, _types.isArray)(construct);
+          }
 
-				if (p.async) {
-					return childExt.then(value => (0, _link.byLink)(data, [key], { value }));
-				}
+          if (srcIsArray) {
+            if (p.concatArray) {
+              const o = isProto ? construct : src;
+              data[key] = p.concatFn ? p.concatFn(o, val, key) : o.concat(val);
+              return;
+            }
 
-				(0, _link.byLink)(data, [key], { value: childExt });
-			} else {
-				setVal(data, key, val);
-			}
-		}, p));
-	}
+            clone = src;
+          } else {
+            clone = [];
+          }
+        } else {
+          clone = (0, _types.isStructure)(src) ? src : struct || {};
+        }
 
-	return p.async ? promise.then(() => data) : data;
+        const childExt = (0, _core.default)(clone).extend(p, val);
+
+        if (p.async) {
+          return childExt.then(value => (0, _link.byLink)(data, [key], {
+            value
+          }));
+        }
+
+        (0, _link.byLink)(data, [key], {
+          value: childExt
+        });
+      } else {
+        setVal(data, key, val);
+      }
+    }, p));
+  }
+
+  return p.async ? promise.then(() => data) : data;
 };
-
 /**
  * Clones an object
  *
  * @param {?} obj - source object
  * @return {?}
  */
-_core2.default.clone = function (obj) {
-	return JSON.parse(JSON.stringify(obj));
-};
 
+
+_core.default.clone = function (obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
 /**
  * Extends the specified object by another objects
  *
@@ -304,15 +315,20 @@ _core2.default.clone = function (obj) {
  * @param {...Object} args - objects for extending
  * @return {(!Object|!Promise)}
  */
-_core2.default.extend = function (deepOrParams, target, args) {
-	args = [deepOrParams];
 
-	for (let i = 2; i < arguments.length; i++) {
-		args.push(arguments[i]);
-	}
 
-	const obj = (0, _core2.default)(target == null ? _types.Empty : target);
-	return obj.extend.apply(obj, args);
+_core.default.extend = function (deepOrParams, target, args) {
+  args = [deepOrParams];
+
+  for (let i = 2; i < arguments.length; i++) {
+    args.push(arguments[i]);
+  }
+
+  const obj = (0, _core.default)(target == null ? _types.Empty : target);
+  return obj.extend.apply(obj, args);
 };
 
-Object.assign(_core2.default, { extend: _core2.default.extend, clone: _core2.default.clone });
+Object.assign(_core.default, {
+  extend: _core.default.extend,
+  clone: _core.default.clone
+});

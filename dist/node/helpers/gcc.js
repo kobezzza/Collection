@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -18,6 +17,7 @@
 
 exports.__esModule = true;
 exports.any = any;
+
 function any(val) {
   return val;
 }

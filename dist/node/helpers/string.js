@@ -1,5 +1,4 @@
 'use strict';
-
 /*!
  * Collection
  * https://github.com/kobezzza/Collection
@@ -11,7 +10,6 @@
 exports.__esModule = true;
 exports.ws = ws;
 const wsRgxp = /^\s+|[\r\n]+/mg;
-
 /**
  * String tag (for ES6 string templates) for truncate starting whitespaces and eol-s
  *
@@ -19,8 +17,10 @@ const wsRgxp = /^\s+|[\r\n]+/mg;
  * @param {...?} expr
  * @return {string}
  */
+
 function ws(strings, expr) {
   expr = [];
+
   for (let i = 1; i < arguments.length; i++) {
     expr.push(arguments[i]);
   }
