@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.1 (sync)
+ * Collection v6.7.2 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 13 May 2019 13:57:39 GMT
+ * Date: 'Mon, 13 May 2019 14:27:13 GMT
  */
 
 (function (global, factory) {
@@ -486,7 +486,7 @@
 	 * @const
 	 */
 
-	Collection.prototype.VERSION = [6, 7, 1];
+	Collection.prototype.VERSION = [6, 7, 2];
 	/**
 	 * Creates an instance of Collection
 	 * @param {$$CollectionType} obj

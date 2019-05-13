@@ -19,7 +19,7 @@ exports.clone;
 exports.extend;
 
 require('./dist/node/iterators/cache');
-require('./dist/node/iterators/forEach');
+require('./dist/node/iterators/for-each');
 require('./dist/node/iterators/helpers');
 require('./dist/node/iterators/extend');
 require('./dist/node/iterators/map');

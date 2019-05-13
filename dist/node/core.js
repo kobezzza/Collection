@@ -98,7 +98,7 @@ Object.assign($C, {
  * @const
  */
 
-Collection.prototype.VERSION = [6, 7, 1];
+Collection.prototype.VERSION = [6, 7, 2];
 /**
  * Creates an instance of Collection
  * @param {$$CollectionType} obj
