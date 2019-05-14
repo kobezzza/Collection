@@ -55,7 +55,7 @@ _core.Collection.prototype._initParams = function (p, filters) {
     p.thread = true;
   }
 
-  if (p.thread && !_thread.PRIORITY[p.priority]) {
+  if (p.thread && !_thread.priorities[p.priority]) {
     p.priority = 'normal';
   }
 
@@ -124,7 +124,7 @@ _core.Collection.prototype.thread = function (opt_priority, opt_onChunk) {
     p.priority = opt_priority;
   }
 
-  if (!_thread.PRIORITY[p.priority]) {
+  if (!_thread.priorities[p.priority]) {
     p.priority = 'normal';
   }
 

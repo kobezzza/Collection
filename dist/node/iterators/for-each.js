@@ -9,25 +9,25 @@
 
 var _core = require("../core");
 
+require("./length");
+
 var _cache = require("../consts/cache");
+
+var _compile = require("./compile");
+
+var _thread = require("../consts/thread");
 
 var _types = require("../helpers/types");
 
 var _link = require("../helpers/link");
 
-var _base = require("../consts/base");
-
-var _links = require("../consts/links");
-
-var _hacks = require("../consts/hacks");
-
-var _thread = require("../consts/thread");
-
-var _compile = require("./compile");
-
 var _gcc = require("../helpers/gcc");
 
-require("./length");
+var _symbols = require("../consts/symbols");
+
+var _primitives = require("../consts/primitives");
+
+var _env = require("../consts/env");
 
 function notAsync() {
   return false;
@@ -171,14 +171,14 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
                   resolve(iterator.value);
                   iterator.continue();
                 } else {
-                  resolve(_links.IGNORE);
+                  resolve(_primitives.IGNORE);
                 }
               }
             }
 
             function end() {
               clear();
-              resolve(_links.IGNORE);
+              resolve(_primitives.IGNORE);
             }
 
             function error(err) {
@@ -206,12 +206,12 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
   // Optimization for the length request
 
 
-  if (!fCount && cb[_base.LENGTH_REQUEST]) {
+  if (!fCount && cb[_symbols.LENGTH_REQUEST]) {
     if (type === 'array') {
-      cb[_base.LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? _link.slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
+      cb[_symbols.LENGTH_REQUEST] = (p.startIndex || p.endIndex !== false ? _link.slice.call(data, p.startIndex || 0, p.endIndex !== false ? p.endIndex + 1 : data.length) : data).length;
       return this;
     } else if (_types.mapSet[type] && !p.startIndex && p.endIndex === false) {
-      cb[_base.LENGTH_REQUEST] = data.size;
+      cb[_symbols.LENGTH_REQUEST] = data.size;
       return this;
     }
   }
@@ -220,17 +220,17 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
       filterArgs = false;
 
   if (p.length) {
-    cbArgs = p.cbArgs = cb[_base.FN_LENGTH] || cb.length;
+    cbArgs = p.cbArgs = cb[_symbols.FN_LENGTH] || cb.length;
     p.filterArgs = [];
 
     for (let i = 0; i < fCount; i++) {
-      p.filterArgs.push(filters[i][_base.FN_LENGTH] || filters[i].length);
+      p.filterArgs.push(filters[i][_symbols.FN_LENGTH] || filters[i].length);
     }
 
     filterArgs = p.filterArgs.length ? p.filterArgs : false;
   }
 
-  const lengthKey = _hacks.SYMBOL_NATIVE_SUPPORT ? Symbol() : 'value';
+  const lengthKey = _env.SYMBOL_NATIVE_SUPPORT ? Symbol() : 'value';
   let cbLength;
 
   if (cbArgs === false || cbArgs > 3) {
@@ -276,11 +276,11 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
   }
 
   const key = [type, cbArgs, fCount < 5 ? fCount : Boolean(fCount), filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false, Boolean(p.parallel), Boolean(p.race)].join();
-  const fn = (0, _gcc.any)(_cache.tmpCycle[key] || (0, _compile.compileCycle)(key, p));
+  const fn = (0, _gcc.any)(_cache.compiledCycles[key] || (0, _compile.compileCycle)(key, p));
   const args = {
-    TRUE: _links.TRUE,
-    FALSE: _links.FALSE,
-    IGNORE: _links.IGNORE,
+    TRUE: _primitives.TRUE,
+    FALSE: _primitives.FALSE,
+    IGNORE: _primitives.IGNORE,
     notAsync,
     cursor,
     data,
@@ -288,7 +288,7 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
     cbLength,
     filters,
     fLength,
-    priority: _thread.PRIORITY,
+    priorities: _thread.priorities,
     onComplete: p.onComplete,
     onIterationEnd: p.onIterationEnd,
     count: p.count,
@@ -312,7 +312,7 @@ _core.Collection.prototype.forEach = function (opt_cb, opt_params) {
 
       function wrap(fn) {
         if (!fn) {
-          return undefined;
+          return;
         }
 
         return (el, key, data, o) => {

@@ -9,13 +9,13 @@
 
 var _core = require("../core");
 
-var _base = require("../consts/base");
-
 var _types = require("../helpers/types");
 
 var _link = require("../helpers/link");
 
 var _gcc = require("../helpers/gcc");
+
+var _symbols = require("../consts/symbols");
 
 /**
  * Sets a new value for collection elements by the specified condition/link
@@ -234,7 +234,7 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
     }
 
-    fn[_base.FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
+    fn[_symbols.FN_LENGTH] = fn.length > value.length ? fn.length : value.length;
   } else {
     switch (p.type) {
       case 'map':

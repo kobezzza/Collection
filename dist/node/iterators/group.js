@@ -9,7 +9,7 @@
 
 var _core = require("../core");
 
-var _base = require("../consts/base");
+var _symbols = require("../consts/symbols");
 
 var _types = require("../helpers/types");
 
@@ -99,7 +99,7 @@ _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) 
   }
 
   if (isFunc) {
-    fn[_base.FN_LENGTH] = fn.length > field.length ? fn.length : field.length;
+    fn[_symbols.FN_LENGTH] = fn.length > field.length ? fn.length : field.length;
   }
 
   const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));

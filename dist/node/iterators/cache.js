@@ -13,41 +13,49 @@ var _core = _interopRequireDefault(require("../core"));
 
 var _compile = require("./compile");
 
-var _links = require("../consts/links");
+var _cache = require("../consts/cache");
 
-var _base = require("../consts/base");
+var _symbols = require("../consts/symbols");
 
-var _hacks = require("../consts/hacks");
-
-require("../consts/cache");
+var _env = require("../consts/env");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-if (_links.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
-  if (_hacks.IS_BROWSER && _hacks.LOCAL_STORAGE_SUPPORT) {
+if (_cache.LOCAL_CACHE) {
+  if (_env.IS_BROWSER && _env.LOCAL_STORAGE_SUPPORT && document.readyState === 'loading') {
     try {
-      if (document.readyState === 'loading') {
-        const version = localStorage.getItem(_base.CACHE_VERSION_KEY),
-              cache = localStorage.getItem(_base.CACHE_KEY);
+      const version = localStorage.getItem(_symbols.CACHE_VERSION_KEY),
+            cache = localStorage.getItem(_symbols.CACHE_KEY);
 
-        if (cache && version == _base.CACHE_VERSION) {
-          _core.default.cache.str = JSON.parse(cache);
-          document.write('<script type="text/javascript" ' + [].concat(_links.GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || []).join(' ') + '>' + (0, _compile.returnCache)(_core.default.cache.str) + `${_base.NAMESPACE}.ready = true;` +
-          /* eslint-disable-next-line */
-          '<\/script>');
-        } else {
-          localStorage.removeItem(_base.CACHE_KEY);
-          localStorage.removeItem(_base.CACHE_VERSION_KEY);
-          _core.default.ready = true;
+      if (cache && version == _core.default.CACHE_VERSION) {
+        _core.default.cache.str = JSON.parse(cache);
+        let attrs = '';
+
+        for (const key in _cache.localCacheAttrs) {
+          if (!_cache.localCacheAttrs.hasOwnProperty(key)) {
+            continue;
+          }
+
+          const val = _cache.localCacheAttrs[key];
+          attrs += val != null ? ` ${key}=${val}` : ` ${key}`;
         }
+
+        document.write(`<script type="text/javascript" ${attrs}>` + (0, _compile.returnCache)(_core.default.cache.str) + `${_symbols.NAMESPACE}.ready = true;` +
+        /* eslint-disable-next-line */
+        '<\/script>');
+      } else {
+        localStorage.removeItem(_symbols.CACHE_KEY);
+        localStorage.removeItem(_symbols.CACHE_VERSION_KEY);
       }
-    } catch (_) {}
-  } else if (_hacks.IS_NODE) {
+    } catch (_) {} finally {
+      _core.default.ready = true;
+    }
+  } else if (_env.IS_NODE) {
     try {
       //#if isNode
       const cache = require(require('path').join(__dirname, 'collection.tmp.js'));
 
-      if (cache['version'] === _base.CACHE_VERSION) {
+      if (cache['version'] === _core.default.CACHE_VERSION) {
         cache['exec']();
         _core.default.cache.str = cache['cache'];
       } //#endif

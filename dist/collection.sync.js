@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.2 (sync)
+ * Collection v6.7.3 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 13 May 2019 14:27:13 GMT
+ * Date: 'Tue, 14 May 2019 05:53:56 GMT
  */
 
 (function (global, factory) {
@@ -15,7 +15,7 @@
 }(this, function () { 'use strict';
 
 		/**
-	 * Gets an object with an undefined type
+	 * Converts the specified object to an unknown type
 	 * (for the GCC)
 	 *
 	 * @param {?} val - source object
@@ -52,10 +52,10 @@
 	  }));
 	}
 
-		var GLOBAL = new Function('return this')(),
-	    TRUE = [],
+		var TRUE = [],
 	    FALSE = [],
-	    IGNORE = [];
+	    IGNORE = [],
+	    EMPTY = [];
 
 	var asyncTypes = {
 	  'stream': true,
@@ -76,7 +76,6 @@
 	  'stream': true,
 	  'idbRequest': true
 	};
-	var Empty = {};
 	/**
 	 * Returns true if the specified value is a function
 	 *
@@ -285,7 +284,7 @@
 	      return 'asyncIterator';
 
 	    default:
-	      if (obj === Empty) {
+	      if (obj === EMPTY) {
 	        return null;
 	      }
 
@@ -486,7 +485,13 @@
 	 * @const
 	 */
 
-	Collection.prototype.VERSION = [6, 7, 2];
+	$C.VERSION = [6, 7, 3];
+	/**
+	 * Cache version
+	 * @const
+	 */
+
+	$C.CACHE_VERSION = 60;
 	/**
 	 * Creates an instance of Collection
 	 * @param {$$CollectionType} obj
@@ -495,15 +500,6 @@
 	function $C(obj) {
 	  return new Collection(obj);
 	}
-
-	Object.assign($C, {
-	  ready: false,
-	  cache: {
-	    str: {},
-	    cycle: {}
-	  }
-	});
-	var tmpCycle = $C.cache.cycle;
 
 		var wsRgxp = /^\s+|[\r\n]+/mg;
 	/**
@@ -530,6 +526,7 @@
 	  return res;
 	}
 
+	var GLOBAL = new Function('return this')();
 	var IS_NODE = function () {
 	  try {
 	    return (typeof process === "undefined" ? "undefined" : _typeof(process)) === 'object' && {}.toString.call(process) === '[object process]';
@@ -543,7 +540,7 @@
 	    OBJECT_ASSIGN_NATIVE_SUPPORT = isNative.test(Object.assign && any(Object.assign).toString()),
 	    SYMBOL_NATIVE_SUPPORT = typeof Symbol === 'function' && isNative.test(Symbol.toString());
 	var LOCAL_STORAGE_SUPPORT = !IS_NODE && function () {
-	  var mod = Math.random();
+	  var mod = String(Math.random());
 
 	  try {
 	    localStorage.setItem(mod, mod);
@@ -554,12 +551,22 @@
 	  }
 	}();
 
+	Object.assign($C, {
+	  ready: false,
+	  cache: {
+	    str: {},
+	    cycle: {}
+	  }
+	});
+	var LOCAL_CACHE = GLOBAL['COLLECTION_LOCAL_CACHE'] !== false;
+	var compiledCycles = $C.cache.cycle,
+	    localCacheAttrs = GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || {};
+
 	var NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_kobezzza_Collection';
 	GLOBAL[NAMESPACE] = $C;
 	var LENGTH_REQUEST = SYMBOL_NATIVE_SUPPORT ? Symbol('Data length query') : '__COLLECTION_TMP__lengthQuery',
 	    FN_LENGTH = SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
-	var CACHE_VERSION = 59,
-	    CACHE_KEY = '__COLLECTION_CACHE__',
+	var CACHE_KEY = '__COLLECTION_CACHE__',
 	    CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
 	function _templateObject46() {
@@ -883,7 +890,7 @@
 	}
 
 	function _templateObject14() {
-	  var data = _taggedTemplateLiteral(["\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priority[thread.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n"]);
+	  var data = _taggedTemplateLiteral(["\ntimeEnd = new Date().valueOf();\ntime += timeEnd - timeStart;\ntimeStart = timeEnd;\nif (time > priorities[thread.priority]) {\nyield;\ntime = 0;\ntimeStart = null;\n}\n"]);
 
 	  _templateObject14 = function _templateObject14() {
 	    return data;
@@ -993,7 +1000,7 @@
 	}
 
 	function _templateObject3() {
-	  var data = _taggedTemplateLiteral(["\nvar\npriority = o.priority,\nmaxParallel = o.maxParallel,\nmaxParallelIsNumber = typeof maxParallel === 'number';\nvar\ndone,\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nthread = o.self,\nthread = o.self,\nyielder = false,\nyieldVal;\nfunction isPromise(obj) {\nreturn obj && typeof obj.then === 'function' && typeof obj.catch === 'function';\n}\nvar\nrCbSet = new Set(),\nrElSet = new Set();\nfunction resolveCb(res) {\nrCbSet.delete(r);\nr = res;\nthread.next();\n}\nfunction resolveEl(res) {\nrElSet.delete(r);\nel = res;\nthread.next();\n}\ncb = function (", ") {\nvar\nf = ", ",\nfIsPromise = !done && isPromise(el),\nres;\nif (el === IGNORE || done) {\nf = FALSE;\nreturn;\n}\nif (fIsPromise) {\nf = el.then(function (val) {\nif (val === IGNORE) {\nreturn FALSE;\n}\nif (brkIf && val === null) {\nbreaker = true;\nreturn FALSE;\n}\nel = val;\nreturn TRUE;\n}, onError);\n}\n"]);
+	  var data = _taggedTemplateLiteral(["\nvar\npriorities = o.priorities,\nmaxParallel = o.maxParallel,\nmaxParallelIsNumber = typeof maxParallel === 'number';\nvar\ndone,\ntimeStart,\ntimeEnd,\ntime = 0;\nvar\nthread = o.self,\nthread = o.self,\nyielder = false,\nyieldVal;\nfunction isPromise(obj) {\nreturn obj && typeof obj.then === 'function' && typeof obj.catch === 'function';\n}\nvar\nrCbSet = new Set(),\nrElSet = new Set();\nfunction resolveCb(res) {\nrCbSet.delete(r);\nr = res;\nthread.next();\n}\nfunction resolveEl(res) {\nrElSet.delete(r);\nel = res;\nthread.next();\n}\ncb = function (", ") {\nvar\nf = ", ",\nfIsPromise = !done && isPromise(el),\nres;\nif (el === IGNORE || done) {\nf = FALSE;\nreturn;\n}\nif (fIsPromise) {\nf = el.then(function (val) {\nif (val === IGNORE) {\nreturn FALSE;\n}\nif (brkIf && val === null) {\nbreaker = true;\nreturn FALSE;\n}\nel = val;\nreturn TRUE;\n}, onError);\n}\n"]);
 
 	  _templateObject3 = function _templateObject3() {
 	    return data;
@@ -1021,8 +1028,8 @@
 
 	  return data;
 	}
-	var timeout;
-	var cache = $C.cache.str;
+	var cacheTimer;
+	var cycles = $C.cache.str;
 	/**
 	 * Returns a cache string by an object
 	 *
@@ -1315,24 +1322,34 @@
 	  if (p.async) {
 	    
 	  } else {
-	    tmpCycle[key] = new Function('o', 'p', iFn);
+	    compiledCycles[key] = new Function('o', 'p', iFn);
 	  }
 
-	  if ($C.ready) {
-	    var delay = 5e3;
-	    var text = "".concat(NAMESPACE, ".cache.cycle[\"").concat(key, "\"] = ").concat(tmpCycle[key].toString(), ";");
-	    cache[key] = text;
+	  if (LOCAL_CACHE && $C.ready) {
+	    var delay = 5e3,
+	        code = "".concat(NAMESPACE, ".cache.cycle[\"").concat(key, "\"] = ").concat(compiledCycles[key].toString(), ";");
+	    cycles[key] = code;
 
 	    if (IS_BROWSER && LOCAL_STORAGE_SUPPORT) {
-	      clearTimeout(timeout);
-	      timeout = setTimeout(function () {
+	      clearTimeout(cacheTimer);
+	      cacheTimer = setTimeout(function () {
 	        try {
-	          localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-	          localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
+	          localStorage.setItem(CACHE_KEY, JSON.stringify(cycles));
+	          localStorage.setItem(CACHE_VERSION_KEY, $C.CACHE_VERSION);
 
 	          if (BLOB_SUPPORT) {
 	            var script = document.createElement('script');
-	            script.src = URL.createObjectURL(new Blob([text], {
+
+	            for (var _key in localCacheAttrs) {
+	              if (!localCacheAttrs.hasOwnProperty(_key)) {
+	                continue;
+	              }
+
+	              var val = localCacheAttrs[_key];
+	              script.setAttribute(_key, val != null ? String(val) : '');
+	            }
+
+	            script.src = URL.createObjectURL(new Blob([code], {
 	              type: 'application/javascript'
 	            }));
 	            document.head.appendChild(script);
@@ -1344,28 +1361,38 @@
 	    }
 	  }
 
-	  return tmpCycle[key];
+	  return compiledCycles[key];
 	}
 
-	if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
-	  if (IS_BROWSER && LOCAL_STORAGE_SUPPORT) {
+	if (LOCAL_CACHE) {
+	  if (IS_BROWSER && LOCAL_STORAGE_SUPPORT && document.readyState === 'loading') {
 	    try {
-	      if (document.readyState === 'loading') {
-	        var version = localStorage.getItem(CACHE_VERSION_KEY),
-	            cache$1 = localStorage.getItem(CACHE_KEY);
+	      var version = localStorage.getItem(CACHE_VERSION_KEY),
+	          cache = localStorage.getItem(CACHE_KEY);
 
-	        if (cache$1 && version == CACHE_VERSION) {
-	          $C.cache.str = JSON.parse(cache$1);
-	          document.write('<script type="text/javascript" ' + [].concat(GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || []).join(' ') + '>' + returnCache($C.cache.str) + "".concat(NAMESPACE, ".ready = true;") +
-	          /* eslint-disable-next-line */
-	          '<\/script>');
-	        } else {
-	          localStorage.removeItem(CACHE_KEY);
-	          localStorage.removeItem(CACHE_VERSION_KEY);
-	          $C.ready = true;
+	      if (cache && version == $C.CACHE_VERSION) {
+	        $C.cache.str = JSON.parse(cache);
+	        var attrs = '';
+
+	        for (var key in localCacheAttrs) {
+	          if (!localCacheAttrs.hasOwnProperty(key)) {
+	            continue;
+	          }
+
+	          var val = localCacheAttrs[key];
+	          attrs += val != null ? " ".concat(key, "=").concat(val) : " ".concat(key);
 	        }
+
+	        document.write("<script type=\"text/javascript\" ".concat(attrs, ">") + returnCache($C.cache.str) + "".concat(NAMESPACE, ".ready = true;") +
+	        /* eslint-disable-next-line */
+	        '<\/script>');
+	      } else {
+	        localStorage.removeItem(CACHE_KEY);
+	        localStorage.removeItem(CACHE_VERSION_KEY);
 	      }
-	    } catch (_) {}
+	    } catch (_) {} finally {
+	      $C.ready = true;
+	    }
 	  } else if (IS_NODE) {
 	    try {
 	      
@@ -1375,6 +1402,56 @@
 	    }
 	  }
 	}
+
+	/**
+	 * Returns the number of elements in the collection by the specified parameters
+	 *
+	 * @see Collection.prototype.forEach
+	 * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter] - function filter or an array of functions
+	 * @param {?$$CollectionSingleBase=} [opt_params] - additional parameters
+	 * @return {(number|!Promise<number>)}
+	 */
+
+	Collection.prototype.length = function (opt_filter, opt_params) {
+	  var p = opt_params || {};
+
+	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
+	    p = opt_filter || p;
+	    opt_filter = null;
+	  }
+
+	  this._initParams(p, opt_filter);
+
+	  p = any(Object.assign(Object.create(this.p), p, {
+	    result: 0
+	  }));
+
+	  var calc = function calc() {
+	    return p.result++;
+	  };
+
+	  calc[LENGTH_REQUEST] = true;
+	  var returnVal = any(this.forEach(calc, p));
+
+	  if (calc[LENGTH_REQUEST] !== true) {
+	    p.result = calc[LENGTH_REQUEST];
+	    p.onComplete && p.onComplete(p.result);
+	  }
+
+	  if (returnVal !== this) {
+	    return returnVal;
+	  }
+
+	  return p.result;
+	};
+
+		var MAX_PRIORITY = 40;
+	var priorities = {
+	  'low': MAX_PRIORITY / 8,
+	  'normal': MAX_PRIORITY / 4,
+	  'hight': MAX_PRIORITY / 2,
+	  'critical': MAX_PRIORITY
+	};
 
 	var slice = [].slice,
 	    splice = [].splice,
@@ -1435,7 +1512,7 @@
 	        };
 	      }
 
-	      return undefined;
+	      return;
 	    }
 
 	    var isTest = i === last && p.test;
@@ -1580,56 +1657,6 @@
 	  return byLink(this.data, link, {
 	    test: true
 	  });
-	};
-
-		var MAX_PRIORITY = 40;
-	var PRIORITY = {
-	  'low': MAX_PRIORITY / 8,
-	  'normal': MAX_PRIORITY / 4,
-	  'hight': MAX_PRIORITY / 2,
-	  'critical': MAX_PRIORITY
-	};
-
-	/**
-	 * Returns the number of elements in the collection by the specified parameters
-	 *
-	 * @see Collection.prototype.forEach
-	 * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter] - function filter or an array of functions
-	 * @param {?$$CollectionSingleBase=} [opt_params] - additional parameters
-	 * @return {(number|!Promise<number>)}
-	 */
-
-	Collection.prototype.length = function (opt_filter, opt_params) {
-	  var p = opt_params || {};
-
-	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
-	    p = opt_filter || p;
-	    opt_filter = null;
-	  }
-
-	  this._initParams(p, opt_filter);
-
-	  p = any(Object.assign(Object.create(this.p), p, {
-	    result: 0
-	  }));
-
-	  var calc = function calc() {
-	    return p.result++;
-	  };
-
-	  calc[LENGTH_REQUEST] = true;
-	  var returnVal = any(this.forEach(calc, p));
-
-	  if (calc[LENGTH_REQUEST] !== true) {
-	    p.result = calc[LENGTH_REQUEST];
-	    p.onComplete && p.onComplete(p.result);
-	  }
-
-	  if (returnVal !== this) {
-	    return returnVal;
-	  }
-
-	  return p.result;
 	};
 
 	function notAsync() {
@@ -1787,7 +1814,7 @@
 	  }
 
 	  var key = [type, cbArgs, fCount < 5 ? fCount : Boolean(fCount), filterArgs, p.length, p.async, p.thread, p.withDescriptor, p.notOwn, p.live, p.inverseFilter, p.reverse, p.mult, Boolean(p.count), Boolean(p.from), Boolean(p.startIndex), p.endIndex !== false, Boolean(p.parallel), Boolean(p.race)].join();
-	  var fn = any(tmpCycle[key] || compileCycle(key, p));
+	  var fn = any(compiledCycles[key] || compileCycle(key, p));
 	  var args = {
 	    TRUE: TRUE,
 	    FALSE: FALSE,
@@ -1799,7 +1826,7 @@
 	    cbLength: _cbLength,
 	    filters: filters,
 	    fLength: _fLength,
-	    priority: PRIORITY,
+	    priorities: priorities,
 	    onComplete: p.onComplete,
 	    onIterationEnd: p.onIterationEnd,
 	    count: p.count,
@@ -1855,7 +1882,7 @@
 	    p.thread = true;
 	  }
 
-	  if (p.thread && !PRIORITY[p.priority]) {
+	  if (p.thread && !priorities[p.priority]) {
 	    p.priority = 'normal';
 	  }
 
@@ -2387,7 +2414,7 @@
 	    args.push(arguments[i]);
 	  }
 
-	  var obj = $C(target == null ? Empty : target);
+	  var obj = $C(target == null ? EMPTY : target);
 	  return obj.extend.apply(obj, args);
 	};
 
