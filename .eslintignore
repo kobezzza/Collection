@@ -2,3 +2,4 @@ externs.js
 collection.js
 dist/**
 predefs/**
+**/*.ts

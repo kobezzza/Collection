@@ -18,43 +18,51 @@ require('./gulp/build');
 require('./gulp/test');
 
 gulp.task('default', gulp.parallel([
+	gulp.series([
+		gulp.parallel(['bump', 'head']),
+		'build'
+	]),
+
 	'copyright',
-	'head',
-	'build',
-	'bump',
 	'yaspeller',
 	'npmignore'
 ]));
 
 gulp.task('dev', gulp.parallel([
+	gulp.series([
+		gulp.parallel(['bump', 'head']),
+		'test:node',
+		'test:browser',
+	]),
+
 	'copyright',
-	'head',
-	'test:node',
-	'test:browser',
-	'bump',
 	'yaspeller',
 	'npmignore'
 ]));
 
 gulp.task('dev:node', gulp.parallel([
+	gulp.series([
+		gulp.parallel(['bump', 'head']),
+		'test:node'
+	]),
+
 	'copyright',
-	'head',
-	'test:node',
-	'bump',
 	'yaspeller',
 	'npmignore'
 ]));
 
 gulp.task('watch', gulp.series(['dev', () => {
-	gulp.watch('./src/**/*.js', gulp.parallel(['test:browser:dev', 'test:node']));
-	gulp.watch('./src/core.js', gulp.series('bump'));
+	gulp.watch('./src/**/*.js', gulp.series([
+		'bump',
+		gulp.parallel(['test:browser:dev', 'test:node'])
+	]));
+
 	gulp.watch('./*.md', gulp.series('yaspeller'));
 	gulp.watch('./.gitignore', gulp.series('npmignore'));
 }]));
 
 gulp.task('watch:node', gulp.series(['dev:node', () => {
-	gulp.watch('./src/**/*.js', gulp.series('test:node'));
-	gulp.watch('./src/core.js', gulp.series('bump'));
+	gulp.watch('./src/**/*.js', gulp.series(['bump', 'test:node']));
 	gulp.watch('./*.md', gulp.series('yaspeller'));
 	gulp.watch('./.gitignore', gulp.series('npmignore'));
 }]));

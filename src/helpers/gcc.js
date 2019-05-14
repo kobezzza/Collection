@@ -9,7 +9,7 @@
  */
 
 /**
- * Gets an object with an undefined type
+ * Converts the specified object to an unknown type
  * (for the GCC)
  *
  * @param {?} val - source object

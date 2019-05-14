@@ -11,7 +11,7 @@
 import { Collection } from '../core';
 import { isFunction, isNumber, getType, asyncTypes } from '../helpers/types';
 import { any } from '../helpers/gcc';
-import { PRIORITY } from '../consts/thread';
+import { priorities } from '../consts/thread';
 
 /**
  * Appends a filter to the operation
@@ -55,7 +55,7 @@ Collection.prototype._initParams = function (p, filters) {
 		p.thread = true;
 	}
 
-	if (p.thread && !PRIORITY[p.priority]) {
+	if (p.thread && !priorities[p.priority]) {
 		p.priority = 'normal';
 	}
 
@@ -137,7 +137,7 @@ Collection.prototype.thread = function (opt_priority, opt_onChunk) {
 		p.priority = opt_priority;
 	}
 
-	if (!PRIORITY[p.priority]) {
+	if (!priorities[p.priority]) {
 		p.priority = 'normal';
 	}
 

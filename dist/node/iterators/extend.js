@@ -13,11 +13,13 @@ var _core = _interopRequireWildcard(require("../core"));
 
 var _types = require("../helpers/types");
 
-var _hacks = require("../consts/hacks");
-
 var _link = require("../helpers/link");
 
 var _gcc = require("../helpers/gcc");
+
+var _primitives = require("../consts/primitives");
+
+var _env = require("../consts/env");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
@@ -127,7 +129,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
   const dataIsSimple = simpleType[type];
   p.result = data;
 
-  if (!p.deep && p.withUndef && p.mult && dataIsSimple && _hacks.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.extendFilter && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
+  if (!p.deep && p.withUndef && p.mult && dataIsSimple && _env.OBJECT_ASSIGN_NATIVE_SUPPORT && !p.concatArray && !p.withProto && !p.withDescriptor && !p.withAccessors && !p.traits && !p.extendFilter && !p.filter.length && !p.async && !p.from && !p.count && !p.startIndex && !p.endIndex && !p.notOwn && !p.reverse) {
     const args = [];
 
     for (let i = 1; i < arguments.length; i++) {
@@ -324,7 +326,7 @@ _core.default.extend = function (deepOrParams, target, args) {
     args.push(arguments[i]);
   }
 
-  const obj = (0, _core.default)(target == null ? _types.Empty : target);
+  const obj = (0, _core.default)(target == null ? _primitives.EMPTY : target);
   return obj.extend.apply(obj, args);
 };
 

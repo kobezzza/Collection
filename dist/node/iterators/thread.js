@@ -9,11 +9,11 @@
 
 var _core = _interopRequireWildcard(require("../core"));
 
+require("./map");
+
 var _math = require("../helpers/math");
 
 var _thread = require("../consts/thread");
-
-require("./map");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
@@ -21,9 +21,9 @@ const intervals = [[0, 40], [41, 160], [161, 500], [501, 2000]];
 const lastPos = {},
       execStack = {};
 
-for (const key in _thread.PRIORITY) {
-  if (!_thread.PRIORITY.hasOwnProperty(key)) {
-    break;
+for (const key in _thread.priorities) {
+  if (!_thread.priorities.hasOwnProperty(key)) {
+    continue;
   }
 
   lastPos[key] = 0;
@@ -56,7 +56,7 @@ function getTasks() {
     (0, _core.default)(exec).forEach((el, key) => {
       rands.push({
         key,
-        value: _thread.PRIORITY[key]
+        value: _thread.priorities[key]
       });
     }, el => el.length);
     rands.sort(sort);
@@ -93,7 +93,7 @@ function getTasks() {
         if (point && !point.pause) {
           mods[key]++;
           tasks[key].push(arr[pos]);
-          total += _thread.PRIORITY[key];
+          total += _thread.priorities[key];
         }
 
         arr.splice(pos, 1);

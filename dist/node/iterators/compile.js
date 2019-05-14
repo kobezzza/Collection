@@ -13,20 +13,20 @@ exports.compileCycle = compileCycle;
 
 var _core = _interopRequireDefault(require("../core"));
 
-var _cache = require("../consts/cache");
-
 var _string = require("../helpers/string");
 
 var _types = require("../helpers/types");
 
-var _hacks = require("../consts/hacks");
+var _cache = require("../consts/cache");
 
-var _base = require("../consts/base");
+var _env = require("../consts/env");
+
+var _symbols = require("../consts/symbols");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-let timeout;
-const cache = _core.default.cache.str;
+let cacheTimer;
+const cycles = _core.default.cache.str;
 /**
  * Returns a cache string by an object
  *
@@ -60,7 +60,7 @@ const filterArgsList = ['el', 'key', 'data', 'fCtx'];
 
 function compileCycle(key, p) {
   const isMapSet = _types.mapSet[p.type];
-  const cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT);
+  const cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && _env.OBJECT_KEYS_NATIVE_SUPPORT);
   const cbArgs = cbArgsList.slice(0, p.length ? p.cbArgs : cbArgsList.length),
         filterArgs = [];
   const maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
@@ -154,7 +154,7 @@ function compileCycle(key, p) {
   if (p.async) {
     iFn += _string.ws`
 			var
-				priority = o.priority,
+				priorities = o.priorities,
 				maxParallel = o.maxParallel,
 				maxParallelIsNumber = typeof maxParallel === 'number';
 
@@ -637,7 +637,7 @@ function compileCycle(key, p) {
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
 
-			if (time > priority[thread.priority]) {
+			if (time > priorities[thread.priority]) {
 				yield;
 				time = 0;
 				timeStart = null;
@@ -761,10 +761,10 @@ function compileCycle(key, p) {
 					hasOwnProperty = IGNORE.hasOwnProperty;
 			`;
 
-      if (p.reverse || _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
+      if (p.reverse || _env.OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn) {
         iFn += 'var tmpArray;';
 
-        if (!p.notOwn && _hacks.OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
+        if (!p.notOwn && _env.OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
           iFn += 'tmpArray = Object.keys(data);';
         } else {
           iFn += 'tmpArray = [];';
@@ -1124,45 +1124,55 @@ function compileCycle(key, p) {
 
   if (p.async) {
     //#if iterators/async
-    _cache.tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)(); //#endif
+    _cache.compiledCycles[key] = new Function(`return function *(o, p) { ${iFn} };`)(); //#endif
   } else {
-    _cache.tmpCycle[key] = new Function('o', 'p', iFn);
+    _cache.compiledCycles[key] = new Function('o', 'p', iFn);
   }
 
-  if (_core.default.ready) {
-    const delay = 5e3;
-    const text = `${_base.NAMESPACE}.cache.cycle["${key}"] = ${_cache.tmpCycle[key].toString()};`;
-    cache[key] = text;
+  if (_cache.LOCAL_CACHE && _core.default.ready) {
+    const delay = 5e3,
+          code = `${_symbols.NAMESPACE}.cache.cycle["${key}"] = ${_cache.compiledCycles[key].toString()};`;
+    cycles[key] = code;
 
-    if (_hacks.IS_BROWSER && _hacks.LOCAL_STORAGE_SUPPORT) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
+    if (_env.IS_BROWSER && _env.LOCAL_STORAGE_SUPPORT) {
+      clearTimeout(cacheTimer);
+      cacheTimer = setTimeout(() => {
         try {
-          localStorage.setItem(_base.CACHE_KEY, JSON.stringify(cache));
-          localStorage.setItem(_base.CACHE_VERSION_KEY, _base.CACHE_VERSION);
+          localStorage.setItem(_symbols.CACHE_KEY, JSON.stringify(cycles));
+          localStorage.setItem(_symbols.CACHE_VERSION_KEY, _core.default.CACHE_VERSION);
 
-          if (_hacks.BLOB_SUPPORT) {
+          if (_env.BLOB_SUPPORT) {
             const script = document.createElement('script');
-            script.src = URL.createObjectURL(new Blob([text], {
+
+            for (const key in _cache.localCacheAttrs) {
+              if (!_cache.localCacheAttrs.hasOwnProperty(key)) {
+                continue;
+              }
+
+              const val = _cache.localCacheAttrs[key];
+              script.setAttribute(key, val != null ? String(val) : '');
+            }
+
+            script.src = URL.createObjectURL(new Blob([code], {
               type: 'application/javascript'
             }));
             document.head.appendChild(script);
           }
         } catch (_) {}
       }, delay);
-    } else if (_hacks.IS_NODE) {
+    } else if (_env.IS_NODE) {
       //#if isNode
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
+      clearTimeout(cacheTimer);
+      cacheTimer = setTimeout(() => {
         require('fs').writeFile(require('path').join(__dirname, 'collection.tmp.js'), `
-						exports.version = ${_base.CACHE_VERSION};
-						exports.cache = ${JSON.stringify(cache)};
-						exports.exec = function () { ${returnCache(cache)} };
+						exports.version = ${_core.default.CACHE_VERSION};
+						exports.cache = ${JSON.stringify(cycles)};
+						exports.exec = function () { ${returnCache(cycles)} };
 					`, () => {});
       }, delay);
-      timeout['unref'](); //#endif
+      cacheTimer['unref'](); //#endif
     }
   }
 
-  return _cache.tmpCycle[key];
+  return _cache.compiledCycles[key];
 }

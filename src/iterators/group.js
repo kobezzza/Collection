@@ -9,7 +9,7 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH } from '../consts/base';
+import { FN_LENGTH } from '../consts/symbols';
 import { isArray, isFunction, isPromise, isMap, isWeakMap, mapSet } from '../helpers/types';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';

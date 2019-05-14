@@ -79,7 +79,7 @@ export function byLink(obj, link, opt_params) {
 				};
 			}
 
-			return undefined;
+			return;
 		}
 
 		const

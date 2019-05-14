@@ -8,7 +8,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import { IGNORE, FALSE } from '../consts/links';
+import { IGNORE, FALSE, EMPTY } from '../consts/primitives';
 
 export const asyncTypes = {
 	'stream': true,
@@ -32,9 +32,6 @@ export const iterators = {
 	'stream': true,
 	'idbRequest': true
 };
-
-export const
-	Empty = {};
 
 /**
  * Returns true if the specified value is a function
@@ -266,7 +263,7 @@ export function getType(obj, opt_use) {
 			return 'asyncIterator';
 
 		default:
-			if (obj === Empty) {
+			if (obj === EMPTY) {
 				return null;
 			}
 

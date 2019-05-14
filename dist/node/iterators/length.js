@@ -9,11 +9,11 @@
 
 var _core = require("../core");
 
-var _base = require("../consts/base");
-
 var _types = require("../helpers/types");
 
 var _gcc = require("../helpers/gcc");
+
+var _symbols = require("../consts/symbols");
 
 /**
  * Returns the number of elements in the collection by the specified parameters
@@ -39,11 +39,11 @@ _core.Collection.prototype.length = function (opt_filter, opt_params) {
 
   const calc = () => p.result++;
 
-  calc[_base.LENGTH_REQUEST] = true;
+  calc[_symbols.LENGTH_REQUEST] = true;
   const returnVal = (0, _gcc.any)(this.forEach(calc, p));
 
-  if (calc[_base.LENGTH_REQUEST] !== true) {
-    p.result = calc[_base.LENGTH_REQUEST];
+  if (calc[_symbols.LENGTH_REQUEST] !== true) {
+    p.result = calc[_symbols.LENGTH_REQUEST];
     p.onComplete && p.onComplete(p.result);
   }
 

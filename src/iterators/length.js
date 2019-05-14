@@ -9,9 +9,11 @@
  */
 
 import { Collection } from '../core';
-import { LENGTH_REQUEST } from '../consts/base';
+
 import { isArray, isFunction } from '../helpers/types';
 import { any } from '../helpers/gcc';
+
+import { LENGTH_REQUEST } from '../consts/symbols';
 
 /**
  * Returns the number of elements in the collection by the specified parameters

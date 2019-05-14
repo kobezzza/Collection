@@ -10,9 +10,11 @@
  */
 
 exports.__esModule = true;
-exports.tmpCycle = void 0;
+exports.localCacheAttrs = exports.compiledCycles = exports.LOCAL_CACHE = void 0;
 
 var _core = _interopRequireDefault(require("../core"));
+
+var _env = require("./env");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23,5 +25,9 @@ Object.assign(_core.default, {
     cycle: {}
   }
 });
-const tmpCycle = _core.default.cache.cycle;
-exports.tmpCycle = tmpCycle;
+const LOCAL_CACHE = _env.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false;
+exports.LOCAL_CACHE = LOCAL_CACHE;
+const compiledCycles = _core.default.cache.cycle,
+      localCacheAttrs = _env.GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || {};
+exports.localCacheAttrs = localCacheAttrs;
+exports.compiledCycles = compiledCycles;

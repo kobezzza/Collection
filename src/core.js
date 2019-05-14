@@ -90,7 +90,13 @@ Object.assign($C, {config: {}});
  * Library version
  * @const
  */
-Collection.prototype.VERSION = [6, 7, 1];
+$C.VERSION = [6, 7, 3];
+
+/**
+ * Cache version
+ * @const
+ */
+$C.CACHE_VERSION = 60;
 
 /**
  * Creates an instance of Collection

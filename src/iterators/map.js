@@ -9,10 +9,12 @@
  */
 
 import { Collection } from '../core';
-import { IS_NODE } from '../consts/hacks';
-import { FN_LENGTH } from '../consts/base';
+
 import { isArray, isFunction, isPromise, isPositive } from '../helpers/types';
 import { any } from '../helpers/gcc';
+
+import { IS_NODE } from '../consts/env';
+import { FN_LENGTH } from '../consts/symbols';
 
 /**
  * Creates a new collection based on the current by the specified parameters

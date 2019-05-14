@@ -30,9 +30,9 @@ exports.getSameAs = getSameAs;
 exports.isStructure = isStructure;
 exports.canExtendProto = canExtendProto;
 exports.isPositive = isPositive;
-exports.isNative = exports.Empty = exports.iterators = exports.weakTypes = exports.mapSet = exports.asyncTypes = void 0;
+exports.isNative = exports.iterators = exports.weakTypes = exports.mapSet = exports.asyncTypes = void 0;
 
-var _links = require("../consts/links");
+var _primitives = require("../consts/primitives");
 
 const asyncTypes = {
   'stream': true,
@@ -56,8 +56,6 @@ const iterators = {
   'stream': true,
   'idbRequest': true
 };
-exports.iterators = iterators;
-const Empty = {};
 /**
  * Returns true if the specified value is a function
  *
@@ -65,7 +63,7 @@ const Empty = {};
  * @return {boolean}
  */
 
-exports.Empty = Empty;
+exports.iterators = iterators;
 
 function isFunction(obj) {
   return typeof obj === 'function';
@@ -285,7 +283,7 @@ function getType(obj, opt_use) {
       return 'asyncIterator';
 
     default:
-      if (obj === Empty) {
+      if (obj === _primitives.EMPTY) {
         return null;
       }
 
@@ -410,5 +408,5 @@ function canExtendProto(obj) {
 
 
 function isPositive(obj) {
-  return obj !== _links.FALSE && obj !== _links.IGNORE;
+  return obj !== _primitives.FALSE && obj !== _primitives.IGNORE;
 }

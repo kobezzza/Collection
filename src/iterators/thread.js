@@ -9,9 +9,10 @@
  */
 
 import $C, { Collection } from '../core';
-import { getRandomInt } from '../helpers/math';
-import { MAX_PRIORITY, PRIORITY } from '../consts/thread';
 import './map';
+
+import { getRandomInt } from '../helpers/math';
+import { priorities, MAX_PRIORITY } from '../consts/thread';
 
 const intervals = [
 	[
@@ -39,9 +40,9 @@ const
 	lastPos = {},
 	execStack = {};
 
-for (const key in PRIORITY) {
-	if (!PRIORITY.hasOwnProperty(key)) {
-		break;
+for (const key in priorities) {
+	if (!priorities.hasOwnProperty(key)) {
+		continue;
 	}
 
 	lastPos[key] = 0;
@@ -82,7 +83,7 @@ function getTasks() {
 		$C(exec).forEach((el, key) => {
 			rands.push({
 				key,
-				value: PRIORITY[key]
+				value: priorities[key]
 			});
 
 		}, (el) => el.length);
@@ -127,7 +128,7 @@ function getTasks() {
 				if (point && !point.pause) {
 					mods[key]++;
 					tasks[key].push(arr[pos]);
-					total += PRIORITY[key];
+					total += priorities[key];
 				}
 
 				arr.splice(pos, 1);

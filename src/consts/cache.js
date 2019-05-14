@@ -11,6 +11,7 @@
  */
 
 import $C from '../core';
+import { GLOBAL } from './env';
 
 Object.assign($C, {
 	ready: false,
@@ -20,4 +21,9 @@ Object.assign($C, {
 	}
 });
 
-export const tmpCycle = $C.cache.cycle;
+export const
+	LOCAL_CACHE = GLOBAL['COLLECTION_LOCAL_CACHE'] !== false;
+
+export const
+	compiledCycles = $C.cache.cycle,
+	localCacheAttrs = GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || {};

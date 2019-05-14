@@ -9,16 +9,19 @@
  */
 
 import { Collection } from '../core';
-import { tmpCycle } from '../consts/cache';
+import './length';
+
+import { compiledCycles } from '../consts/cache';
+import { compileCycle } from './compile';
+
+import { priorities } from '../consts/thread';
 import { isObjectInstance, isArray, isFunction, mapSet, asyncTypes, weakTypes } from '../helpers/types';
 import { slice } from '../helpers/link';
-import { FN_LENGTH, LENGTH_REQUEST } from '../consts/base';
-import { TRUE, FALSE, IGNORE } from '../consts/links';
-import { SYMBOL_NATIVE_SUPPORT } from '../consts/hacks';
-import { PRIORITY } from '../consts/thread';
-import { compileCycle } from './compile';
 import { any } from '../helpers/gcc';
-import './length';
+
+import { FN_LENGTH, LENGTH_REQUEST } from '../consts/symbols';
+import { TRUE, FALSE, IGNORE } from '../consts/primitives';
+import { SYMBOL_NATIVE_SUPPORT } from '../consts/env';
 
 function notAsync() {
 	return false;
@@ -304,7 +307,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 	].join();
 
 	const
-		fn = any(tmpCycle[key] || compileCycle(key, p));
+		fn = any(compiledCycles[key] || compileCycle(key, p));
 
 	const args = {
 		TRUE,
@@ -317,7 +320,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 		cbLength,
 		filters,
 		fLength,
-		priority: PRIORITY,
+		priorities,
 		onComplete: p.onComplete,
 		onIterationEnd: p.onIterationEnd,
 		count: p.count,
@@ -344,7 +347,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 
 			function wrap(fn) {
 				if (!fn) {
-					return undefined;
+					return;
 				}
 
 				return (el, key, data, o) => {

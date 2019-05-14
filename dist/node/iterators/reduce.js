@@ -9,11 +9,11 @@
 
 var _core = require("../core");
 
-var _base = require("../consts/base");
-
 var _types = require("../helpers/types");
 
 var _gcc = require("../helpers/gcc");
+
+var _symbols = require("../consts/symbols");
 
 /**
  * Reduces the collection by the specified condition
@@ -44,7 +44,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
   p = (0, _gcc.any)(Object.assign(Object.create(this.p), p, {
     result: opt_initialValue
   }));
-  fn[_base.FN_LENGTH] = cb.length - 1;
+  fn[_symbols.FN_LENGTH] = cb.length - 1;
 
   function fn(el) {
     if (opt_initialValue == null) {

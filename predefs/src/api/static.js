@@ -22,6 +22,12 @@ $C.cache = {
 };
 
 /** @type {?} */
+$C.VERSION;
+
+/** @type {?} */
+$C.CACHE_VERSION;
+
+/** @type {?} */
 $C.ready;
 
 /** @type {?} */

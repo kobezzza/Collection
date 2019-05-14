@@ -9,13 +9,13 @@
 
 var _core = require("../core");
 
-var _hacks = require("../consts/hacks");
-
-var _base = require("../consts/base");
-
 var _types = require("../helpers/types");
 
 var _gcc = require("../helpers/gcc");
+
+var _env = require("../consts/env");
+
+var _symbols = require("../consts/symbols");
 
 /**
  * Creates a new collection based on the current by the specified parameters
@@ -79,7 +79,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
 
       default:
         if (type === 'stream') {
-          if (_hacks.IS_NODE) {
+          if (_env.IS_NODE) {
             //#if isNode
             const {
               Transform
@@ -121,7 +121,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
         (0, _types.isPositive)(val) && res.push(val);
       };
 
-      fn[_base.FN_LENGTH] = opt_cb.length;
+      fn[_symbols.FN_LENGTH] = opt_cb.length;
       break;
 
     case 'object':
@@ -142,7 +142,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
         }
       };
 
-      fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
+      fn[_symbols.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
       break;
 
     case 'map':
@@ -158,7 +158,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
         (0, _types.isPositive)(val) && res.set(key, val);
       };
 
-      fn[_base.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
+      fn[_symbols.FN_LENGTH] = fn.length > opt_cb.length ? fn.length : opt_cb.length;
       break;
 
     case 'set':
@@ -174,7 +174,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
         (0, _types.isPositive)(val) && res.add(val);
       };
 
-      fn[_base.FN_LENGTH] = opt_cb.length;
+      fn[_symbols.FN_LENGTH] = opt_cb.length;
       break;
 
     case 'stream':
@@ -227,7 +227,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
         });
       };
 
-      fn[_base.FN_LENGTH] = opt_cb.length;
+      fn[_symbols.FN_LENGTH] = opt_cb.length;
       break;
 
     default:
@@ -248,7 +248,7 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
         }
       };
 
-      fn[_base.FN_LENGTH] = opt_cb.length;
+      fn[_symbols.FN_LENGTH] = opt_cb.length;
   }
 
   const returnVal = (0, _gcc.any)(this.forEach((0, _gcc.any)(fn), p));

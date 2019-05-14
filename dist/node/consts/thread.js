@@ -8,13 +8,13 @@
  */
 
 exports.__esModule = true;
-exports.PRIORITY = exports.MAX_PRIORITY = void 0;
+exports.priorities = exports.MAX_PRIORITY = void 0;
 const MAX_PRIORITY = 40;
 exports.MAX_PRIORITY = MAX_PRIORITY;
-const PRIORITY = {
+const priorities = {
   'low': MAX_PRIORITY / 8,
   'normal': MAX_PRIORITY / 4,
   'hight': MAX_PRIORITY / 2,
   'critical': MAX_PRIORITY
 };
-exports.PRIORITY = PRIORITY;
+exports.priorities = priorities;
