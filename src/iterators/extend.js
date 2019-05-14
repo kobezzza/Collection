@@ -11,10 +11,13 @@
  */
 
 import $C, { Collection, P } from '../core';
-import { Empty, isArray, isBoolean, isStructure, getSameAs, canExtendProto, getType } from '../helpers/types';
-import { OBJECT_ASSIGN_NATIVE_SUPPORT } from '../consts/hacks';
+
+import { isArray, isBoolean, isStructure, getSameAs, canExtendProto, getType } from '../helpers/types';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
+
+import { EMPTY } from '../consts/primitives';
+import { OBJECT_ASSIGN_NATIVE_SUPPORT } from '../consts/env';
 
 const simpleType = {
 	'array': true,
@@ -344,7 +347,7 @@ $C.extend = function (deepOrParams, target, args) {
 		args.push(arguments[i]);
 	}
 
-	const obj = $C(target == null ? Empty : target);
+	const obj = $C(target == null ? EMPTY : target);
 	return obj.extend.apply(obj, args);
 };
 

@@ -15,9 +15,6 @@ var $$CollectionType;
  */
 function $$Collection(collection) {}
 
-/** @type {!Array<number>} */
-$$Collection.prototype.VERSION;
-
 /**
  * @typedef {{
  *   true,

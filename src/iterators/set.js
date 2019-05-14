@@ -9,10 +9,12 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH } from '../consts/base';
+
 import { isFunction, isArray, isPromise, iterators } from '../helpers/types';
 import { byLink } from '../helpers/link';
 import { any } from '../helpers/gcc';
+
+import { FN_LENGTH } from '../consts/symbols';
 
 /**
  * Sets a new value for collection elements by the specified condition/link

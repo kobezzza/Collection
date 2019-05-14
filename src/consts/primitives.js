@@ -9,7 +9,7 @@
  */
 
 export const
-	GLOBAL = new Function('return this')(),
 	TRUE = [],
 	FALSE = [],
-	IGNORE = [];
+	IGNORE = [],
+	EMPTY = [];

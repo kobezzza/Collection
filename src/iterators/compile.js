@@ -9,16 +9,20 @@
  */
 
 import $C from '../core';
-import { tmpCycle } from '../consts/cache';
+
 import { ws } from '../helpers/string';
 import { mapSet } from '../helpers/types';
-import { OBJECT_KEYS_NATIVE_SUPPORT } from '../consts/hacks';
-import { NAMESPACE, CACHE_VERSION, CACHE_KEY, CACHE_VERSION_KEY } from '../consts/base';
-import { IS_NODE, IS_BROWSER, BLOB_SUPPORT, LOCAL_STORAGE_SUPPORT } from '../consts/hacks';
 
-let timeout;
+import { compiledCycles, localCacheAttrs, LOCAL_CACHE } from '../consts/cache';
+import { OBJECT_KEYS_NATIVE_SUPPORT } from '../consts/env';
+import { NAMESPACE, CACHE_KEY, CACHE_VERSION_KEY } from '../consts/symbols';
+import { IS_NODE, IS_BROWSER, BLOB_SUPPORT, LOCAL_STORAGE_SUPPORT } from '../consts/env';
+
+let
+	cacheTimer;
+
 const
-	cache = $C.cache.str;
+	cycles = $C.cache.str;
 
 /**
  * Returns a cache string by an object
@@ -171,7 +175,7 @@ export function compileCycle(key, p) {
 	if (p.async) {
 		iFn += ws`
 			var
-				priority = o.priority,
+				priorities = o.priorities,
 				maxParallel = o.maxParallel,
 				maxParallelIsNumber = typeof maxParallel === 'number';
 
@@ -671,7 +675,7 @@ export function compileCycle(key, p) {
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
 
-			if (time > priority[thread.priority]) {
+			if (time > priorities[thread.priority]) {
 				yield;
 				time = 0;
 				timeStart = null;
@@ -1195,30 +1199,42 @@ export function compileCycle(key, p) {
 
 	if (p.async) {
 		//#if iterators/async
-		tmpCycle[key] = new Function(`return function *(o, p) { ${iFn} };`)();
+		compiledCycles[key] = new Function(`return function *(o, p) { ${iFn} };`)();
 		//#endif
 
 	} else {
-		tmpCycle[key] = new Function('o', 'p', iFn);
+		compiledCycles[key] = new Function('o', 'p', iFn);
 	}
 
-	if ($C.ready) {
+	if (LOCAL_CACHE && $C.ready) {
 		const
-			delay = 5e3;
+			delay = 5e3,
+			code = `${NAMESPACE}.cache.cycle["${key}"] = ${compiledCycles[key].toString()};`;
 
-		const text = `${NAMESPACE}.cache.cycle["${key}"] = ${tmpCycle[key].toString()};`;
-		cache[key] = text;
+		cycles[key] =
+			code;
 
 		if (IS_BROWSER && LOCAL_STORAGE_SUPPORT) {
-			clearTimeout(timeout);
-			timeout = setTimeout(() => {
+			clearTimeout(cacheTimer);
+			cacheTimer = setTimeout(() => {
 				try {
-					localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-					localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
+					localStorage.setItem(CACHE_KEY, JSON.stringify(cycles));
+					localStorage.setItem(CACHE_VERSION_KEY, $C.CACHE_VERSION);
 
 					if (BLOB_SUPPORT) {
-						const script = document.createElement('script');
-						script.src = URL.createObjectURL(new Blob([text], {type: 'application/javascript'}));
+						const
+							script = document.createElement('script');
+
+						for (const key in localCacheAttrs) {
+							if (!localCacheAttrs.hasOwnProperty(key)) {
+								continue;
+							}
+
+							const val = localCacheAttrs[key];
+							script.setAttribute(key, val != null ? String(val) : '');
+						}
+
+						script.src = URL.createObjectURL(new Blob([code], {type: 'application/javascript'}));
 						document.head.appendChild(script);
 					}
 
@@ -1228,25 +1244,25 @@ export function compileCycle(key, p) {
 
 		} else if (IS_NODE) {
 			//#if isNode
-			clearTimeout(timeout);
-			timeout = setTimeout(() => {
+			clearTimeout(cacheTimer);
+			cacheTimer = setTimeout(() => {
 				require('fs').writeFile(
 					require('path').join(__dirname, 'collection.tmp.js'),
 
 					`
-						exports.version = ${CACHE_VERSION};
-						exports.cache = ${JSON.stringify(cache)};
-						exports.exec = function () { ${returnCache(cache)} };
+						exports.version = ${$C.CACHE_VERSION};
+						exports.cache = ${JSON.stringify(cycles)};
+						exports.exec = function () { ${returnCache(cycles)} };
 					`,
 
 					() => {}
 				);
 			}, delay);
 
-			timeout['unref']();
+			cacheTimer['unref']();
 			//#endif
 		}
 	}
 
-	return tmpCycle[key];
+	return compiledCycles[key];
 }

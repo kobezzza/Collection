@@ -16,9 +16,6 @@ var $$CollectionType;
  */
 function $$Collection(collection) {}
 
-/** @type {!Array<number>} */
-$$Collection.prototype.VERSION;
-
 /**
  * @typedef {{
  *   true,
@@ -679,6 +676,15 @@ var write;
 var end;
 
 /** @type {?} */
+var notAsync;
+
+/** @type {?} */
+var priorities;
+
+/** @type {?} */
+var maxParallel;
+
+/** @type {?} */
 var TRUE;
 
 /** @type {?} */
@@ -687,11 +693,7 @@ var FALSE;
 /** @type {?} */
 var IGNORE;
 
-/** @type {?} */
-var notAsync;
 
-/** @type {?} */
-var maxParallel;
 
 /**
  * @param {$$CollectionType=} collection
@@ -707,6 +709,12 @@ $C.cache = {
 	/** @type {?} */
 	str: {}
 };
+
+/** @type {?} */
+$C.VERSION;
+
+/** @type {?} */
+$C.CACHE_VERSION;
 
 /** @type {?} */
 $C.ready;

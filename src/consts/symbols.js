@@ -9,8 +9,7 @@
  */
 
 import $C from '../core';
-import { GLOBAL } from './links';
-import { SYMBOL_NATIVE_SUPPORT } from './hacks';
+import { GLOBAL, SYMBOL_NATIVE_SUPPORT } from './env';
 
 export const NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_kobezzza_Collection';
 GLOBAL[NAMESPACE] = $C;
@@ -20,6 +19,5 @@ export const
 	FN_LENGTH = SYMBOL_NATIVE_SUPPORT ? Symbol('Function length') : '__COLLECTION_TMP__length';
 
 export const
-	CACHE_VERSION = 59,
 	CACHE_KEY = '__COLLECTION_CACHE__',
 	CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';

@@ -9,9 +9,11 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH } from '../consts/base';
+
 import { isArray, isFunction, isPromise, isStream, isPositive } from '../helpers/types';
 import { any } from '../helpers/gcc';
+
+import { FN_LENGTH } from '../consts/symbols';
 
 /**
  * Reduces the collection by the specified condition

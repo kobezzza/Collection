@@ -12,37 +12,51 @@
 
 import $C from '../core';
 import { returnCache } from './compile';
-import { GLOBAL } from '../consts/links';
-import { NAMESPACE, CACHE_VERSION, CACHE_KEY, CACHE_VERSION_KEY } from '../consts/base';
-import { IS_NODE, IS_BROWSER, LOCAL_STORAGE_SUPPORT } from '../consts/hacks';
-import '../consts/cache';
 
-if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
-	if (IS_BROWSER && LOCAL_STORAGE_SUPPORT) {
+import { localCacheAttrs, LOCAL_CACHE } from '../consts/cache';
+import { NAMESPACE, CACHE_KEY, CACHE_VERSION_KEY } from '../consts/symbols';
+import { IS_NODE, IS_BROWSER, LOCAL_STORAGE_SUPPORT } from '../consts/env';
+
+if (LOCAL_CACHE) {
+	if (IS_BROWSER && LOCAL_STORAGE_SUPPORT && document.readyState === 'loading') {
 		try {
-			if (document.readyState === 'loading') {
-				const
-					version = localStorage.getItem(CACHE_VERSION_KEY),
-					cache = localStorage.getItem(CACHE_KEY);
+			const
+				version = localStorage.getItem(CACHE_VERSION_KEY),
+				cache = localStorage.getItem(CACHE_KEY);
 
-				if (cache && version == CACHE_VERSION) {
-					$C.cache.str = JSON.parse(cache);
-					document.write(
-						'<script type="text/javascript" ' + [].concat(GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || []).join(' ') + '>' +
-						returnCache($C.cache.str) +
-						`${NAMESPACE}.ready = true;` +
-						/* eslint-disable-next-line */
-						'<\/script>'
-					);
+			if (cache && version == $C.CACHE_VERSION) {
+				$C.cache.str = JSON.parse(cache);
 
-				} else {
-					localStorage.removeItem(CACHE_KEY);
-					localStorage.removeItem(CACHE_VERSION_KEY);
-					$C.ready = true;
+				let
+					attrs = '';
+
+				for (const key in localCacheAttrs) {
+					if (!localCacheAttrs.hasOwnProperty(key)) {
+						continue;
+					}
+
+					const val = localCacheAttrs[key];
+					attrs += val != null ? ` ${key}=${val}` : ` ${key}`;
 				}
+
+				document.write(
+					`<script type="text/javascript" ${attrs}>` +
+					returnCache($C.cache.str) +
+					`${NAMESPACE}.ready = true;` +
+					/* eslint-disable-next-line */
+					'<\/script>'
+				);
+
+			} else {
+				localStorage.removeItem(CACHE_KEY);
+				localStorage.removeItem(CACHE_VERSION_KEY);
 			}
 
-		} catch (_) {}
+		} catch (_) {
+
+		} finally {
+			$C.ready = true;
+		}
 
 	} else if (IS_NODE) {
 		try {
@@ -51,7 +65,7 @@ if (GLOBAL['COLLECTION_LOCAL_CACHE'] !== false) {
 			const
 				cache = require(require('path').join(__dirname, 'collection.tmp.js'));
 
-			if (cache['version'] === CACHE_VERSION) {
+			if (cache['version'] === $C.CACHE_VERSION) {
 				cache['exec']();
 				$C.cache.str = cache['cache'];
 			}

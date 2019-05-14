@@ -8,8 +8,11 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-import { isNative } from '../helpers/types';
 import { any } from '../helpers/gcc';
+import { isNative } from '../helpers/types';
+
+export const
+	GLOBAL = new Function('return this')();
 
 export const IS_NODE = (() => {
 	try {
@@ -29,7 +32,7 @@ export const
 
 export const LOCAL_STORAGE_SUPPORT = !IS_NODE && (() => {
 	const
-		mod = Math.random();
+		mod = String(Math.random());
 
 	try {
 		localStorage.setItem(mod, mod);

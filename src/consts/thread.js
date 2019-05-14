@@ -11,7 +11,7 @@
 export const
 	MAX_PRIORITY = 40;
 
-export const PRIORITY = {
+export const priorities = {
 	'low': MAX_PRIORITY / 8,
 	'normal': MAX_PRIORITY / 4,
 	'hight': MAX_PRIORITY / 2,
