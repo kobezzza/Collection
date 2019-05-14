@@ -9,10 +9,12 @@
  */
 
 import { Collection } from '../core';
-import { FN_LENGTH } from '../consts/symbols';
+
 import { isArray, isFunction, isPromise, isMap, isWeakMap, mapSet } from '../helpers/types';
 import { byLink, hasOwnProperty } from '../helpers/link';
 import { any } from '../helpers/gcc';
+
+import { FN_LENGTH } from '../consts/symbols';
 
 /**
  * Groups elements in the collection by the specified condition and returns a new collection
