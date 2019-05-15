@@ -13,7 +13,7 @@
 import $C from './core';
 export default $C;
 
-import { IS_NODE } from './consts/hacks';
+import { IS_NODE } from './consts/env';
 
 if (IS_NODE) {
 	module.exports = exports = $C;
