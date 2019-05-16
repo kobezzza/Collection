@@ -53,76 +53,76 @@ gulp.task('build:browser', () => {
 			` * Date: '${new Date().toUTCString()}\n` +
 			' */\n\n';
 
-		tasks.push(
+		tasks.push(merge(
 			gulp.src('./src/index.js')
 				.pipe($.plumber())
 				.pipe($.monic({flags: builds[key]}))
 				.pipe($.rename(name))
-				.pipe(gulp.dest('./src'))
+				.pipe(gulp.dest('./src')),
 
-				.on('end', () => {
-					const stream = new Transform({
-						readableObjectMode: true
+			(() => {
+				const stream = new Transform({
+					readableObjectMode: true
+				});
+
+				rollup.rollup({
+					input: `./src/${name}`,
+					plugins: [require('rollup-plugin-babel')()]
+				})
+					.then((bundle) => bundle.generate({
+						name: '$C',
+						format: 'umd',
+						exports: 'default',
+						amd: {id: 'Collection'}
+					}))
+
+					.then(({output}) => {
+						for (let i = 0; i < output.length; i++) {
+							const
+								el = output[i];
+
+							stream.push(new File({
+								path: el.facadeModuleId,
+								base: path.dirname(el.facadeModuleId),
+								contents: Buffer.from(el.code)
+							}));
+						}
+
+						stream.push(null);
+					})
+
+					.catch((err) => {
+						stream.push(err);
+						stream.push(null);
 					});
 
-					rollup.rollup({
-						input: `./src/${name}`,
-						plugins: [require('rollup-plugin-babel')()]
-					})
-						.then((bundle) => bundle.generate({
-							name: '$C',
-							format: 'umd',
-							exports: 'default',
-							amd: {id: 'Collection'}
-						}))
+				return stream
+					.pipe($.plumber())
+					.pipe(through.obj((data, enc, cb) => {
+						if (data instanceof File) {
+							cb(null, data);
 
-						.then(({output}) => {
-							for (let i = 0; i < output.length; i++) {
-								const
-									el = output[i];
+						} else {
+							cb(data);
+						}
+					}))
 
-								stream.push(new File({
-									path: el.facadeModuleId,
-									base: path.dirname(el.facadeModuleId),
-									contents: Buffer.from(el.code)
-								}));
-							}
+					.pipe($.monic({
+						flags: builds[key],
+						replacers: [(str) => str.replace(/(\/\/#[a-z].*)/g, '\n$1')]
+					}))
 
-							stream.push(null);
-						})
-
-						.catch((err) => {
-							stream.push(err);
-							stream.push(null);
-						});
-
-					return stream
-						.pipe($.plumber())
-						.pipe(through.obj((data, enc, cb) => {
-							if (data instanceof File) {
-								cb(null, data);
-
-							} else {
-								cb(data);
-							}
-						}))
-
-						.pipe($.monic({
-							flags: builds[key],
-							replacers: [(str) => str.replace(/(\/\/#[a-z].*)/g, '\n$1')]
-						}))
-
-						.pipe($.replace(/(\\t)+/g, ''))
-						.pipe($.replace(/(\\n){2,}/g, '\\n'))
-						.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
-						.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
-						.pipe($.header(fullHead))
-						.pipe($.eol('\n'))
-						.pipe($.rename({extname: '.js'}))
-						.pipe(gulp.dest('./dist'))
-						.on('end', () => del(`./src/${name}`));
-				})
-		);
+					.pipe($.replace(/(\\t)+/g, ''))
+					.pipe($.replace(/(\\n){2,}/g, '\\n'))
+					.pipe($.replace(/(@param {.*?}) \[([$\w.]+)=.*]/g, '$1 $2'))
+					.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
+					.pipe($.header(fullHead))
+					.pipe($.eol('\n'))
+					.pipe($.rename({extname: '.js'}))
+					.pipe(gulp.dest('./dist'))
+					.on('end', () => del(`./src/${name}`));
+			})()
+		));
 	});
 
 	return merge(tasks);
