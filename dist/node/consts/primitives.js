@@ -7,13 +7,15 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-exports.__esModule = true;
-exports.IGNORE = exports.FALSE = exports.TRUE = exports.GLOBAL = void 0;
-const GLOBAL = new Function('return this')(),
-      TRUE = [],
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.EMPTY = exports.IGNORE = exports.FALSE = exports.TRUE = void 0;
+const TRUE = [],
       FALSE = [],
-      IGNORE = [];
+      IGNORE = [],
+      EMPTY = [];
+exports.EMPTY = EMPTY;
 exports.IGNORE = IGNORE;
 exports.FALSE = FALSE;
 exports.TRUE = TRUE;
-exports.GLOBAL = GLOBAL;

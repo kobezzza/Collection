@@ -7,7 +7,9 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.byLink = byLink;
 exports.hasOwnProperty = exports.splice = exports.slice = void 0;
 

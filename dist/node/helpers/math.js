@@ -15,7 +15,9 @@
  * @return {number}
  */
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.getRandomInt = getRandomInt;
 
 function getRandomInt(min, max) {

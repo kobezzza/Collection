@@ -82,9 +82,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
           if (p.async && (0, _types.isPromise)(res)) {
             return res.then(res => {
-              let status = res === undefined;
+              let status = false;
 
-              if (res !== undefined && data.get(key) !== res) {
+              if (data.get(key) !== res) {
                 data.set(key, res);
                 status = data.get(key) === res;
               }
@@ -105,9 +105,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
           } //#endif
 
 
-          let status = res === undefined;
+          let status = false;
 
-          if (res !== undefined && data.get(key) !== res) {
+          if (data.get(key) !== res) {
             data.set(key, res);
             status = data.get(key) === res;
           }
@@ -134,9 +134,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
           if (p.async && (0, _types.isPromise)(res)) {
             return res.then(res => {
-              let status = res === undefined;
+              let status = false;
 
-              if (res !== undefined && !data.has(res)) {
+              if (!data.has(res)) {
                 data.delete(el);
                 data.add(res);
                 status = data.has(res);
@@ -158,9 +158,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
           } //#endif
 
 
-          let status = res === undefined;
+          let status = false;
 
-          if (res !== undefined && !data.has(res)) {
+          if (!data.has(res)) {
             data.delete(el);
             data.add(res);
             status = data.has(res);
@@ -188,9 +188,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
           if (p.async && (0, _types.isPromise)(res)) {
             return res.then(res => {
-              let status = res === undefined;
+              let status = false;
 
-              if (res !== undefined && data[key] !== res) {
+              if (data[key] !== res) {
                 data[key] = res;
                 status = data[key] === res;
               }
@@ -211,9 +211,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
           } //#endif
 
 
-          let status = res === undefined;
+          let status = false;
 
-          if (res !== undefined && data[key] !== res) {
+          if (data[key] !== res) {
             data[key] = res;
             status = data[key] === res;
           }

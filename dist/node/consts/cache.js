@@ -9,7 +9,9 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.localCacheAttrs = exports.compiledCycles = exports.LOCAL_CACHE = void 0;
 
 var _core = _interopRequireDefault(require("../core"));

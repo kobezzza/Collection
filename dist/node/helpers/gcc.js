@@ -15,7 +15,9 @@
  * @return {?}
  */
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.any = any;
 
 function any(val) {

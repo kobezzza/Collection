@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Tue, 14 May 2019 05:53:55 GMT
+ * Date: 'Thu, 16 May 2019 15:44:11 GMT
  */
 
 (function (global, factory) {
@@ -3645,9 +3645,9 @@
 
 	          if (p.async && isPromise(res)) {
 	            return res.then(function (res) {
-	              var status = res === undefined;
+	              var status = false;
 
-	              if (res !== undefined && data.get(key) !== res) {
+	              if (data.get(key) !== res) {
 	                data.set(key, res);
 	                status = data.get(key) === res;
 	              }
@@ -3668,9 +3668,9 @@
 	          } 
 
 
-	          var status = res === undefined;
+	          var status = false;
 
-	          if (res !== undefined && data.get(key) !== res) {
+	          if (data.get(key) !== res) {
 	            data.set(key, res);
 	            status = data.get(key) === res;
 	          }
@@ -3697,9 +3697,9 @@
 
 	          if (p.async && isPromise(res)) {
 	            return res.then(function (res) {
-	              var status = res === undefined;
+	              var status = false;
 
-	              if (res !== undefined && !data.has(res)) {
+	              if (!data.has(res)) {
 	                data.delete(el);
 	                data.add(res);
 	                status = data.has(res);
@@ -3721,9 +3721,9 @@
 	          } 
 
 
-	          var status = res === undefined;
+	          var status = false;
 
-	          if (res !== undefined && !data.has(res)) {
+	          if (!data.has(res)) {
 	            data.delete(el);
 	            data.add(res);
 	            status = data.has(res);
@@ -3751,9 +3751,9 @@
 
 	          if (p.async && isPromise(res)) {
 	            return res.then(function (res) {
-	              var status = res === undefined;
+	              var status = false;
 
-	              if (res !== undefined && data[key] !== res) {
+	              if (data[key] !== res) {
 	                data[key] = res;
 	                status = data[key] === res;
 	              }
@@ -3774,9 +3774,9 @@
 	          } 
 
 
-	          var status = res === undefined;
+	          var status = false;
 
-	          if (res !== undefined && data[key] !== res) {
+	          if (data[key] !== res) {
 	            data[key] = res;
 	            status = data[key] === res;
 	          }
