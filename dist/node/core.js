@@ -100,7 +100,7 @@ Object.assign($C, {
  * @const
  */
 
-$C.VERSION = [6, 7, 3];
+$C.VERSION = [6, 7, 4];
 /**
  * Cache version
  * @const

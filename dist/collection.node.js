@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.3 (node)
+ * Collection v6.7.4 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 16 May 2019 15:44:11 GMT
+ * Date: 'Thu, 16 May 2019 16:40:44 GMT
  */
 
 (function (global, factory) {
@@ -485,7 +485,7 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 7, 3];
+	$C.VERSION = [6, 7, 4];
 	/**
 	 * Cache version
 	 * @const
