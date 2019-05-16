@@ -42,7 +42,7 @@ gulp.task('node', gulp.parallel(
 gulp.task('watch', gulp.series('default', () => {
 	gulp.watch('./src/**/*.js', gulp.series(
 		'bump',
-		gulp.parallel('build:node', 'build:test:browser')
+		gulp.parallel('build:node', 'build:compile')
 	));
 
 	gulp.watch('./*.md', gulp.series('yaspeller'));
@@ -50,7 +50,7 @@ gulp.task('watch', gulp.series('default', () => {
 }));
 
 gulp.task('watch:node', gulp.series('node', () => {
-	gulp.watch('./src/**/*.js', gulp.series('bump', 'build:test:node'));
+	gulp.watch('./src/**/*.js', gulp.series('bump', 'build:node'));
 	gulp.watch('./*.md', gulp.series('yaspeller'));
 	gulp.watch('./.gitignore', gulp.series('npmignore'));
 }));
