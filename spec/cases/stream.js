@@ -7,6 +7,10 @@
  */
 
 describe('Collection methods with streams', () => {
+	if (typeof window !== 'undefined') {
+		return;
+	}
+
 	const
 		{Transform} = require('stream');
 
