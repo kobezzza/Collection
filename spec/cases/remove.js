@@ -354,10 +354,6 @@ describe('Collection.remove', () => {
 		]);
 	});
 
-	it('get from a set', () => {
-		expect($C(new Set([1, 2, 3, 4, 5])).get((el) => el % 2)).toEqual([1, 3, 5]);
-	});
-
 	it('remove from a set with multiple parameters', () => {
 		expect(
 			$C(new Set([1, 2, 3, 4, 5, 6, 7, 8, 9])).filter((el) => el > 1).remove({

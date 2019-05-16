@@ -359,4 +359,116 @@ describe('Collection.set', () => {
 
 		expect(obj).toEqual(new Set([1, 2, 6, 4, 10]));
 	});
+
+	it('set to an array without a filter', () => {
+		const
+			arr = [1, 2];
+
+		expect($C(arr).set(3)).toEqual([
+			{
+				key: 0,
+				result: true,
+				value: 1,
+				newValue: 3
+			},
+
+			{
+				key: 1,
+				result: true,
+				value: 2,
+				newValue: 3
+			}
+		]);
+
+		expect(arr).toEqual([3, 3]);
+	});
+
+	it('set to an array with multiple filters', () => {
+		expect(
+			$C([1, 2, 3, 4, 5]).set(77, [
+				(el) => el > 1,
+				(el) => el % 2
+			])
+		).toEqual([
+			{
+				key: 2,
+				result: true,
+				value: 3,
+				newValue: 77
+			},
+
+			{
+				key: 4,
+				result: true,
+				value: 5,
+				newValue: 77
+			}
+		]);
+	});
+
+	it('set to an array with .one helper', () => {
+		expect($C([1, 2, 3, 4, 5]).one.set(77, (el) => el > 2)).toEqual({
+			key: 2,
+			result: true,
+			value: 3,
+			newValue: 77
+		});
+	});
+
+	it('set to an array with {mult: false} parameter', () => {
+		expect($C([1, 2, 3, 4, 5]).set(77, (el) => el > 2, {mult: false})).toEqual({
+			key: 2,
+			result: true,
+			value: 3,
+			newValue: 77
+		});
+	});
+
+	it('set to an array with multiple parameters', () => {
+		expect(
+			$C([1, 2, 3, 4, 5, 6, 7, 8, 9]).filter((el) => el > 1).set(77, {
+				filter: (el) => el % 2,
+				from: 1,
+				count: 2
+			})
+		).toEqual([
+			{
+				key: 4,
+				result: true,
+				value: 5,
+				newValue: 77
+			},
+
+			{
+				key: 6,
+				result: true,
+				value: 7,
+				newValue: 77
+			}
+		]);
+	});
+
+	it('set to a set with multiple parameters', () => {
+		expect(
+			$C(new Set([1, 2, 3, 4, 5, 6, 7, 8, 9])).filter((el) => el > 1).set(77, {
+				filter: (el) => el % 2,
+				from: 1,
+				count: 2
+			})
+		).toEqual([
+			{
+				key: null,
+				result: true,
+				value: 5,
+				newValue: 77
+			},
+
+			{
+				key: null,
+				result: false,
+				value: 7,
+				newValue: 77
+			}
+		]);
+	});
 });
