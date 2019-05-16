@@ -12,8 +12,7 @@
 
 const
 	gulp = require('gulp'),
-	$ = require('gulp-load-plugins')(),
-	{test} = require('./helpers');
+	$ = require('gulp-load-plugins')();
 
 const
 	path = require('path'),
@@ -122,7 +121,7 @@ gulp.task('build:browser', () => {
 
 					.pipe($.rename({extname: '.js'}))
 					.pipe(gulp.dest('./dist'))
-					.on('end', () => del(`./src/${name}`).then(cb, cb));
+					.on('end', () => del(`./src/${name}`).then(() => cb(), () => cb()));
 			}))
 		);
 	});
