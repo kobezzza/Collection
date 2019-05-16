@@ -33,7 +33,7 @@ module.exports = (generate) => {
 
 	if (generate) {
 		const src = p('dist/tests.js');
-		fs.writeFileSync(src, content.join('\\n\\n'));
+		fs.writeFileSync(src, content.join('\n\n'));
 		require(src);
 	}
 };
