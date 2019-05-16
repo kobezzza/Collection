@@ -20,7 +20,7 @@ require('./gulp/test');
 gulp.task('default', gulp.parallel(
 	gulp.series(
 		gulp.parallel('bump', 'head'),
-		'build'
+		'build:test'
 	),
 
 	'copyright',
@@ -40,11 +40,7 @@ gulp.task('node', gulp.parallel(
 ));
 
 gulp.task('watch', gulp.series('default', () => {
-	gulp.watch('./src/**/*.js', gulp.series(
-		'bump',
-		gulp.parallel('build:node', 'build:compile')
-	));
-
+	gulp.watch('./src/**/*.js', gulp.series('bump', 'build'));
 	gulp.watch('./*.md', gulp.series('yaspeller'));
 	gulp.watch('./.gitignore', gulp.series('npmignore'));
 }));

@@ -122,7 +122,7 @@ gulp.task('build:browser', () => {
 
 					.pipe($.rename({extname: '.js'}))
 					.pipe(gulp.dest('./dist'))
-					.on('end', () => del(`./src/${name}`).finally(cb));
+					.on('end', () => del(`./src/${name}`).then(cb, cb));
 			}))
 		);
 	});
@@ -130,8 +130,8 @@ gulp.task('build:browser', () => {
 	return merge(tasks);
 });
 
-gulp.task('build:compile', gulp.series(gulp.parallel('build:browser', 'predefs'), compile));
-gulp.task('build:compile:fast', compile);
+gulp.task('build:browser:compile', gulp.series(gulp.parallel('build:browser', 'predefs'), compile));
+gulp.task('build:browser:compile:fast', compile);
 
 function compile() {
 	const
@@ -170,7 +170,4 @@ function compile() {
 	return merge(tasks);
 }
 
-gulp.task('build', gulp.series(
-	gulp.parallel('build:node', 'build:compile'),
-	test('browser')
-));
+gulp.task('build', gulp.parallel('build:node', 'build:browser:compile'));
