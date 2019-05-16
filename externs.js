@@ -652,6 +652,15 @@ var fLength;
 var onComplete;
 
 /** @type {?} */
+var readableObjectMode;
+
+/** @type {?} */
+var writableObjectMode;
+
+/** @type {?} */
+var transform;
+
+/** @type {?} */
 var addListener;
 
 /** @type {?} */

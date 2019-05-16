@@ -37,11 +37,11 @@ gulp.task('predefs:bower', () =>
 	$.run('bower install').exec()
 );
 
-gulp.task('predefs', gulp.parallel([
+gulp.task('predefs', gulp.parallel(
 	'predefs:build',
 	'predefs:externs',
 	'predefs:bower'
-]));
+));
 
 gulp.task('head', () => {
 	function filter(file) {

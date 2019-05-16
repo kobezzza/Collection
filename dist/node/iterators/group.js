@@ -9,13 +9,13 @@
 
 var _core = require("../core");
 
-var _symbols = require("../consts/symbols");
-
 var _types = require("../helpers/types");
 
 var _link = require("../helpers/link");
 
 var _gcc = require("../helpers/gcc");
+
+var _symbols = require("../consts/symbols");
 
 /**
  * Groups elements in the collection by the specified condition and returns a new collection

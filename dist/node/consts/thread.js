@@ -7,7 +7,9 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.priorities = exports.MAX_PRIORITY = void 0;
 const MAX_PRIORITY = 40;
 exports.MAX_PRIORITY = MAX_PRIORITY;

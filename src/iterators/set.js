@@ -89,9 +89,9 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					if (p.async && isPromise(res)) {
 						return res.then((res) => {
 							let
-								status = res === undefined;
+								status = false;
 
-							if (res !== undefined && data.get(key) !== res) {
+							if (data.get(key) !== res) {
 								data.set(key, res);
 								status = data.get(key) === res;
 							}
@@ -115,9 +115,9 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					//#endif
 
 					let
-						status = res === undefined;
+						status = false;
 
-					if (res !== undefined && data.get(key) !== res) {
+					if (data.get(key) !== res) {
 						data.set(key, res);
 						status = data.get(key) === res;
 					}
@@ -149,9 +149,9 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					if (p.async && isPromise(res)) {
 						return res.then((res) => {
 							let
-								status = res === undefined;
+								status = false;
 
-							if (res !== undefined && !data.has(res)) {
+							if (!data.has(res)) {
 								data.delete(el);
 								data.add(res);
 								status = data.has(res);
@@ -176,9 +176,9 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					//#endif
 
 					let
-						status = res === undefined;
+						status = false;
 
-					if (res !== undefined && !data.has(res)) {
+					if (!data.has(res)) {
 						data.delete(el);
 						data.add(res);
 						status = data.has(res);
@@ -211,9 +211,9 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					if (p.async && isPromise(res)) {
 						return res.then((res) => {
 							let
-								status = res === undefined;
+								status = false;
 
-							if (res !== undefined && data[key] !== res) {
+							if (data[key] !== res) {
 								data[key] = res;
 								status = data[key] === res;
 							}
@@ -237,9 +237,9 @@ Collection.prototype.set = function (value, filter, opt_params) {
 					//#endif
 
 					let
-						status = res === undefined;
+						status = false;
 
-					if (res !== undefined && data[key] !== res) {
+					if (data[key] !== res) {
 						data[key] = res;
 						status = data[key] === res;
 					}

@@ -7,12 +7,17 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-exports.__esModule = true;
-exports.LOCAL_STORAGE_SUPPORT = exports.SYMBOL_NATIVE_SUPPORT = exports.OBJECT_ASSIGN_NATIVE_SUPPORT = exports.OBJECT_KEYS_NATIVE_SUPPORT = exports.BLOB_SUPPORT = exports.IS_BROWSER = exports.IS_NODE = void 0;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.LOCAL_STORAGE_SUPPORT = exports.SYMBOL_NATIVE_SUPPORT = exports.OBJECT_ASSIGN_NATIVE_SUPPORT = exports.OBJECT_KEYS_NATIVE_SUPPORT = exports.BLOB_SUPPORT = exports.IS_BROWSER = exports.IS_NODE = exports.GLOBAL = void 0;
+
+var _gcc = require("../helpers/gcc");
 
 var _types = require("../helpers/types");
 
-var _gcc = require("../helpers/gcc");
+const GLOBAL = new Function('return this')();
+exports.GLOBAL = GLOBAL;
 
 const IS_NODE = (() => {
   try {
@@ -37,7 +42,7 @@ exports.BLOB_SUPPORT = BLOB_SUPPORT;
 exports.IS_BROWSER = IS_BROWSER;
 
 const LOCAL_STORAGE_SUPPORT = !IS_NODE && (() => {
-  const mod = Math.random();
+  const mod = String(Math.random());
 
   try {
     localStorage.setItem(mod, mod);

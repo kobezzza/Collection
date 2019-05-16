@@ -9,6 +9,10 @@
  */
 
 const
+	gulp = require('gulp'),
+	$ = require('gulp-load-plugins')();
+
+const
 	path = require('path'),
 	fs = require('fs');
 
@@ -37,5 +41,27 @@ module.exports = {
 			v = /VERSION\s*[:=]\s*\[(.*?)]/.exec(file)[1].split(/\s*,\s*/);
 
 		return v.slice(0, 3).join('.') + (v[3] ? `-${eval(v[3])}` : '');
+	},
+
+	test(type, dev) {
+		return () => {
+			const src = type !== 'node' ? `./dist/collection.node${dev ? '' : '.min'}.js` : [
+				'./collection.js',
+				'./dist/node/**/*.js',
+				'!./dist/node/**/*.tmp.js'
+			];
+
+			return gulp.src(src)
+				.pipe($.istanbul())
+				.pipe($.istanbul.hookRequire())
+				.on('finish', runTests);
+
+			function runTests() {
+				return gulp.src(`./spec/${type + (dev ? '-dev' : '')}-spec.js`)
+					.pipe($.plumber())
+					.pipe($.jasmine())
+					.pipe($.istanbul.writeReports());
+			}
+		};
 	}
 };

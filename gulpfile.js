@@ -17,52 +17,36 @@ require('./gulp/predefs');
 require('./gulp/build');
 require('./gulp/test');
 
-gulp.task('default', gulp.parallel([
-	gulp.series([
-		gulp.parallel(['bump', 'head']),
-		'build'
-	]),
+gulp.task('default', gulp.parallel(
+	gulp.series(
+		gulp.parallel('bump', 'head'),
+		'build:test'
+	),
 
 	'copyright',
 	'yaspeller',
 	'npmignore'
-]));
+));
 
-gulp.task('dev', gulp.parallel([
-	gulp.series([
-		gulp.parallel(['bump', 'head']),
-		'build:node',
-		'build:browser'
-	]),
-
-	'copyright',
-	'yaspeller',
-	'npmignore'
-]));
-
-gulp.task('dev:node', gulp.parallel([
-	gulp.series([
-		gulp.parallel(['bump', 'head']),
-		'build:node'
-	]),
+gulp.task('node', gulp.parallel(
+	gulp.series(
+		gulp.parallel('bump', 'head'),
+		'build:test:node'
+	),
 
 	'copyright',
 	'yaspeller',
 	'npmignore'
-]));
+));
 
-gulp.task('watch', gulp.series(['dev', () => {
-	gulp.watch('./src/**/*.js', gulp.series([
-		'bump',
-		gulp.parallel(['build:browser', 'build:node'])
-	]));
-
+gulp.task('watch', gulp.series('default', () => {
+	gulp.watch('./src/**/*.js', gulp.series('bump', 'build'));
 	gulp.watch('./*.md', gulp.series('yaspeller'));
 	gulp.watch('./.gitignore', gulp.series('npmignore'));
-}]));
+}));
 
-gulp.task('watch:node', gulp.series(['dev:node', () => {
-	gulp.watch('./src/**/*.js', gulp.series(['bump', 'build:node']));
+gulp.task('watch:node', gulp.series('node', () => {
+	gulp.watch('./src/**/*.js', gulp.series('bump', 'build:node'));
 	gulp.watch('./*.md', gulp.series('yaspeller'));
 	gulp.watch('./.gitignore', gulp.series('npmignore'));
-}]));
+}));

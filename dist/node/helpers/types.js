@@ -7,7 +7,9 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.isFunction = isFunction;
 exports.isNumber = isNumber;
 exports.isString = isString;

@@ -10,7 +10,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-export { default as default } from './core';
+export { default } from './core';
 
 import './iterators/cache';
 import './iterators/for-each';
