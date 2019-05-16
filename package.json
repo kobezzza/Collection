@@ -21,7 +21,7 @@
   },
   "scripts": {
     "test": "bower install && jasmine",
-    "test-coverage": "bower install && gulp test",
+    "test-coverage": "gulp test:browser:fast && gulp test:browser:dev:fast && gulp test:node:fast",
     "full-test": "npm run test-coverage && yaspeller ./"
   },
   "keywords": [

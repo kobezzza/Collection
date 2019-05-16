@@ -46,21 +46,22 @@ gulp.task('build:browser', () => {
 		tasks = [];
 
 	Object.keys(builds).forEach((key) => {
-		const name = `${key}.tmp`;
+		const
+			name = `${key}.tmp`;
+
 		const fullHead =
 			helpers.getHead(true, key !== 'collection' ? key.replace(/^collection\./, '') : '') +
 			' *\n' +
 			` * Date: '${new Date().toUTCString()}\n` +
 			' */\n\n';
 
-		tasks.push(merge(
-			gulp.src('./src/index.js')
-				.pipe($.plumber())
-				.pipe($.monic({flags: builds[key]}))
-				.pipe($.rename(name))
-				.pipe(gulp.dest('./src')),
+		tasks.push(gulp.src('./src/index.js')
+			.pipe($.plumber())
+			.pipe($.monic({flags: builds[key]}))
+			.pipe($.rename(name))
+			.pipe(gulp.dest('./src'))
 
-			(() => {
+			.pipe(through.obj((data, enc, cb) => {
 				const stream = new Transform({
 					readableObjectMode: true
 				});
@@ -96,7 +97,7 @@ gulp.task('build:browser', () => {
 						stream.push(null);
 					});
 
-				return stream
+				stream
 					.pipe($.plumber())
 					.pipe(through.obj((data, enc, cb) => {
 						if (data instanceof File) {
@@ -118,17 +119,18 @@ gulp.task('build:browser', () => {
 					.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
 					.pipe($.header(fullHead))
 					.pipe($.eol('\n'))
+
 					.pipe($.rename({extname: '.js'}))
 					.pipe(gulp.dest('./dist'))
-					.on('end', () => del(`./src/${name}`));
-			})()
-		));
+					.on('end', () => del(`./src/${name}`).finally(cb));
+			}))
+		);
 	});
 
 	return merge(tasks);
 });
 
-gulp.task('build:compile', gulp.series(gulp.parallel(['build:browser', 'predefs']), compile));
+gulp.task('build:compile', gulp.series(gulp.parallel('build:browser', 'predefs'), compile));
 gulp.task('build:compile:fast', compile);
 
 function compile() {
@@ -168,7 +170,7 @@ function compile() {
 	return merge(tasks);
 }
 
-gulp.task('build', gulp.parallel([
-	gulp.series(['build:compile', test('browser')]),
-	gulp.series(['build:node', test('node')])
-]));
+gulp.task('build', gulp.series(
+	gulp.parallel('build:node', 'build:compile'),
+	test('browser')
+));

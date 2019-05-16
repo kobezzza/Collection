@@ -45,7 +45,13 @@ module.exports = {
 
 	test(type, dev) {
 		return () => {
-			return gulp.src(type === 'node' ? './collection.js' : `./dist/collection.node${dev ? '' : '.min'}.js`)
+			const src = type !== 'node' ? `./dist/collection.node${dev ? '' : '.min'}.js` : [
+				'./collection.js',
+				'./dist/node/**/*.js',
+				'!./dist/node/**/*.tmp.js'
+			];
+
+			return gulp.src(src)
 				.pipe($.istanbul())
 				.pipe($.istanbul.hookRequire())
 				.on('finish', runTests);
