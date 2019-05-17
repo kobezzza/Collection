@@ -96,7 +96,7 @@ $C.VERSION = [6, 7, 4];
  * Cache version
  * @const
  */
-$C.CACHE_VERSION = 60;
+$C.CACHE_VERSION = 61;
 
 /**
  * Creates an instance of Collection
