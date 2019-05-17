@@ -105,7 +105,7 @@ export function compileCycle(key, p) {
 			count = o.count,
 			from = o.from,
 			startIndex = o.startIndex || 0,
-			endIndex = o.endIndex !== false ? o.endIndex + 1 : 0;
+			endIndex = o.endIndex !== false ? o.endIndex : 0;
 
 		var
 			onIterationEnd = o.onIterationEnd,
@@ -376,7 +376,7 @@ export function compileCycle(key, p) {
 					filters: filters.slice(0),
 					mult: ${p.mult},
 					startIndex: startIndex,
-					endIndex: endIndex,
+					endIndex: o.endIndex,
 					from: from,
 					count: count,
 					live: ${p.live},
@@ -762,7 +762,7 @@ export function compileCycle(key, p) {
 
 			if ((p.reverse || !p.live) && (p.startIndex || p.endIndex)) {
 				iFn += ws`
-					clone = slice.call(clone, startIndex, endIndex || data.length);
+					clone = slice.call(clone, startIndex, endIndex ? endIndex + 1 : data.length);
 				`;
 			}
 
@@ -863,7 +863,7 @@ export function compileCycle(key, p) {
 				}
 
 				if (p.startIndex || p.endIndex) {
-					iFn += `tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);`;
+					iFn += `tmpArray = tmpArray.slice(startIndex, endIndex ? endIndex + 1 : tmpArray.length);`;
 				}
 
 				iFn += ws`
@@ -1020,7 +1020,7 @@ export function compileCycle(key, p) {
 				`;
 
 				if (p.startIndex || p.endIndex) {
-					iFn += `tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);`;
+					iFn += `tmpArray = tmpArray.slice(startIndex, endIndex ? endIndex + 1 : tmpArray.length);`;
 				}
 
 				iFn += ws`
