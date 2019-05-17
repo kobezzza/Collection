@@ -63,7 +63,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 					res = [];
 
 				} else {
-					res = {};
+					res = {length: source.length};
 					type = 'object';
 				}
 
@@ -196,7 +196,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 		case 'stream':
 			fn = function () {
-				return new Promise((resolve) => {
+				return new Promise((resolve, reject) => {
 					let
 						val = opt_cb.apply(null, arguments);
 
@@ -205,32 +205,47 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 						resolve();
 					}
 
+					function onError(err) {
+						clear();
+						reject(err);
+					}
+
 					function clear() {
 						res.removeListener('drain', write);
-						res.removeListener('error', end);
+						res.removeListener('error', onError);
 						res.removeListener('close', end);
 					}
 
 					function write() {
 						clear();
 
+						res.addListener('error', onError);
+						res.addListener('close', end);
+
 						try {
 							if (!isPositive(val)) {
-								resolve();
+								res.end();
+								end();
 								return;
 							}
 
-							if (res.write(val)) {
-								resolve(val);
+							if (res.writableLength < res.writableHighWaterMark) {
+								res.write(val, (err) => {
+									if (err) {
+										onError(err);
+										return;
+									}
+
+									clear();
+									resolve(val);
+								});
 
 							} else {
 								res.addListener('drain', write);
-								res.addListener('error', end);
-								res.addListener('close', end);
 							}
 
-						} catch (_) {
-							end();
+						} catch (err) {
+							onError(err);
 						}
 					}
 
