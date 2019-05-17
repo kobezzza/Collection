@@ -240,7 +240,7 @@ Collection.prototype.iterator = function (opt_async) {
  */
 Collection.prototype.to = function (value) {
 	const type = typeof value;
-	this.p.initialType = value != null && value !== 'object' ? type : getType(value);
+	this.p.initialType = value != null && type !== 'object' ? type : getType(value);
 	this.p.initial = value;
 	return this;
 };
