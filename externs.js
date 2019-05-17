@@ -658,6 +658,12 @@ var readableObjectMode;
 var writableObjectMode;
 
 /** @type {?} */
+var writableLength;
+
+/** @type {?} */
+var writableHighWaterMark;
+
+/** @type {?} */
 var transform;
 
 /** @type {?} */
