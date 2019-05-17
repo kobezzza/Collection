@@ -233,7 +233,7 @@ _core.Collection.prototype.iterator = function (opt_async) {
 
 _core.Collection.prototype.to = function (value) {
   const type = typeof value;
-  this.p.initialType = value != null && value !== 'object' ? type : (0, _types.getType)(value);
+  this.p.initialType = value != null && type !== 'object' ? type : (0, _types.getType)(value);
   this.p.initial = value;
   return this;
 };

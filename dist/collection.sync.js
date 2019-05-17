@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.4 (sync)
+ * Collection v6.7.5 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 16 May 2019 16:40:44 GMT
+ * Date: 'Fri, 17 May 2019 17:05:20 GMT
  */
 
 (function (global, factory) {
@@ -485,13 +485,13 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 7, 4];
+	$C.VERSION = [6, 7, 5];
 	/**
 	 * Cache version
 	 * @const
 	 */
 
-	$C.CACHE_VERSION = 60;
+	$C.CACHE_VERSION = 61;
 	/**
 	 * Creates an instance of Collection
 	 * @param {$$CollectionType} obj
@@ -830,7 +830,7 @@
 	}
 
 	function _templateObject20() {
-	  var data = _taggedTemplateLiteral(["\nclone = slice.call(clone, startIndex, endIndex || data.length);\n"]);
+	  var data = _taggedTemplateLiteral(["\nclone = slice.call(clone, startIndex, endIndex ? endIndex + 1 : data.length);\n"]);
 
 	  _templateObject20 = function _templateObject20() {
 	    return data;
@@ -930,7 +930,7 @@
 	}
 
 	function _templateObject10() {
-	  var data = _taggedTemplateLiteral(["\nvar ctx = {\n$: {},\ninfo: {\nfilters: filters.slice(0),\nmult: ", ",\nstartIndex: startIndex,\nendIndex: endIndex,\nfrom: from,\ncount: count,\nlive: ", ",\nreverse: ", ",\nwithDescriptor: ", ",\nnotOwn: ", ",\ninverseFilter: ", ",\ntype: '", "',\nasync: ", ",\nthread: ", ",\npriority: ", " && '", "',\nlength: ", "\n},\ntrue: TRUE,\nfalse: FALSE,\ncursor: o.cursor,\nlength: o.cbLength,\nchildResult: childResult,\nonError: onError,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nget value() {\nreturn yieldVal;\n},\njump: function (val) {\nif (", ") {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (", ") {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget id() {\nreturn id;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar fCtx = Object.create(ctx);\nfCtx.length = o.fLength;\n"]);
+	  var data = _taggedTemplateLiteral(["\nvar ctx = {\n$: {},\ninfo: {\nfilters: filters.slice(0),\nmult: ", ",\nstartIndex: startIndex,\nendIndex: o.endIndex,\nfrom: from,\ncount: count,\nlive: ", ",\nreverse: ", ",\nwithDescriptor: ", ",\nnotOwn: ", ",\ninverseFilter: ", ",\ntype: '", "',\nasync: ", ",\nthread: ", ",\npriority: ", " && '", "',\nlength: ", "\n},\ntrue: TRUE,\nfalse: FALSE,\ncursor: o.cursor,\nlength: o.cbLength,\nchildResult: childResult,\nonError: onError,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nget value() {\nreturn yieldVal;\n},\njump: function (val) {\nif (", ") {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (", ") {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget id() {\nreturn id;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar fCtx = Object.create(ctx);\nfCtx.length = o.fLength;\n"]);
 
 	  _templateObject10 = function _templateObject10() {
 	    return data;
@@ -1020,7 +1020,7 @@
 	}
 
 	function _templateObject() {
-	  var data = _taggedTemplateLiteral(["\nvar\ndata = o.data,\ncb = o.cb,\nbaseCb = cb,\nfilters = o.filters;\nvar\ncount = o.count,\nfrom = o.from,\nstartIndex = o.startIndex || 0,\nendIndex = o.endIndex !== false ? o.endIndex + 1 : 0;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError;\nvar\nTRUE = o.TRUE,\nFALSE = o.FALSE,\nIGNORE = o.IGNORE;\nvar\ni = -1,\nj = 0,\nn = -1,\nid = 0,\nfI = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nchildResult;\nvar\nfLength = filters.length,\nlength,\nr,\nf;\nvar\nel,\nkey;\n"]);
+	  var data = _taggedTemplateLiteral(["\nvar\ndata = o.data,\ncb = o.cb,\nbaseCb = cb,\nfilters = o.filters;\nvar\ncount = o.count,\nfrom = o.from,\nstartIndex = o.startIndex || 0,\nendIndex = o.endIndex !== false ? o.endIndex : 0;\nvar\nonIterationEnd = o.onIterationEnd,\nonComplete = o.onComplete,\nonError = o.onError;\nvar\nTRUE = o.TRUE,\nFALSE = o.FALSE,\nIGNORE = o.IGNORE;\nvar\ni = -1,\nj = 0,\nn = -1,\nid = 0,\nfI = -1;\nvar\nbreaker = false,\nbrkIf = false;\nvar\nlimit = 1,\nlooper = 0,\nchildResult;\nvar\nfLength = filters.length,\nlength,\nr,\nf;\nvar\nel,\nkey;\n"]);
 
 	  _templateObject = function _templateObject() {
 	    return data;
@@ -1182,7 +1182,7 @@
 	        }
 
 	        if (p.startIndex || p.endIndex) {
-	          iFn += "tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);";
+	          iFn += "tmpArray = tmpArray.slice(startIndex, endIndex ? endIndex + 1 : tmpArray.length);";
 	        }
 
 	        iFn += ws(_templateObject27(), threadStart, threadEnd);
@@ -1236,7 +1236,7 @@
 	        iFn += ws(_templateObject36(), threadEnd, threadEnd, asyncWait);
 
 	        if (p.startIndex || p.endIndex) {
-	          iFn += "tmpArray = tmpArray.slice(startIndex, endIndex || tmpArray.length);";
+	          iFn += "tmpArray = tmpArray.slice(startIndex, endIndex ? endIndex + 1 : tmpArray.length);";
 	        }
 
 	        iFn += ws(_templateObject37(), threadStart, defArgs ? 'key = tmpArray[n];' : '');
@@ -2024,7 +2024,7 @@
 	Collection.prototype.to = function (value) {
 	  var type = _typeof(value);
 
-	  this.p.initialType = value != null && value !== 'object' ? type : getType(value);
+	  this.p.initialType = value != null && type !== 'object' ? type : getType(value);
 	  this.p.initial = value;
 	  return this;
 	};
@@ -2470,7 +2470,9 @@
 	        if (isArray(source)) {
 	          res = [];
 	        } else {
-	          res = {};
+	          res = {
+	            length: source.length
+	          };
 	          type = 'object';
 	        }
 
@@ -2554,7 +2556,7 @@
 	    case 'stream':
 	      fn = function fn() {
 	        var _arguments = arguments;
-	        return new Promise(function (resolve) {
+	        return new Promise(function (resolve, reject) {
 	          var val = opt_cb.apply(null, _arguments);
 
 	          function end() {
@@ -2562,30 +2564,44 @@
 	            resolve();
 	          }
 
+	          function onError(err) {
+	            clear();
+	            reject(err);
+	          }
+
 	          function clear() {
 	            res.removeListener('drain', write);
-	            res.removeListener('error', end);
+	            res.removeListener('error', onError);
 	            res.removeListener('close', end);
 	          }
 
 	          function write() {
 	            clear();
+	            res.addListener('error', onError);
+	            res.addListener('close', end);
 
 	            try {
 	              if (!isPositive(val)) {
-	                resolve();
+	                res.end();
+	                end();
 	                return;
 	              }
 
-	              if (res.write(val)) {
-	                resolve(val);
+	              if (res.writableLength < res.writableHighWaterMark) {
+	                res.write(val, function (err) {
+	                  if (err) {
+	                    onError(err);
+	                    return;
+	                  }
+
+	                  clear();
+	                  resolve(val);
+	                });
 	              } else {
 	                res.addListener('drain', write);
-	                res.addListener('error', end);
-	                res.addListener('close', end);
 	              }
-	            } catch (_) {
-	              end();
+	            } catch (err) {
+	              onError(err);
 	            }
 	          } 
 
