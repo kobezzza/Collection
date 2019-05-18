@@ -341,14 +341,14 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 	const {onIterationEnd} = p;
 	p.onIterationEnd = (ctx) => {
-		if ((mult ? p.result.notFound : !p.result.length) && 'key' in p) {
-			if (p.key == null && isArray(data)) {
+		if ((mult ? !p.result.length : p.result.notFound) && p.create !== false && 'key' in p) {
+			if (isArray(data) && !p.key && p.key !== 0) {
 				p.key = data.length;
 			}
 
 			const res = byLink(data, p.key, {
 				value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
-				create: p.create !== false
+				create: true
 			});
 
 			if (mult) {
