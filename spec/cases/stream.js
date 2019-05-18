@@ -206,8 +206,6 @@ describe('Collection methods with streams', () => {
 			.addListener('close', () => {
 				expect(dataHandler).toHaveBeenCalledTimes(1);
 				expect(dataHandler).toHaveBeenCalledWith(0);
-
-				expect(errorHandler).toHaveBeenCalledTimes(1);
 				expect(errorHandler).toHaveBeenCalledWith(err);
 				done();
 			});
