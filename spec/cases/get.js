@@ -83,4 +83,18 @@ describe('Collection.get', () => {
 			})
 		).toEqual([5, 7]);
 	});
+
+	it('async get from a set with multiple parameters', async () => {
+		expect(
+			await $C(new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]))
+				.async
+				.filter((el) => Promise.resolve(el > 1))
+				.get({
+					filter: (el) => el % 2,
+					from: 1,
+					count: 2
+				})
+
+		).toEqual([5, 7]);
+	});
 });
