@@ -48,6 +48,7 @@ const slice = [].slice,
  *   [delete = delete] - if true, then the property will be deleted
  *   [create = false] - if true, then the property will be created if it's not defined
  *   [test = false] - if is true, then will be returned false if the property is not defined
+ *   [error = false] - if is true, then will be thrown an exception if the property is not defined
  *
  * @return {({result: boolean, key, value, notFound: (boolean|undefined)}|?)}
  */
@@ -72,7 +73,7 @@ function byLink(obj, link, opt_params) {
       }
 
       if (p.error) {
-        throw new ReferenceError(`${el} is not defined!`);
+        throw new ReferenceError(`"${el}" is not defined`);
       }
 
       if (p.delete) {

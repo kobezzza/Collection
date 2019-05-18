@@ -1047,11 +1047,12 @@ function compileCycle(key, p) {
 
   if (!p.mult) {
     tmp += 'breaker = true;';
-  } //#if iterators/async
+  }
 
+  let waitCb = ''; //#if iterators/async
 
   if (p.async) {
-    tmp += _string.ws`
+    waitCb = _string.ws`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
 					rCbSet.add(r);
@@ -1062,6 +1063,7 @@ function compileCycle(key, p) {
 				yield;
 			}
 		`;
+    tmp += waitCb;
   } //#endif
 
 
@@ -1095,6 +1097,22 @@ function compileCycle(key, p) {
 		`;
   }
 
+  tmp = _string.ws`
+		if (onIterationEnd) {
+			onIterationEnd(${needCtx ? 'ctx' : ''});
+		}
+	`; //#if iterators/async
+
+  if (p.async) {
+    tmp = _string.ws`
+			if (onIterationEnd) {
+				r = onIterationEnd(${needCtx ? 'ctx' : ''});
+				${waitCb}
+			}
+		`;
+  } //#endif
+
+
   iFn += _string.ws`
 			${threadEnd}
 
@@ -1106,9 +1124,7 @@ function compileCycle(key, p) {
 		breaker = false;
 		looper++;
 
-		if (onIterationEnd) {
-			onIterationEnd(${needCtx ? 'ctx' : ''});
-		}
+		${tmp}
 	`;
   iFn += _string.ws`
 			${yielder}

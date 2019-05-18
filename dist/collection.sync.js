@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.5 (sync)
+ * Collection v6.7.6 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Fri, 17 May 2019 17:05:20 GMT
+ * Date: 'Sat, 18 May 2019 08:59:54 GMT
  */
 
 (function (global, factory) {
@@ -485,13 +485,13 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 7, 5];
+	$C.VERSION = [6, 7, 6];
 	/**
 	 * Cache version
 	 * @const
 	 */
 
-	$C.CACHE_VERSION = 61;
+	$C.CACHE_VERSION = 62;
 	/**
 	 * Creates an instance of Collection
 	 * @param {$$CollectionType} obj
@@ -569,8 +569,28 @@
 	var CACHE_KEY = '__COLLECTION_CACHE__',
 	    CACHE_VERSION_KEY = '__COLLECTION_CACHE_VERSION__';
 
-	function _templateObject46() {
+	function _templateObject48() {
 	  var data = _taggedTemplateLiteral(["\n", "\n}\n", "\nif (onComplete) {\n", "\nonComplete(p.result);\n}\nreturn p.result;\n"]);
+
+	  _templateObject48 = function _templateObject48() {
+	    return data;
+	  };
+
+	  return data;
+	}
+
+	function _templateObject47() {
+	  var data = _taggedTemplateLiteral(["\n", "\nif (breaker", ") {\nbreak;\n}\n}\nbreaker = false;\nlooper++;\n", "\n"]);
+
+	  _templateObject47 = function _templateObject47() {
+	    return data;
+	  };
+
+	  return data;
+	}
+
+	function _templateObject46() {
+	  var data = _taggedTemplateLiteral(["\nif (onIterationEnd) {\nr = onIterationEnd(", ");\n", "\n}\n"]);
 
 	  _templateObject46 = function _templateObject46() {
 	    return data;
@@ -580,7 +600,7 @@
 	}
 
 	function _templateObject45() {
-	  var data = _taggedTemplateLiteral(["\n", "\nif (breaker", ") {\nbreak;\n}\n}\nbreaker = false;\nlooper++;\nif (onIterationEnd) {\nonIterationEnd(", ");\n}\n"]);
+	  var data = _taggedTemplateLiteral(["\nif (onIterationEnd) {\nonIterationEnd(", ");\n}\n"]);
 
 	  _templateObject45 = function _templateObject45() {
 	    return data;
@@ -1297,7 +1317,9 @@
 
 	  if (!p.mult) {
 	    tmp += 'breaker = true;';
-	  } 
+	  }
+
+	  var waitCb = ''; 
 
 
 	  if (!p.async && p.from) {
@@ -1316,8 +1338,11 @@
 	    iFn += ws(_templateObject44(), threadEnd);
 	  }
 
-	  iFn += ws(_templateObject45(), threadEnd, p.async ? '|| done' : '', needCtx ? 'ctx' : '');
-	  iFn += ws(_templateObject46(), yielder, asyncWait, p.async ? 'done = true;' : '');
+	  tmp = ws(_templateObject45(), needCtx ? 'ctx' : ''); 
+
+
+	  iFn += ws(_templateObject47(), threadEnd, p.async ? '|| done' : '', tmp);
+	  iFn += ws(_templateObject48(), yielder, asyncWait, p.async ? 'done = true;' : '');
 
 	  if (p.async) {
 	    
@@ -1480,6 +1505,7 @@
 	 *   [delete = delete] - if true, then the property will be deleted
 	 *   [create = false] - if true, then the property will be created if it's not defined
 	 *   [test = false] - if is true, then will be returned false if the property is not defined
+	 *   [error = false] - if is true, then will be thrown an exception if the property is not defined
 	 *
 	 * @return {({result: boolean, key, value, notFound: (boolean|undefined)}|?)}
 	 */
@@ -1500,7 +1526,7 @@
 	      }
 
 	      if (p.error) {
-	        throw new ReferenceError("".concat(el, " is not defined!"));
+	        throw new ReferenceError("\"".concat(el, "\" is not defined"));
 	      }
 
 	      if (p.delete) {
@@ -2554,64 +2580,71 @@
 	      break;
 
 	    case 'stream':
-	      fn = function fn() {
-	        var _arguments = arguments;
-	        return new Promise(function (resolve, reject) {
-	          var val = opt_cb.apply(null, _arguments);
+	      {
+	        var writable = true;
 
-	          function end() {
-	            clear();
-	            resolve();
-	          }
+	        fn = function fn() {
+	          var _arguments = arguments;
+	          return new Promise(function (resolve, reject) {
+	            var val = opt_cb.apply(null, _arguments);
 
-	          function onError(err) {
-	            clear();
-	            reject(err);
-	          }
-
-	          function clear() {
-	            res.removeListener('drain', write);
-	            res.removeListener('error', onError);
-	            res.removeListener('close', end);
-	          }
-
-	          function write() {
-	            clear();
-	            res.addListener('error', onError);
-	            res.addListener('close', end);
-
-	            try {
-	              if (!isPositive(val)) {
-	                res.end();
-	                end();
-	                return;
-	              }
-
-	              if (res.writableLength < res.writableHighWaterMark) {
-	                res.write(val, function (err) {
-	                  if (err) {
-	                    onError(err);
-	                    return;
-	                  }
-
-	                  clear();
-	                  resolve(val);
-	                });
-	              } else {
-	                res.addListener('drain', write);
-	              }
-	            } catch (err) {
-	              onError(err);
+	            function end() {
+	              clear();
+	              resolve();
 	            }
-	          } 
+
+	            function onError(err) {
+	              clear();
+	              reject(err);
+	            }
+
+	            function clear() {
+	              res.removeListener('drain', write);
+	              res.removeListener('error', onError);
+	              res.removeListener('close', end);
+	            }
+
+	            function write() {
+	              clear();
+	              res.addListener('error', onError);
+	              res.addListener('close', end);
+
+	              try {
+	                if (!isPositive(val)) {
+	                  res.end();
+	                  end();
+	                  return;
+	                }
+
+	                if (writable) {
+	                  writable = Boolean(res.write(val, function (err) {
+	                    if (err) {
+	                      onError(err);
+	                      return;
+	                    }
+
+	                    clear();
+	                    resolve(val);
+	                  }));
+	                } else {
+	                  res.addListener('drain', function () {
+	                    writable = true;
+	                    write();
+	                  });
+	                }
+	              } catch (err) {
+	                onError(err);
+	              }
+	            } 
 
 
-	          return write();
-	        });
-	      };
+	            return write();
+	          });
+	        };
 
-	      fn[FN_LENGTH] = opt_cb.length;
-	      break;
+	        fn[FN_LENGTH] = opt_cb.length;
+	        break;
+	      }
 
 	    default:
 	      fn = function fn() {
@@ -3298,9 +3331,9 @@
 
 
 	          var status = false;
+	          data.delete(el);
 
 	          if (!data.has(res)) {
-	            data.delete(el);
 	            data.add(res);
 	            status = data.has(res);
 	          }
@@ -3380,9 +3413,9 @@
 	      case 'set':
 	        fn = function fn(el, key, data) {
 	          var result = false;
+	          data.delete(el);
 
 	          if (!data.has(value)) {
-	            data.delete(el);
 	            data.add(value);
 	            result = data.has(value);
 	          }
@@ -3433,21 +3466,28 @@
 	      onIterationEnd = _p.onIterationEnd;
 
 	  p.onIterationEnd = function (ctx) {
-	    if ((mult ? p.result.notFound : !p.result.length) && 'key' in p) {
-	      if (p.key == null && isArray(data)) {
+	    if ((mult ? !p.result.length : p.result.notFound) && p.create !== false && 'key' in p) {
+	      if (isArray(data) && !p.key && p.key !== 0) {
 	        p.key = data.length;
 	      }
 
-	      var res = byLink(data, p.key, {
-	        value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
-	        create: p.create !== false
-	      });
+	      var newVal = valIsFunc ? value(undefined, undefined, data, ctx) : value;
 
-	      if (mult) {
-	        p.result.push(res);
-	      } else {
-	        p.result = res;
-	      }
+	      var create = function create(newVal) {
+	        var res = byLink(data, p.key, {
+	          value: newVal,
+	          create: true
+	        });
+
+	        if (mult) {
+	          p.result.push(res);
+	        } else {
+	          p.result = res;
+	        }
+	      }; 
+
+
+	      create(newVal);
 	    }
 
 	    onIterationEnd && onIterationEnd(ctx);

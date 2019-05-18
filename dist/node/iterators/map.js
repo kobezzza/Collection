@@ -180,71 +180,78 @@ _core.Collection.prototype.map = function (opt_cb, opt_params) {
       break;
 
     case 'stream':
-      fn = function () {
-        return new Promise((resolve, reject) => {
-          let val = opt_cb.apply(null, arguments);
+      {
+        let writable = true;
 
-          function end() {
-            clear();
-            resolve();
-          }
+        fn = function () {
+          return new Promise((resolve, reject) => {
+            let val = opt_cb.apply(null, arguments);
 
-          function onError(err) {
-            clear();
-            reject(err);
-          }
-
-          function clear() {
-            res.removeListener('drain', write);
-            res.removeListener('error', onError);
-            res.removeListener('close', end);
-          }
-
-          function write() {
-            clear();
-            res.addListener('error', onError);
-            res.addListener('close', end);
-
-            try {
-              if (!(0, _types.isPositive)(val)) {
-                res.end();
-                end();
-                return;
-              }
-
-              if (res.writableLength < res.writableHighWaterMark) {
-                res.write(val, err => {
-                  if (err) {
-                    onError(err);
-                    return;
-                  }
-
-                  clear();
-                  resolve(val);
-                });
-              } else {
-                res.addListener('drain', write);
-              }
-            } catch (err) {
-              onError(err);
+            function end() {
+              clear();
+              resolve();
             }
-          } //#if iterators/async
+
+            function onError(err) {
+              clear();
+              reject(err);
+            }
+
+            function clear() {
+              res.removeListener('drain', write);
+              res.removeListener('error', onError);
+              res.removeListener('close', end);
+            }
+
+            function write() {
+              clear();
+              res.addListener('error', onError);
+              res.addListener('close', end);
+
+              try {
+                if (!(0, _types.isPositive)(val)) {
+                  res.end();
+                  end();
+                  return;
+                }
+
+                if (writable) {
+                  writable = Boolean(res.write(val, err => {
+                    if (err) {
+                      onError(err);
+                      return;
+                    }
+
+                    clear();
+                    resolve(val);
+                  }));
+                } else {
+                  res.addListener('drain', () => {
+                    writable = true;
+                    write();
+                  });
+                }
+              } catch (err) {
+                onError(err);
+              }
+            } //#if iterators/async
 
 
-          if (p.async && (0, _types.isPromise)(val)) {
-            return val.then(res => {
-              val = res;
-              write();
-            });
-          } //#endif
+            if (p.async && (0, _types.isPromise)(val)) {
+              return val.then(res => {
+                val = res;
+                write();
+              });
+            } //#endif
 
 
-          return write();
-        });
-      };
+            return write();
+          });
+        };
 
-      fn[_symbols.FN_LENGTH] = opt_cb.length;
-      break;
+        fn[_symbols.FN_LENGTH] = opt_cb.length;
+        break;
+      }
 
     default:
       fn = function () {

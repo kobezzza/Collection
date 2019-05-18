@@ -135,9 +135,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
           if (p.async && (0, _types.isPromise)(res)) {
             return res.then(res => {
               let status = false;
+              data.delete(el);
 
               if (!data.has(res)) {
-                data.delete(el);
                 data.add(res);
                 status = data.has(res);
               }
@@ -159,9 +159,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
 
 
           let status = false;
+          data.delete(el);
 
           if (!data.has(res)) {
-            data.delete(el);
             data.add(res);
             status = data.has(res);
           }
@@ -265,9 +265,9 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
       case 'set':
         fn = (el, key, data) => {
           let result = false;
+          data.delete(el);
 
           if (!data.has(value)) {
-            data.delete(el);
             data.add(value);
             result = data.has(value);
           }
@@ -319,21 +319,33 @@ _core.Collection.prototype.set = function (value, filter, opt_params) {
   } = p;
 
   p.onIterationEnd = ctx => {
-    if ((mult ? p.result.notFound : !p.result.length) && 'key' in p) {
-      if (p.key == null && (0, _types.isArray)(data)) {
+    if ((mult ? !p.result.length : p.result.notFound) && p.create !== false && 'key' in p) {
+      if ((0, _types.isArray)(data) && !p.key && p.key !== 0) {
         p.key = data.length;
       }
 
-      const res = (0, _link.byLink)(data, p.key, {
-        value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
-        create: p.create !== false
-      });
+      const newVal = valIsFunc ? value(undefined, undefined, data, ctx) : value;
 
-      if (mult) {
-        p.result.push(res);
-      } else {
-        p.result = res;
-      }
+      const create = newVal => {
+        const res = (0, _link.byLink)(data, p.key, {
+          value: newVal,
+          create: true
+        });
+
+        if (mult) {
+          p.result.push(res);
+        } else {
+          p.result = res;
+        }
+      }; //#if iterators/async
+
+
+      if (valIsFunc && p.async && (0, _types.isPromise)(newVal)) {
+        return newVal.then(create);
+      } //#endif
+
+
+      create(newVal);
     }
 
     onIterationEnd && onIterationEnd(ctx);
