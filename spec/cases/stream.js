@@ -49,7 +49,7 @@ describe('Collection methods with streams', () => {
 	it('map from a stream', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(length)).map((el) => el * 2)
 			.addListener('data', dataHandler)
@@ -68,7 +68,7 @@ describe('Collection methods with streams', () => {
 	it('async map from a stream', async (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(length)).async.map((el) => Promise.resolve(el * 2))
 			.addListener('data', dataHandler)
@@ -87,7 +87,7 @@ describe('Collection methods with streams', () => {
 	it('map from a stream with a water mark', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C([0, 1, 2, 3, 4])
 			.to(new Transform({
@@ -116,8 +116,8 @@ describe('Collection methods with streams', () => {
 	it('map from a stream with an error', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy(),
-			errorHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler'),
+			errorHandler = jasmine.createSpy('errorHandler');
 
 		const
 			err = new Error('boom!');
@@ -130,22 +130,25 @@ describe('Collection methods with streams', () => {
 			return el * 2;
 		})
 			.addListener('data', dataHandler)
-			.addListener('error', errorHandler)
-			.addListener('close', () => {
+			.addListener('error', (err) => {
+				errorHandler(err);
+			})
+
+			.addListener('close', () => setImmediate(() => {
 				expect(dataHandler).toHaveBeenCalledTimes(1);
 				expect(dataHandler).toHaveBeenCalledWith(0);
 
 				expect(errorHandler).toHaveBeenCalledTimes(1);
 				expect(errorHandler).toHaveBeenCalledWith(err);
 				done();
-			});
+			}));
 	});
 
 	it('map from a stream with a readable error', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy(),
-			errorHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler'),
+			errorHandler = jasmine.createSpy('errorHandler');
 
 		const
 			err = new Error('boom!');
@@ -159,21 +162,21 @@ describe('Collection methods with streams', () => {
 		})
 			.addListener('data', dataHandler)
 			.addListener('error', errorHandler)
-			.addListener('close', () => {
+			.addListener('close', () => setImmediate(() => {
 				expect(dataHandler).toHaveBeenCalledTimes(1);
 				expect(dataHandler).toHaveBeenCalledWith(0);
 
 				expect(errorHandler).toHaveBeenCalledTimes(1);
 				expect(errorHandler).toHaveBeenCalledWith(err);
 				done();
-			});
+			}));
 	});
 
 	it('map from a stream with a writable error', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy(),
-			errorHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler'),
+			errorHandler = jasmine.createSpy('errorHandler');
 
 		const
 			err = new Error('boom!');
@@ -213,8 +216,8 @@ describe('Collection methods with streams', () => {
 	it('map from a stream with a write error', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy(),
-			errorHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler'),
+			errorHandler = jasmine.createSpy('errorHandler');
 
 		const
 			err = new Error('boom!');
@@ -240,21 +243,21 @@ describe('Collection methods with streams', () => {
 
 			.addListener('data', dataHandler)
 			.addListener('error', errorHandler)
-			.addListener('close', () => {
+			.addListener('close', () => setImmediate(() => {
 				expect(dataHandler).toHaveBeenCalledTimes(1);
 				expect(dataHandler).toHaveBeenCalledWith(0);
 
 				expect(errorHandler).toHaveBeenCalledTimes(1);
 				expect(errorHandler).toHaveBeenCalledWith(err);
 				done();
-			});
+			}));
 	});
 
 	it('map from a stream with closing', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy(),
-			errorHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler'),
+			errorHandler = jasmine.createSpy('errorHandler');
 
 		let
 			i = 0;
@@ -289,7 +292,7 @@ describe('Collection methods with streams', () => {
 	it('map from a stream with break', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(length))
 			.map((el, i, data, o) => {
@@ -311,7 +314,7 @@ describe('Collection methods with streams', () => {
 	it('map from a write stream', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(length, false, 'write')).map((el) => el * 2)
 			.addListener('data', dataHandler)
@@ -329,7 +332,7 @@ describe('Collection methods with streams', () => {
 
 	it('map from a stream with parameters', (done) => {
 		const
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(9))
 			.filter((el) => el % 2)
@@ -348,7 +351,7 @@ describe('Collection methods with streams', () => {
 
 	it('map from a stream with .one helper', (done) => {
 		const
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(5))
 			.one
@@ -375,7 +378,7 @@ describe('Collection methods with streams', () => {
 	it('reduce from a stream to a stream', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(length)).toStream().reduce((res, el) => {
 			res.write(el * 2);
@@ -397,7 +400,7 @@ describe('Collection methods with streams', () => {
 	it('map from reduce from a stream to a stream', (done) => {
 		const
 			length = 5,
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(
 			$C(generateStream(length)).toStream().reduce((res, el) => {
@@ -436,7 +439,7 @@ describe('Collection methods with streams', () => {
 
 	it('reduce from a stream to a stream with parameters', (done) => {
 		const
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(9))
 			.filter((el) => el % 2)
@@ -459,7 +462,7 @@ describe('Collection methods with streams', () => {
 
 	it('reduce from a stream with .one helper', (done) => {
 		const
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(5))
 			.one
@@ -480,7 +483,7 @@ describe('Collection methods with streams', () => {
 
 	it('race map with a stream', (done) => {
 		const
-			dataHandler = jasmine.createSpy();
+			dataHandler = jasmine.createSpy('dataHandler');
 
 		$C(generateStream(5))
 			.race(2)
