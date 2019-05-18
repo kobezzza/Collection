@@ -1012,7 +1012,7 @@ describe('Collection.set', () => {
 			$C(obj)
 				.set(77, {
 					filter: (el) => el % 2,
-					onIterationEnd: () => setImmediate(done)
+					onIterationEnd: () => setTimeout(done, 50)
 				})
 
 		).toEqual([
