@@ -1119,10 +1119,13 @@ export function compileCycle(key, p) {
 		tmp += 'breaker = true;';
 	}
 
+	let
+		waitCb = '';
+
 	//#if iterators/async
 
 	if (p.async) {
-		tmp += ws`
+		waitCb = ws`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
 					rCbSet.add(r);
@@ -1133,6 +1136,8 @@ export function compileCycle(key, p) {
 				yield;
 			}
 		`;
+
+		tmp += waitCb;
 	}
 
 	//#endif
@@ -1167,6 +1172,25 @@ export function compileCycle(key, p) {
 		`;
 	}
 
+	tmp = ws`
+		if (onIterationEnd) {
+			onIterationEnd(${needCtx ? 'ctx' : ''});
+		}
+	`;
+
+	//#if iterators/async
+
+	if (p.async) {
+		tmp = ws`
+			if (onIterationEnd) {
+				r = onIterationEnd(${needCtx ? 'ctx' : ''});
+				${waitCb}
+			}
+		`;
+	}
+
+	//#endif
+
 	iFn += ws`
 			${threadEnd}
 
@@ -1178,9 +1202,7 @@ export function compileCycle(key, p) {
 		breaker = false;
 		looper++;
 
-		if (onIterationEnd) {
-			onIterationEnd(${needCtx ? 'ctx' : ''});
-		}
+		${tmp}
 	`;
 
 	iFn += ws`

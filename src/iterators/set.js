@@ -346,17 +346,32 @@ Collection.prototype.set = function (value, filter, opt_params) {
 				p.key = data.length;
 			}
 
-			const res = byLink(data, p.key, {
-				value: valIsFunc ? value(undefined, undefined, data, ctx) : value,
-				create: true
-			});
+			const
+				newVal = valIsFunc ? value(undefined, undefined, data, ctx) : value;
 
-			if (mult) {
-				p.result.push(res);
+			const create = (newVal) => {
+				const res = byLink(data, p.key, {
+					value: newVal,
+					create: true
+				});
 
-			} else {
-				p.result = res;
+				if (mult) {
+					p.result.push(res);
+
+				} else {
+					p.result = res;
+				}
+			};
+
+			//#if iterators/async
+
+			if (valIsFunc && p.async && isPromise(newVal)) {
+				return newVal.then(create);
 			}
+
+			//#endif
+
+			create(newVal);
 		}
 
 		onIterationEnd && onIterationEnd(ctx);
