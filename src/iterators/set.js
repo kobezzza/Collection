@@ -148,11 +148,10 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 					if (p.async && isPromise(res)) {
 						return res.then((res) => {
-							let
-								status = false;
+							let status = false;
+							data.delete(el);
 
 							if (!data.has(res)) {
-								data.delete(el);
 								data.add(res);
 								status = data.has(res);
 							}
@@ -175,11 +174,10 @@ Collection.prototype.set = function (value, filter, opt_params) {
 
 					//#endif
 
-					let
-						status = false;
+					let status = false;
+					data.delete(el);
 
 					if (!data.has(res)) {
-						data.delete(el);
 						data.add(res);
 						status = data.has(res);
 					}
@@ -292,8 +290,9 @@ Collection.prototype.set = function (value, filter, opt_params) {
 			case 'set':
 				fn = (el, key, data) => {
 					let result = false;
+					data.delete(el);
+
 					if (!data.has(value)) {
-						data.delete(el);
 						data.add(value);
 						result = data.has(value);
 					}
