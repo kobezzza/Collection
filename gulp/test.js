@@ -13,16 +13,16 @@ const
 	$ = require('gulp-load-plugins')(),
 	{test} = require('./helpers');
 
-gulp.task('test', test(false, 'browser'));
-gulp.task('build:test', gulp.series('build', test(true, 'browser')));
+gulp.task('test', test('browser'));
+gulp.task('build:test', gulp.series('build', test('browser')));
 
-gulp.task('test:node', test(false, 'node'));
-gulp.task('build:test:node', gulp.series('build:node', test(true, 'node')));
+gulp.task('test:node', test('node'));
+gulp.task('build:test:node', gulp.series('build:node', test('node')));
 
-gulp.task('test:browser', test(false, 'browser'));
-gulp.task('build:test:browser', gulp.series('build:browser:compile', test(true, 'browser')));
+gulp.task('test:browser', test('browser'));
+gulp.task('build:test:browser', gulp.series('build:browser:compile', test('browser')));
 
-gulp.task('test:browser:dev', test(false, 'browser', true));
-gulp.task('build:test:browser:dev', gulp.series('build:browser', test(true, 'browser', true)));
+gulp.task('test:browser:dev', test('browser', true));
+gulp.task('build:test:browser:dev', gulp.series('build:browser', test('browser', true)));
 
 gulp.task('yaspeller', () => $.run('yaspeller ./').exec().on('error', console.error));

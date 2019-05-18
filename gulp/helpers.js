@@ -43,7 +43,7 @@ module.exports = {
 		return v.slice(0, 3).join('.') + (v[3] ? `-${eval(v[3])}` : '');
 	},
 
-	test(plumber, type, dev) {
+	test(type, dev) {
 		return (cb) => {
 			const src = type !== 'node' ? `./dist/collection.node${dev ? '' : '.min'}.js` : [
 				'./collection.js',
