@@ -44,23 +44,24 @@ module.exports = {
 	},
 
 	test(plumber, type, dev) {
-		return () => {
+		return (cb) => {
 			const src = type !== 'node' ? `./dist/collection.node${dev ? '' : '.min'}.js` : [
 				'./collection.js',
 				'./dist/node/**/*.js',
 				'!./dist/node/**/*.tmp.js'
 			];
 
-			return gulp.src(src)
+			gulp.src(src)
 				.pipe($.istanbul())
 				.pipe($.istanbul.hookRequire())
 				.on('finish', runTests);
 
 			function runTests() {
 				return gulp.src(`./spec/${type + (dev ? '-dev' : '')}-spec.js`)
-					.pipe($.if(Boolean(plumber), $.plumber()))
+					.pipe($.plumber())
 					.pipe($.jasmine())
-					.pipe($.istanbul.writeReports());
+					.pipe($.istanbul.writeReports())
+					.on('finish', cb);
 			}
 		};
 	}
