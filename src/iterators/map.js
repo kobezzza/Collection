@@ -194,7 +194,8 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 			fn[FN_LENGTH] = opt_cb.length;
 			break;
 
-		case 'stream':
+		case 'stream': {
+			let writable = true;
 			fn = function () {
 				return new Promise((resolve, reject) => {
 					let
@@ -229,8 +230,8 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 								return;
 							}
 
-							if (res.writableLength < res.writableHighWaterMark) {
-								res.write(val, (err) => {
+							if (writable) {
+								writable = Boolean(res.write(val, (err) => {
 									if (err) {
 										onError(err);
 										return;
@@ -238,10 +239,13 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 									clear();
 									resolve(val);
-								});
+								}));
 
 							} else {
-								res.addListener('drain', write);
+								res.addListener('drain', () => {
+									writable = true;
+									write();
+								});
 							}
 
 						} catch (err) {
@@ -266,6 +270,7 @@ Collection.prototype.map = function (opt_cb, opt_params) {
 
 			fn[FN_LENGTH] = opt_cb.length;
 			break;
+		}
 
 		default:
 			fn = function () {
