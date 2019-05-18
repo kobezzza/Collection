@@ -43,7 +43,7 @@ module.exports = {
 		return v.slice(0, 3).join('.') + (v[3] ? `-${eval(v[3])}` : '');
 	},
 
-	test(type, dev) {
+	test(plumber, type, dev) {
 		return () => {
 			const src = type !== 'node' ? `./dist/collection.node${dev ? '' : '.min'}.js` : [
 				'./collection.js',
@@ -58,7 +58,7 @@ module.exports = {
 
 			function runTests() {
 				return gulp.src(`./spec/${type + (dev ? '-dev' : '')}-spec.js`)
-					.pipe($.plumber())
+					.pipe($.if(Boolean(plumber), $.plumber()))
 					.pipe($.jasmine())
 					.pipe($.istanbul.writeReports());
 			}
