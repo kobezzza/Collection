@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.6
+ * Collection v6.7.7
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sat, 18 May 2019 08:59:54 GMT
+ * Date: 'Mon, 20 May 2019 17:12:08 GMT
  */
 
 (function (global, factory) {
@@ -280,6 +280,9 @@
 	    case 'for of':
 	      return 'iterator';
 
+	    case 'sync for of':
+	      return 'syncIterator';
+
 	    case 'async for of':
 	      return 'asyncIterator';
 
@@ -485,13 +488,13 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 7, 6];
+	$C.VERSION = [6, 7, 7];
 	/**
 	 * Cache version
 	 * @const
 	 */
 
-	$C.CACHE_VERSION = 62;
+	$C.CACHE_VERSION = 63;
 	/**
 	 * Creates an instance of Collection
 	 * @param {$$CollectionType} obj
@@ -1072,6 +1075,10 @@
 	}
 	var cbArgsList = ['el', 'key', 'data', 'ctx'];
 	var filterArgsList = ['el', 'key', 'data', 'fCtx'];
+	var asyncIterators = {
+	  'generator': true,
+	  'iterator': true
+	};
 	/**
 	 * Compiles a loop by the specified parameters
 	 *
@@ -1130,6 +1137,10 @@
 
 	    if (p.count) {
 	      fnCountHelper += ws(_templateObject7());
+	    }
+
+	    if (!p.mult) {
+	      fnCountHelper += 'breaker = true;';
 	    }
 
 	    iFn += ws(_templateObject8(), resolveFilterVal, fnCountHelper, cbArgs, fnCountHelper, cbArgs);
@@ -1286,6 +1297,7 @@
 	    case 'set':
 	    case 'generator':
 	    case 'iterator':
+	    case 'syncIterator':
 	    case 'asyncIterator':
 	      if (isMapSet) {
 	        iFn += 'var cursor = data.keys();';
@@ -1302,7 +1314,7 @@
 	      iFn += ws(_templateObject33(), p.reverse ? 'var tmpArray = [];' : '', threadStart);
 	      var asyncIterator = ''; 
 
-	      if (p.type === 'asyncIterator') {
+	      if (p.type === 'asyncIterator' || asyncIterators[p.type] && p.async) {
 	        asyncIterator = ws(_templateObject34());
 	      } 
 
@@ -1377,7 +1389,7 @@
 
 	  tmp += "r = cb(".concat(cbArgs, ");");
 
-	  if (!p.mult) {
+	  if (!p.mult && !p.async) {
 	    tmp += 'breaker = true;';
 	  }
 
@@ -2319,7 +2331,7 @@
 
 
 	Collection.prototype.iterator = function (opt_async) {
-	  this.p.use = "".concat(opt_async ? 'async ' : '', "for off");
+	  this.p.use = "".concat(opt_async === false ? 'sync ' : opt_async ? 'async ' : '', "for of");
 
 	  if (opt_async) {
 	    this.p.async = true;
@@ -2831,6 +2843,7 @@
 
 	      case 'generator':
 	      case 'iterator':
+	      case 'syncIterator':
 	      case 'asyncIterator':
 	      case 'idbRequest':
 	        res = [];

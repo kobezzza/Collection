@@ -281,6 +281,9 @@ function getType(obj, opt_use) {
     case 'for of':
       return 'iterator';
 
+    case 'sync for of':
+      return 'syncIterator';
+
     case 'async for of':
       return 'asyncIterator';
 

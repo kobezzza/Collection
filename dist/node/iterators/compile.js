@@ -52,6 +52,10 @@ function returnCache(cache) {
 
 const cbArgsList = ['el', 'key', 'data', 'ctx'];
 const filterArgsList = ['el', 'key', 'data', 'fCtx'];
+const asyncIterators = {
+  'generator': true,
+  'iterator': true
+};
 /**
  * Compiles a loop by the specified parameters
  *
@@ -301,6 +305,10 @@ function compileCycle(key, p) {
 
 				j++;
 			`;
+    }
+
+    if (!p.mult) {
+      fnCountHelper += 'breaker = true;';
     }
 
     iFn += _string.ws`
@@ -870,6 +878,7 @@ function compileCycle(key, p) {
     case 'set':
     case 'generator':
     case 'iterator':
+    case 'syncIterator':
     case 'asyncIterator':
       if (isMapSet) {
         iFn += 'var cursor = data.keys();';
@@ -906,7 +915,7 @@ function compileCycle(key, p) {
 			`;
       let asyncIterator = ''; //#if iterators/async
 
-      if (p.type === 'asyncIterator') {
+      if (p.type === 'asyncIterator' || asyncIterators[p.type] && p.async) {
         asyncIterator = _string.ws`
 					while (isPromise(el)) {
 						if (!rElSet.has(el)) {
@@ -1045,7 +1054,7 @@ function compileCycle(key, p) {
 
   tmp += `r = cb(${cbArgs});`;
 
-  if (!p.mult) {
+  if (!p.mult && !p.async) {
     tmp += 'breaker = true;';
   }
 

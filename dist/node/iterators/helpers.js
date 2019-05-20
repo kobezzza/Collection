@@ -215,7 +215,7 @@ _core.Collection.prototype.object = function (opt_notOwn) {
 
 
 _core.Collection.prototype.iterator = function (opt_async) {
-  this.p.use = `${opt_async ? 'async ' : ''}for off`;
+  this.p.use = `${opt_async === false ? 'sync ' : opt_async ? 'async ' : ''}for of`;
 
   if (opt_async) {
     this.p.async = true;
