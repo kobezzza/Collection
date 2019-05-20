@@ -58,6 +58,11 @@ const filterArgsList = [
 	'fCtx'
 ];
 
+const asyncIterators = {
+	'generator': true,
+	'iterator': true
+};
+
 /**
  * Compiles a loop by the specified parameters
  *
@@ -929,6 +934,7 @@ export function compileCycle(key, p) {
 		case 'set':
 		case 'generator':
 		case 'iterator':
+		case 'syncIterator':
 		case 'asyncIterator':
 			if (isMapSet) {
 				iFn += 'var cursor = data.keys();';
@@ -970,7 +976,7 @@ export function compileCycle(key, p) {
 
 			//#if iterators/async
 
-			if (p.type === 'asyncIterator') {
+			if (p.type === 'asyncIterator' || asyncIterators[p.type] && p.async) {
 				asyncIterator = ws`
 					while (isPromise(el)) {
 						if (!rElSet.has(el)) {
