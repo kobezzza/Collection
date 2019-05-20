@@ -241,7 +241,7 @@ export function isIDBRequest(obj) {
  * Returns the current type of an object
  *
  * @param {Object} obj - source object
- * @param {?string=} [opt_use] - cycle type for iteration: for, for in, for of, async for of
+ * @param {?string=} [opt_use] - cycle type for iteration: for, for in, for of, async for of, sync for of
  * @return {?string}
  */
 export function getType(obj, opt_use) {
