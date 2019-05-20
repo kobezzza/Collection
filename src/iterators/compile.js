@@ -326,6 +326,10 @@ export function compileCycle(key, p) {
 			`;
 		}
 
+		if (!p.mult) {
+			fnCountHelper += 'breaker = true;';
+		}
+
 		iFn += ws`
 			if (fIsPromise) {
 				f = f.then(function (f) {
@@ -1115,7 +1119,7 @@ export function compileCycle(key, p) {
 
 	tmp += `r = cb(${cbArgs});`;
 
-	if (!p.mult) {
+	if (!p.mult && !p.async) {
 		tmp += 'breaker = true;';
 	}
 
