@@ -779,7 +779,7 @@ describe('Collection.set', () => {
 		]);
 	});
 
-	it('set to an array with .one helper', () => {
+	it('single set to an array', () => {
 		expect($C([1, 2, 3, 4, 5]).one.set(77, (el) => el > 2)).toEqual({
 			key: 2,
 			result: true,

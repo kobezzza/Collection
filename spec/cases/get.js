@@ -52,7 +52,7 @@ describe('Collection.get', () => {
 		).toEqual([3, 5]);
 	});
 
-	it('get from an array with .one helper', () => {
+	it('single get from an array', () => {
 		expect($C([1, 2, 3, 4, 5]).one.get((el) => el > 2)).toBe(3);
 	});
 

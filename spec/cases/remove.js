@@ -551,7 +551,7 @@ describe('Collection.remove', () => {
 		]);
 	});
 
-	it('remove from an array with .one helper', () => {
+	it('single remove from an array', () => {
 		expect($C([1, 2, 3, 4, 5]).one.remove((el) => el > 2)).toEqual({
 			key: 2,
 			result: true,
