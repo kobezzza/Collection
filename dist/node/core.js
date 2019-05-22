@@ -100,13 +100,13 @@ Object.assign($C, {
  * @const
  */
 
-$C.VERSION = [6, 7, 7];
+$C.VERSION = [6, 7, 8];
 /**
  * Cache version
  * @const
  */
 
-$C.CACHE_VERSION = 63;
+$C.CACHE_VERSION = 64;
 /**
  * Creates an instance of Collection
  * @param {$$CollectionType} obj

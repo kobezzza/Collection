@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.7 (node)
+ * Collection v6.7.8 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Mon, 20 May 2019 17:12:08 GMT
+ * Date: 'Wed, 22 May 2019 16:41:09 GMT
  */
 
 (function (global, factory) {
@@ -261,7 +261,7 @@
 	 * Returns the current type of an object
 	 *
 	 * @param {Object} obj - source object
-	 * @param {?string=} [opt_use] - cycle type for iteration: for, for in, for of, async for of
+	 * @param {?string=} [opt_use] - cycle type for iteration: for, for in, for of, async for of, sync for of
 	 * @return {?string}
 	 */
 
@@ -488,13 +488,13 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 7, 7];
+	$C.VERSION = [6, 7, 8];
 	/**
 	 * Cache version
 	 * @const
 	 */
 
-	$C.CACHE_VERSION = 63;
+	$C.CACHE_VERSION = 64;
 	/**
 	 * Creates an instance of Collection
 	 * @param {$$CollectionType} obj
@@ -973,7 +973,7 @@
 	}
 
 	function _templateObject8() {
-	  var data = _taggedTemplateLiteral(["\nif (fIsPromise) {\nf = f.then(function (f) {\n", "\nif (f) {\n", "\nreturn baseCb(", ");\n}\n});\nres = f;\n} else if (f) {\n", "\nres = baseCb(", ");\n}\n"]);
+	  var data = _taggedTemplateLiteral(["\nif (fIsPromise) {\nf = f.then(function (f) {\n", "\nif (", ") {\n", "\nreturn baseCb(", ");\n}\n});\nres = f;\n} else if (", ") {\n", "\nres = baseCb(", ");\n}\n"]);
 
 	  _templateObject8 = function _templateObject8() {
 	    return data;
@@ -1102,7 +1102,8 @@
 	    filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
 	  }
 
-	  var resolveFilterVal = "f = ".concat(p.inverseFilter ? '!' : '', "f && f !== FALSE || f === TRUE;"),
+	  var resolveFilterVal = 'f = f && f !== FALSE || f === TRUE;',
+	      resolveFilterValCb = "".concat(p.inverseFilter ? '!' : '', "f || f === TRUE"),
 	      callCycleFilter = "filters[fI](".concat(filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length), ")");
 	  var iFn = ws(_templateObject());
 
@@ -1143,7 +1144,7 @@
 	      fnCountHelper += 'breaker = true;';
 	    }
 
-	    iFn += ws(_templateObject8(), resolveFilterVal, fnCountHelper, cbArgs, fnCountHelper, cbArgs);
+	    iFn += ws(_templateObject8(), resolveFilterVal, resolveFilterValCb, fnCountHelper, cbArgs, resolveFilterValCb, fnCountHelper, cbArgs);
 
 	    if (needParallel) {
 	      
@@ -1379,7 +1380,7 @@
 	        iFn += ws(_templateObject41(), callCycleFilter, resolveFilterVal);
 	      }
 
-	      iFn += 'if (f) {';
+	      iFn += "if (".concat(resolveFilterValCb, ") {");
 	    }
 
 	    if (p.count) {
