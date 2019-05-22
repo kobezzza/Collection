@@ -80,7 +80,7 @@ function compileCycle(key, p) {
   }
 
   const resolveFilterVal = 'f = f && f !== FALSE || f === TRUE;',
-        resolveFilterValCb = `${p.inverseFilter ? '!' : ''}f || f === TRUE`,
+        resolveFilterValCb = `${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE`,
         callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
   let iFn = _string.ws`
 		var

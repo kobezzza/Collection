@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.8 (sync)
+ * Collection v6.7.9 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 22 May 2019 16:41:09 GMT
+ * Date: 'Wed, 22 May 2019 17:51:55 GMT
  */
 
 (function (global, factory) {
@@ -488,13 +488,13 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 7, 8];
+	$C.VERSION = [6, 7, 9];
 	/**
 	 * Cache version
 	 * @const
 	 */
 
-	$C.CACHE_VERSION = 64;
+	$C.CACHE_VERSION = 65;
 	/**
 	 * Creates an instance of Collection
 	 * @param {$$CollectionType} obj
@@ -1103,7 +1103,7 @@
 	  }
 
 	  var resolveFilterVal = 'f = f && f !== FALSE || f === TRUE;',
-	      resolveFilterValCb = "".concat(p.inverseFilter ? '!' : '', "f || f === TRUE"),
+	      resolveFilterValCb = "".concat(p.inverseFilter ? '!' : '', "f && f !== FALSE || f === TRUE"),
 	      callCycleFilter = "filters[fI](".concat(filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length), ")");
 	  var iFn = ws(_templateObject());
 
