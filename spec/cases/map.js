@@ -23,7 +23,7 @@ describe('Collection.map', () => {
 		expect($C({0: 1, 1: 2, 2: 3, length: 3}).map((el) => el * 2)).toEqual({0: 2, 1: 4, 2: 6, length: 3});
 	});
 
-	it('map with a filter and an array', () => {
+	it('map with an array and a filter', () => {
 		expect($C([1, 2, 3]).filter((el) => el > 1).map((el) => el * 2)).toEqual([4, 6]);
 		expect($C([1, 2, 3]).map((el) => el * 2, (el) => el > 1)).toEqual([4, 6]);
 		expect($C([1, 2, 3]).map((el) => el * 2, [(el) => el > 1, (el) => el > 2])).toEqual([6]);
@@ -104,7 +104,7 @@ describe('Collection.map', () => {
 		expect($C({a: 1, b: 2, c: 3}).map((el) => el * 2)).toEqual({a: 2, b: 4, c: 6});
 	});
 
-	it('map with a filter and an object', () => {
+	it('map with an object and a filter', () => {
 		expect($C({a: 1, b: 2, c: 3}).filter((el) => el > 1).map((el) => el * 2)).toEqual({b: 4, c: 6});
 	});
 
@@ -152,7 +152,7 @@ describe('Collection.map', () => {
 		expect($C(new Set([1, 2, 3])).map((el) => el * 2)).toEqual(new Set([2, 4, 6]));
 	});
 
-	it('map with a filter and a set', () => {
+	it('map with a set and a filter', () => {
 		expect($C(new Set([1, 2, 3])).filter((el) => el > 1).map((el) => el * 2)).toEqual(new Set([4, 6]));
 	});
 
@@ -216,7 +216,7 @@ describe('Collection.map', () => {
 		expect($C(new Map([['a', 1], ['b', 2], ['c', 3]])).map((el) => el * 2)).toEqual(new Map([['a', 2], ['b', 4], ['c', 6]]));
 	});
 
-	it('map with a filter and a map', () => {
+	it('map with a map and a filter', () => {
 		expect($C(new Map([['a', 1], ['b', 2], ['c', 3]])).filter((el) => el > 1).map((el) => el * 2))
 			.toEqual(new Map([['b', 4], ['c', 6]]));
 	});
@@ -287,7 +287,7 @@ describe('Collection.map', () => {
 		expect($C(data).map((el) => el * 2)).toEqual([2, 4, 6]);
 	});
 
-	it('map with a filter and a generator', () => {
+	it('map with a generator and a filter', () => {
 		function *data() {
 			for (let i = 1; i <= 3; i++) {
 				yield i;
