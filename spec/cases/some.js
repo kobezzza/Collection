@@ -6,7 +6,7 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-describe('Collection.includes', () => {
+describe('Collection.some', () => {
 	it('some with an array', () => {
 		const
 			data = [1, 2, 3, 4, 5],
