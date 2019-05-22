@@ -96,7 +96,8 @@ export function compileCycle(key, p) {
 	}
 
 	const
-		resolveFilterVal = `f = ${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE;`,
+		resolveFilterVal = 'f = f && f !== FALSE || f === TRUE;',
+		resolveFilterValCb = `${p.inverseFilter ? '!' : ''}f || f === TRUE`,
 		callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
 
 	let iFn = ws`
@@ -340,7 +341,7 @@ export function compileCycle(key, p) {
 				f = f.then(function (f) {
 					${resolveFilterVal}
 
-					if (f) {
+					if (${resolveFilterValCb}) {
 						${fnCountHelper}
 						return baseCb(${cbArgs});
 					}
@@ -348,7 +349,7 @@ export function compileCycle(key, p) {
 
 				res = f;
 
-			} else if (f) {
+			} else if (${resolveFilterValCb}) {
 				${fnCountHelper}
 				res = baseCb(${cbArgs});
 			}
@@ -1115,7 +1116,7 @@ export function compileCycle(key, p) {
 				`;
 			}
 
-			iFn += 'if (f) {';
+			iFn += `if (${resolveFilterValCb}) {`;
 		}
 
 		if (p.count) {
