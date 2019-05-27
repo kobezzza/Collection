@@ -184,6 +184,26 @@ describe('Collection.group', () => {
 		]));
 	});
 
+	it('group by a function to an object with a filter', () => {
+		expect($C(data).filter((el) => el.name !== 'Andrey').group((el, i, data, o) => el.lvl)).toEqual({
+			70: [
+				{
+					name: 'Dmitry',
+					features: {code: true, design: true},
+					lvl: 70
+				}
+			],
+
+			80: [
+				{
+					name: 'Daria',
+					features: {management: true, speak: true},
+					lvl: 80
+				}
+			]
+		});
+	});
+
 	it('group by a function to a weak map', () => {
 		expect($C(data).to(new WeakMap()).group((el) => Object(el.lvl))).toEqual(new WeakMap([
 			[Object(70), [
