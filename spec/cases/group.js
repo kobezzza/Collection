@@ -84,6 +84,32 @@ describe('Collection.group', () => {
 		});
 	});
 
+	it('group by a link to a custom object', () => {
+		expect($C(data).to({}).group('lvl')).toEqual({
+			70: [
+				{
+					name: 'Dmitry',
+					features: {code: true, design: true},
+					lvl: 70
+				}
+			],
+
+			80: [
+				{
+					name: 'Andrey',
+					features: {code: true, music: true},
+					lvl: 80
+				},
+
+				{
+					name: 'Daria',
+					features: {management: true, speak: true},
+					lvl: 80
+				}
+			]
+		});
+	});
+
 	it('group by a link to a map', () => {
 		expect($C(data).to(new Map()).group('lvl')).toEqual(new Map([
 			[70, [
@@ -169,6 +195,82 @@ describe('Collection.group', () => {
 			]],
 
 			[Object(80), [
+				{
+					name: 'Andrey',
+					features: {code: true, music: true},
+					lvl: 80
+				},
+
+				{
+					name: 'Daria',
+					features: {management: true, speak: true},
+					lvl: 80
+				}
+			]]
+		]));
+	});
+
+	it('async group by a function to an object', async () => {
+		expect(await $C(data).async.group((el) => Promise.resolve(el.lvl))).toEqual({
+			70: [
+				{
+					name: 'Dmitry',
+					features: {code: true, design: true},
+					lvl: 70
+				}
+			],
+
+			80: [
+				{
+					name: 'Andrey',
+					features: {code: true, music: true},
+					lvl: 80
+				},
+
+				{
+					name: 'Daria',
+					features: {management: true, speak: true},
+					lvl: 80
+				}
+			]
+		});
+
+		expect(await $C(data).async.to({}).group((el) => Promise.resolve(el.lvl))).toEqual({
+			70: [
+				{
+					name: 'Dmitry',
+					features: {code: true, design: true},
+					lvl: 70
+				}
+			],
+
+			80: [
+				{
+					name: 'Andrey',
+					features: {code: true, music: true},
+					lvl: 80
+				},
+
+				{
+					name: 'Daria',
+					features: {management: true, speak: true},
+					lvl: 80
+				}
+			]
+		});
+	});
+
+	it('async group by a function to a map', async () => {
+		expect(await $C(data).to(new Map()).async.group((el) => Promise.resolve(el.lvl))).toEqual(new Map([
+			[70, [
+				{
+					name: 'Dmitry',
+					features: {code: true, design: true},
+					lvl: 70
+				}
+			]],
+
+			[80, [
 				{
 					name: 'Andrey',
 					features: {code: true, music: true},
