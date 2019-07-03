@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.9 (sync)
+ * Collection v6.7.10 (sync)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Wed, 22 May 2019 17:51:55 GMT
+ * Date: 'Wed, 03 Jul 2019 15:17:54 GMT
  */
 
 (function (global, factory) {
@@ -488,13 +488,13 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 7, 9];
+	$C.VERSION = [6, 7, 10];
 	/**
 	 * Cache version
 	 * @const
 	 */
 
-	$C.CACHE_VERSION = 65;
+	$C.CACHE_VERSION = 66;
 	/**
 	 * Creates an instance of Collection
 	 * @param {$$CollectionType} obj
@@ -953,7 +953,7 @@
 	}
 
 	function _templateObject10() {
-	  var data = _taggedTemplateLiteral(["\nvar ctx = {\n$: {},\ninfo: {\nfilters: filters.slice(0),\nmult: ", ",\nstartIndex: startIndex,\nendIndex: o.endIndex,\nfrom: from,\ncount: count,\nlive: ", ",\nreverse: ", ",\nwithDescriptor: ", ",\nnotOwn: ", ",\ninverseFilter: ", ",\ntype: '", "',\nasync: ", ",\nthread: ", ",\npriority: ", " && '", "',\nlength: ", "\n},\ntrue: TRUE,\nfalse: FALSE,\ncursor: o.cursor,\nlength: o.cbLength,\nchildResult: childResult,\nonError: onError,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nget value() {\nreturn yieldVal;\n},\njump: function (val) {\nif (", ") {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (", ") {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget id() {\nreturn id;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar fCtx = Object.create(ctx);\nfCtx.length = o.fLength;\n"]);
+	  var data = _taggedTemplateLiteral(["\nvar ctx = {\n$: {},\ninfo: {\nfilters: filters.slice(0),\nmult: ", ",\nstartIndex: startIndex,\nendIndex: o.endIndex,\nfrom: from,\ncount: count,\nlive: ", ",\nreverse: ", ",\nwithDescriptor: ", ",\nnotOwn: ", ",\ninverseFilter: ", ",\ntype: '", "',\nasync: ", ",\nthread: ", ",\npriority: ", " && '", "',\nlength: ", "\n},\ntrue: TRUE,\nfalse: FALSE,\ncursor: o.cursor,\nlength: o.cbLength,\nchildResult: childResult,\nonError: onError,\nget result() {\nreturn p.result;\n},\nset result(value) {\np.result = value;\n},\nget value() {\nreturn yieldVal;\n},\njump: function (val) {\nif (", ") {\nreturn false;\n}\nvar diff = i - n;\nn = val - 1;\ni = n + diff;\nreturn i;\n},\ni: function (val) {\nif (val === undefined) {\nreturn i;\n}\nif (", ") {\nreturn false;\n}\nn += val;\ni += val;\nreturn i;\n},\nget id() {\nreturn id;\n},\nget reset() {\nbreaker = true;\nlimit++;\nreturn FALSE;\n},\nget break() {\nbreaker = true;\nreturn FALSE;\n}\n};\nvar fCtx = Object.create(ctx);\nfCtx.length = o.fLength || o.cbLength;\n"]);
 
 	  _templateObject10 = function _templateObject10() {
 	    return data;
@@ -1091,12 +1091,12 @@
 	  var isMapSet = mapSet[p.type];
 	  var cantModI = !(p.type === 'array' || p.reverse || p.type === 'object' && p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT);
 	  var cbArgs = cbArgsList.slice(0, p.length ? p.cbArgs : cbArgsList.length),
-	      filterArgs = [];
-	  var maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
-	      needParallel = p.parallel || p.race,
-	      parallelFn = p.parallel ? 'wait' : 'race',
-	      needCtx = maxArgsLength > 3 || needParallel || p.thread,
+	      filterArgs = [],
 	      fLength = p.filter.length;
+	  var needParallel = p.parallel || p.race,
+	      parallelFn = p.parallel ? 'wait' : 'race';
+	  var maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
+	      needCtx = maxArgsLength > 3 || needParallel || p.thread;
 
 	  for (var i = 0; i < fLength; i++) {
 	    filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
@@ -1810,7 +1810,7 @@
 
 	  var _cbLength;
 
-	  if (cbArgs === false || cbArgs > 3) {
+	  if (p.thread || cbArgs === false || cbArgs > 3) {
 	    var _p = any(Object.assign({}, opt_params, {
 	      onChunk: null,
 	      onIterationEnd: null,
@@ -1830,7 +1830,7 @@
 
 	  var _fLength;
 
-	  if (filterArgs === false || Math.max.apply(null, any(filterArgs)) > 3) {
+	  if (p.thread || filterArgs === false || Math.max.apply(null, any(filterArgs)) > 3) {
 	    var _p2 = any(Object.assign({}, opt_params, {
 	      onChunk: null,
 	      onIterationEnd: null,
@@ -2203,7 +2203,7 @@
 	      _p = p,
 	      type = _p.type;
 
-	  if (!type) {
+	  if (!type || data === EMPTY) {
 	    for (var i = 1; i < arguments.length; i++) {
 	      type = getType(arguments[i], p.use);
 

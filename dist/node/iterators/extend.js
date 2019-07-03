@@ -91,7 +91,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
     type
   } = p;
 
-  if (!type) {
+  if (!type || data === _primitives.EMPTY) {
     for (let i = 1; i < arguments.length; i++) {
       type = (0, _types.getType)(arguments[i], p.use);
 
