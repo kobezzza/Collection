@@ -86,7 +86,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 		{data} = this,
 		{type} = p;
 
-	if (!type) {
+	if (!type || data === EMPTY) {
 		for (let i = 1; i < arguments.length; i++) {
 			type = getType(arguments[i], p.use);
 
