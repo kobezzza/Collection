@@ -82,14 +82,16 @@ export function compileCycle(key, p) {
 
 	const
 		cbArgs = cbArgsList.slice(0, p.length ? p.cbArgs : cbArgsList.length),
-		filterArgs = [];
+		filterArgs = [],
+		fLength = p.filter.length;
+
+	const
+		needParallel = p.parallel || p.race,
+		parallelFn = p.parallel ? 'wait' : 'race';
 
 	const
 		maxArgsLength = p.length ? Math.max.apply(null, [].concat(p.cbArgs, p.filterArgs)) : cbArgsList.length,
-		needParallel = p.parallel || p.race,
-		parallelFn = p.parallel ? 'wait' : 'race',
-		needCtx = maxArgsLength > 3 || needParallel || p.thread,
-		fLength = p.filter.length;
+		needCtx = maxArgsLength > 3 || needParallel || p.thread;
 
 	for (let i = 0; i < fLength; i++) {
 		filterArgs.push(filterArgsList.slice(0, p.length ? p.filterArgs[i] : filterArgsList.length));
@@ -465,7 +467,7 @@ export function compileCycle(key, p) {
 			};
 
 			var fCtx = Object.create(ctx);
-			fCtx.length = o.fLength;
+			fCtx.length = o.fLength || o.cbLength;
 		`;
 
 		if (p.async) {
