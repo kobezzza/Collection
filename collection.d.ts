@@ -5835,8 +5835,6 @@ declare const $C: {
 	(collection: TextTrackCueList): CollectionJS.CollectionIterator<TextTrackCueList, number, TextTrackCue>;
 	(collection: TextTrackList): CollectionJS.CollectionIterator<TextTrackList, number, TextTrack>;
 	(collection: TouchList): CollectionJS.CollectionIterator<TouchList, number, Touch>;
-	(collection: VideoTrackList): CollectionJS.CollectionIterator<VideoTrackList, number, VideoTrack>;
-	(collection: AudioTrackList): CollectionJS.CollectionIterator<AudioTrackList, number, AudioTrack>;
 	(collection: ClientRectList): CollectionJS.CollectionIterator<ClientRectList, number, ClientRect>;
 	(collection: DataTransferItemList): CollectionJS.CollectionIterator<DataTransferItemList, number, DataTransferItem>;
 	(collection: DOMStringList): CollectionJS.CollectionIterator<DOMStringList, number, string>;
