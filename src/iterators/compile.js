@@ -72,12 +72,36 @@ const asyncIterators = {
  */
 export function compileCycle(key, p) {
 	const
+		passDescriptor = p.passDescriptor ?? p.withDescriptor;
+
+	let
+		propsToIterate = p.propsToIterate;
+
+	if (p.notOwn != null) {
+		switch (p.notOwn) {
+			case true:
+				propsToIterate = 'all';
+				break;
+
+			case -1:
+				propsToIterate = 'inherited';
+				break;
+
+			default:
+				propsToIterate = 'own';
+		}
+
+	} else {
+		propsToIterate ??= 'own';
+	}
+
+	const
 		isMapSet = mapSet[p.type];
 
 	const cantModI = !(
 		p.type === 'array' ||
 		p.reverse ||
-		p.type === 'object' && p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT
+		p.type === 'object' && propsToIterate !== 'own' && OBJECT_KEYS_NATIVE_SUPPORT
 	);
 
 	const
@@ -152,16 +176,16 @@ export function compileCycle(key, p) {
 			key;
 	`;
 
-	if (p.withDescriptor) {
+	if (passDescriptor) {
 		if (p.withProto) {
 			iFn += ws`
-				var 
+				var
 					_getProto = Object.getPrototypeOf,
 					_getDescriptor = Object.getOwnPropertyDescriptor;
 
 				function getDescriptor(obj, key) {
 					while (obj) {
-						var 
+						var
 							desc = _getDescriptor(obj, key);
 
 						if (desc) {
@@ -393,7 +417,9 @@ export function compileCycle(key, p) {
 					count: count,
 					live: ${p.live},
 					reverse: ${p.reverse},
-					withDescriptor: ${p.withDescriptor},
+					passDescriptor: ${passDescriptor},
+					withDescriptor: ${passDescriptor},
+					propsToIterate: '${propsToIterate}',
 					notOwn: ${p.notOwn},
 					inverseFilter: ${p.inverseFilter},
 					type: '${p.type}',
@@ -798,14 +824,14 @@ export function compileCycle(key, p) {
 			if (defArgs) {
 				if (maxArgsLength > 1) {
 					if (p.startIndex) {
-						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + startIndex ${(p.reverse ? ')' : '')};`;
+						iFn += `key = ${p.reverse ? 'dLength - (' : ''} n + startIndex ${p.reverse ? ')' : ''};`;
 
 					} else {
 						iFn += `key = ${p.reverse ? 'dLength - ' : ''} n;`;
 					}
 				}
 
-				if (p.withDescriptor) {
+				if (passDescriptor) {
 					iFn += 'el = getDescriptor(clone, n);';
 
 				} else {
@@ -822,17 +848,17 @@ export function compileCycle(key, p) {
 					hasOwnProperty = IGNORE.hasOwnProperty;
 			`;
 
-			if (p.reverse || (OBJECT_KEYS_NATIVE_SUPPORT && !p.notOwn)) {
+			if (p.reverse || (OBJECT_KEYS_NATIVE_SUPPORT && propsToIterate === 'own')) {
 				iFn += 'var tmpArray;';
 
-				if (!p.notOwn && OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
+				if (propsToIterate === 'own' && OBJECT_KEYS_NATIVE_SUPPORT && !p.async) {
 					iFn += 'tmpArray = Object.keys(data);';
 
 				} else {
 					iFn += 'tmpArray = [];';
 
-					if (p.notOwn) {
-						if (p.notOwn === -1) {
+					if (propsToIterate !== 'own') {
+						if (propsToIterate === 'inherited') {
 							iFn += ws`
 								for (key in data) {
 									${threadStart}
@@ -898,7 +924,7 @@ export function compileCycle(key, p) {
 						${threadStart}
 				`;
 
-				if (p.notOwn === false) {
+				if (propsToIterate === 'own') {
 					iFn += ws`
 						if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 							${threadEnd}
@@ -906,7 +932,7 @@ export function compileCycle(key, p) {
 						}`
 					;
 
-				} else if (p.notOwn === -1) {
+				} else if (propsToIterate === 'inherited') {
 					iFn += ws`
 						if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
 							${threadEnd}
@@ -923,7 +949,7 @@ export function compileCycle(key, p) {
 			}
 
 			if (defArgs) {
-				if (p.withDescriptor) {
+				if (passDescriptor) {
 					iFn += 'el = getDescriptor(data, key);';
 
 				} else {
@@ -1273,7 +1299,7 @@ export function compileCycle(key, p) {
 						document.head.appendChild(script);
 					}
 
-				} catch (_) {}
+				} catch {}
 
 			}, delay);
 

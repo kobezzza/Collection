@@ -22,7 +22,7 @@ import { any } from '../helpers/gcc';
  * @return {(boolean|!Promise<boolean>)}
  */
 Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {
-	let p = opt_params || {};
+	let p = opt_params ?? {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;
@@ -32,7 +32,7 @@ Collection.prototype.includes = function (searchElement, opt_filter, opt_params)
 	const
 		f = Number.isNaN(searchElement) ? (el) => Number.isNaN(el) : (el) => el === searchElement;
 
-	this._initParams(p, [].concat(opt_filter || [], f));
+	this._initParams(p, [].concat(opt_filter ?? [], f));
 	p = any(Object.assign(Object.create(this.p), p, {mult: false, result: false}));
 
 	const

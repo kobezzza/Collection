@@ -108,10 +108,12 @@ var $$CollectionFilter;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   passDescriptor: (?boolean|undefined),
  *   withDescriptor: (?boolean|undefined),
+ *   propsToIterate: (?'own'|'inherited'|'all'|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
- *   use: (?string|undefined),
+ *   use: (?'for'|'for of'|'for in'|undefined),
  *   length: (?boolean|undefined),
  *   async: (?boolean|undefined),
  *   parallel: (boolean|number|null|undefined),
@@ -192,7 +194,13 @@ var reverse;
 var inverseFilter;
 
 /** @type {?} */
+var passDescriptor;
+
+/** @type {?} */
 var withDescriptor;
+
+/** @type {?} */
+var propsToIterate;
 
 /** @type {?} */
 var notOwn;
@@ -349,7 +357,7 @@ $$Collection.prototype.includes = function (searchElement, opt_filter, opt_param
  *   parallel: (boolean|number|null|undefined),
  *   race: (boolean|number|null|undefined),
  *   thread: (?boolean|undefined),
- *   priority: (?string|undefined),
+ *   priority: (?'low'|'normal'|'hight'|'critical'|undefined),
  *   onChunk: (?$$CollectionThreadCb|undefined),
  *   onIterationEnd: (?$$CollectionThreadCb|undefined)
  * }}

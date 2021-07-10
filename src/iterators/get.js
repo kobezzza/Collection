@@ -23,7 +23,7 @@ import { any } from '../helpers/gcc';
  * @return {(?|!Array|!Promise<(?|!Array)>)}
  */
 Collection.prototype.get = function (opt_filter, opt_params) {
-	let p = opt_params || {};
+	let p = opt_params ?? {};
 
 	if (
 		!isFunction(opt_filter) && (

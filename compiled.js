@@ -9,7 +9,7 @@
  */
 
 /** @type {(function($$CollectionType): $$Collection)} */
-module.exports = exports = require('./dist/collection.node.min');
+module.exports = exports = require('./dist/collection.node');
 exports.default = exports;
 
 /** @type {function(?): ?} */

@@ -30,38 +30,39 @@ function notAsync() {
 function defaultCb() {}
 
 /**
- * Iterates the collection and calls a callback function for each element that matches for the specified condition
+ * Iterates the passed collection and calls a callback function for each element that matches for the specified condition
  *
  * @param {($$CollectionCb|$$Collection_forEach|null)=} [opt_cb] - callback function
  * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
  *
- *   *) [filter] - function filter or an array of functions
- *   *) [mult = true] - if false, then after the first successful iteration the operation will be broken
+ *   *) [filter] - function (or a list of functions) to filter iterated values
+ *   *) [mult = true] - if false, then after the first successful iteration the operation will be finished
  *   *) [count] - maximum number of elements in the response (by default all object)
- *   *) [from = 0] - number of skipping successful iterations
- *   *) [startIndex = 0] - number of skipping successful iterations
- *   *) [endIndex] - end iteration position
- *   *) [reverse] - if true, then the iteration will be from the end
+ *   *) [from = 0] - number of successful iterations to skip
+ *   *) [startIndex = 0] - index of the first element to iterate
+ *   *) [endIndex] - index of the last element to iterate
+ *   *) [reverse] - if true, then the iteration will start from the end
  *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
- *   *) [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
- *   *) [notOwn = false] - iteration type:
+ *   *) [passDescriptor = false] - if true, then the callback function takes an element descriptor instead of a value
+ *   *) [propsToIterate = false] - strategy to iterate object properties:
  *
- *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
- *     2) if true, then hasOwnProperty test is disabled;
- *     3) if -1, then hasOwnProperty test is enabled and all own properties will be skipped.
+ *        1. `'own'` - the object iterates only own properties (by default)
+ *        2. `'inherited'` - the object iterates only inherited properties
+ *          (for-in with the negative `hasOwnProperty` check)
+ *        3. `'all'` - the object iterates inherited properties too (for-in without the `hasOwnProperty` check)
  *
- *   *) [live = false] - if true, the initial collection length won't be cached (not for all data types),
- *      ie all elements which will be added to the collection during the iteration will be included to the processing
+ *   *) [live = false] - if true, the initial collection length won't be cached (not for all data types), i.e.,
+ *        all elements which will be added to the collection during the iteration will be included in the processing
  *
  *   *) [use] - type of the using iterator (for, for of, for in)
- *   *) [length = true] - if false, then function parameters optimization won't be apply
+ *   *) [length = true] - if false, then function parameters optimization won't be applied
  *   *) [async = false] - if true, then the operation will be executed as async (returns a promise)
  *   *) [thread = false] - if true, then the operation will be executed in a thread (returns a promise)
  *   *) [parallel = false] - if true or number, then the operation will be executed as async and parallel
- *        (number is max parallel operations)
+ *        (the number is maximum parallel operations)
  *
  *   *  [race = false] - if true or number, then the operation will be executed as async and parallel with race
- *        (number is max parallel operations)
+ *        (the number is maximum parallel operations)
  *
  *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
  *   *) [onChunk] - callback function for chunks
@@ -80,14 +81,14 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 
 	const
 		p = any(Object.create(this._init())),
-		sp = opt_params || p;
+		sp = opt_params ?? p;
 
 	if (isArray(opt_params) || isFunction(opt_params)) {
 		p.filter = p.filter.concat(opt_params);
 
 	} else if (opt_params) {
 		if (opt_params.filter !== p.filter) {
-			opt_params.filter = p.filter.concat(opt_params.filter || []);
+			opt_params.filter = p.filter.concat(opt_params.filter ?? []);
 		}
 
 		Object.assign(p, opt_params);
@@ -296,8 +297,8 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 		p.length,
 		p.async,
 		p.thread,
-		p.withDescriptor,
-		p.notOwn,
+		p.passDescriptor ?? p.withDescriptor,
+		p.propsToIterate ?? p.notOwn,
 		p.live,
 		p.inverseFilter,
 		p.reverse,
@@ -311,7 +312,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 	].join();
 
 	const
-		fn = any(compiledCycles[key] || compileCycle(key, p));
+		fn = any(compiledCycles[key] ?? compileCycle(key, p));
 
 	const args = {
 		TRUE,
@@ -419,7 +420,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 					try {
 						thread.throw(err);
 
-					} catch (_) {}
+					} catch {}
 
 					reject(err);
 					return err;

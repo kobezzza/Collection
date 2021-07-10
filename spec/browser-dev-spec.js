@@ -6,5 +6,5 @@
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  */
 
-global.$C = require('../dist/collection.node');
+global.$C = require('../dist/collection');
 require('./test')();
