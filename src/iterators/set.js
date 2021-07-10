@@ -20,12 +20,12 @@ import { FN_LENGTH } from '../consts/symbols';
  * Sets a new value for collection elements by the specified condition/link
  *
  * @see Collection.prototype.forEach
- * @param {(?|$$CollectionCb)} value - new value (function will execute)
- * @param {($$CollectionFilter|$$Collection_set|$$CollectionLink)=} filter - link, function filter or an array of functions
+ * @param {(?|$$CollectionCb)} value - new value (if it provided as a function, it would be executed)
+ * @param {($$CollectionFilter|$$Collection_set|$$CollectionLink)=} filter - link, function (or a list of functions) to filter iterated values
  * @param {?$$Collection_set=} [opt_params] - additional parameters:
  *
- *   *) [key] - key (null for array.push) of a new element (if search elements nof found)
- *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
+ *   *) [key] - key (`null` for `array.push`) of a new element (if search elements was not found)
+ *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise, it will be created
  *
  * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */

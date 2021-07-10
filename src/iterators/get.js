@@ -14,11 +14,13 @@ import { byLink } from '../helpers/link';
 import { any } from '../helpers/gcc';
 
 /**
- * Searches elements in a collection by the specified condition/link.
- * The method returns an array of found elements or an element (if mult = false)
+ * Searches elements in a collection by the specified condition or link.
+ * The method returns an array of found elements or the founded element (if `mult` provided to `false`)
  *
  * @see Collection.prototype.forEach
- * @param {($$CollectionFilter|$$CollectionBase|$$CollectionLink)=} [opt_filter] - link, function filter or an array of functions
+ * @param {($$CollectionFilter|$$CollectionBase|$$CollectionLink)=} [opt_filter] - link or a function (or a list of functions)
+ *   to filter iterated values
+ *
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
  * @return {(?|!Array|!Promise<(?|!Array)>)}
  */
@@ -36,7 +38,7 @@ Collection.prototype.get = function (opt_filter, opt_params) {
 	}
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
-		p = opt_filter || p;
+		p = opt_filter ?? p;
 		opt_filter = null;
 	}
 

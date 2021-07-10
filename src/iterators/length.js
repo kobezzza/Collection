@@ -19,7 +19,7 @@ import { LENGTH_REQUEST } from '../consts/symbols';
  * Returns the number of elements in the collection by the specified parameters
  *
  * @see Collection.prototype.forEach
- * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter] - function filter or an array of functions
+ * @param {($$CollectionFilter|$$CollectionSingleBase)=} [opt_filter] - function (or a list of functions) to filter iterated values
  * @param {?$$CollectionSingleBase=} [opt_params] - additional parameters
  * @return {(number|!Promise<number>)}
  */
@@ -27,7 +27,7 @@ Collection.prototype.length = function (opt_filter, opt_params) {
 	let p = opt_params ?? {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
-		p = opt_filter || p;
+		p = opt_filter ?? p;
 		opt_filter = null;
 	}
 

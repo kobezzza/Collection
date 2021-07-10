@@ -163,7 +163,7 @@ let exec = 0;
  * @private
  * @param {?} obj - generator object
  * @param {string} priority - task priority
- * @param {function(!Error)} onError - callback function for error handling
+ * @param {function(!Error)} onError - callback function to handler errors
  * @param {?function($$CollectionCtx)} [opt_onChunk] - callback function for chunks
  */
 Collection.prototype._addToStack = function (obj, priority, onError, opt_onChunk) {

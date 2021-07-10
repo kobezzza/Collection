@@ -9,14 +9,14 @@
  */
 
 import { Collection } from '../core';
-import { isFunction, isNumber, getType, asyncTypes } from '../helpers/types';
+import { isFunction, isNumber, isString, getType, asyncTypes } from '../helpers/types';
 import { any } from '../helpers/gcc';
 import { priorities } from '../consts/thread';
 
 /**
  * Appends a filter to the operation
  *
- * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filters - function filter
+ * @param {...($$CollectionFilter|Array<$$CollectionFilter>|undefined)} filters - function (or a list of functions) to filter iterated values
  * @return {!Collection}
  */
 Collection.prototype.filter = function (filters) {
@@ -39,7 +39,7 @@ Collection.prototype.filter = function (filters) {
 /**
  * @private
  * @param {?} p
- * @param {...?} filters - function filter
+ * @param {...?} filters - function (or a list of functions) to filter iterated values
  * @return {!Collection}
  */
 Collection.prototype._initParams = function (p, filters) {
@@ -115,7 +115,7 @@ Collection.prototype._initParams = function (p, filters) {
 //#if iterators/thread
 
 /**
- * Marks the operation as thread
+ * Marks the operation as a thread
  *
  * @param {(?string|$$CollectionThreadCb)=} [opt_priority] - thread priority (low, normal, hight, critical)
  * @param {?$$CollectionThreadCb=} [opt_onChunk] - callback function for chunks
@@ -152,7 +152,7 @@ Collection.prototype.thread = function (opt_priority, opt_onChunk) {
 //#endif
 
 /**
- * Sets .startIndex for the operation
+ * Sets `.startIndex` for the operation
  *
  * @param {number} value - source value
  * @return {!Collection}
@@ -163,7 +163,7 @@ Collection.prototype.start = function (value) {
 };
 
 /**
- * Sets .endIndex for the operation
+ * Sets `.endIndex` for the operation
  *
  * @param {number} value - source value
  * @return {!Collection}
@@ -174,7 +174,7 @@ Collection.prototype.end = function (value) {
 };
 
 /**
- * Sets .from for the operation
+ * Sets `.from` for the operation
  *
  * @param {number} value - source value
  * @return {!Collection}
@@ -185,7 +185,7 @@ Collection.prototype.from = function (value) {
 };
 
 /**
- * Sets .count for the operation
+ * Sets `.count` for the operation
  *
  * @param {number} value - source value
  * @return {!Collection}
@@ -196,30 +196,36 @@ Collection.prototype.count = function (value) {
 };
 
 /**
- * Sets .use to 'for in' for the operation
+ * Sets `.use` to `'for in'` for the operation
  *
- * @param {(boolean|number|null)=} [opt_notOwn] - iteration type:
+ * @param {('own'|'inherited'|'all'|boolean|number|null)=} [opt_propsToIterate] - strategy to iterate object properties:
  *
- *   1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped
- *   2) if true, then hasOwnProperty test is disabled
- *   3) if -1, then hasOwnProperty test is enabled and all own properties will be skipped
+ *   1. `'own'` - the object iterates only own properties (by default)
+ *   2. `'inherited'` - the object iterates only inherited properties
+ *     (for-in with the negative `hasOwnProperty` check)
+ *   3. `'all'` - the object iterates inherited properties too (for-in without the `hasOwnProperty` check)
  *
  * @return {!Collection}
  */
-Collection.prototype.object = function (opt_notOwn) {
+Collection.prototype.object = function (opt_propsToIterate) {
 	this.p.use = 'for in';
 
-	if (opt_notOwn) {
-		this.p.notOwn = opt_notOwn;
+	if (opt_propsToIterate) {
+		if (isString(opt_propsToIterate)) {
+			this.p.opt_propsToIterate = opt_propsToIterate;
+
+		} else {
+			this.p.notOwn = opt_propsToIterate;
+		}
 	}
 
 	return this;
 };
 
 /**
- * Sets .use to 'for of' for the operation
+ * Sets `.use` to `'for of'` for the operation
  *
- * @param {?boolean=} [opt_async] - if true, then will be used async for of
+ * @param {?boolean=} [opt_async] - if true, then will be used `async for of`
  * @return {!Collection}
  */
 Collection.prototype.iterator = function (opt_async) {
@@ -233,7 +239,7 @@ Collection.prototype.iterator = function (opt_async) {
 };
 
 /**
- * Sets .initial for the operation
+ * Sets `.initial` for the operation
  *
  * @param {?} value
  * @return {!Collection}
@@ -246,7 +252,7 @@ Collection.prototype.to = function (value) {
 };
 
 /**
- * Sets .initial as a transform stream for the operation
+ * Sets `.initial` as a transform stream for the operation
  *
  * @param {?boolean=} [opt_readObj] - readableObjectMode
  * @param {?boolean=} [opt_writeObj=opt_readObj] - writableObjectMode
@@ -279,7 +285,7 @@ Collection.prototype.toStream = function (opt_readObj, opt_writeObj) {
 //#if iterators/async
 
 /**
- * Sets .async to true and .parallel for the operation
+ * Sets `.async` to `true` and `.parallel` for the operation
  *
  * @param {(boolean|number|null)=} [opt_max]
  * @return {!Collection}
@@ -291,7 +297,7 @@ Collection.prototype.parallel = function (opt_max) {
 };
 
 /**
- * Sets .async to true and .race for the operation
+ * Sets `.async` to `true` and `.race` for the operation
  *
  * @param {(boolean|number|null)=} [opt_max]
  * @return {!Collection}
@@ -309,7 +315,7 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 
 	async: {
 		/**
-		 * Sets .async to true for the operation
+		 * Sets `.async` to `true` for the operation
 		 */
 		get() {
 			this.p.async = true;
@@ -321,7 +327,7 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 
 	live: {
 		/**
-		 * Sets .live to true for the operation
+		 * Sets `.live` to `true` for the operation
 		 */
 		get() {
 			this.p.live = true;
@@ -329,9 +335,19 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 		}
 	},
 
+	passDescriptor: {
+		/**
+		 * Sets `.passDescriptor` to `true` for the operation
+		 */
+		get() {
+			this.p.passDescriptor = true;
+			return this;
+		}
+	},
+
 	descriptor: {
 		/**
-		 * Sets .withDescriptor to true for the operation
+		 * Sets `.withDescriptor` to `true` for the operation
 		 */
 		get() {
 			this.p.withDescriptor = true;
@@ -341,7 +357,7 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 
 	array: {
 		/**
-		 * Sets .use to 'for' for the operation
+		 * Sets `.use` to `'for'` for the operation
 		 */
 		get() {
 			this.p.use = 'for';
@@ -351,7 +367,7 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 
 	one: {
 		/**
-		 * Sets .mult to false for the operation
+		 * Sets `.mult` to `false` for the operation
 		 */
 		get() {
 			this.p.mult = false;
@@ -361,7 +377,7 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 
 	inverse: {
 		/**
-		 * Sets .inverseFilter to true for the operation
+		 * Sets `.inverseFilter` to `true` for the operation
 		 */
 		get() {
 			this.p.inverseFilter = true;
@@ -371,7 +387,7 @@ Object.defineProperties(Collection.prototype, /** @lends {Collection.prototype} 
 
 	reverse: {
 		/**
-		 * Sets .reverse to true for the operation
+		 * Sets `.reverse` to `true` for the operation
 		 */
 		get() {
 			this.p.reverse = true;

@@ -152,7 +152,9 @@ $$Collection.prototype.forEach = function (opt_cb, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   passDescriptor: (?boolean|undefined),
  *   withDescriptor: (?boolean|undefined),
+ *   propsToIterate: (?'own'|'inherited'|'all'|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -228,7 +230,9 @@ var onIterationEnd;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   passDescriptor: (?boolean|undefined),
  *   withDescriptor: (?boolean|undefined),
+ *   propsToIterate: (?'own'|'inherited'|'all'|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -268,7 +272,9 @@ $$Collection.prototype.get = function (opt_filter, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   passDescriptor: (?boolean|undefined),
  *   withDescriptor: (?boolean|undefined),
+ *   propsToIterate: (?'own'|'inherited'|'all'|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -347,7 +353,9 @@ $$Collection.prototype.includes = function (searchElement, opt_filter, opt_param
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   passDescriptor: (?boolean|undefined),
  *   withDescriptor: (?boolean|undefined),
+ *   propsToIterate: (?'own'|'inherited'|'all'|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -408,7 +416,9 @@ var newValue;
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   passDescriptor: (?boolean|undefined),
  *   withDescriptor: (?boolean|undefined),
+ *   propsToIterate: (?'own'|'inherited'|'all'|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -541,7 +551,7 @@ $$Collection.prototype.from = function (value) {};
 $$Collection.prototype.count = function (value) {};
 
 /**
- * @param {(boolean|number|null)=} [opt_notOwn]
+ * @param {('own'|'inherited'|'all'|boolean|number|null)=} [opt_notOwn]
  * @return {!$$Collection}
  */
 $$Collection.prototype.object = function (opt_notOwn) {};
@@ -579,6 +589,9 @@ $$Collection.prototype.race = function (opt_max) {};
 
 /** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.live;
+
+/** @type {{get: function (): !$$Collection}} */
+$$Collection.prototype.passDescriptor;
 
 /** @type {{get: function (): !$$Collection}} */
 $$Collection.prototype.descriptor;

@@ -21,7 +21,7 @@ import { FN_LENGTH } from '../consts/symbols';
  * @see Collection.prototype.forEach
  * @param {$$CollectionReduceCb} cb - callback function
  * @param {(?|$$CollectionFilter|$$CollectionBase)=} [opt_initialValue] - initial value
- * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function (or a list of functions) to filter iterated values
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
  * @return {(?|!Promise)}
  */
@@ -35,7 +35,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 	let p = opt_params ?? {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
-		p = opt_filter || p;
+		p = opt_filter ?? p;
 		opt_filter = null;
 	}
 

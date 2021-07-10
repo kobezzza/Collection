@@ -14,11 +14,11 @@ import { any } from '../helpers/gcc';
 
 /**
  * Searches elements in the collection by the specified condition.
- * The method returns an array of found indexes/keys or an index/key (if mult = false) or null.
- * If the data is Map or Set and mult = false, then the method will return an object {value: key} or null
+ * The method returns an array of found indexes/keys or index/key (if `mult` provided to `false`) or `null`.
+ * If the data is a Map or Set and `mult` provided to `false`, then the method will return an object `{value: key}` or `null`.
  *
  * @see Collection.prototype.forEach
- * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function filter or an array of functions
+ * @param {($$CollectionFilter|$$CollectionBase)=} [opt_filter] - function (or a list of functions) to filter iterated values
  * @param {?$$CollectionBase=} [opt_params] - additional parameters
  * @return {(?|!Array|!Promise<(?|!Array)>)}
  */
@@ -26,7 +26,7 @@ Collection.prototype.search = function (opt_filter, opt_params) {
 	let p = opt_params ?? {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
-		p = opt_filter || p;
+		p = opt_filter ?? p;
 		opt_filter = null;
 	}
 

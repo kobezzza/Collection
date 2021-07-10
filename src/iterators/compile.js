@@ -25,7 +25,7 @@ const
 	cycles = $C.cache.str;
 
 /**
- * Returns a cache string by an object
+ * Returns a cache string for the specified cache object
  *
  * @param {?} cache - cache object
  * @return {string}
