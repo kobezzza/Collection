@@ -12,6 +12,7 @@
 
 const
 	gulp = require('gulp'),
+	plumber = require('gulp-plumber'),
 	$ = require('gulp-load-plugins')();
 
 const
@@ -20,7 +21,7 @@ const
 
 gulp.task('build:node', () =>
 	gulp.src('./src/**/*.js', {since: gulp.lastRun('build:node')})
-		.pipe($.plumber())
+		.pipe(plumber())
 		.pipe($.babel({
 			babelrc: false,
 			plugins: [['@babel/plugin-transform-modules-commonjs']]
@@ -55,7 +56,7 @@ gulp.task('build:browser', () => {
 			' */\n\n';
 
 		tasks.push(gulp.src('./src/index.js')
-			.pipe($.plumber())
+			.pipe(plumber())
 			.pipe($.monic({flags: builds[key]}))
 			.pipe($.rename(name))
 			.pipe(gulp.dest('./src'))
@@ -97,7 +98,7 @@ gulp.task('build:browser', () => {
 					});
 
 				stream
-					.pipe($.plumber())
+					.pipe(plumber())
 					.pipe(through.obj((data, enc, cb) => {
 						if (data instanceof File) {
 							cb(null, data);
@@ -156,7 +157,7 @@ function compile() {
 
 		tasks.push(
 			gulp.src(`./dist/${key}.js`)
-				.pipe($.plumber())
+				.pipe(plumber())
 				.pipe($.closureCompiler(Object.assign(gccFlags, {compilerPath: glob.sync(gccFlags.compilerPath)[0]})))
 				.pipe($.replace(/^\/\*[\s\S]*?\*\//, ''))
 				.pipe($.wrap('(function(){\'use strict\';<%= contents %>}).call(this);'))

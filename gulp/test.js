@@ -10,7 +10,9 @@
 
 const
 	gulp = require('gulp'),
-	$ = require('gulp-load-plugins')(),
+	$ = require('gulp-load-plugins')();
+
+const
 	{test} = require('./helpers');
 
 gulp.task('test', test(true, 'browser'));
