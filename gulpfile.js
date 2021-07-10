@@ -23,7 +23,6 @@ gulp.task('default', gulp.parallel(
 		'build:test'
 	),
 
-	'copyright',
 	'yaspeller',
 	'npmignore'
 ));
@@ -34,7 +33,6 @@ gulp.task('node', gulp.parallel(
 		'build:test:node'
 	),
 
-	'copyright',
 	'yaspeller',
 	'npmignore'
 ));
