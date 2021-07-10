@@ -18,14 +18,16 @@ export const
 	hasOwnProperty = {}.hasOwnProperty;
 
 /**
- * Sets a value to an object property by a link or returns/deletes the property.
+ * Sets a value as an object property by the specified link or returns/deletes the property.
  * At changing or deleting the property returns an object:
  *
- *   {
- *     result: boolean,
- *     key,
- *     value
- *   }
+ * ```js
+ * ({
+ *   result: boolean,
+ *   key,
+ *   value
+ * })
+ * ```
  *
  * @param {?} obj
  * @param {$$CollectionLink} link - source link:
@@ -47,7 +49,7 @@ export const
  */
 export function byLink(obj, link, opt_params) {
 	const
-		p = opt_params || {};
+		p = opt_params ?? {};
 
 	const
 		linkList = isString(link) ? any(link).split('.') : [].concat(link),
@@ -216,7 +218,7 @@ export function byLink(obj, link, opt_params) {
 }
 
 /**
- * Returns true if an object contains a property by a link
+ * Returns true if the passed object contains a property by the specified link
  *
  * @see byLink
  * @param {$$CollectionLink} link - source link
@@ -230,7 +232,7 @@ $C.in = function (link, obj) {
 Object.assign($C, {in: $C.in});
 
 /**
- * Returns true if the collection contains a property by a link
+ * Returns true if the collection contains a property by the specified link
  *
  * @see byLink
  * @param {$$CollectionLink} link - source link

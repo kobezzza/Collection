@@ -26,4 +26,4 @@ export const
 
 export const
 	compiledCycles = $C.cache.cycle,
-	localCacheAttrs = GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || {};
+	localCacheAttrs = GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] ?? {};
