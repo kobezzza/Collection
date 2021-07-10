@@ -18,7 +18,7 @@ export const IS_NODE = (() => {
 	try {
 		return typeof process === 'object' && {}.toString.call(process) === '[object process]';
 
-	} catch (_) {
+	} catch {
 		return false;
 	}
 })();
@@ -39,7 +39,7 @@ export const LOCAL_STORAGE_SUPPORT = !IS_NODE && (() => {
 		localStorage.removeItem(mod);
 		return true;
 
-	} catch (_) {
+	} catch {
 		return false;
 	}
 })();

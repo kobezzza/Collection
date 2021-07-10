@@ -314,7 +314,7 @@ export const
 	isNative = /\[native code]/;
 
 /**
- * Returns a new object with the same type as source
+ * Returns a new object with the same type as the specified source
  *
  * @param {?} obj - source object
  * @return {?}
