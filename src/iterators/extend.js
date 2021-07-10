@@ -39,15 +39,22 @@ const {
  * @param {(boolean|?$$Collection_extend)} deepOrParams - if true, then properties will be copied recursively
  *   OR additional parameters for extending:
  *
- *   *) [withUndef = false] - if true, then the original value can be rewritten to undefined
- *   *) [withDescriptor = false] - if true, then the descriptor of a property will be copied too
- *   *) [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
- *   *) [withProto = false] - if true, then properties will be copied with prototypes
- *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
- *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
- *   *) [extendFilter] - function that will be filtering values for deep extending
- *   *) [traits = false] - if true, then will be copied only new properties, or if -1, only old
- *   *) [deep = false] - if true, then properties will be copied recursively
+ *   *) [deep = false] - if true, then object properties are copied recursively.
+ *        Also, this mode enables copying properties from a prototype.
+ *
+ *   *) [skipUndefs = true] - if true, all properties with undefined value aren't copied
+ *   *) [withDescriptors = false] - should or shouldn't copy property descriptors too.
+ *        If passed `onlyAccessors`, the descriptor properties like `enumerable` or `configurable` are ignored.
+ *
+ *   *) [propsToCopy] - strategy to resolve collisions of properties when merging:
+ *        1. `'all'` - all properties are merged in spite of possible collisions (by default)
+ *        2. `'new'` - properties with collisions aren't merged
+ *        3. `'exist'` - properties without collisions aren't merged
+ *
+ *   *) [concatArrays = false] - if true, then to merge two arrays will be used a concatenation strategy
+ *        (works only with the `deep` mode). Also, the parameter can be passed as a function to concatenate arrays.
+ *
+ *   *) [extendFilter] - function to filter values that support deep extending (works only with the `deep` mode)
  *
  * @param {...Object} args - objects for extending
  * @return {(!Object|!Promise)}

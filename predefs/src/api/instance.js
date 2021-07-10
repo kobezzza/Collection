@@ -450,15 +450,20 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
 
 /**
  * @typedef {{
+ *   deep?: (?boolean|undefined),
+ *   skipUndefs?: (?boolean|undefined),
  *   withUndef: (?boolean|undefined),
+ *   withDescriptors: (?boolean|'onlyAccessors'|undefined),
+ *   passDescriptor: (?boolean|undefined),
  *   withAccessors: (?boolean|undefined),
  *   withDescriptor: (?boolean|undefined),
+ *   propsToCopy: (?'new'|'exist'|'all'|undefined),
  *   withProto: (?boolean|undefined),
- *   concatArray: (?boolean|undefined),
- *   concatFn: (?function(!Array, !Array, ?): ?|undefined),
- *   extendFilter: (?function(?, ?, ?): ?|undefined),
  *   traits: (boolean|number|null|undefined),
- *   deep: (?boolean|undefined),
+ *   concatArrays: (?boolean|function(!Array, !Array, ?): ?|undefined),
+ *   concatFn: (?function(!Array, !Array, ?): ?|undefined),
+ *   concatArray: (?boolean|undefined),
+ *   extendFilter: (?function(?, ?, ?): ?|undefined),
  *   filter: $$CollectionFilter,
  *   mult: (?boolean|undefined),
  *   count: (number|number|null|undefined),
@@ -467,6 +472,7 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
  *   endIndex: (number|number|null|undefined),
  *   reverse: (?boolean|undefined),
  *   inverseFilter: (?boolean|undefined),
+ *   propsToIterate: (?'own'|'inherited'|'all'|undefined),
  *   notOwn: (boolean|number|null|undefined),
  *   live: (?boolean|undefined),
  *   use: (?string|undefined),
@@ -483,13 +489,25 @@ $$Collection.prototype.set = function (value, filter, opt_params) {};
 var $$Collection_extend;
 
 /** @type {?} */
+var deep;
+
+/** @type {?} */
+var skipUndefs;
+
+/** @type {?} */
 var withUndef;
+
+/** @type {?} */
+var withDescriptors;
 
 /** @type {?} */
 var withAccessors;
 
 /** @type {?} */
 var withProto;
+
+/** @type {?} */
+var concatArrays;
 
 /** @type {?} */
 var concatArray;
@@ -501,10 +519,10 @@ var concatFn;
 var extendFilter;
 
 /** @type {?} */
-var traits;
+var propsToCopy;
 
 /** @type {?} */
-var deep;
+var traits;
 
 /**
  * @param {(boolean|$$Collection_extend)} deepOrParams
