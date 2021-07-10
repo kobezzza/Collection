@@ -82,7 +82,7 @@ function compileCycle(key, p) {
   const resolveFilterVal = 'f = f && f !== FALSE || f === TRUE;',
         resolveFilterValCb = `${p.inverseFilter ? '!' : ''}f && f !== FALSE || f === TRUE`,
         callCycleFilter = `filters[fI](${filterArgsList.slice(0, p.length ? maxArgsLength : filterArgsList.length)})`;
-  let iFn = _string.ws`
+  let iFn = (0, _string.ws)`
 		var
 			data = o.data,
 			cb = o.cb,
@@ -134,7 +134,7 @@ function compileCycle(key, p) {
 
   if (p.withDescriptor) {
     if (p.withProto) {
-      iFn += _string.ws`
+      iFn += (0, _string.ws)`
 				var 
 					_getProto = Object.getPrototypeOf,
 					_getDescriptor = Object.getOwnPropertyDescriptor;
@@ -159,7 +159,7 @@ function compileCycle(key, p) {
 
 
   if (p.async) {
-    iFn += _string.ws`
+    iFn += (0, _string.ws)`
 			var
 				priorities = o.priorities,
 				maxParallel = o.maxParallel,
@@ -229,7 +229,7 @@ function compileCycle(key, p) {
       if (fLength < 5) {
         for (let i = 0; i < fLength; i++) {
           const callFilter = `filters[${i}](${filterArgs[i]})`;
-          iFn += _string.ws`
+          iFn += (0, _string.ws)`
 						if (${i ? 'f' : 'f === undefined || f'}) {
 							if (fIsPromise) {
 								f = f.then(function (f) {
@@ -254,7 +254,7 @@ function compileCycle(key, p) {
 					`;
         }
       } else {
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					for (fI = -1; ++fI < fLength;) {
 						if (fIsPromise) {
 							f = f.then((function (fI) {
@@ -290,7 +290,7 @@ function compileCycle(key, p) {
     let fnCountHelper = '';
 
     if (p.from) {
-      fnCountHelper += _string.ws`
+      fnCountHelper += (0, _string.ws)`
 				if (from !== 0) {
 					from--;
 					return;
@@ -299,7 +299,7 @@ function compileCycle(key, p) {
     }
 
     if (p.count) {
-      fnCountHelper += _string.ws`
+      fnCountHelper += (0, _string.ws)`
 				if (j === count) {
 					return;
 				}
@@ -312,7 +312,7 @@ function compileCycle(key, p) {
       fnCountHelper += 'breaker = true;';
     }
 
-    iFn += _string.ws`
+    iFn += (0, _string.ws)`
 			if (fIsPromise) {
 				f = f.then(function (f) {
 					${resolveFilterVal}
@@ -333,7 +333,7 @@ function compileCycle(key, p) {
 
     if (needParallel) {
       //#if iterators/async
-      iFn += _string.ws`
+      iFn += (0, _string.ws)`
 				if (maxParallelIsNumber) {
 					ctx['${parallelFn}'](maxParallel, null, new Promise(function (r) { r(res); }));
 
@@ -350,7 +350,7 @@ function compileCycle(key, p) {
 
 
   if (needCtx) {
-    iFn += _string.ws`
+    iFn += (0, _string.ws)`
 			var ctx = {
 				$: {},
 				info: {
@@ -441,7 +441,7 @@ function compileCycle(key, p) {
 
     if (p.async) {
       //#if iterators/async
-      iFn += _string.ws`
+      iFn += (0, _string.ws)`
 				ctx.thread = thread;
 				thread.ctx = ctx;
 
@@ -627,7 +627,7 @@ function compileCycle(key, p) {
 				};
 			`; //#endif
     } else {
-      iFn += _string.ws`
+      iFn += (0, _string.ws)`
 				ctx.yield = ctx.next = ctx.child = ctx.race = ctx.wait = ctx.sleep = o.notAsync;
 			`;
     }
@@ -638,12 +638,12 @@ function compileCycle(key, p) {
   //#if iterators/thread
 
   if (p.async && p.thread) {
-    threadStart = _string.ws`
+    threadStart = (0, _string.ws)`
 			if (timeStart == null) {
 				timeStart = new Date().valueOf();
 			}
 		`;
-    threadEnd = _string.ws`
+    threadEnd = (0, _string.ws)`
 			timeEnd = new Date().valueOf();
 			time += timeEnd - timeStart;
 			timeStart = timeEnd;
@@ -664,7 +664,7 @@ function compileCycle(key, p) {
 
   if (p.async) {
     iFn += 'done = false;';
-    yielder = _string.ws`
+    yielder = (0, _string.ws)`
 			if (yielder) {
 				yielder = false;
 				thread.pause = true;
@@ -673,7 +673,7 @@ function compileCycle(key, p) {
 		`;
 
     if (needCtx) {
-      asyncWait = _string.ws`
+      asyncWait = (0, _string.ws)`
 				waiting = true;
 
 				while (waitStore.size) {
@@ -693,7 +693,7 @@ function compileCycle(key, p) {
   let indexLimits = '';
 
   if (p.startIndex) {
-    indexLimits = _string.ws`
+    indexLimits = (0, _string.ws)`
 			if (n < startIndex) {
 				${threadEnd}
 				continue;
@@ -702,7 +702,7 @@ function compileCycle(key, p) {
   }
 
   if (p.endIndex) {
-    indexLimits += _string.ws`
+    indexLimits += (0, _string.ws)`
 			if (n > endIndex) {
 				${threadEnd}
 				break;
@@ -714,7 +714,7 @@ function compileCycle(key, p) {
 
   switch (p.type) {
     case 'array':
-      iFn += _string.ws`
+      iFn += (0, _string.ws)`
 				var
 					clone = data,
 					dLength = data.length - 1,
@@ -726,20 +726,20 @@ function compileCycle(key, p) {
       }
 
       if ((p.reverse || !p.live) && (p.startIndex || p.endIndex)) {
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					clone = slice.call(clone, startIndex, endIndex ? endIndex + 1 : data.length);
 				`;
       }
 
       if (!p.reverse && p.live) {
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					for (n = startIndex - 1; ++n < clone.length;) {
 						${threadStart}
 						i = n;
 						${indexLimits}
 				`;
       } else {
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					length = clone.length;
 					for (n = -1; ++n < length;) {
 						${threadStart}
@@ -766,7 +766,7 @@ function compileCycle(key, p) {
       break;
 
     case 'object':
-      iFn += _string.ws`
+      iFn += (0, _string.ws)`
 				var
 					selfHasOwn = data.hasOwnProperty,
 					hasOwnProperty = IGNORE.hasOwnProperty;
@@ -782,7 +782,7 @@ function compileCycle(key, p) {
 
           if (p.notOwn) {
             if (p.notOwn === -1) {
-              iFn += _string.ws`
+              iFn += (0, _string.ws)`
 								for (key in data) {
 									${threadStart}
 									if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
@@ -794,7 +794,7 @@ function compileCycle(key, p) {
 								}
 							`;
             } else {
-              iFn += _string.ws`
+              iFn += (0, _string.ws)`
 								for (key in data) {
 									${threadStart}
 									tmpArray.push(key);
@@ -803,7 +803,7 @@ function compileCycle(key, p) {
 							`;
             }
           } else {
-            iFn += _string.ws`
+            iFn += (0, _string.ws)`
 							for (key in data) {
 								${threadStart}
 								if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
@@ -825,7 +825,7 @@ function compileCycle(key, p) {
           iFn += `tmpArray = tmpArray.slice(startIndex, endIndex ? endIndex + 1 : tmpArray.length);`;
         }
 
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					length = tmpArray.length;
 					for (n = -1; ++n < length;) {
 						${threadStart}
@@ -839,26 +839,26 @@ function compileCycle(key, p) {
 						i = n + startIndex;
 				`;
       } else {
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					for (key in data) {
 						${threadStart}
 				`;
 
         if (p.notOwn === false) {
-          iFn += _string.ws`
+          iFn += (0, _string.ws)`
 						if (!(selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key))) {
 							${threadEnd}
 							break;
 						}`;
         } else if (p.notOwn === -1) {
-          iFn += _string.ws`
+          iFn += (0, _string.ws)`
 						if (selfHasOwn ? data.hasOwnProperty(key) : hasOwnProperty.call(data, key)) {
 							${threadEnd}
 							continue;
 						}`;
         }
 
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					n++;
 					i = n;
 					${indexLimits}
@@ -890,7 +890,7 @@ function compileCycle(key, p) {
       } else if (p.type === 'generator') {
         iFn += 'var cursor = data();';
       } else {
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					var
 						iteratorKey = typeof Symbol !== 'undefined' && Symbol.iterator,
 						cursor;
@@ -904,7 +904,7 @@ function compileCycle(key, p) {
 				`;
       }
 
-      iFn += _string.ws`
+      iFn += (0, _string.ws)`
 				${p.reverse ? 'var tmpArray = [];' : ''}
 
 				for (
@@ -917,7 +917,7 @@ function compileCycle(key, p) {
       let asyncIterator = ''; //#if iterators/async
 
       if (p.type === 'asyncIterator' || asyncIterators[p.type] && p.async) {
-        asyncIterator = _string.ws`
+        asyncIterator = (0, _string.ws)`
 					while (isPromise(el)) {
 						if (!rElSet.has(el)) {
 							rElSet.add(el);
@@ -935,7 +935,7 @@ function compileCycle(key, p) {
         iFn += `el = 'value' in key ? key.value : key; ${asyncIterator}`; //#if iterators/async
 
         if (needParallel) {
-          iFn += _string.ws`
+          iFn += (0, _string.ws)`
 						if (maxParallelIsNumber) {
 							if (isPromise(el)) {
 								ctx['${parallelFn}'](maxParallel, null, el);
@@ -947,7 +947,7 @@ function compileCycle(key, p) {
         } //#endif
 
 
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 						if (el !== IGNORE) {
 							if (brkIf && el === null) {
 								${threadEnd}
@@ -969,7 +969,7 @@ function compileCycle(key, p) {
           iFn += `tmpArray = tmpArray.slice(startIndex, endIndex ? endIndex + 1 : tmpArray.length);`;
         }
 
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					length = size;
 					for (n = -1; ++n < length;) {
 						${threadStart}
@@ -977,7 +977,7 @@ function compileCycle(key, p) {
 						i = n + startIndex;
 				`;
       } else {
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					${defArgs ? `key = 'value' in key ? key.value : key;` : ''}
 					n++;
 					i = n;
@@ -1011,7 +1011,7 @@ function compileCycle(key, p) {
   }
 
   if (p.count) {
-    iFn += _string.ws`
+    iFn += (0, _string.ws)`
 			if (j === count) {
 				${threadEnd}
 				break;
@@ -1025,7 +1025,7 @@ function compileCycle(key, p) {
     if (fLength) {
       if (fLength < 5) {
         for (let i = 0; i < fLength; i++) {
-          iFn += _string.ws`
+          iFn += (0, _string.ws)`
 						if (${i ? 'f' : 'true'}) {
 							f = filters[${i}](${filterArgs[i]});
 							${resolveFilterVal}
@@ -1033,7 +1033,7 @@ function compileCycle(key, p) {
 					`;
         }
       } else {
-        iFn += _string.ws`
+        iFn += (0, _string.ws)`
 					for (fI = -1; ++fI < fLength;) {
 						f = ${callCycleFilter};
 						${resolveFilterVal}
@@ -1062,7 +1062,7 @@ function compileCycle(key, p) {
   let waitCb = ''; //#if iterators/async
 
   if (p.async) {
-    waitCb = _string.ws`
+    waitCb = (0, _string.ws)`
 			while (isPromise(r)) {
 				if (!rCbSet.has(r)) {
 					rCbSet.add(r);
@@ -1078,7 +1078,7 @@ function compileCycle(key, p) {
 
 
   if (!p.async && p.from) {
-    iFn += _string.ws`
+    iFn += (0, _string.ws)`
 			if (from !== 0) {
 				from--;
 
@@ -1097,7 +1097,7 @@ function compileCycle(key, p) {
   iFn += yielder;
 
   if (!p.live && !p.reverse && isMapSet) {
-    iFn += _string.ws`
+    iFn += (0, _string.ws)`
 			size--;
 
 			if (!size) {
@@ -1107,14 +1107,14 @@ function compileCycle(key, p) {
 		`;
   }
 
-  tmp = _string.ws`
+  tmp = (0, _string.ws)`
 		if (onIterationEnd) {
 			onIterationEnd(${needCtx ? 'ctx' : ''});
 		}
 	`; //#if iterators/async
 
   if (p.async) {
-    tmp = _string.ws`
+    tmp = (0, _string.ws)`
 			if (onIterationEnd) {
 				r = onIterationEnd(${needCtx ? 'ctx' : ''});
 				${waitCb}
@@ -1123,7 +1123,7 @@ function compileCycle(key, p) {
   } //#endif
 
 
-  iFn += _string.ws`
+  iFn += (0, _string.ws)`
 			${threadEnd}
 
 			if (breaker${p.async ? '|| done' : ''}) {
@@ -1136,7 +1136,7 @@ function compileCycle(key, p) {
 
 		${tmp}
 	`;
-  iFn += _string.ws`
+  iFn += (0, _string.ws)`
 			${yielder}
 		}
 
