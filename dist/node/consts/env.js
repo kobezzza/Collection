@@ -10,7 +10,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LOCAL_STORAGE_SUPPORT = exports.SYMBOL_NATIVE_SUPPORT = exports.OBJECT_ASSIGN_NATIVE_SUPPORT = exports.OBJECT_KEYS_NATIVE_SUPPORT = exports.BLOB_SUPPORT = exports.IS_BROWSER = exports.IS_NODE = exports.GLOBAL = void 0;
+exports.SYMBOL_NATIVE_SUPPORT = exports.OBJECT_KEYS_NATIVE_SUPPORT = exports.OBJECT_ASSIGN_NATIVE_SUPPORT = exports.LOCAL_STORAGE_SUPPORT = exports.IS_NODE = exports.IS_BROWSER = exports.GLOBAL = exports.BLOB_SUPPORT = void 0;
 
 var _gcc = require("../helpers/gcc");
 
@@ -22,7 +22,7 @@ exports.GLOBAL = GLOBAL;
 const IS_NODE = (() => {
   try {
     return typeof process === 'object' && {}.toString.call(process) === '[object process]';
-  } catch (_) {
+  } catch {
     return false;
   }
 })();
@@ -48,7 +48,7 @@ const LOCAL_STORAGE_SUPPORT = !IS_NODE && (() => {
     localStorage.setItem(mod, mod);
     localStorage.removeItem(mod);
     return true;
-  } catch (_) {
+  } catch {
     return false;
   }
 })();

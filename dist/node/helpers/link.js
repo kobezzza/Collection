@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.byLink = byLink;
-exports.hasOwnProperty = exports.splice = exports.slice = void 0;
+exports.splice = exports.slice = exports.hasOwnProperty = void 0;
 
 var _core = _interopRequireWildcard(require("../core"));
 
@@ -27,14 +27,16 @@ const slice = [].slice,
       splice = [].splice,
       hasOwnProperty = {}.hasOwnProperty;
 /**
- * Sets a value to an object property by a link or returns/deletes the property.
+ * Sets a value as an object property by the specified link or returns/deletes the property.
  * At changing or deleting the property returns an object:
  *
- *   {
- *     result: boolean,
- *     key,
- *     value
- *   }
+ * ```js
+ * ({
+ *   result: boolean,
+ *   key,
+ *   value
+ * })
+ * ```
  *
  * @param {?} obj
  * @param {$$CollectionLink} link - source link:
@@ -60,7 +62,7 @@ exports.splice = splice;
 exports.slice = slice;
 
 function byLink(obj, link, opt_params) {
-  const p = opt_params || {};
+  const p = opt_params ?? {};
   const linkList = (0, _types.isString)(link) ? (0, _gcc.any)(link).split('.') : [].concat(link),
         length = linkList.length,
         last = length - 1;
@@ -203,7 +205,7 @@ function byLink(obj, link, opt_params) {
   return obj;
 }
 /**
- * Returns true if an object contains a property by a link
+ * Returns true if the passed object contains a property by the specified link
  *
  * @see byLink
  * @param {$$CollectionLink} link - source link
@@ -222,7 +224,7 @@ Object.assign(_core.default, {
   in: _core.default.in
 });
 /**
- * Returns true if the collection contains a property by a link
+ * Returns true if the collection contains a property by the specified link
  *
  * @see byLink
  * @param {$$CollectionLink} link - source link

@@ -5831,11 +5831,9 @@ declare const $C: {
 	(collection: CSSRuleList): CollectionJS.CollectionIterator<CSSRuleList, number, CSSRule>;
 	(collection: CSSStyleDeclaration): CollectionJS.CollectionIterator<CSSStyleDeclaration, number, string>;
 	(collection: StyleSheetList): CollectionJS.CollectionIterator<StyleSheetList, number, StyleSheet>;
-	// (collection: StyleSheetPageList): CollectionJS.CollectionIterator<StyleSheetPageList, number, CSSPageRule>;
 	(collection: TextTrackCueList): CollectionJS.CollectionIterator<TextTrackCueList, number, TextTrackCue>;
 	(collection: TextTrackList): CollectionJS.CollectionIterator<TextTrackList, number, TextTrack>;
 	(collection: TouchList): CollectionJS.CollectionIterator<TouchList, number, Touch>;
-	(collection: ClientRectList): CollectionJS.CollectionIterator<ClientRectList, number, ClientRect>;
 	(collection: DataTransferItemList): CollectionJS.CollectionIterator<DataTransferItemList, number, DataTransferItem>;
 	(collection: DOMStringList): CollectionJS.CollectionIterator<DOMStringList, number, string>;
 	(collection: DOMTokenList): CollectionJS.CollectionIterator<DOMTokenList, number, string>;

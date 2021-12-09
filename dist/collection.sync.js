@@ -5,14 +5,14 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Sat, 10 Jul 2021 10:14:55 GMT
+ * Date: 'Thu, 09 Dec 2021 13:24:56 GMT
  */
 
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define('Collection', factory) :
 	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.$C = factory());
-}(this, (function () { 'use strict';
+})(this, (function () { 'use strict';
 
 		/**
 	 * Converts the specified object to an unknown type
@@ -335,7 +335,7 @@
 	}
 	var isNative = /\[native code]/;
 	/**
-	 * Returns a new object with the same type as source
+	 * Returns a new object with the same type as the specified source
 	 *
 	 * @param {?} obj - source object
 	 * @return {?}
@@ -508,7 +508,7 @@
 
 		var wsRgxp = /^\s+|[\r\n]+/mg;
 	/**
-	 * String tag (for ES6 string templates) for truncate starting whitespaces and eol-s
+	 * String tag (for ES6 string templates) to truncate starting white spaces and eol-s
 	 *
 	 * @param {!Array<string>} strings
 	 * @param {...?} expr
@@ -535,7 +535,7 @@
 	var IS_NODE = function () {
 	  try {
 	    return (typeof process === "undefined" ? "undefined" : _typeof(process)) === 'object' && {}.toString.call(process) === '[object process]';
-	  } catch (_) {
+	  } catch (_unused) {
 	    return false;
 	  }
 	}();
@@ -551,11 +551,14 @@
 	    localStorage.setItem(mod, mod);
 	    localStorage.removeItem(mod);
 	    return true;
-	  } catch (_) {
+	  } catch (_unused2) {
 	    return false;
 	  }
 	}();
 
+	/* eslint-disable prefer-const */
+
+		var _GLOBAL$COLLECTION_LO;
 	Object.assign($C, {
 	  ready: false,
 	  cache: {
@@ -565,7 +568,7 @@
 	});
 	var LOCAL_CACHE = GLOBAL['COLLECTION_LOCAL_CACHE'] !== false;
 	var compiledCycles = $C.cache.cycle,
-	    localCacheAttrs = GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || {};
+	    localCacheAttrs = (_GLOBAL$COLLECTION_LO = GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS']) !== null && _GLOBAL$COLLECTION_LO !== void 0 ? _GLOBAL$COLLECTION_LO : {};
 
 	var NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_kobezzza_Collection';
 	GLOBAL[NAMESPACE] = $C;
@@ -633,7 +636,7 @@
 
 	  if (p.withDescriptor) {
 	    if (p.withProto) {
-	      iFn += ws(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\nvar \n_getProto = Object.getPrototypeOf,\n_getDescriptor = Object.getOwnPropertyDescriptor;\nfunction getDescriptor(obj, key) {\nwhile (obj) {\nvar \ndesc = _getDescriptor(obj, key);\nif (desc) {\nreturn desc;\n}\nobj = _getProto(obj);\n}\n}\n"])));
+	      iFn += ws(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\nvar\n_getProto = Object.getPrototypeOf,\n_getDescriptor = Object.getOwnPropertyDescriptor;\nfunction getDescriptor(obj, key) {\nwhile (obj) {\nvar\ndesc = _getDescriptor(obj, key);\nif (desc) {\nreturn desc;\n}\nobj = _getProto(obj);\n}\n}\n"])));
 	    } else {
 	      iFn += 'var getDescriptor = Object.getOwnPropertyDescriptor;';
 	    }
@@ -912,7 +915,7 @@
 	            }));
 	            document.head.appendChild(script);
 	          }
-	        } catch (_) {}
+	        } catch (_unused) {}
 	      }, delay);
 	    } else if (IS_NODE) {
 	      
@@ -948,14 +951,14 @@
 	        localStorage.removeItem(CACHE_KEY);
 	        localStorage.removeItem(CACHE_VERSION_KEY);
 	      }
-	    } catch (_) {} finally {
+	    } catch (_unused) {} finally {
 	      $C.ready = true;
 	    }
 	  } else if (IS_NODE) {
 	    try {
 	      
 
-	    } catch (_) {} finally {
+	    } catch (_unused2) {} finally {
 	      $C.ready = true;
 	    }
 	  }
@@ -971,7 +974,7 @@
 	 */
 
 	Collection.prototype.length = function (opt_filter, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -1015,14 +1018,16 @@
 	    splice = [].splice,
 	    hasOwnProperty = {}.hasOwnProperty;
 	/**
-	 * Sets a value to an object property by a link or returns/deletes the property.
+	 * Sets a value as an object property by the specified link or returns/deletes the property.
 	 * At changing or deleting the property returns an object:
 	 *
-	 *   {
-	 *     result: boolean,
-	 *     key,
-	 *     value
-	 *   }
+	 * ```js
+	 * ({
+	 *   result: boolean,
+	 *   key,
+	 *   value
+	 * })
+	 * ```
 	 *
 	 * @param {?} obj
 	 * @param {$$CollectionLink} link - source link:
@@ -1044,7 +1049,7 @@
 	 */
 
 	function byLink(obj, link, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 	  var linkList = isString(link) ? any(link).split('.') : [].concat(link),
 	      length = linkList.length,
 	      last = length - 1;
@@ -1187,7 +1192,7 @@
 	  return obj;
 	}
 	/**
-	 * Returns true if an object contains a property by a link
+	 * Returns true if the passed object contains a property by the specified link
 	 *
 	 * @see byLink
 	 * @param {$$CollectionLink} link - source link
@@ -1205,7 +1210,7 @@
 	  in: $C.in
 	});
 	/**
-	 * Returns true if the collection contains a property by a link
+	 * Returns true if the collection contains a property by the specified link
 	 *
 	 * @see byLink
 	 * @param {$$CollectionLink} link - source link
@@ -1229,38 +1234,38 @@
 	 * @param {($$CollectionCb|$$Collection_forEach|null)=} [opt_cb] - callback function
 	 * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
 	 *
-	 *   *) [filter] - function filter or an array of functions
-	 *   *) [mult = true] - if false, then after the first successful iteration the operation will be broken
-	 *   *) [count] - maximum number of elements in the response (by default all object)
-	 *   *) [from = 0] - number of skipping successful iterations
-	 *   *) [startIndex = 0] - number of skipping successful iterations
-	 *   *) [endIndex] - end iteration position
-	 *   *) [reverse] - if true, then the iteration will be from the end
-	 *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
-	 *   *) [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
-	 *   *) [notOwn = false] - iteration type:
+	 *   * [filter] - function filter or an array of functions
+	 *   * [mult = true] - if false, then after the first successful iteration the operation will be broken
+	 *   * [count] - maximum number of elements in the response (by default all object)
+	 *   * [from = 0] - number of skipping successful iterations
+	 *   * [startIndex = 0] - number of skipping successful iterations
+	 *   * [endIndex] - end iteration position
+	 *   * [reverse] - if true, then the iteration will be from the end
+	 *   * [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
+	 *   * [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
+	 *   * [notOwn = false] - iteration type:
 	 *
 	 *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
 	 *     2) if true, then hasOwnProperty test is disabled;
 	 *     3) if -1, then hasOwnProperty test is enabled and all own properties will be skipped.
 	 *
-	 *   *) [live = false] - if true, the initial collection length won't be cached (not for all data types),
+	 *   * [live = false] - if true, the initial collection length won't be cached (not for all data types),
 	 *      ie all elements which will be added to the collection during the iteration will be included to the processing
 	 *
-	 *   *) [use] - type of the using iterator (for, for of, for in)
-	 *   *) [length = true] - if false, then function parameters optimization won't be apply
-	 *   *) [async = false] - if true, then the operation will be executed as async (returns a promise)
-	 *   *) [thread = false] - if true, then the operation will be executed in a thread (returns a promise)
-	 *   *) [parallel = false] - if true or number, then the operation will be executed as async and parallel
+	 *   * [use] - type of the using iterator (for, for of, for in)
+	 *   * [length = true] - if false, then function parameters optimization won't be apply
+	 *   * [async = false] - if true, then the operation will be executed as async (returns a promise)
+	 *   * [thread = false] - if true, then the operation will be executed in a thread (returns a promise)
+	 *   * [parallel = false] - if true or number, then the operation will be executed as async and parallel
 	 *        (number is max parallel operations)
 	 *
 	 *   *  [race = false] - if true or number, then the operation will be executed as async and parallel with race
 	 *        (number is max parallel operations)
 	 *
-	 *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
-	 *   *) [onChunk] - callback function for chunks
-	 *   *) [onIterationEnd] - callback function for the end of iterations
-	 *   *) [result] - parameter that marked as the operation result
+	 *   * [priority = 'normal'] - thread priority (low, normal, hight, critical)
+	 *   * [onChunk] - callback function for chunks
+	 *   * [onIterationEnd] - callback function for the end of iterations
+	 *   * [result] - parameter that marked as the operation result
 	 *
 	 * @return {(!Collection|!Promise)}
 	 */
@@ -1677,15 +1682,15 @@
 	 * @param {(boolean|?$$Collection_extend)} deepOrParams - if true, then properties will be copied recursively
 	 *   OR additional parameters for extending:
 	 *
-	 *   *) [withUndef = false] - if true, then the original value can be rewritten to undefined
-	 *   *) [withDescriptor = false] - if true, then the descriptor of a property will be copied too
-	 *   *) [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
-	 *   *) [withProto = false] - if true, then properties will be copied with prototypes
-	 *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
-	 *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
-	 *   *) [extendFilter] - function that will be filtering values for deep extending
-	 *   *) [traits = false] - if true, then will be copied only new properties, or if -1, only old
-	 *   *) [deep = false] - if true, then properties will be copied recursively
+	 *   * [withUndef = false] - if true, then the original value can be rewritten to undefined
+	 *   * [withDescriptor = false] - if true, then the descriptor of a property will be copied too
+	 *   * [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
+	 *   * [withProto = false] - if true, then properties will be copied with prototypes
+	 *   * [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
+	 *   * [concatFn = Array.prototype.concat] - function that will be concatenate arrays
+	 *   * [extendFilter] - function that will be filtering values for deep extending
+	 *   * [traits = false] - if true, then will be copied only new properties, or if -1, only old
+	 *   * [deep = false] - if true, then properties will be copied recursively
 	 *
 	 * @param {...Object} args - objects for extending
 	 * @return {(!Object|!Promise)}
@@ -1701,7 +1706,9 @@
 	        deep: p
 	      };
 	    } else {
-	      p = p || {};
+	      var _p;
+
+	      p = (_p = p) !== null && _p !== void 0 ? _p : {};
 	    }
 
 	    this._initParams(p);
@@ -1724,8 +1731,8 @@
 	  }
 
 	  var data = this.data,
-	      _p = p,
-	      type = _p.type;
+	      _p2 = p,
+	      type = _p2.type;
 
 	  if (!type || data === EMPTY) {
 	    for (var i = 1; i < arguments.length; i++) {
@@ -1911,7 +1918,9 @@
 	              clone = [];
 	            }
 	          } else {
-	            clone = isStructure(src) ? src : struct || {};
+	            var _struct;
+
+	            clone = isStructure(src) ? src : (_struct = struct) !== null && _struct !== void 0 ? _struct : {};
 	          }
 
 	          var childExt = $C(clone).extend(p, val);
@@ -1988,13 +1997,13 @@
 	 * @see Collection.prototype.forEach
 	 * @param {($$CollectionCb|$$Collection_map)=} opt_cb - callback function
 	 * @param {($$Collection_map|$$CollectionFilter)=} [opt_params] - additional parameters:
-	 *   *) [initial] - initial object for adding elements
+	 *   * [initial] - initial object for adding elements
 	 *
 	 * @return {(?|!Promise)}
 	 */
 
 	Collection.prototype.map = function (opt_cb, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isFunction(opt_cb)) {
 	    p = opt_cb || p;
@@ -2222,7 +2231,7 @@
 	 */
 
 	Collection.prototype.get = function (opt_filter, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && _typeof(opt_filter) !== 'object')) {
 	    return byLink(this.data, any(opt_filter));
@@ -2271,13 +2280,15 @@
 	 */
 
 	Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
+	  var _opt_params;
+
 	  if (this.p.initial != null) {
 	    opt_params = any(opt_filter);
 	    opt_filter = any(opt_initialValue);
 	    opt_initialValue = this.p.initial;
 	  }
 
-	  var p = opt_params || {};
+	  var p = (_opt_params = opt_params) !== null && _opt_params !== void 0 ? _opt_params : {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2340,7 +2351,7 @@
 	 */
 
 	Collection.prototype.every = function (opt_filter, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2375,7 +2386,7 @@
 	 */
 
 	Collection.prototype.some = function (opt_filter, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2413,7 +2424,7 @@
 	Collection.prototype.search = function (opt_filter, opt_params) {
 	  var _this = this;
 
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2469,7 +2480,7 @@
 	 */
 
 	Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2507,8 +2518,8 @@
 	 * @param {($$CollectionFilter|$$Collection_group)=} [opt_filter] - function filter or an array of functions
 	 * @param {?$$Collection_group=} [opt_params] - additional parameters:
 	 *
-	 *   *) [saveKeys = false] - if true, then will be saved keys, but not values
-	 *   *) [useMap = false] - if true, then for saving data will be used Map
+	 *   * [saveKeys = false] - if true, then will be saved keys, but not values
+	 *   * [useMap = false] - if true, then for saving data will be used Map
 	 *
 	 * @return {(!Object|!Map|!Promise<(!Object|!Map)>)}
 	 */
@@ -2518,7 +2529,7 @@
 	    return el;
 	  };
 
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2584,7 +2595,7 @@
 	 */
 
 	Collection.prototype.remove = function (opt_filter, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 
 	  if (!isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && _typeof(opt_filter) !== 'object')) {
 	    return byLink(this.data, opt_filter, {
@@ -2781,14 +2792,14 @@
 	 * @param {($$CollectionFilter|$$Collection_set|$$CollectionLink)=} filter - link, function filter or an array of functions
 	 * @param {?$$Collection_set=} [opt_params] - additional parameters:
 	 *
-	 *   *) [key] - key (null for array.push) of a new element (if search elements nof found)
-	 *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
+	 *   * [key] - key (null for array.push) of a new element (if search elements nof found)
+	 *   * [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
 	 *
 	 * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
 	 */
 
 	Collection.prototype.set = function (value, filter, opt_params) {
-	  var p = opt_params || {};
+	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
 	  var data = this.data;
 
 	  if (!isFunction(filter) && (isArray(filter) && !isFunction(filter[1]) || filter != null && _typeof(filter) !== 'object')) {
@@ -3038,5 +3049,5 @@
 
 	return $C;
 
-})));
+}));
 

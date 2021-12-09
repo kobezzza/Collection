@@ -24,7 +24,7 @@ var _gcc = require("../helpers/gcc");
  * @return {(?|!Array|!Promise<(?|!Array)>)}
  */
 _core.Collection.prototype.search = function (opt_filter, opt_params) {
-  let p = opt_params || {};
+  let p = opt_params ?? {};
 
   if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
     p = opt_filter || p;

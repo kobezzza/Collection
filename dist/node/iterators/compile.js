@@ -10,8 +10,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.returnCache = returnCache;
 exports.compileCycle = compileCycle;
+exports.returnCache = returnCache;
 
 var _core = _interopRequireDefault(require("../core"));
 
@@ -135,13 +135,13 @@ function compileCycle(key, p) {
   if (p.withDescriptor) {
     if (p.withProto) {
       iFn += (0, _string.ws)`
-				var 
+				var
 					_getProto = Object.getPrototypeOf,
 					_getDescriptor = Object.getOwnPropertyDescriptor;
 
 				function getDescriptor(obj, key) {
 					while (obj) {
-						var 
+						var
 							desc = _getDescriptor(obj, key);
 
 						if (desc) {
@@ -1186,7 +1186,7 @@ function compileCycle(key, p) {
             }));
             document.head.appendChild(script);
           }
-        } catch (_) {}
+        } catch {}
       }, delay);
     } else if (_env.IS_NODE) {
       //#if isNode

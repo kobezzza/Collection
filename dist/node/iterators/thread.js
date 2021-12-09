@@ -82,7 +82,7 @@ function getTasks() {
       const arr = tmp[key];
 
       if (rand >= value[0] && rand <= value[1]) {
-        tasks[key] = tasks[key] || [];
+        tasks[key] = tasks[key] ?? [];
         let pos = lastPos[key];
 
         if (arr[pos] == null) {
@@ -164,7 +164,7 @@ _core.Collection.prototype._addToStack = function (obj, priority, onError, opt_o
 
     try {
       obj.throw(err);
-    } catch (_) {}
+    } catch {}
 
     onError(err);
     return err;

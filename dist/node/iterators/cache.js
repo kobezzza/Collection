@@ -47,7 +47,7 @@ if (_cache.LOCAL_CACHE) {
         localStorage.removeItem(_symbols.CACHE_KEY);
         localStorage.removeItem(_symbols.CACHE_VERSION_KEY);
       }
-    } catch (_) {} finally {
+    } catch {} finally {
       _core.default.ready = true;
     }
   } else if (_env.IS_NODE) {
@@ -60,7 +60,7 @@ if (_cache.LOCAL_CACHE) {
         _core.default.cache.str = cache['cache'];
       } //#endif
 
-    } catch (_) {} finally {
+    } catch {} finally {
       _core.default.ready = true;
     }
   }
