@@ -20,7 +20,7 @@
     "url": "https://github.com/kobezzza/Collection/issues"
   },
   "scripts": {
-    "test": "bower install && jasmine",
+    "test": "jasmine",
     "test-coverage": "gulp test:browser && gulp test:browser:dev && gulp test:node",
     "full-test": "npm run test-coverage && yaspeller ./"
   },
