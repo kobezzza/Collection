@@ -8,7 +8,7 @@ Collection — minimalistic JavaScript library for working with collections of d
 [![NPM dependencies](http://img.shields.io/david/kobezzza/Collection.svg?style=flat)](https://david-dm.org/kobezzza/Collection)
 [![NPM devDependencies](http://img.shields.io/david/dev/kobezzza/Collection.svg?style=flat)](https://david-dm.org/kobezzza/Collection?type=dev)
 
-[![Build Status](http://img.shields.io/travis/kobezzza/Collection.svg?style=flat&branch=master)](https://travis-ci.org/kobezzza/Collection)
+[![Build Status](https://github.com/kobezzza/Collection/workflows/build/badge.svg?branch=master)](https://github.com/kobezzza/Collection/actions?query=workflow%3Abuild)
 [![Coverage Status](http://img.shields.io/coveralls/kobezzza/Collection.svg?style=flat)](https://coveralls.io/r/kobezzza/Collection?branch=master)
 
 [Demo (threads)](http://jsfiddle.net/kobezzza/hut2jhL9/)
