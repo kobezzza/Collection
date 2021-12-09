@@ -1,11 +1,11 @@
 /*!
- * Collection v6.7.10 (node)
+ * Collection v6.8.0 (node)
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 09 Dec 2021 13:24:56 GMT
+ * Date: 'Thu, 09 Dec 2021 13:28:35 GMT
  */
 
 (function (global, factory) {
@@ -490,7 +490,7 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 7, 10];
+	$C.VERSION = [6, 8, 0];
 	/**
 	 * Cache version
 	 * @const
