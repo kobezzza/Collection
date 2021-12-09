@@ -24,7 +24,7 @@ var _symbols = require("../consts/symbols");
  * @return {(number|!Promise<number>)}
  */
 _core.Collection.prototype.length = function (opt_filter, opt_params) {
-  let p = opt_params ?? {};
+  let p = opt_params || {};
 
   if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
     p = opt_filter || p;

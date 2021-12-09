@@ -31,7 +31,7 @@ var _symbols = require("../consts/symbols");
  * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */
 _core.Collection.prototype.set = function (value, filter, opt_params) {
-  let p = opt_params ?? {};
+  let p = opt_params || {};
   const {
     data
   } = this;

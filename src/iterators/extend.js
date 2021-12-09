@@ -60,7 +60,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 			p = {deep: p};
 
 		} else {
-			p = p ?? {};
+			p = p || {};
 		}
 
 		this._initParams(p);
@@ -299,7 +299,7 @@ Collection.prototype.extend = function (deepOrParams, args) {
 					}
 
 				} else {
-					clone = isStructure(src) ? src : struct ?? {};
+					clone = isStructure(src) ? src : struct || {};
 				}
 
 				const

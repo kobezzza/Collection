@@ -30,6 +30,6 @@ Object.assign(_core.default, {
 const LOCAL_CACHE = _env.GLOBAL['COLLECTION_LOCAL_CACHE'] !== false;
 exports.LOCAL_CACHE = LOCAL_CACHE;
 const compiledCycles = _core.default.cache.cycle,
-      localCacheAttrs = _env.GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] ?? {};
+      localCacheAttrs = _env.GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || {};
 exports.localCacheAttrs = localCacheAttrs;
 exports.compiledCycles = compiledCycles;

@@ -28,7 +28,7 @@ var _symbols = require("../consts/symbols");
  * @return {(?|!Promise)}
  */
 _core.Collection.prototype.map = function (opt_cb, opt_params) {
-  let p = opt_params ?? {};
+  let p = opt_params || {};
 
   if (!(0, _types.isFunction)(opt_cb)) {
     p = opt_cb || p;

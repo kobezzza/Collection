@@ -5,7 +5,7 @@
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 09 Dec 2021 13:46:31 GMT
+ * Date: 'Thu, 09 Dec 2021 14:03:08 GMT
  */
 
 (function (global, factory) {
@@ -556,9 +556,6 @@
 	  }
 	}();
 
-	/* eslint-disable prefer-const */
-
-		var _GLOBAL$COLLECTION_LO;
 	Object.assign($C, {
 	  ready: false,
 	  cache: {
@@ -568,7 +565,7 @@
 	});
 	var LOCAL_CACHE = GLOBAL['COLLECTION_LOCAL_CACHE'] !== false;
 	var compiledCycles = $C.cache.cycle,
-	    localCacheAttrs = (_GLOBAL$COLLECTION_LO = GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS']) !== null && _GLOBAL$COLLECTION_LO !== void 0 ? _GLOBAL$COLLECTION_LO : {};
+	    localCacheAttrs = GLOBAL['COLLECTION_LOCAL_CACHE_ATTRS'] || {};
 
 	var NAMESPACE = '__COLLECTION_NAMESPACE__https_github_com_kobezzza_Collection';
 	GLOBAL[NAMESPACE] = $C;
@@ -974,7 +971,7 @@
 	 */
 
 	Collection.prototype.length = function (opt_filter, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -1049,7 +1046,7 @@
 	 */
 
 	function byLink(obj, link, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 	  var linkList = isString(link) ? any(link).split('.') : [].concat(link),
 	      length = linkList.length,
 	      last = length - 1;
@@ -1706,9 +1703,7 @@
 	        deep: p
 	      };
 	    } else {
-	      var _p;
-
-	      p = (_p = p) !== null && _p !== void 0 ? _p : {};
+	      p = p || {};
 	    }
 
 	    this._initParams(p);
@@ -1731,8 +1726,8 @@
 	  }
 
 	  var data = this.data,
-	      _p2 = p,
-	      type = _p2.type;
+	      _p = p,
+	      type = _p.type;
 
 	  if (!type || data === EMPTY) {
 	    for (var i = 1; i < arguments.length; i++) {
@@ -1918,9 +1913,7 @@
 	              clone = [];
 	            }
 	          } else {
-	            var _struct;
-
-	            clone = isStructure(src) ? src : (_struct = struct) !== null && _struct !== void 0 ? _struct : {};
+	            clone = isStructure(src) ? src : struct || {};
 	          }
 
 	          var childExt = $C(clone).extend(p, val);
@@ -2003,7 +1996,7 @@
 	 */
 
 	Collection.prototype.map = function (opt_cb, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isFunction(opt_cb)) {
 	    p = opt_cb || p;
@@ -2231,7 +2224,7 @@
 	 */
 
 	Collection.prototype.get = function (opt_filter, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && _typeof(opt_filter) !== 'object')) {
 	    return byLink(this.data, any(opt_filter));
@@ -2280,15 +2273,13 @@
 	 */
 
 	Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_params) {
-	  var _opt_params;
-
 	  if (this.p.initial != null) {
 	    opt_params = any(opt_filter);
 	    opt_filter = any(opt_initialValue);
 	    opt_initialValue = this.p.initial;
 	  }
 
-	  var p = (_opt_params = opt_params) !== null && _opt_params !== void 0 ? _opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2351,7 +2342,7 @@
 	 */
 
 	Collection.prototype.every = function (opt_filter, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2386,7 +2377,7 @@
 	 */
 
 	Collection.prototype.some = function (opt_filter, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2424,7 +2415,7 @@
 	Collection.prototype.search = function (opt_filter, opt_params) {
 	  var _this = this;
 
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2480,7 +2471,7 @@
 	 */
 
 	Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2529,7 +2520,7 @@
 	    return el;
 	  };
 
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 	    p = opt_filter || p;
@@ -2595,7 +2586,7 @@
 	 */
 
 	Collection.prototype.remove = function (opt_filter, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 
 	  if (!isFunction(opt_filter) && (isArray(opt_filter) && !isFunction(opt_filter[1]) || opt_filter != null && _typeof(opt_filter) !== 'object')) {
 	    return byLink(this.data, opt_filter, {
@@ -2799,7 +2790,7 @@
 	 */
 
 	Collection.prototype.set = function (value, filter, opt_params) {
-	  var p = opt_params !== null && opt_params !== void 0 ? opt_params : {};
+	  var p = opt_params || {};
 	  var data = this.data;
 
 	  if (!isFunction(filter) && (isArray(filter) && !isFunction(filter[1]) || filter != null && _typeof(filter) !== 'object')) {

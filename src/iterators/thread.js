@@ -114,7 +114,7 @@ function getTasks() {
 				arr = tmp[key];
 
 			if (rand >= value[0] && rand <= value[1]) {
-				tasks[key] = tasks[key] ?? [];
+				tasks[key] = tasks[key] || [];
 				let pos = lastPos[key];
 
 				if (arr[pos] == null) {

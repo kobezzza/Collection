@@ -62,7 +62,7 @@ exports.splice = splice;
 exports.slice = slice;
 
 function byLink(obj, link, opt_params) {
-  const p = opt_params ?? {};
+  const p = opt_params || {};
   const linkList = (0, _types.isString)(link) ? (0, _gcc.any)(link).split('.') : [].concat(link),
         length = linkList.length,
         last = length - 1;

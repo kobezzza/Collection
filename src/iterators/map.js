@@ -27,7 +27,7 @@ import { FN_LENGTH } from '../consts/symbols';
  * @return {(?|!Promise)}
  */
 Collection.prototype.map = function (opt_cb, opt_params) {
-	let p = opt_params ?? {};
+	let p = opt_params || {};
 
 	if (!isFunction(opt_cb)) {
 		p = opt_cb || p;

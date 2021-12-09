@@ -24,7 +24,7 @@ var _gcc = require("../helpers/gcc");
  * @return {($$CollectionReport|!Promise<$$CollectionReport>)}
  */
 _core.Collection.prototype.remove = function (opt_filter, opt_params) {
-  let p = opt_params ?? {};
+  let p = opt_params || {};
 
   if (!(0, _types.isFunction)(opt_filter) && ((0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter[1]) || opt_filter != null && typeof opt_filter !== 'object')) {
     return (0, _link.byLink)(this.data, opt_filter, {

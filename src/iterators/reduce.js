@@ -32,7 +32,7 @@ Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, opt_pa
 		opt_initialValue = this.p.initial;
 	}
 
-	let p = opt_params ?? {};
+	let p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;

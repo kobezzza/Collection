@@ -30,7 +30,7 @@ import { FN_LENGTH } from '../consts/symbols';
  * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */
 Collection.prototype.set = function (value, filter, opt_params) {
-	let p = opt_params ?? {};
+	let p = opt_params || {};
 
 	const
 		{data} = this;

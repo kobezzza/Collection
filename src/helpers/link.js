@@ -49,7 +49,7 @@ export const
  */
 export function byLink(obj, link, opt_params) {
 	const
-		p = opt_params ?? {};
+		p = opt_params || {};
 
 	const
 		linkList = isString(link) ? any(link).split('.') : [].concat(link),

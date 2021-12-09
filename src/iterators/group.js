@@ -34,7 +34,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		field = opt_field || ((el) => el);
 
 	let
-		p = opt_params ?? {};
+		p = opt_params || {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;

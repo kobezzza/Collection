@@ -32,7 +32,7 @@ _core.Collection.prototype.reduce = function (cb, opt_initialValue, opt_filter, 
     opt_initialValue = this.p.initial;
   }
 
-  let p = opt_params ?? {};
+  let p = opt_params || {};
 
   if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
     p = opt_filter || p;

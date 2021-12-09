@@ -64,7 +64,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
         deep: p
       };
     } else {
-      p = p ?? {};
+      p = p || {};
     }
 
     this._initParams(p);
@@ -277,7 +277,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
             clone = [];
           }
         } else {
-          clone = (0, _types.isStructure)(src) ? src : struct ?? {};
+          clone = (0, _types.isStructure)(src) ? src : struct || {};
         }
 
         const childExt = (0, _core.default)(clone).extend(p, val);

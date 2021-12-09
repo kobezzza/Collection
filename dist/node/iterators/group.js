@@ -33,7 +33,7 @@ var _symbols = require("../consts/symbols");
 _core.Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
   const field = opt_field || (el => el);
 
-  let p = opt_params ?? {};
+  let p = opt_params || {};
 
   if (!(0, _types.isArray)(opt_filter) && !(0, _types.isFunction)(opt_filter)) {
     p = opt_filter || p;
