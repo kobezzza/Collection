@@ -52,7 +52,7 @@ if (LOCAL_CACHE) {
 				localStorage.removeItem(CACHE_VERSION_KEY);
 			}
 
-		} catch (_) {
+		} catch {
 
 		} finally {
 			$C.ready = true;
@@ -72,7 +72,7 @@ if (LOCAL_CACHE) {
 
 			//#endif
 
-		} catch (_) {
+		} catch {
 
 		} finally {
 			$C.ready = true;

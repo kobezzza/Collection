@@ -24,7 +24,7 @@ import { LENGTH_REQUEST } from '../consts/symbols';
  * @return {(number|!Promise<number>)}
  */
 Collection.prototype.length = function (opt_filter, opt_params) {
-	let p = opt_params || {};
+	let p = opt_params ?? {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;

@@ -24,8 +24,8 @@ import { FN_LENGTH } from '../consts/symbols';
  * @param {($$CollectionFilter|$$Collection_group)=} [opt_filter] - function filter or an array of functions
  * @param {?$$Collection_group=} [opt_params] - additional parameters:
  *
- *   *) [saveKeys = false] - if true, then will be saved keys, but not values
- *   *) [useMap = false] - if true, then for saving data will be used Map
+ *   * [saveKeys = false] - if true, then will be saved keys, but not values
+ *   * [useMap = false] - if true, then for saving data will be used Map
  *
  * @return {(!Object|!Map|!Promise<(!Object|!Map)>)}
  */
@@ -34,7 +34,7 @@ Collection.prototype.group = function (opt_field, opt_filter, opt_params) {
 		field = opt_field || ((el) => el);
 
 	let
-		p = opt_params || {};
+		p = opt_params ?? {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;

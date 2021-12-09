@@ -65,7 +65,7 @@ describe('Collection methods with streams', () => {
 			});
 	});
 
-	it('async map from a stream', async (done) => {
+	it('async map from a stream', (done) => {
 		const
 			length = 5,
 			dataHandler = jasmine.createSpy('dataHandler');
