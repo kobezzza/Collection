@@ -21,7 +21,9 @@ var _primitives = require("../consts/primitives");
 
 var _env = require("../consts/env");
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 const simpleType = {
   'array': true,
@@ -39,15 +41,15 @@ const {
  * @param {(boolean|?$$Collection_extend)} deepOrParams - if true, then properties will be copied recursively
  *   OR additional parameters for extending:
  *
- *   *) [withUndef = false] - if true, then the original value can be rewritten to undefined
- *   *) [withDescriptor = false] - if true, then the descriptor of a property will be copied too
- *   *) [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
- *   *) [withProto = false] - if true, then properties will be copied with prototypes
- *   *) [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
- *   *) [concatFn = Array.prototype.concat] - function that will be concatenate arrays
- *   *) [extendFilter] - function that will be filtering values for deep extending
- *   *) [traits = false] - if true, then will be copied only new properties, or if -1, only old
- *   *) [deep = false] - if true, then properties will be copied recursively
+ *   * [withUndef = false] - if true, then the original value can be rewritten to undefined
+ *   * [withDescriptor = false] - if true, then the descriptor of a property will be copied too
+ *   * [withAccessors = false] - if true, then property accessors will be copied too, but not another descriptor properties;
+ *   * [withProto = false] - if true, then properties will be copied with prototypes
+ *   * [concatArray = false] - if true, then array properties will be concatenated (only if extending by an another array)
+ *   * [concatFn = Array.prototype.concat] - function that will be concatenate arrays
+ *   * [extendFilter] - function that will be filtering values for deep extending
+ *   * [traits = false] - if true, then will be copied only new properties, or if -1, only old
+ *   * [deep = false] - if true, then properties will be copied recursively
  *
  * @param {...Object} args - objects for extending
  * @return {(!Object|!Promise)}
@@ -62,7 +64,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
         deep: p
       };
     } else {
-      p = p || {};
+      p = p ?? {};
     }
 
     this._initParams(p);
@@ -275,7 +277,7 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
             clone = [];
           }
         } else {
-          clone = (0, _types.isStructure)(src) ? src : struct || {};
+          clone = (0, _types.isStructure)(src) ? src : struct ?? {};
         }
 
         const childExt = (0, _core.default)(clone).extend(p, val);

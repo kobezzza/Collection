@@ -23,12 +23,12 @@ var _symbols = require("../consts/symbols");
  * @see Collection.prototype.forEach
  * @param {($$CollectionCb|$$Collection_map)=} opt_cb - callback function
  * @param {($$Collection_map|$$CollectionFilter)=} [opt_params] - additional parameters:
- *   *) [initial] - initial object for adding elements
+ *   * [initial] - initial object for adding elements
  *
  * @return {(?|!Promise)}
  */
 _core.Collection.prototype.map = function (opt_cb, opt_params) {
-  let p = opt_params || {};
+  let p = opt_params ?? {};
 
   if (!(0, _types.isFunction)(opt_cb)) {
     p = opt_cb || p;

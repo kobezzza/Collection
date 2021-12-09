@@ -10,13 +10,16 @@
 
 const
 	gulp = require('gulp'),
-	$ = require('gulp-load-plugins')(),
+	plumber = require('gulp-plumber'),
+	$ = require('gulp-load-plugins')();
+
+const
 	helpers = require('./helpers'),
 	fullHead = `${helpers.getHead()} */\n\n`;
 
 gulp.task('predefs:build', () =>
 	gulp.src('./predefs/src/index.js')
-		.pipe($.plumber())
+		.pipe(plumber())
 		.pipe($.monic())
 		.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
 		.pipe(gulp.dest('./predefs/build'))
@@ -24,7 +27,7 @@ gulp.task('predefs:build', () =>
 
 gulp.task('predefs:externs', () =>
 	gulp.src('./predefs/src/index.js')
-		.pipe($.plumber())
+		.pipe(plumber())
 		.pipe($.monic({flags: {externs: true}}))
 		.pipe($.replace(helpers.headRgxp.addFlags('g'), ''))
 		.pipe($.replace(/(\s)+$/, '$1'))
@@ -33,14 +36,9 @@ gulp.task('predefs:externs', () =>
 		.pipe(gulp.dest('./'))
 );
 
-gulp.task('predefs:bower', () =>
-	$.run('bower install').exec()
-);
-
 gulp.task('predefs', gulp.parallel(
 	'predefs:build',
-	'predefs:externs',
-	'predefs:bower'
+	'predefs:externs'
 ));
 
 gulp.task('head', () => {
@@ -56,7 +54,7 @@ gulp.task('head', () => {
 	];
 
 	return gulp.src(paths, {base: './'})
-		.pipe($.plumber())
+		.pipe(plumber())
 		.pipe($.ignore.include(filter))
 		.pipe($.replace(helpers.headRgxp, ''))
 		.pipe($.header(fullHead))

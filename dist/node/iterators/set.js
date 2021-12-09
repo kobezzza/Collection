@@ -25,13 +25,13 @@ var _symbols = require("../consts/symbols");
  * @param {($$CollectionFilter|$$Collection_set|$$CollectionLink)=} filter - link, function filter or an array of functions
  * @param {?$$Collection_set=} [opt_params] - additional parameters:
  *
- *   *) [key] - key (null for array.push) of a new element (if search elements nof found)
- *   *) [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
+ *   * [key] - key (null for array.push) of a new element (if search elements nof found)
+ *   * [create = true] - if false, in the absence of the requested property will be thrown an exception, otherwise it will be created
  *
  * @return {($$CollectionSetReport|!Promise<$$CollectionSetReport>)}
  */
 _core.Collection.prototype.set = function (value, filter, opt_params) {
-  let p = opt_params || {};
+  let p = opt_params ?? {};
   const {
     data
   } = this;

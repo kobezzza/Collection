@@ -90,7 +90,7 @@ Object.assign($C, {config: {}});
  * Library version
  * @const
  */
-$C.VERSION = [6, 7, 10];
+$C.VERSION = [6, 8, 0];
 
 /**
  * Cache version

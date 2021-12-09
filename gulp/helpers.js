@@ -10,6 +10,7 @@
 
 const
 	gulp = require('gulp'),
+	plumber = require('gulp-plumber'),
 	$ = require('gulp-load-plugins')();
 
 const
@@ -52,14 +53,14 @@ module.exports = {
 			];
 
 			gulp.src(src)
-				.pipe($.plumber())
+				.pipe(plumber())
 				.pipe($.istanbul())
 				.pipe($.istanbul.hookRequire())
 				.on('finish', runTests);
 
 			function runTests() {
 				gulp.src(`./spec/${type + (dev ? '-dev' : '')}-spec.js`)
-					.pipe($.plumber())
+					.pipe(plumber())
 					.pipe($.jasmine())
 					.on('error', (err) => die ? cb(err) : cb())
 					.pipe($.istanbul.writeReports())

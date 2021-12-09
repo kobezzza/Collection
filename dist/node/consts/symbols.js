@@ -10,7 +10,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.CACHE_VERSION_KEY = exports.CACHE_KEY = exports.FN_LENGTH = exports.LENGTH_REQUEST = exports.NAMESPACE = void 0;
+exports.NAMESPACE = exports.LENGTH_REQUEST = exports.FN_LENGTH = exports.CACHE_VERSION_KEY = exports.CACHE_KEY = void 0;
 
 var _core = _interopRequireDefault(require("../core"));
 

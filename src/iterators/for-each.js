@@ -35,38 +35,38 @@ function defaultCb() {}
  * @param {($$CollectionCb|$$Collection_forEach|null)=} [opt_cb] - callback function
  * @param {?$$Collection_forEach=} [opt_params] - additional parameters:
  *
- *   *) [filter] - function filter or an array of functions
- *   *) [mult = true] - if false, then after the first successful iteration the operation will be broken
- *   *) [count] - maximum number of elements in the response (by default all object)
- *   *) [from = 0] - number of skipping successful iterations
- *   *) [startIndex = 0] - number of skipping successful iterations
- *   *) [endIndex] - end iteration position
- *   *) [reverse] - if true, then the iteration will be from the end
- *   *) [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
- *   *) [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
- *   *) [notOwn = false] - iteration type:
+ *   * [filter] - function filter or an array of functions
+ *   * [mult = true] - if false, then after the first successful iteration the operation will be broken
+ *   * [count] - maximum number of elements in the response (by default all object)
+ *   * [from = 0] - number of skipping successful iterations
+ *   * [startIndex = 0] - number of skipping successful iterations
+ *   * [endIndex] - end iteration position
+ *   * [reverse] - if true, then the iteration will be from the end
+ *   * [inverseFilter = false] - if true, the successful iteration is considered as a negative result of the filter
+ *   * [withDescriptor = false] - if true, then the first element of callback function will be an object of the element descriptor
+ *   * [notOwn = false] - iteration type:
  *
  *     1) if false, then hasOwnProperty test is enabled and all not own properties will be skipped;
  *     2) if true, then hasOwnProperty test is disabled;
  *     3) if -1, then hasOwnProperty test is enabled and all own properties will be skipped.
  *
- *   *) [live = false] - if true, the initial collection length won't be cached (not for all data types),
+ *   * [live = false] - if true, the initial collection length won't be cached (not for all data types),
  *      ie all elements which will be added to the collection during the iteration will be included to the processing
  *
- *   *) [use] - type of the using iterator (for, for of, for in)
- *   *) [length = true] - if false, then function parameters optimization won't be apply
- *   *) [async = false] - if true, then the operation will be executed as async (returns a promise)
- *   *) [thread = false] - if true, then the operation will be executed in a thread (returns a promise)
- *   *) [parallel = false] - if true or number, then the operation will be executed as async and parallel
+ *   * [use] - type of the using iterator (for, for of, for in)
+ *   * [length = true] - if false, then function parameters optimization won't be apply
+ *   * [async = false] - if true, then the operation will be executed as async (returns a promise)
+ *   * [thread = false] - if true, then the operation will be executed in a thread (returns a promise)
+ *   * [parallel = false] - if true or number, then the operation will be executed as async and parallel
  *        (number is max parallel operations)
  *
  *   *  [race = false] - if true or number, then the operation will be executed as async and parallel with race
  *        (number is max parallel operations)
  *
- *   *) [priority = 'normal'] - thread priority (low, normal, hight, critical)
- *   *) [onChunk] - callback function for chunks
- *   *) [onIterationEnd] - callback function for the end of iterations
- *   *) [result] - parameter that marked as the operation result
+ *   * [priority = 'normal'] - thread priority (low, normal, hight, critical)
+ *   * [onChunk] - callback function for chunks
+ *   * [onIterationEnd] - callback function for the end of iterations
+ *   * [result] - parameter that marked as the operation result
  *
  * @return {(!Collection|!Promise)}
  */
@@ -419,7 +419,7 @@ Collection.prototype.forEach = function (opt_cb, opt_params) {
 					try {
 						thread.throw(err);
 
-					} catch (_) {}
+					} catch {}
 
 					reject(err);
 					return err;

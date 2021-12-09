@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.ws = ws;
 const wsRgxp = /^\s+|[\r\n]+/mg;
 /**
- * String tag (for ES6 string templates) for truncate starting whitespaces and eol-s
+ * String tag (for ES6 string templates) to truncate starting white spaces and eol-s
  *
  * @param {!Array<string>} strings
  * @param {...?} expr

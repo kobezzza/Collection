@@ -22,7 +22,7 @@ import { any } from '../helpers/gcc';
  * @return {(boolean|!Promise<boolean>)}
  */
 Collection.prototype.includes = function (searchElement, opt_filter, opt_params) {
-	let p = opt_params || {};
+	let p = opt_params ?? {};
 
 	if (!isArray(opt_filter) && !isFunction(opt_filter)) {
 		p = opt_filter || p;

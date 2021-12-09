@@ -155,13 +155,13 @@ export function compileCycle(key, p) {
 	if (p.withDescriptor) {
 		if (p.withProto) {
 			iFn += ws`
-				var 
+				var
 					_getProto = Object.getPrototypeOf,
 					_getDescriptor = Object.getOwnPropertyDescriptor;
 
 				function getDescriptor(obj, key) {
 					while (obj) {
-						var 
+						var
 							desc = _getDescriptor(obj, key);
 
 						if (desc) {
@@ -1273,7 +1273,7 @@ export function compileCycle(key, p) {
 						document.head.appendChild(script);
 					}
 
-				} catch (_) {}
+				} catch {}
 
 			}, delay);
 

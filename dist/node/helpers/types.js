@@ -10,29 +10,31 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isFunction = isFunction;
-exports.isNumber = isNumber;
-exports.isString = isString;
-exports.isBoolean = isBoolean;
-exports.isArray = isArray;
-exports.isMap = isMap;
-exports.isWeakMap = isWeakMap;
-exports.isSet = isSet;
-exports.isWeakSet = isWeakSet;
-exports.isPromise = isPromise;
-exports.isPlainObject = isPlainObject;
-exports.isObjectInstance = isObjectInstance;
-exports.isLikeArray = isLikeArray;
-exports.isGenerator = isGenerator;
-exports.isIterator = isIterator;
-exports.isStream = isStream;
-exports.isIDBRequest = isIDBRequest;
-exports.getType = getType;
-exports.getSameAs = getSameAs;
-exports.isStructure = isStructure;
+exports.asyncTypes = void 0;
 exports.canExtendProto = canExtendProto;
+exports.getSameAs = getSameAs;
+exports.getType = getType;
+exports.isArray = isArray;
+exports.isBoolean = isBoolean;
+exports.isFunction = isFunction;
+exports.isGenerator = isGenerator;
+exports.isIDBRequest = isIDBRequest;
+exports.isIterator = isIterator;
+exports.isLikeArray = isLikeArray;
+exports.isMap = isMap;
+exports.isNative = void 0;
+exports.isNumber = isNumber;
+exports.isObjectInstance = isObjectInstance;
+exports.isPlainObject = isPlainObject;
 exports.isPositive = isPositive;
-exports.isNative = exports.iterators = exports.weakTypes = exports.mapSet = exports.asyncTypes = void 0;
+exports.isPromise = isPromise;
+exports.isSet = isSet;
+exports.isStream = isStream;
+exports.isString = isString;
+exports.isStructure = isStructure;
+exports.isWeakMap = isWeakMap;
+exports.isWeakSet = isWeakSet;
+exports.weakTypes = exports.mapSet = exports.iterators = void 0;
 
 var _primitives = require("../consts/primitives");
 
@@ -335,7 +337,7 @@ function getType(obj, opt_use) {
 
 const isNative = /\[native code]/;
 /**
- * Returns a new object with the same type as source
+ * Returns a new object with the same type as the specified source
  *
  * @param {?} obj - source object
  * @return {?}

@@ -10,7 +10,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.EMPTY = exports.IGNORE = exports.FALSE = exports.TRUE = void 0;
+exports.TRUE = exports.IGNORE = exports.FALSE = exports.EMPTY = void 0;
 const TRUE = [],
       FALSE = [],
       IGNORE = [],
