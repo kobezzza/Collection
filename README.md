@@ -5,8 +5,6 @@ Collection — minimalistic JavaScript library for working with collections of d
 
 [![NPM version](http://img.shields.io/npm/v/collection.js.svg?style=flat)](http://badge.fury.io/js/collection.js)
 [![NPM download](https://img.shields.io/npm/dm/collection.js.svg?style=flat)](http://badge.fury.io/js/collection.js)
-[![NPM dependencies](http://img.shields.io/david/kobezzza/Collection.svg?style=flat)](https://david-dm.org/kobezzza/Collection)
-[![NPM devDependencies](http://img.shields.io/david/dev/kobezzza/Collection.svg?style=flat)](https://david-dm.org/kobezzza/Collection?type=dev)
 
 [![Build Status](https://github.com/kobezzza/Collection/workflows/build/badge.svg?branch=master)](https://github.com/kobezzza/Collection/actions?query=workflow%3Abuild)
 [![Coverage Status](http://img.shields.io/coveralls/kobezzza/Collection.svg?style=flat)](https://coveralls.io/r/kobezzza/Collection?branch=master)
