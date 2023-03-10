@@ -206,6 +206,10 @@ _core.Collection.prototype.extend = function (deepOrParams, args) {
 
     const isSimple = simpleType[(0, _types.getType)(arg)];
     promise = promise.then(() => (0, _core.default)(arg).forEach((el, key) => {
+      if (key === '__proto__') {
+        return;
+      }
+
       if (dataIsSimple && isSimple && (withDescriptor || p.withAccessors && (el.get || el.set))) {
         if (p.traits && key in data !== (p.traits === -1)) {
           return;

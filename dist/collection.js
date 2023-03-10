@@ -1,11 +1,11 @@
 /*!
- * Collection v6.8.0
+ * Collection v6.8.1
  * https://github.com/kobezzza/Collection
  *
  * Released under the MIT license
  * https://github.com/kobezzza/Collection/blob/master/LICENSE
  *
- * Date: 'Thu, 09 Dec 2021 14:03:08 GMT
+ * Date: 'Fri, 10 Mar 2023 14:12:19 GMT
  */
 
 (function (global, factory) {
@@ -490,7 +490,7 @@
 	 * @const
 	 */
 
-	$C.VERSION = [6, 8, 0];
+	$C.VERSION = [6, 8, 1];
 	/**
 	 * Cache version
 	 * @const
@@ -2171,6 +2171,10 @@
 	    var isSimple = simpleType[getType(arg)];
 	    promise = promise.then(function () {
 	      return $C(arg).forEach(function (el, key) {
+	        if (key === '__proto__') {
+	          return;
+	        }
+
 	        if (dataIsSimple && isSimple && (withDescriptor || p.withAccessors && (el.get || el.set))) {
 	          if (p.traits && key in data !== (p.traits === -1)) {
 	            return;
